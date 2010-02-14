@@ -1,35 +1,12 @@
 ! -----------------------------------------------------------------------------------
-! SQL '89
-!
-! SQL (Structured Query Language)
-!
-! The SQL programming language was developed as a uniform means of modifying and
-! querying relational databases. By using a single abstract language to interact 
-! with the database, programs can be written that are independent of the vender and
-! format of the database itself. Variations are used by Oracle, Microsoft and most 
-! other developers
-!
-! In 1992, a new version SQL as released but has yet to be implemented by any major
-! developer. The reason to this lies in the sheer complexity of the grammar. SQL 92 
-! contains over 300 rules and a myraid of new features. For instance, in SQL 92, the
-! developer can create types using COBOL syntax rather than the normal data types of 
-! SQL 89. This reason combined with the fact that SQL 89 is a time-tested and 
-! ample tool maintains it as the standard of the database industry.
-!
-! Update:
-!   02/17/2005
-!     Added "NULL" to the <Value> rule, I also added more comments to the grammar
-!
-! Note: This is an ad hoc version of the language. If there are any flaws, please 
-! visit www.devincook.com/goldparser
+! T-SQL Script Analyzer
 ! -----------------------------------------------------------------------------------
 
-"Name"         = 'SQL 89'
-"Version"      = '1989'
-"About"        = 'This is the ANSI 89 version of SQL. Variations are used by'
-               | 'Oracle, Microsoft and most other database developers'
+"Name"         = 'T-SQL CREATE Statements'
+"Version"      = '2005'
+"About"        = 'Parser for T-SQL CREATE statements to get names'
 
-"Start Symbol" = <Query>
+"Start Symbol" = <Root>
 
 ! =============================================================================
 ! Comments
@@ -43,42 +20,154 @@ Comment Line  = '--'
 ! Terminals
 ! =============================================================================
 
-{String Ch 1}      = {Printable} - ["]
-{String Ch 2}      = {Printable} - ['']
+{String Ch}        = {Printable} - ["]
 {Id Ch Standard}   = {Alphanumeric} + [_]
 {Id Ch Extended}   = {Printable} - ['['] - [']']
+{Hex Ch}           = [0123456789ABCDEF]
 
-StringLiteral   = '"'{String Ch 1}*'"' | ''{String Ch 2}*''
+StringLiteral   = (''{String Ch}*'')+
 IntegerLiteral  = {Digit}+
 RealLiteral     = {Digit}+'.'{Digit}+
+HexLiteral      = 0x{Hex Ch}+
 
-!----- Identifiers in SQL are very complex. 
-
-Id             = ({Letter}{Id Ch Standard}* | '['{Id Ch Extended}+']')  ('.'({Letter}{Id Ch Standard}* | '['{Id Ch Extended}+']'))?
+! We use a simplified name convention, which does not allow user/schema, database or server to be specified
+Id             = {Letter}{Id Ch Standard}* | '['{Id Ch Extended}+']' | '"'{Id Ch Standard}*'"'
+LocalId        = '@'{Letter}{Id Ch Standard}*
+TableId        = '#'?{Letter}{Id Ch Standard}* | '[''#'?{Id Ch Extended}+']' | '"''#'?{Id Ch Standard}*'"'
+LocaleId       = {Alpha}+('-'{Alpha}+)?
 
 ! =============================================================================
-! Rules
+! Start Symbol and Common Names
 ! =============================================================================
 
-<Query>       ::= <Alter Stm>
-                | <Create Stm>
-                | <Delete Stm>
-                | <Drop Stm>
-                | <Insert Stm>
-                | <Select Stm>
-                | <Update Stm>               
+<Root> ::= <Create Stm>
+         | <Create Stm> ';'
+
+<Create Stm> ::= <Create Fulltext>
+               | <Create Function>
+               | <Create Index>
+               | <Create Table>
+
+<Column Name> ::= Id
+
+<Function Name> ::= Id
+
+<Index Name> ::= Id
+
+<Parameter Name> ::= LocalId
+
+<Variable Name> ::= LocalId
+
+<Table Name> ::= TableId
+
+<Table Name Qualified> ::= <Table Name>
+                         | <Schema Name> '.' <Table Name>
+
+<Type Name> ::= Id
+
+<Type Name Qualified> ::= <Type Name>
+                        | <Schema Name> '.' <Type Name>
+
+<Schema Name> ::= Id
+
+<LCID> ::= HexLiteral
+         | IntegerLiteral
+         | LocaleId
+
+<Optional As> ::= AS
+                |
+
+! =============================================================================
+! Parameter Lists for Functions and Procedures
+! =============================================================================
+
+<Parameter Group> ::= '(' <Parameter List> ')'
+                    | '(' ')'
+
+<Parameter List> ::= <Parameter List> ',' <Parameter>
+                   | <Parameter>
+
+<Parameter> ::= <Parameter Name> <Optional As> <Type Name Qualified> <Parameter Default>
+
+<Parameter Default> ::= '=' DEFAULT
+                      |
+
+! =============================================================================
+! CREATE FULLTEXT
+! =============================================================================
+
+! We don't allow to specify the catalog name, since the catalog is automatically assigned (module name)
+
+<Create Fulltext> ::= CREATE FULLTEXT INDEX ON TABLE <Table Name> <Fulltext Column Group> KEY INDEX <Index Name> <Fulltext Change Tracking>
+
+<Fulltext Column Group> ::= '(' <Fulltext Column List> ')'
+                          |
+
+<Fulltext Column List> ::= <Fulltext Column List> ',' <Fulltext Column>
+                         | <Fulltext Column>
+
+<Fulltext Column> ::= <Column Name> <Fulltext Column Type> <Fulltext Column Language>
+
+<Fulltext Column Type> ::= TYPE COLUMN <Fulltext Column Type Name>
+                         |
+
+<Fulltext Column Type Name> ::= CHAR
+                              | NCHAR
+                              | VARCHAR
+                              | NVARCHAR
+
+<Fulltext Column Language> ::= LANGUAGE <LCID>
+                             |
+
+<Fulltext Change Tracking> ::= WITH CHANGE_TRACKING <Fulltext Change Tracking Name>
+                             |
+
+<Fulltext Change Tracking Name> ::= MANUAL
+                                  | AUTO
+                                  | OFF
+                                  | OFF ',' NO POPULATION
+
+! =============================================================================
+! CREATE FUNCTION
+! =============================================================================
+
+! We don't allow to specify the schema name, it is implicit (module name)
+
+<Create Function> ::= CREATE FUNCTION <Function Name> <Parameter Group> RETURNS <Function Type>
+
+<Function Type> ::= <Function Scalar>
+                  | <Function Inline>
+                  | <Function Table>
+
+<Function Scalar> ::= <Type Name> <Function Option Group> <Optional As> BEGIN <Function Body> RETURN <Scalar Expression> END
+
+<Function Inline> ::= TABLE <Function Option Group> <Optional As> RETURN <Function Inline Select>
+
+<Function Inline Select> ::= <Select Stm>
+                           | '(' <Select Stm> ')'
+
+<Function Table> ::= <
+
+<Function Option Group> ::= WITH <Function Option>
+                          |
+
+! The options ENCRYPTION and SCHEMABINDING are handled by the module and therefore not allowed
+
+<Function Option> ::= RETURNS NULL ON NULL INPUT
+                    | CALLED ON NULL INPUT
+
+
+
+<Function Body> ?
+<Scalar Expression> ?
+<Select Stm> ?
+
+/*
+
+
+<Create Index> ::= CREATE <Unique> INDEX IntegerLiteral ON Id '(' <Order List> ')' <With Clause>
                 
-! =============================================================================
-! Table modification statements
-! =============================================================================
-           
-<Alter Stm>   ::= ALTER TABLE Id ADD  COLUMN <Field Def List> <Constraint Opt>
-                | ALTER TABLE Id ADD  <Constraint>
-                | ALTER TABLE Id DROP COLUMN Id
-                | ALTER TABLE Id DROP CONSTRAINT Id
-
-<Create Stm>  ::= CREATE <Unique> INDEX IntegerLiteral ON Id '(' <Order List> ')' <With Clause>
-                | CREATE TABLE Id '(' <Field Def List> ')' <Constraint Opt>
+<Create Table> ::= CREATE TABLE Id '(' <Field Def List> ')' <Constraint Opt>
 
 <Unique>      ::= UNIQUE
                 |
@@ -271,3 +360,4 @@ Id             = ({Letter}{Id Ch Standard}* | '['{Id Ch Extended}+']')  ('.'({Le
 <Id Member>   ::= Id
                 | Id Id
 
+*/
