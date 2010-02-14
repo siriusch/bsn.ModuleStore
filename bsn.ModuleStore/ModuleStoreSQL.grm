@@ -5,6 +5,7 @@
 "Name"         = 'T-SQL CREATE Statements'
 "Version"      = '2005'
 "About"        = 'Parser for T-SQL CREATE statements to get names'
+"Author"       = 'Arsene von Wyss'
 
 "Start Symbol" = <Root>
 
@@ -22,7 +23,7 @@ Comment Line  = '--'
 
 {String Ch}        = {Printable} - ["]
 {Id Ch Standard}   = {Alphanumeric} + [_]
-{Id Ch Extended}   = {Printable} - ['['] - [']']
+{Id Ch Extended}   = {Printable} - ['['#']']
 {Hex Ch}           = [0123456789ABCDEF]
 
 StringLiteral   = (''{String Ch}*'')+
@@ -33,32 +34,32 @@ HexLiteral      = 0x{Hex Ch}+
 ! We use a simplified name convention, which does not allow user/schema, database or server to be specified
 Id             = {Letter}{Id Ch Standard}* | '['{Id Ch Extended}+']' | '"'{Id Ch Standard}*'"'
 LocalId        = '@'{Letter}{Id Ch Standard}*
-TableId        = '#'?{Letter}{Id Ch Standard}* | '[''#'?{Id Ch Extended}+']' | '"''#'?{Id Ch Standard}*'"'
-LocaleId       = {Alpha}+('-'{Alpha}+)?
+SystemId       = '@@'{Letter}+
+TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{Id Ch Standard}*'"'
 
 ! =============================================================================
-! Start Symbol and Common Names
+! Common Terminals (Names, Literals, ...)
 ! =============================================================================
 
-<Root> ::= <Create Stm>
-         | <Create Stm> ';'
+<Alias Name> ::= Id
 
-<Create Stm> ::= <Create Fulltext>
-               | <Create Function>
-               | <Create Index>
-               | <Create Table>
+<Collation Name> ::= Id
 
 <Column Name> ::= Id
+
+<Column Name Qualified> ::= <Column Name>
+                         | <Schema Name> '.' <Column Name>
 
 <Function Name> ::= Id
 
 <Index Name> ::= Id
 
+<Label Name> ::= Id
+
 <Parameter Name> ::= LocalId
 
-<Variable Name> ::= LocalId
-
-<Table Name> ::= TableId
+<Table Name> ::= Id
+               | TempTableId
 
 <Table Name Qualified> ::= <Table Name>
                          | <Schema Name> '.' <Table Name>
@@ -70,27 +71,95 @@ LocaleId       = {Alpha}+('-'{Alpha}+)?
 
 <Schema Name> ::= Id
 
+<System Variable Name> ::= SystemId
+
+<Variable Name> ::= LocalId
+
 <LCID> ::= HexLiteral
          | IntegerLiteral
-         | LocaleId
+         | StringLiteral
 
 <Optional As> ::= AS
                 |
+
+<Null Literal> ::= NULL
+                 | NOT NULL
+
+<Literal> ::= StringLiteral
+            | IntegerLiteral
+            | HexLiteral
+            | RealLiteral
+            | <Null Literal>
+
+<Toggle> ::= ON
+           | OFF
+
+! =============================================================================
+! Any statements allowed as SQL statements in code
+! =============================================================================
+
+<Root> ::= <Statement Group>
+         | <Statement>
+
+! In T-SQL, the terminator (;) is usually not required. However, this introduces some ambiguities, so that we require it. 
+<Statement Group> ::= <Statement Block>
+                    | <Statement> ';'
+
+<Statement Block> ::= BEGIN <Statement List> END
+
+<Statement List> ::= <Statement Group> <Statement List>
+                   | <Statement Group>
+
+<Statement> ::= <Break Statement>
+              | <Continue Statement>
+              | <Goto Statement>
+              | <If Statement>
+              | <Return Statement>
+              | <Try Catch Statement>
+!              | <Waitfor Statement>
+              | <While Statement>
+              | <Select Statement>
+!              | <Insert Statement>
+!              | <Update Statement>
+!              | <Delete Statement>
+              | <Create Statement>
+!              | <Drop Statement>
+!              | <Alter Statement>
+
+<Create Statement> ::= <Create Fulltext>
+                     | <Create Function>
+!                     | <Create Index>
+!                     | <Create Table>
+
+! =============================================================================
+! Control-of-Flow statements
+! =============================================================================
+
+<Break Statement> ::= BREAK
+
+<Continue Statement> ::= CONTINUE
+
+<Goto Statement> ::= GOTO <Label Name>
+
+<If Statement> ::= IF <Expression> THEN <IfElse Statement>
+
+! To avoid the hanging ELSE problem/ambiguity, we just require a block - even if this is more restrictive than T-SQL
+<IfElse Statement> ::= <Statement Block> ELSE <Statement Group>
+                     | <Statement Group>
+
+<Return Statement> ::= RETURN
+                     | RETURN <Expression>
+
+<Try Catch Statement> ::= BEGIN TRY <Statement List> END TRY BEGIN CATCH <Statement List> END CATCH
+
+<While Statement> ::= WHILE <Expression> <Statement Group>
 
 ! =============================================================================
 ! Parameter Lists for Functions and Procedures
 ! =============================================================================
 
-<Parameter Group> ::= '(' <Parameter List> ')'
-                    | '(' ')'
-
-<Parameter List> ::= <Parameter List> ',' <Parameter>
-                   | <Parameter>
-
-<Parameter> ::= <Parameter Name> <Optional As> <Type Name Qualified> <Parameter Default>
-
-<Parameter Default> ::= '=' DEFAULT
-                      |
+<Optional Default> ::= '=' <Literal>
+                     |
 
 ! =============================================================================
 ! CREATE FULLTEXT
@@ -103,7 +172,7 @@ LocaleId       = {Alpha}+('-'{Alpha}+)?
 <Fulltext Column Group> ::= '(' <Fulltext Column List> ')'
                           |
 
-<Fulltext Column List> ::= <Fulltext Column List> ',' <Fulltext Column>
+<Fulltext Column List> ::= <Fulltext Column> ',' <Fulltext Column List>
                          | <Fulltext Column>
 
 <Fulltext Column> ::= <Column Name> <Fulltext Column Type> <Fulltext Column Language>
@@ -133,36 +202,270 @@ LocaleId       = {Alpha}+('-'{Alpha}+)?
 
 ! We don't allow to specify the schema name, it is implicit (module name)
 
-<Create Function> ::= CREATE FUNCTION <Function Name> <Parameter Group> RETURNS <Function Type>
+<Create Function> ::= CREATE FUNCTION <Function Name> <Function Parameter Group> RETURNS <Function Type>
+
+<Function Parameter Group> ::= '(' <Function Parameter List> ')'
+                             | '(' ')'
+
+<Function Parameter List> ::= <Function Parameter> ',' <Function Parameter List>
+                            | <Function Parameter>
+
+<Function Parameter> ::= <Parameter Name> <Optional As> <Type Name Qualified> <Optional Default>
 
 <Function Type> ::= <Function Scalar>
                   | <Function Inline>
                   | <Function Table>
 
-<Function Scalar> ::= <Type Name> <Function Option Group> <Optional As> BEGIN <Function Body> RETURN <Scalar Expression> END
+<Function Scalar> ::= <Type Name> <Function Option Group> <Optional As> <Statement Block>
 
 <Function Inline> ::= TABLE <Function Option Group> <Optional As> RETURN <Function Inline Select>
 
-<Function Inline Select> ::= <Select Stm>
-                           | '(' <Select Stm> ')'
+<Function Inline Select> ::= <Select Statement>
+                           | '(' <Select Statement> ')'
 
-<Function Table> ::= <
+<Function Table> ::= <Variable Name> TABLE <Table Type Definition Group> <Function Option Group> <Optional As> <Statement Block>
 
 <Function Option Group> ::= WITH <Function Option>
                           |
 
 ! The options ENCRYPTION and SCHEMABINDING are handled by the module and therefore not allowed
-
 <Function Option> ::= RETURNS NULL ON NULL INPUT
                     | CALLED ON NULL INPUT
 
+! =============================================================================
+! Table/Column Type Definitions
+! =============================================================================
+
+<Table Type Definition Group> ::= '(' <Table Type Definition List> ')'
+
+<Table Type Definition List> ::= <Table Type Definition> ',' <Table Type Definition List>
+                               | <Table Type Definition>
+
+<Table Type Definition> ::= <Column Definition> <Column Constraint> <Table Constraint Group>
+                          | <Column Computed Definition> <Table Constraint Group>
+
+<Table Constraint Group> ::= <Table Constraint List>
+                           |
+
+<Table Constraint List> ::= <Table Constraint> <Table Constraint List>
+                          | <Table Constraint>
+
+<Table Constraint> ::= <Constraint Unique> <Constraint Cluster> <Constraint Index>
+                     | <Constraint Check>
+
+<Column Definition> ::= <Column Name> <Type Name Qualified> <Column Kind> <Column Constraint Group>
+
+<Column Kind> ::= <Column Identity>
+                | <Column Rowguid>
+                | <Column Default> <Column Collate>
+
+<Column Identity> ::= IDENTITY <Column Identity Range>
+
+<Column Identity Range> ::= '(' IntegerLiteral ',' IntegerLiteral ')'
+                          |
+
+<Column Rowguid> ::= ROWGUIDCOL
+
+<Column Default> ::= DEFAULT <Literal>
+                   |
+
+<Column Collate> ::= COLLATE <Collation Name>
+                   |
+
+<Column Constraint Group> ::= <Column Constraint List>
+                            |
+
+<Column Constraint List> ::= <Column Constraint> <Column Constraint List> 
+                           | <Column Constraint>
+
+! The syntax for multiple the constraint checks is not clear fromt he grammar in the SQL Books 2005
+<Column Constraint> ::= <Null Literal>
+                      | <Constraint Unique> <Constraint Cluster> <Constraint Index>
+                      | <Constraint Check>
+
+<Column Computed Definition> ::= <Column Name> AS <Expression>
+
+<Constraint Unique> ::= PRIMARY KEY
+                      | UNIQUE
+
+<Constraint Cluster> ::= CLUSTERED
+                       | NONCLUSTERED
+                       |
+
+<Constraint Check> ::= CHECK '(' <Expression> ')'
+
+<Constraint Index> ::= WITH <Index Option Fillfactor>
+                     | WITH '(' <Index Option List> ')'
+                     |
+
+<Index Option List> ::= <Index Option> ',' <Index Option List>
+                      | <Index Option>
+
+<Index Option> ::= <Index Option Fillfactor>
+                 | <Index Option Toggle> <Toggle>
+
+<Index Option Fillfactor> ::= FILLFACTOR '=' IntegerLiteral
+
+<Index Option Toggle> ::= PAD_INDEX
+                        | IGNORE_DUP_KEY
+                        | STATISTICS_NORECOMPUTE
+                        | ALLOW_ROW_LOCKS
+                        | ALLOW_PAGE_LOCKS
+
+! =============================================================================
+! Common Table Expressions
+! =============================================================================
+
+<CTE Group> ::= WITH <CTE List>
+              |
+
+<CTE List> ::= <CTE> ',' <CTE List>
+             | <CTE>
+
+<CTE> ::= <Alias Name> AS '(' <Select Statement> ')'
+
+! =============================================================================
+! SELECT Statement
+! =============================================================================
+
+<Select Statement> ::= <CTE Group> SELECT <Top> <Columns> <Into Clause> <From Clause> <Where Clause> <Group Clause> <Having Clause> <Order Clause>
+
+<Top> ::= TOP IntegerLiteral
+        | TOP <Variable Name>
+        |
+
+<Columns> ::= <Restriction> '*'
+            | <Restriction> <Column List>
+
+<Column List> ::= <Column Item> ',' <Column List>
+                | <Column Item>
+
+<Column Item> ::= <Column Source>
+                | <Column Source> <Optional As> <Alias Name>                  
+
+<Column Source> ::= <Aggregate> 
+                  | <Expression>                
+
+<Restriction> ::= ALL
+                | DISTINCT
+                |
+
+<Aggregate>     ::= Count  '(' '*' ')'           
+                  | Count  '(' <Expression> ')'
+                  | Avg    '(' <Expression> ')'
+                  | Min    '(' <Expression> ')'
+                  | Max    '(' <Expression> ')'
+                  | StDev  '(' <Expression> ')'
+                  | StDevP '(' <Expression> ')'
+                  | Sum    '(' <Expression> ')'
+                  | Var    '(' <Expression> ')'
+                  | VarP   '(' <Expression> ')'
+
+<Into Clause> ::= INTO Id
+                |
+
+<From Clause> ::= FROM <Source> <Join Chain>
+
+<Join Chain> ::= <Join> <Join Chain>
+               |
+
+<Join> ::= INNER JOIN <Source> ON <Expression>
+         | LEFT JOIN <Source> ON <Expression>
+         | RIGHT JOIN <Source> ON <Expression>
+         | JOIN <Source> ON <Expression>
+         | CROSS JOIN <Source>
+
+<Source> ::= <Table Name Qualified>
+           | <Table Name Qualified> <Optional As> <Alias Name>
+           | '(' <Select Statement> ')' <Optional As> <Alias Name>
+
+<Where Clause> ::= WHERE <Expression>
+                 |
+
+<Group Clause> ::= GROUP BY <Expression List>
+                 |
+
+<Order Clause> ::= ORDER BY <Order List>
+                 |
+
+<Order> ::= <Expression> <Order Type>
+
+<Order List> ::= <Order> ',' <Order List>
+               | <Order>
+
+<Order Type> ::= ASC
+               | DESC
+               |
+
+<Having Clause> ::= HAVING <Expression>
+                  |
+
+! ============================================================================= 
+! Expressions
+! =============================================================================
+
+<Expression> ::= <And Exp> OR <Expression>
+               | <And Exp>
+
+<And Exp> ::= <Not Exp> AND <And Exp>
+            | <Not Exp>
+
+<Not Exp> ::= NOT <Pred Exp>
+            | <Pred Exp>
+
+<Pred Between Op> ::= BETWEEN
+                    | NOT BETWEEN
+
+<Pred Binary Op> ::= '='
+                   | '<>'
+                   | '!='
+                   | '>'
+                   | '>='
+                   | '<'
+                   | '<='
+
+<Pred Exp> ::= <Add Exp> <Pred Between Op> <Add Exp> AND <Add Exp>
+             | <Value> IS <Null Literal>
+             | <Add Exp> LIKE StringLiteral
+             | <Add Exp> IN <Tuple>
+             | <Add Exp> <Pred Binary Op> <Add Exp>
+             | <Add Exp>
+
+<Add Binary Op> ::= '+'
+                  | '-'
+
+<Add Exp> ::= <Add Exp> <Add Binary Op> <Mult Exp>
+            | <Mult Exp>
+
+<Mult Binary Op> ::= '*'
+                   | '/'
+
+<Mult Exp> ::= <Mult Exp> <Mult Binary Op> <Negate Exp> 
+             | <Negate Exp>
+
+<Negate Exp> ::= '-' <Value>
+               | <Value>
+        
+<Value> ::= <Tuple>
+          | <Column Name Qualified>
+          | <Variable Name>
+          | <System Variable Name>
+          | IntegerLiteral
+          | RealLiteral
+          | StringLiteral
+          | HexLiteral
+          | NULL
+
+<Tuple> ::= '(' <Select Statement> ')'
+          | '(' <Expression List> ')'
+
+<Expression List> ::= <Expression> ',' <Expression List>
+                    | <Expression>
 
 
-<Function Body> ?
-<Scalar Expression> ?
-<Select Stm> ?
 
-/*
+
+!*
 
 
 <Create Index> ::= CREATE <Unique> INDEX IntegerLiteral ON Id '(' <Order List> ')' <With Clause>
@@ -302,62 +605,10 @@ LocaleId       = {Alpha}+('-'{Alpha}+)?
 <Having Clause> ::= HAVING <Expression>
                   |
 
-! ============================================================================= 
-! Expressions
-! =============================================================================
-
-<Expression>  ::= <And Exp> OR <Expression>
-                | <And Exp>
-
-<And Exp>     ::= <Not Exp> AND <And Exp>
-                | <Not Exp>
-
-<Not Exp>     ::= NOT <Pred Exp>
-                | <Pred Exp>
-
-<Pred Exp>    ::= <Add Exp> BETWEEN <Add Exp> AND <Add Exp>
-                | <Add Exp> NOT BETWEEN <Add Exp> AND <Add Exp>
-                | <Value> IS NOT NULL
-                | <Value> IS NULL
-                | <Add Exp> LIKE StringLiteral
-                | <Add Exp> IN   <Tuple>
-                | <Add Exp> '='  <Add Exp>
-                | <Add Exp> '<>' <Add Exp>
-                | <Add Exp> '!=' <Add Exp>
-                | <Add Exp> '>'  <Add Exp>
-                | <Add Exp> '>=' <Add Exp>
-                | <Add Exp> '<'  <Add Exp>
-                | <Add Exp> '<=' <Add Exp>
-                | <Add Exp>
-
-<Add Exp>     ::= <Add Exp> '+' <Mult Exp>
-                | <Add Exp> '-' <Mult Exp>
-                | <Mult Exp>
-
-<Mult Exp>    ::= <Mult Exp> '*' <Negate Exp> 
-                | <Mult Exp> '/' <Negate Exp>
-                | <Negate Exp>
-
-<Negate Exp>  ::= '-' <Value>
-                | <Value>
-        
-<Value>       ::= <Tuple>
-                | ID
-                | IntegerLiteral
-                | RealLiteral
-                | StringLiteral
-                | NULL
-
-<Tuple>       ::= '(' <Select Stm> ')'
-                | '(' <Expr List> ')'
-
-<Expr List>  ::= <Expression> ',' <Expr List>
-               | <Expression>
-
-<Id List>     ::= <Id Member> ',' <Id List> 
-                | <Id Member>
-
 <Id Member>   ::= Id
                 | Id Id
 
-*/
+<Id List> ::= <Id Member> ',' <Id List> 
+            | <Id Member>
+
+*!
