@@ -39,6 +39,212 @@ SystemId       = '@@'{Letter}{Id Ch Standard}*
 TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{Id Ch Standard}*'"'
 !NamespaceId    = {Letter}{Id Ch Standard}*':'{Nonspace Ch}+
 
+! The reserved keywords as per MSDN: http://msdn.microsoft.com/en-us/library/ms189822.aspx
+! By specifying them explicitly here, we should not see those in the log as implicit when generating the grammar tables
+ADD = ADD
+EXISTS = EXISTS
+PRECISION = PRECISION
+ALL = ALL
+EXIT = EXIT
+PRIMARY = PRIMARY
+ALTER = ALTER
+EXTERNAL = EXTERNAL
+PRINT = PRINT
+AND = AND
+FETCH = FETCH
+PROC = PROC
+ANY = ANY
+FILE = FILE
+PROCEDURE = PROCEDURE
+AS = AS
+FILLFACTOR = FILLFACTOR
+PUBLIC = PUBLIC
+ASC = ASC
+FOR = FOR
+RAISERROR = RAISERROR
+AUTHORIZATION = AUTHORIZATION
+FOREIGN = FOREIGN
+READ = READ
+BACKUP = BACKUP
+FREETEXT = FREETEXT
+READTEXT = READTEXT
+BEGIN = BEGIN
+FREETEXTTABLE = FREETEXTTABLE
+RECONFIGURE = RECONFIGURE
+BETWEEN = BETWEEN
+FROM = FROM
+REFERENCES = REFERENCES
+BREAK = BREAK
+FULL = FULL
+REPLICATION = REPLICATION
+BROWSE = BROWSE
+FUNCTION = FUNCTION
+RESTORE = RESTORE
+BULK = BULK
+GOTO = GOTO
+RESTRICT = RESTRICT
+BY = BY
+GRANT = GRANT
+RETURN = RETURN
+CASCADE = CASCADE
+GROUP = GROUP
+REVERT = REVERT
+CASE = CASE
+HAVING = HAVING
+REVOKE = REVOKE
+CHECK = CHECK
+HOLDLOCK = HOLDLOCK
+RIGHT = RIGHT
+CHECKPOINT = CHECKPOINT
+IDENTITY = IDENTITY
+ROLLBACK = ROLLBACK
+CLOSE = CLOSE
+IDENTITY_INSERT = IDENTITY_INSERT
+ROWCOUNT = ROWCOUNT
+CLUSTERED = CLUSTERED
+IDENTITYCOL = IDENTITYCOL
+ROWGUIDCOL = ROWGUIDCOL
+COALESCE = COALESCE
+IF = IF
+RULE = RULE
+COLLATE = COLLATE
+IN = IN
+SAVE = SAVE
+COLUMN = COLUMN
+INDEX = INDEX
+SCHEMA = SCHEMA
+COMMIT = COMMIT
+INNER = INNER
+SECURITYAUDIT = SECURITYAUDIT
+COMPUTE = COMPUTE
+INSERT = INSERT
+SELECT = SELECT
+CONSTRAINT = CONSTRAINT
+INTERSECT = INTERSECT
+SESSION_USER = SESSION_USER
+CONTAINS = CONTAINS
+INTO = INTO
+SET = SET
+CONTAINSTABLE = CONTAINSTABLE
+IS = IS
+SETUSER = SETUSER
+CONTINUE = CONTINUE
+JOIN = JOIN
+SHUTDOWN = SHUTDOWN
+CONVERT = CONVERT
+KEY = KEY
+SOME = SOME
+CREATE = CREATE
+KILL = KILL
+STATISTICS = STATISTICS
+CROSS = CROSS
+LEFT = LEFT
+SYSTEM_USER = SYSTEM_USER
+CURRENT = CURRENT
+LIKE = LIKE
+TABLE = TABLE
+CURRENT_DATE = CURRENT_DATE
+LINENO = LINENO
+TABLESAMPLE = TABLESAMPLE
+CURRENT_TIME = CURRENT_TIME
+LOAD = LOAD
+TEXTSIZE = TEXTSIZE
+CURRENT_TIMESTAMP = CURRENT_TIMESTAMP
+MERGE = MERGE
+THEN = THEN
+CURRENT_USER = CURRENT_USER
+NATIONAL = NATIONAL
+TO = TO
+CURSOR = CURSOR
+NOCHECK = NOCHECK
+TOP = TOP
+DATABASE = DATABASE
+NONCLUSTERED = NONCLUSTERED
+TRAN = TRAN
+DBCC = DBCC
+NOT = NOT
+TRANSACTION = TRANSACTION
+DEALLOCATE = DEALLOCATE
+NULL = NULL
+TRIGGER = TRIGGER
+DECLARE = DECLARE
+NULLIF = NULLIF
+TRUNCATE = TRUNCATE
+DEFAULT = DEFAULT
+OF = OF
+TSEQUAL = TSEQUAL
+DELETE = DELETE
+OFF = OFF
+UNION = UNION
+DENY = DENY
+OFFSETS = OFFSETS
+UNIQUE = UNIQUE
+DESC = DESC
+ON = ON
+UNPIVOT = UNPIVOT
+DISK = DISK
+OPEN = OPEN
+UPDATE = UPDATE
+DISTINCT = DISTINCT
+OPENDATASOURCE = OPENDATASOURCE
+UPDATETEXT = UPDATETEXT
+DISTRIBUTED = DISTRIBUTED
+OPENQUERY = OPENQUERY
+USE = USE
+DOUBLE = DOUBLE
+OPENROWSET = OPENROWSET
+USER = USER
+DROP = DROP
+OPENXML = OPENXML
+VALUES = VALUES
+DUMP = DUMP
+OPTION = OPTION
+VARYING = VARYING
+ELSE = ELSE
+OR = OR
+VIEW = VIEW
+END = END
+ORDER = ORDER
+WAITFOR = WAITFOR
+ERRLVL = ERRLVL
+OUTER = OUTER
+WHEN = WHEN
+ESCAPE = ESCAPE
+OVER = OVER
+WHERE = WHERE
+EXCEPT = EXCEPT
+PERCENT = PERCENT
+WHILE = WHILE
+EXEC = EXEC
+PIVOT = PIVOT
+WITH = WITH
+EXECUTE = EXECUTE
+PLAN = PLAN
+WRITETEXT = WRITETEXT
+
+! Compound reserved words to keep the grammar context-free
+RETURNS_NULL_ON_NULL_INPUT = RETURNS{Whitespace}+NULL{Whitespace}+ON{Whitespace}+NULL{Whitespace}+INPUT
+CALLED_ON_NULL_INPUT = CALLED{Whitespace}+ON{Whitespace}+NULL{Whitespace}+INPUT
+FOR_XML = FOR{Whitespace}+XML
+FOR_PATH = FOR{Whitespace}+PATH
+FOR_VALUE = FOR{Whitespace}+VALUE
+FOR_PROPERTY = FOR{Whitespace}+PROPERTY
+XML_INDEX = XML{Whitespace}+INDEX
+USING_XML_INDEX = USING{Whitespace}+XML{Whitespace}+INDEX
+WITH_CHANGE_TRACKING = WITH{Whitespace}+CHANGE_TRACKING
+BEGIN_TRY = BEGIN{Whitespace}+TRY
+END_TRY = END{Whitespace}+TRY
+BEGIN_CATCH = BEGIN{Whitespace}+CATCH
+END_CATCH = END{Whitespace}+CATCH
+FULLTEXT_INDEX = FULLTEXT{Whitespace}+INDEX
+WITH_FILLFACTOR = WITH{Whitespace}+FILLFACTOR
+NO_POPULATION = NO{Whitespace}+POPULATION
+TYPE_COLUMN = TYPE{Whitespace}+COLUMN
+INCLUDE_ = INCLUDE{Whitespace}*'('
+COUNT_ = COUNT{Whitespace}*'('
+_RETURNS = ')'{Whitespace}*RETURNS
+LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{String Ch}+)?'')
+
 ! =============================================================================
 ! Common Terminals (Names, Literals, ...)
 ! =============================================================================
@@ -90,12 +296,6 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
 
 <XmlElementName> ::= Id
 
-<XmlNamespaceName> ::= Id
-
-<LCID> ::= HexLiteral
-         | IntegerLiteral
-         | StringLiteral
-
 <OptionalAs> ::= AS
                |
 
@@ -118,7 +318,8 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
             | <StringLiteral>
             | <NullLiteral>
 
-<Toggle> ::= Id
+<Toggle> ::= ON
+           | OFF
 
 ! =============================================================================
 ! Any statements allowed as SQL statements in code
@@ -189,7 +390,7 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
 <ReturnStatement> ::= RETURN
                     | RETURN <Expression>
 
-<TryCatchStatement> ::= BEGIN TRY <StatementList> END TRY BEGIN CATCH <StatementList> END CATCH
+<TryCatchStatement> ::= BEGIN_TRY <StatementList> END_TRY BEGIN_CATCH <StatementList> END_CATCH
 
 <WhileStatement> ::= WHILE <Expression> <StatementGroup>
 
@@ -206,7 +407,7 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
 
 ! We don't allow to specify the catalog name, since the catalog is automatically assigned (module name)
 
-<CreateFulltext> ::= CREATE FULLTEXT INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
+<CreateFulltext> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
 
 <FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'
                         |
@@ -216,21 +417,20 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
 
 <FulltextColumn> ::= <ColumnName> <FulltextColumnType> <FulltextColumnLanguage>
 
-<FulltextColumnType> ::= TYPE COLUMN <TypeNameQualified>
+<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>
                        |
 
-<FulltextColumnLanguage> ::= LANGUAGE <LCID>
+<FulltextColumnLanguage> ::= LANGUAGE_LCID
                            |
 
-<FulltextChangeTracking> ::= WITH CHANGE_TRACKING <FulltextChangeTrackingName>
+<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING <FulltextChangeTrackingName>
                            |
 
-<FulltextChangeTrackingName> ::= MANUAL
-                               | AUTO
+<FulltextChangeTrackingName> ::= Id
                                | OFF
-                               | OFF ',' NO POPULATION
+                               | OFF ',' NO_POPULATION
 
-<DropFulltext> ::= DROP FULLTEXT INDEX ON <TableName>
+<DropFulltext> ::= DROP FULLTEXT_INDEX ON <TableName>
 
 ! =============================================================================
 ! CREATE/DROP FUNCTION
@@ -238,10 +438,10 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
 
 ! We don't allow to specify the schema name, it is implicit (module name)
 
-<CreateFunction> ::= CREATE FUNCTION <FunctionName> <FunctionParameterGroup> RETURNS <FunctionType>
+<CreateFunction> ::= CREATE FUNCTION <FunctionName> <FunctionParameterGroup> <FunctionType>
 
-<FunctionParameterGroup> ::= '(' <FunctionParameterList> ')'
-                           | '(' ')'
+<FunctionParameterGroup> ::= '(' <FunctionParameterList> _RETURNS
+                           | '(' _RETURNS
 
 <FunctionParameterList> ::= <FunctionParameter> ',' <FunctionParameterList>
                           | <FunctionParameter>
@@ -265,8 +465,8 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
                         |
 
 ! The options ENCRYPTION and SCHEMABINDING are handled by the module and therefore not allowed
-<FunctionOption> ::= RETURNS NULL ON NULL INPUT
-                   | CALLED ON NULL INPUT
+<FunctionOption> ::= RETURNS_NULL_ON_NULL_INPUT
+                   | CALLED_ON_NULL_INPUT
 
 <DropFunction> ::= DROP FUNCTION <FunctionName>
 
@@ -277,14 +477,14 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
 ! We don't support the ON option, filegroup is managed by module manager
 
 <CreateIndex> ::= CREATE <ConstraintUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' <IndexInclude> <IndexOptionGroup>
-                | CREATE <IndexPrimary> XML INDEX <IndexName> ON <TableName> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
+                | CREATE <IndexPrimary> XML_INDEX <IndexName> ON <TableName> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
 
 <IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>
                     | <IndexColumn>
 
 <IndexColumn> ::= <ColumnName> <OrderType> 
 
-<IndexInclude> ::= INCLUDE '(' <ColumnNameList> ')'
+<IndexInclude> ::= INCLUDE_ <ColumnNameList> ')'
 
 <IndexPrimary> ::= PRIMARY
                  |
@@ -295,32 +495,19 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
 <IndexOptionList> ::= <IndexOption> ',' <IndexOptionList>
                     | <IndexOption>
 
-<IndexOption> ::= <IndexOptionMaxdop>
-                | <IndexOptionFillfactor>
-                | <IndexOptionToggle> '=' <Toggle>
+<IndexOption> ::= <IndexOptionInteger>
+                | <IndexOptionToggle>
 
-<IndexOptionMaxdop> ::= MAXDOP '=' <IntegerLiteral>
+<IndexOptionInteger> ::= Id '=' <IntegerLiteral>
 
-<IndexOptionFillfactor> ::= FILLFACTOR '=' <IntegerLiteral>
+<IndexOptionToggle> ::= Id '=' <Toggle>
 
-<IndexOptionToggle> ::= PAD_INDEX
-                      | IGNORE_DUP_KEY
-                      | STATISTICS_NORECOMPUTE
-                      | ALLOW_ROW_LOCKS
-                      | ALLOW_PAGE_LOCKS
-                      | SORT_IN_TEMPDB
-                      | DROP_EXISTING
-                      | ONLINE
-
-<IndexUsing> ::= USING XML INDEX <IndexName> <IndexFor>
+<IndexUsing> ::= USING_XML_INDEX <IndexName> <IndexFor>
                |
 
-<IndexFor> ::= FOR <IndexForValue>
-             |
-
-<IndexForValue> ::= VALUE
-                  | PATH
-                  | PROPERTY
+<IndexFor> ::= FOR_VALUE
+             | FOR_PATH
+             | FOR_PROPERTY
 
 <DropIndex> ::= DROP INDEX <IndexName> ON <TableName> <IndexOptionGroup>
 
@@ -388,7 +575,7 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
 
 <ConstraintCheck> ::= CHECK '(' <Expression> ')'
 
-<ConstraintIndex> ::= WITH <IndexOptionFillfactor>
+<ConstraintIndex> ::= WITH_FILLFACTOR '=' <IntegerLiteral>
                     | <IndexOptionGroup>
 
 ! =============================================================================
@@ -481,35 +668,17 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
                 | UNION ALL <SelectGroup>
                 |
 
-<SelectFor> ::= FOR <SelectForValue>
-              |
+<SelectFor> ::= FOR BROWSE
+              | FOR_XML <SelectForList>
 
-<SelectForValue> ::= BROWSE
-                   | XML <ForXml>
+<SelectForList> ::= <SelectForIdList>
+                  | <SelectForIdList> ',' <SelectForList>
 
-<ForXml> ::= RAW <ForXmlElementNameGroup> <ForXmlCommonDirectiveGroup> <ForXmlFormat> <ForXmlElements>
-           | AUTO <ForXmlCommonDirectiveGroup> <ForXmlFormat> <ForXmlElements>
-           | EXPLICIT <ForXmlCommonDirectiveGroup> <ForXmlFormat>
-           | PATH <ForXmlElementNameGroup> <ForXmlCommonDirectiveGroup> <ForXmlElements>
-
-<ForXmlElementNameGroup> ::= '(' <XmlElementName> ')'
-                           |
-
-<ForXmlCommonDirectiveGroup> ::= ',' BINARY BASE64
-                               | ',' TYPE
-                               | ',' ROOT <ForXmlElementNameGroup>
-                               
-<ForXmlFormat> ::= ',' XMLDATA
-                 | ',' XMLSCHEMA <ForXmlNamespaceNameGroup>
-
-<ForXmlNamespaceNameGroup> ::= '(' <XmlNamespaceName> ')'
-                             |
-
-<ForXmlElements> ::= ',' ELEMENTS <ForXmlElementsType>
-
-<ForXmlElementsType> ::= XSINIL
-                       | ABSENT
-
+<SelectForIdList> ::= Id <SelectForIdList>
+                    | Id '(' <XmlElementName> ')'
+                    | Id '(' <StringLiteral> ')'
+                    | Id
+           
 ! ============================================================================= 
 ! Pedicated and Expressions
 ! =============================================================================
@@ -559,7 +728,7 @@ TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{
 <NegateExp> ::= '-' <Function>
               | <Function>
 
-<Function> ::= COUNT '(' <Restriction> <ColumnWildNameQualified> ')'
+<Function> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'
              | <FunctionName> '(' ')'
              | <FunctionName> '(' <ExpressionList> ')'
              | <Case>
