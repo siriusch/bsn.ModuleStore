@@ -598,9 +598,12 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 
 <SelectGroup> ::= SELECT <Top> <Columns> <IntoClause> <FromClause> <UnionClause>
 
-<Top> ::= TOP IntegerLiteral
-        | TOP <VariableName>
+<Top> ::= TOP IntegerLiteral <OptionalPercent>
+        | TOP '(' <Expression> ')' <OptionalPercent>
         |
+
+<OptionalPercent> ::= PERCENT
+                    |
 
 <Columns> ::= <Restriction> <ColumnList>
 
@@ -641,6 +644,7 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 
 <Source> ::= <TableNameQualified>
            | <TableNameQualified> <OptionalAs> <AliasName>
+           | '(' <SelectStatement> ')'
            | '(' <SelectStatement> ')' <OptionalAs> <AliasName>
 
 <WhereClause> ::= WHERE <Predicate>
