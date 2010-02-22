@@ -249,6 +249,7 @@ FULLTEXT_INDEX = FULLTEXT{Whitespace}+INDEX
 WITH_FILLFACTOR = WITH{Whitespace}+FILLFACTOR
 NO_POPULATION = NO{Whitespace}+POPULATION
 TYPE_COLUMN = TYPE{Whitespace}+COLUMN
+PARTITION_BY = PARTITION{Whitespace}+BY
 INSTEAD_OF = INSTEAD{Whitespace}+OF
 INCLUDE_ = INCLUDE{Whitespace}*'('
 COUNT_ = COUNT{Whitespace}*'('
@@ -404,7 +405,7 @@ OUTPUT = OUT(PUT)?
                  | <WhileStatement>
                  | <SelectStatement>
                  | <InsertStatement>
-!                 | <UpdateStatement>
+                 | <UpdateStatement>
 !                 | <DeleteStatement>
                  | <ExecuteStatement>
                  | <SetStatement>
@@ -443,14 +444,14 @@ OUTPUT = OUT(PUT)?
 <OptionalDefault> ::= '=' <Literal>
                     |
 
-<ReadableRowset> ::= <WritableRowset>
+<ReadableRowset> ::= <WriteableRowset>
                    | '(' <SelectGroup> ')'
                    | <Openxml>
 
-<WritableRowset> ::= <TableNameQualified>
-                   | <VariableName>
-!                   | <Openrowset> -- not supported
-!                   | <Openquery> -- not supported
+<WriteableRowset> ::= <TableNameQualified>
+                    | <VariableName>
+!                    | <Openrowset> -- not supported
+!                    | <Openquery> -- not supported
 
 <Openxml> ::= OPENXML '(' <VariableName> ',' <StringValue> <OptionalOpenxmlFlags> ')' <OptionalOpenxmlSchema>
 
@@ -884,7 +885,7 @@ OUTPUT = OUT(PUT)?
 
 <InsertStatement> ::= <CTEGroup> <InsertGroup>
 
-<InsertGroup> ::= INSERT <Top> <OptionalInto> <WritableRowset> <InsertData>
+<InsertGroup> ::= INSERT <Top> <OptionalInto> <WriteableRowset> <InsertData>
 
 <InsertData> ::= <ColumnNameGroup> <OptionalOutputClause> <InsertSource>
                | DEFAULT VALUES
@@ -896,16 +897,40 @@ OUTPUT = OUT(PUT)?
                  | <SelectGroup>
                  | <ExecuteStatement>
 
+
+! =============================================================================
+! UPDATE Statement
+! =============================================================================
+
+<UpdateStatement> ::= <CTEGroup> <UpdateGroup>
+
+<UpdateGroup> ::= UPDATE <Top> <WriteableRowset> SET <UpdateColumnList> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
+
+<UpdateColumnList> ::= <UpdateColumn> ',' <UpdateColumnList>
+                     | <UpdateColumn>
+
+<UpdateColumn> ::= <ColumnNameQualified> '=' <ExpressionOrDefault>
+                 | <VariableName> '=' <Expression>
+                 | <VariableName> '=' <ColumnNameQualified> '=' <Expression>
+
+<ExpressionOrDefault> ::= <Expression>
+                        | DEFAULT
+
+<OptionalFromClause> ::= <FromClause>
+                       |
+
 ! =============================================================================
 ! SELECT Statement
 ! =============================================================================
 
 <SelectStatement> ::= <CTEGroup> <SelectGroup> <SelectFor>
 
-<SelectGroup> ::= SELECT <Top> <Columns> <IntoClause> <FromClause> <UnionClause>
+<SelectGroup> ::= SELECT <TopLegacy> <Columns> <IntoClause> <FromClauseFull> <UnionClause>
 
-<Top> ::= TOP IntegerLiteral <OptionalPercent>
-        | TOP '(' <Expression> ')' <OptionalPercent>
+<TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>
+              | <Top>
+
+<Top> ::= TOP '(' <Expression> ')' <OptionalPercent>
         |
 
 <OptionalPercent> ::= PERCENT
@@ -931,7 +956,9 @@ OUTPUT = OUT(PUT)?
                | INTO <VariableName>
                |
 
-<FromClause> ::= FROM <Source> <JoinChain> <WhereClause> <GroupClause> <HavingClause> <OrderClause> 
+<FromClause> ::= FROM <Source> <JoinChain>
+
+<FromClauseFull> ::= <FromClause> <WhereClause> <GroupClause> <HavingClause> <OrderClause> 
                |
 
 <JoinChain> ::= <Join> <JoinChain>
