@@ -406,7 +406,7 @@ OUTPUT = OUT(PUT)?
                  | <SelectStatement>
                  | <InsertStatement>
                  | <UpdateStatement>
-!                 | <DeleteStatement>
+                 | <DeleteStatement>
                  | <ExecuteStatement>
                  | <SetStatement>
                  | <DeclareStatement>
@@ -444,12 +444,13 @@ OUTPUT = OUT(PUT)?
 <OptionalDefault> ::= '=' <Literal>
                     |
 
-<ReadableRowset> ::= <WriteableRowset>
+<ReadableRowset> ::= <VariableName>
+                   | <TableNameQualified>
                    | '(' <SelectGroup> ')'
                    | <Openxml>
 
-<WriteableRowset> ::= <TableNameQualified>
-                    | <VariableName>
+<WriteableRowset> ::= <VariableName>
+                    | <TableName>
 !                    | <Openrowset> -- not supported
 !                    | <Openquery> -- not supported
 
@@ -918,6 +919,17 @@ OUTPUT = OUT(PUT)?
 
 <OptionalFromClause> ::= <FromClause>
                        |
+
+! =============================================================================
+! DELETE Statement
+! =============================================================================
+
+<DeleteStatement> ::= <CTEGroup> <DeleteGroup>
+
+<DeleteGroup> ::= DELETE <Top> <OptionalFrom> <WriteableRowset> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
+
+<OptionalFrom> ::= FROM
+                 |
 
 ! =============================================================================
 ! SELECT Statement
