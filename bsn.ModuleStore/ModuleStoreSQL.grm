@@ -4,10 +4,12 @@
 
 "Name"         = 'T-SQL CREATE Statements'
 "Version"      = '2005'
-"About"        = 'Parser for T-SQL CREATE statements to get names'
+"About"        = 'Parser for T-SQL subset'
 "Author"       = 'Arsene von Wyss'
 
 "Start Symbol" = <Root>
+
+! CLR UDTs are missing, but may be implemented later
 
 ! =============================================================================
 ! Comments
@@ -37,10 +39,9 @@ Id             = {Letter}{Id Ch Standard}* | '['{Id Ch Extended}+']' | '"'{Id Ch
 LocalId        = '@'{Letter}{Id Ch Standard}*
 SystemId       = '@@'{Letter}{Id Ch Standard}*
 TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{Id Ch Standard}*'"'
-!NamespaceId    = {Letter}{Id Ch Standard}*':'{Nonspace Ch}+
 
 ! The reserved keywords as per MSDN: http://msdn.microsoft.com/en-us/library/ms189822.aspx
-! By specifying them explicitly here, we should not see those in the log as implicit when generating the grammar tables
+! By specifying them explicitly here, we should not see those in the log as implicit when generating the grammar tables, and the unsed ones are still reserved keywords
 ADD = ADD
 EXISTS = EXISTS
 PRECISION = PRECISION
@@ -52,10 +53,10 @@ EXTERNAL = EXTERNAL
 PRINT = PRINT
 AND = AND
 FETCH = FETCH
-PROC = PROC
+! PROC = PROC -- is covered by PROCEDURE
 ANY = ANY
 FILE = FILE
-PROCEDURE = PROCEDURE
+PROCEDURE = PROC(EDURE)?
 AS = AS
 FILLFACTOR = FILLFACTOR
 PUBLIC = PUBLIC
@@ -215,10 +216,10 @@ WHERE = WHERE
 EXCEPT = EXCEPT
 PERCENT = PERCENT
 WHILE = WHILE
-EXEC = EXEC
+! EXEC = EXEC -- is covered by EXECUTE
 PIVOT = PIVOT
 WITH = WITH
-EXECUTE = EXECUTE
+EXECUTE = EXEC(UTE)?
 PLAN = PLAN
 WRITETEXT = WRITETEXT
 
@@ -230,8 +231,16 @@ FOR_PATH = FOR{Whitespace}+PATH
 FOR_VALUE = FOR{Whitespace}+VALUE
 FOR_PROPERTY = FOR{Whitespace}+PROPERTY
 XML_INDEX = XML{Whitespace}+INDEX
+XML_SCHEMA_COLLECTION = XML{Whitespace}+SCHEMA{Whitespace}+COLLECTION
 USING_XML_INDEX = USING{Whitespace}+XML{Whitespace}+INDEX
 WITH_CHANGE_TRACKING = WITH{Whitespace}+CHANGE_TRACKING
+WITH_RECOMPILE = WITH{Whitespace}+RECOMPILE
+WITH_VIEW_METADATA = WITH{Whitespace}+VIEW_METADATA
+WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
+ENABLE_TRIGGER = ENABLE{Whitespace}+TRIGGER
+DISABLE_TRIGGER = DISABLE{Whitespace}+TRIGGER
+ADD_PERSISTED = ADD{Whitespace}+PERSISTED
+DROP_PERSISTED = DROP{Whitespace}+PERSISTED
 BEGIN_TRY = BEGIN{Whitespace}+TRY
 END_TRY = END{Whitespace}+TRY
 BEGIN_CATCH = BEGIN{Whitespace}+CATCH
@@ -240,10 +249,13 @@ FULLTEXT_INDEX = FULLTEXT{Whitespace}+INDEX
 WITH_FILLFACTOR = WITH{Whitespace}+FILLFACTOR
 NO_POPULATION = NO{Whitespace}+POPULATION
 TYPE_COLUMN = TYPE{Whitespace}+COLUMN
+INSTEAD_OF = INSTEAD{Whitespace}+OF
 INCLUDE_ = INCLUDE{Whitespace}*'('
 COUNT_ = COUNT{Whitespace}*'('
+CAST_ = CAST{Whitespace}*'('
 _RETURNS = ')'{Whitespace}*RETURNS
 LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{String Ch}+)?'')
+OUTPUT = OUT(PUT)?
 
 ! =============================================================================
 ! Common Terminals (Names, Literals, ...)
@@ -257,6 +269,7 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 
 <ColumnNameQualified> ::= <ColumnName>
                         | <TableName> '.' <ColumnName>
+                        | <VariableName> '.' <ColumnName>
 
 <ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>
                    | <ColumnName>
@@ -265,9 +278,12 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 
 <ColumnWildQualified> ::= <ColumnWild>
                         | <TableName> '.' <ColumnWild>
+                        | <VariableName> '.' <ColumnWild>
 
 <ColumnWildNameQualified> ::= <ColumnNameQualified>
                             | <ColumnWildQualified>
+
+<ConstraintName> ::= Id
 
 <FunctionName> ::= Id
 
@@ -277,13 +293,22 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 
 <ParameterName> ::= LocalId
 
+<ProcedureName> ::= Id
+
+<ProcedureNameQualified> ::= <ProcedureName>
+                           | <SchemaName> '.' <ProcedureName>
+
 <TableName> ::= Id
               | TempTableId
 
 <TableNameQualified> ::= <TableName>
                        | <SchemaName> '.' <TableName>
 
+<TriggerName> ::= Id
+
 <TypeName> ::= Id
+             | Id '(' <IntegerLiteral> ')' ! e.g. VARCHAR(20)
+             | Id '(' <IntegerLiteral> ',' <IntegerLiteral> ')' ! e.g. DECIMAL(10,5)
 
 <TypeNameQualified> ::= <TypeName>
                       | <SchemaName> '.' <TypeName>
@@ -294,7 +319,11 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 
 <VariableName> ::= LocalId
 
+<ViewName> ::= Id
+
 <XmlElementName> ::= Id
+
+<XmlSchemaCollectionName> ::= Id
 
 <OptionalAs> ::= AS
                |
@@ -304,7 +333,8 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 <OptionalNot> ::= NOT
                 |
 
-<NullCheck> ::= <OptionalNot> <NullLiteral>
+<NullCheck> ::= <NullLiteral>
+              | NOT <NullLiteral>
 
 <StringLiteral> ::= StringLiteral
 
@@ -337,42 +367,51 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 <StatementList> ::= <StatementGroup> <StatementList>
                   | <StatementGroup>
 
-<Statement> ::= <BreakStatement>
-              | <ContinueStatement>
-              | <GotoStatement>
-              | <IfStatement>
-              | <ReturnStatement>
-              | <TryCatchStatement>
-!              | <WaitforStatement>
-              | <WhileStatement>
-              | <SelectStatement>
-!              | <InsertStatement>
-!              | <UpdateStatement>
-!              | <DeleteStatement>
-              | <CreateStatement>
-              | <DropStatement>
-!              | <AlterStatement>
+<Statement> ::= <DDLStatement>
+              | <DMLStatement>
+
+<DDLStatement> ::= <CreateStatement>
+                 | <DropStatement>
+                 | <AlterStatement>
 
 <CreateStatement> ::= <CreateFulltext>
                     | <CreateFunction>
                     | <CreateIndex>
-!                    | <CreateProcedure>
-!                    | <CreateTable>
-!                    | <CreateTrigger>
-!                    | <CreateView>
-!                    | <CreateXmlSchemaCollection>
+                    | <CreateProcedure>
+                    | <CreateTable>
+                    | <CreateTrigger>
+                    | <CreateView>
+                    | <CreateXmlSchemaCollection>
+
+<AlterStatement> ::= <AlterTable> ! We don't need anything but this to handle data update scripts
 
 <DropStatement> ::= <DropFulltext>
-                    | <DropFunction>
-                    | <DropIndex>
-!                    | <DropProcedure>
-!                    | <DropTable>
-!                    | <DropTrigger>
-!                    | <DropView>
-!                    | <DropXmlSchemaCollection>
+                  | <DropFunction>
+                  | <DropIndex>
+                  | <DropProcedure>
+                  | <DropTable>
+                  | <DropTrigger>
+                  | <DropView>
+                  | <DropXmlSchemaCollection>
+
+<DMLStatement> ::= <BreakStatement>
+                 | <ContinueStatement>
+                 | <GotoStatement>
+                 | <IfStatement>
+                 | <ReturnStatement>
+                 | <TryCatchStatement>
+                 | <WaitforStatement>
+                 | <WhileStatement>
+                 | <SelectStatement>
+!                 | <InsertStatement>
+!                 | <UpdateStatement>
+!                 | <DeleteStatement>
+                 | <ExecuteStatement>
+                 | <SetStatement>
+                 | <DeclareStatement>
 
 ! =============================================================================
-! Control-of-Flow statements
+! Control-of-Flow and simple statements
 ! =============================================================================
 
 <BreakStatement> ::= BREAK
@@ -394,12 +433,46 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 
 <WhileStatement> ::= WHILE <Expression> <StatementGroup>
 
+<WaitforStatement> ::= WAITFOR Id <StringValue>
+
 ! =============================================================================
 ! Parameter Lists for Functions and Procedures
 ! =============================================================================
 
 <OptionalDefault> ::= '=' <Literal>
                     |
+
+! =============================================================================
+! SET (both variables and options, but not yet CLR UDT properties and fields)
+! =============================================================================
+
+<SetStatement> ::= <SetVariableStatement>
+                 | <SetOptionStatement>
+
+<SetVariableStatement> ::= SET <VariableName> '=' <Expression>
+
+<SetOptionStatement> ::= SET Id <SetValueList>
+
+<SetValueList> ::= <SetValue> <SetValueList>
+                 | <SetValue>
+
+<SetValue> ::= Id
+             | <Toggle>
+             | <IntegerLiteral>
+             | <StringValue>
+
+<StringValue> ::= <StringLiteral>
+                | <VariableName>
+
+! =============================================================================
+! DECLARE
+! =============================================================================
+
+<DeclareStatement> ::= DECLARE <VariableName> CURSOR
+                     | DECLARE <VariableName> <OptionalAs> <DeclareType>
+
+<DeclareType> ::= <TypeNameQualified>
+                | TABLE <TableTypeDefinitionGroup>
 
 ! =============================================================================
 ! CREATE/DROP FULLTEXT
@@ -471,6 +544,139 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 <DropFunction> ::= DROP FUNCTION <FunctionName>
 
 ! =============================================================================
+! CREATE/DROP PROCEDURE and EXECUTE
+! =============================================================================
+
+<CreateProcedure> ::= CREATE PROCEDURE <ProcedureName> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> AS <StatementBlock>
+
+<ProcedureParameterGroup> ::= <ProcedureParameterList>
+                            |
+
+<ProcedureParameterList> ::= <ProcedureParameter> ',' <ProcedureParameterList>
+                           | <ProcedureParameter>
+
+<ProcedureParameter> ::= <ParameterName> <TypeNameQualified> <OptionalVarying> <OptionalDefault> <OptionalOutput>
+
+<OptionalVarying> ::= VARYING
+                    |
+
+<OptionalOutput> ::= OUTPUT
+                   |
+
+<ProcedureOptionGroup> ::= WITH_RECOMPILE
+                         |
+
+<ProcedureFor> ::= FOR REPLICATION
+                 |
+
+<DropProcedure> ::= DROP PROCEDURE <ProcedureName>
+
+<ExecuteStatement> ::= EXECUTE <OptionalVariableAssignment> <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>
+
+<ExecuteParameterGroup> ::= <ExecuteParameterList>
+                          |
+
+<ExecuteParameterList> ::= <ExecuteParameter> ',' <ExecuteParameterList>
+                         | <ExecuteParameter>
+
+<ExecuteParameter> ::= <TableNameQualified> ! for the system "sp_*" SPs
+                     | <ParameterName> '=' <ExecuteParameterValue> <OptionalOutput>
+                     | <ExecuteParameterValue> <OptionalOutput>
+
+<ExecuteParameterValue> ::= <VariableName>
+                          | <SystemVariableName>
+                          | <Literal>
+
+<OptionalVariableAssignment> ::= <VariableName> '='
+                               |
+
+! =============================================================================
+! CREATE/ALTER/DROP TABLE
+! =============================================================================
+
+! We don't support the ON option, filegroup is managed by module manager
+
+<CreateTable> ::= CREATE TABLE <TableName> <TableTypeDefinitionGroup> 
+
+<AlterTable> ::= ALTER TABLE <TableName> <AlterTableKind>
+
+<AlterTableKind> ::= <AlterColumn>
+                   | <AddColumnOrConstraint>
+                   | <DropColumn>
+                   | <DropConstraint>
+
+<AlterColumn> ::= ALTER COLUMN <ColumnName> <AlterColumnKind>
+
+<AlterColumnKind> ::= <ColumnTypeDefinition>
+                    | ADD <ColumnRowguid>
+                    | DROP <ColumnRowguid>
+                    | ADD_PERSISTED
+                    | DROP_PERSISTED
+                    | ADD <NotForReplication>
+                    | DROP <NotForReplication>
+                    | ADD <TableTypeDefinition>
+                    | <WithCheck> ADD <TableTypeDefinition>
+                    | <DropConstraint>
+                    | <DropColumn>
+                    | <WithCheck> <AlterConstraint> 
+                    | <AlterConstraint>
+                    | <EnableOrDisableTrigger>
+
+<EnableOrDisableTrigger> ::= ENABLE_TRIGGER <AllOrTriggerNameList>
+                           | DISABLE_TRIGGER <AllOrTriggerNameList>
+
+<AllOrTriggerNameList> ::= ALL
+                        | <TriggerNameList>
+
+<TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>
+                    | <TriggerName>
+
+<AlterConstraint> ::= <CheckOrNocheck> CONSTRAINT <AllOrConstraintNameList>
+
+<AllOrConstraintNameList> ::= ALL
+                        | <ConstraintNameList>
+
+<ConstraintNameList> ::= <ConstraintName> ',' <ConstraintNameList>
+                       | <ConstraintName>
+
+<WithCheck> ::= WITH <CheckOrNocheck>
+
+<CheckOrNocheck> ::= CHECK
+                   | NOCHECK
+
+<AddColumnOrConstraint> ::= ADD <ColumnOrConstraintList>
+
+<ColumnOrConstraintList> ::= <ColumnOrConstraint> ',' <ColumnOrConstraintList>
+                           | <ColumnOrConstraint>
+
+<ColumnOrConstraint> ::= <ColumnDefinition>
+                       | <TableConstraint>
+
+<DropColumn> ::= DROP COLUMN <ColumnName>
+
+<DropConstraint> ::= DROP CONSTRAINT <ConstraintName>
+                   | DROP <ConstraintName>
+
+<DropTable> ::= DROP TABLE <TableName>
+
+! =============================================================================
+! CREATE/DROP VIEW
+! =============================================================================
+
+<CreateView> ::= CREATE VIEW <ViewName> <ColumnNameGroup> <ViewOptionalAttribute> AS <SelectStatement> <ViewOptionalCheckOption>
+
+<ColumnNameGroup> ::= '(' <ColumnNameList> ')'
+                    |
+
+<ViewOptionalAttribute> ::= WITH_VIEW_METADATA
+                          |
+
+<ViewOptionalCheckOption> ::= WITH_CHECK_OPTION
+                            |
+
+<DropView> ::= DROP VIEW <ViewName>
+
+! =============================================================================
 ! CREATE/DROP INDEX
 ! =============================================================================
 
@@ -512,6 +718,40 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 <DropIndex> ::= DROP INDEX <IndexName> ON <TableName> <IndexOptionGroup>
 
 ! =============================================================================
+! CREATE/DROP TRIGGER
+! =============================================================================
+
+! Only DML triggers are supported
+
+<CreateTrigger> ::= CREATE TRIGGER <TriggerName> ON <TableName> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <Statement>
+
+<TriggerType> ::= FOR
+                | INSTEAD_OF
+                | Id ! AFTER is not a keyword
+
+<TriggerOperationList> ::= <TriggerOperation> ',' <TriggerOperationList>
+                         | <TriggerOperation>
+
+<TriggerOperation> ::= INSERT
+                     | UPDATE
+                     | DELETE
+
+<OptionalNotForReplication> ::= <NotForReplication>
+                              |
+
+<NotForReplication> ::= NOT FOR REPLICATION
+
+<DropTrigger> ::= DROP TRIGGER <TriggerName>
+
+! =============================================================================
+! CREATE/DROP XML SCHEMA COLLECTION
+! =============================================================================
+
+<CreateXmlSchemaCollection> ::= CREATE XML_SCHEMA_COLLECTION <XmlSchemaCollectionName> AS <Expression>
+
+<DropXmlSchemaCollection> ::= DROP XML_SCHEMA_COLLECTION <XmlSchemaCollectionName>
+
+! =============================================================================
 ! Table/Column Type Definitions
 ! =============================================================================
 
@@ -523,7 +763,7 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 ! This does not match the BNF in the SQL Books Online 2005, but seems to be the correct syntax
 <TableTypeDefinition> ::= <ColumnDefinition>
                         | <ColumnComputedDefinition>
-                        | CONSTRAINT <ColumnName> <TableConstraintList>
+                        | CONSTRAINT <ConstraintName> <TableConstraintList>
 
 <TableConstraintList> ::= <TableConstraint> <TableConstraintList>
                         | <TableConstraint>
@@ -531,7 +771,9 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 <TableConstraint> ::= <ConstraintPrimaryKey> <ConstraintCluster> <ConstraintIndex>
                     | <ConstraintCheck>
 
-<ColumnDefinition> ::= <ColumnName> <TypeNameQualified> <ColumnKind> <ColumnConstraintGroup>
+<ColumnDefinition> ::= <ColumnName> <ColumnTypeDefinition>
+
+<ColumnTypeDefinition> ::= <TypeNameQualified> <ColumnKind> <ColumnConstraintGroup>
 
 <ColumnKind> ::= <ColumnIdentity>
                | <ColumnRowguid>
@@ -556,7 +798,7 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 <ColumnConstraintList> ::= <ColumnConstraint> <ColumnConstraintList>
                          | <ColumnConstraint>
 
-! The syntax for multiple the constraint checks is not clear from the grammar in the SQL Books 2005
+! The syntax for multiple the constraint checks is not clear from the grammar in the SQL Books 2005 - and where does CONSTRAINT <ConstraintName> fit in?
 <ColumnConstraint> ::= <NullCheck>
                      | <ConstraintPrimaryKey> <ConstraintCluster> <ConstraintIndex>
                      | <ConstraintCheck>
@@ -611,8 +853,11 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
                | <ColumnItem>
 
 <ColumnItem> ::= <ColumnWildQualified>
-               | <Expression> <OptionalAs> <AliasName>                  
-               | <Expression>
+               | <Function> OVER '(' <PartitionByClause> ')' <OptionalAlias>
+               | <Expression> <OptionalAlias>
+
+<PartitionByClause> ::= PARTITION_BY <ExpressionList>
+                | <OrderClause>
 
 <Restriction> ::= ALL
                 | DISTINCT
@@ -637,15 +882,17 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
              | FULL <OptionalOuter>
 
 <OptionalInner> ::= INNER
-              |
+                  |
 
 <OptionalOuter> ::= OUTER
-              |
+                  |
 
-<Source> ::= <TableNameQualified>
-           | <TableNameQualified> <OptionalAs> <AliasName>
-           | '(' <SelectStatement> ')'
-           | '(' <SelectStatement> ')' <OptionalAs> <AliasName>
+<Source> ::= <TableNameQualified> <OptionalAlias>
+           | <VariableName> <OptionalAlias>
+           | '(' <SelectGroup> ')' <OptionalAlias>
+
+<OptionalAlias> ::= <OptionalAs> <AliasName>
+                  |
 
 <WhereClause> ::= WHERE <Predicate>
                 |
@@ -674,6 +921,7 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 
 <SelectFor> ::= FOR BROWSE
               | FOR_XML <SelectForList>
+              |
 
 <SelectForList> ::= <SelectForIdList>
                   | <SelectForIdList> ',' <SelectForList>
@@ -684,7 +932,7 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
                     | Id
            
 ! ============================================================================= 
-! Pedicated and Expressions
+! Pedicates and Expressions
 ! =============================================================================
 
 <Predicate> ::= <AndExp> OR <Predicate>
@@ -712,7 +960,8 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
             | <Expression> <OptionalNot> LIKE StringLiteral <Escape>
             | <Expression> <OptionalNot> IN <Tuple>
             | <Expression> <PredBinaryOp> <Expression>
-            | EXISTS '(' <SelectStatement> ')'
+            | EXISTS '(' <SelectGroup> ')'
+            | '(' <Predicate> ')'
 
 <Escape> ::= ESCAPE <StringLiteral>
            |
@@ -732,10 +981,18 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
 <NegateExp> ::= '-' <Function>
               | <Function>
 
-<Function> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'
+<Function> ::= <CountFunction>
+             | <CastFunction>
+             | <CoalesceFunction>
              | <FunctionName> '(' ')'
              | <FunctionName> '(' <ExpressionList> ')'
              | <Case>
+
+<CountFunction> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'
+
+<CastFunction> ::= CAST_ <Expression> AS <TypeName> ')'
+
+<CoalesceFunction> ::= COALESCE '(' <ExpressionList> ')'
 
 <Case> ::= CASE <Expression> <CaseWhenExpressionList> END
          | CASE <CaseWhenExpressionList> END
@@ -751,11 +1008,11 @@ LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{St
      
 <Value> ::= <Tuple>
           | <ColumnNameQualified>
-          | <VariableName>
+          | <VariableName> ! CLR UDT property, field and methods are not yet implemented
           | <SystemVariableName>
           | <Literal>
 
-<Tuple> ::= '(' <SelectStatement> ')'
+<Tuple> ::= '(' <SelectGroup> ')'
           | '(' <ExpressionList> ')'
 
 <ExpressionList> ::= <Expression> ',' <ExpressionList>
