@@ -403,7 +403,7 @@ OUTPUT = OUT(PUT)?
                  | <WaitforStatement>
                  | <WhileStatement>
                  | <SelectStatement>
-!                 | <InsertStatement>
+                 | <InsertStatement>
 !                 | <UpdateStatement>
 !                 | <DeleteStatement>
                  | <ExecuteStatement>
@@ -421,6 +421,7 @@ OUTPUT = OUT(PUT)?
 <GotoStatement> ::= GOTO <LabelName>
 
 <IfStatement> ::= IF <Predicate> THEN <IfElseStatement>
+                | IF <Predicate> <Statement>
 
 ! To avoid the hanging ELSE problem/ambiguity, we just require a block - even if this is more restrictive than T-SQL
 <IfElseStatement> ::= <StatementBlock> ELSE <StatementGroup>
@@ -436,11 +437,39 @@ OUTPUT = OUT(PUT)?
 <WaitforStatement> ::= WAITFOR Id <StringValue>
 
 ! =============================================================================
-! Parameter Lists for Functions and Procedures
+! Common helper constructs
 ! =============================================================================
 
 <OptionalDefault> ::= '=' <Literal>
                     |
+
+<ReadableRowset> ::= <WritableRowset>
+                   | '(' <SelectGroup> ')'
+                   | <Openxml>
+
+<WritableRowset> ::= <TableNameQualified>
+                   | <VariableName>
+!                   | <Openrowset> -- not supported
+!                   | <Openquery> -- not supported
+
+<Openxml> ::= OPENXML '(' <VariableName> ',' <StringValue> <OptionalOpenxmlFlags> ')' <OptionalOpenxmlSchema>
+
+<OptionalOpenxmlFlags> ::= ',' <IntegerLiteral>
+                         |
+
+<OptionalOpenxmlSchema> ::= WITH '(' <OpenxmlSchemaGroup> ')'
+                          |
+
+<OpenxmlSchemaGroup> ::= <TableNameQualified>
+                       | <OpenxmlColumnList>
+
+<OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>
+                      | <OpenxmlColumn>
+
+<OpenxmlColumn> ::= <ColumnName> <TypeName> <OptionalOpenxmlColumnPattern>
+
+<OptionalOpenxmlColumnPattern> ::= <StringLiteral>
+                                 |
 
 ! =============================================================================
 ! SET (both variables and options, but not yet CLR UDT properties and fields)
@@ -452,6 +481,7 @@ OUTPUT = OUT(PUT)?
 <SetVariableStatement> ::= SET <VariableName> '=' <Expression>
 
 <SetOptionStatement> ::= SET Id <SetValueList>
+                       | SET IDENTITY_INSERT <TableName> <Toggle>
 
 <SetValueList> ::= <SetValue> <SetValueList>
                  | <SetValue>
@@ -786,7 +816,8 @@ OUTPUT = OUT(PUT)?
 
 <ColumnRowguid> ::= ROWGUIDCOL
 
-<ColumnDefault> ::= DEFAULT <Literal>
+<ColumnDefault> ::= <NamedConstraint> DEFAULT '(' <Literal> ')'
+                  | DEFAULT <Literal> ! No idea if that is really right
                   |
 
 <ColumnCollate> ::= COLLATE <CollationName>
@@ -802,6 +833,8 @@ OUTPUT = OUT(PUT)?
 <ColumnConstraint> ::= <NullCheck>
                      | <ConstraintPrimaryKey> <ConstraintCluster> <ConstraintIndex>
                      | <ConstraintCheck>
+
+<NamedConstraint> ::= CONSTRAINT <ConstraintName>
 
 <ColumnComputedDefinition> ::= <ColumnName> AS <Expression>
 
@@ -821,7 +854,7 @@ OUTPUT = OUT(PUT)?
                     | <IndexOptionGroup>
 
 ! =============================================================================
-! Common Table Expressions
+! Common Table Expressions and OUTPUT clause
 ! =============================================================================
 
 <CTEGroup> ::= WITH <CTEList>
@@ -831,6 +864,37 @@ OUTPUT = OUT(PUT)?
             | <CTE>
 
 <CTE> ::= <AliasName> AS '(' <SelectGroup> ')'
+
+<OptionalOutputClause> ::= OUTPUT <OutputColumnList> <OutputIntoClause>
+                         |
+
+<OutputIntoClause> ::= INTO <TableName> <ColumnNameGroup>
+                     | INTO <VariableName> <ColumnNameGroup>
+                     |
+
+<OutputColumnList> ::= <OutputColumn> ',' <OutputColumnList>
+                     | <OutputColumn>
+
+<OutputColumn> ::= <ColumnWildQualified> <OptionalAs> ! this includes DELETED and INSERTED pseudo-table names
+                 | <Expression> <OptionalAs>
+
+! =============================================================================
+! INSERT Statement
+! =============================================================================
+
+<InsertStatement> ::= <CTEGroup> <InsertGroup>
+
+<InsertGroup> ::= INSERT <Top> <OptionalInto> <WritableRowset> <InsertData>
+
+<InsertData> ::= <ColumnNameGroup> <OptionalOutputClause> <InsertSource>
+               | DEFAULT VALUES
+
+<OptionalInto> ::= INTO
+                 |
+
+<InsertSource> ::= VALUES '(' <ExpressionList> ')'
+                 | <SelectGroup>
+                 | <ExecuteStatement>
 
 ! =============================================================================
 ! SELECT Statement
@@ -857,7 +921,7 @@ OUTPUT = OUT(PUT)?
                | <Expression> <OptionalAlias>
 
 <PartitionByClause> ::= PARTITION_BY <ExpressionList>
-                | <OrderClause>
+                      | <OrderClause>
 
 <Restriction> ::= ALL
                 | DISTINCT
@@ -887,9 +951,7 @@ OUTPUT = OUT(PUT)?
 <OptionalOuter> ::= OUTER
                   |
 
-<Source> ::= <TableNameQualified> <OptionalAlias>
-           | <VariableName> <OptionalAlias>
-           | '(' <SelectGroup> ')' <OptionalAlias>
+<Source> ::= <ReadableRowset> <OptionalAlias>
 
 <OptionalAlias> ::= <OptionalAs> <AliasName>
                   |
@@ -903,10 +965,10 @@ OUTPUT = OUT(PUT)?
 <OrderClause> ::= ORDER BY <OrderList>
                 |
 
-<Order> ::= <Expression> <OrderType>
-
 <OrderList> ::= <Order> ',' <OrderList>
               | <Order>
+
+<Order> ::= <Expression> <OrderType>
 
 <OrderType> ::= ASC
               | DESC
