@@ -1050,7 +1050,6 @@ OUTPUT = OUT(PUT)?
 
 <PredBinaryOp> ::= '='
                  | '<>'
-                 | '!='
                  | '>'
                  | '>='
                  | '<'
@@ -1058,7 +1057,7 @@ OUTPUT = OUT(PUT)?
 
 <PredExp> ::= <Expression> <PredBetweenOp> <Expression> AND <Expression>
             | <Expression> IS <NullCheck>
-            | <Expression> <OptionalNot> LIKE StringLiteral <Escape>
+            | <Expression> <OptionalNot> LIKE <StringLiteral> <Escape>
             | <Expression> <OptionalNot> IN <Tuple>
             | <Expression> <PredBinaryOp> <Expression>
             | EXISTS '(' <SelectGroup> ')'
