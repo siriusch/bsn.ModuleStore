@@ -23,7 +23,7 @@ Comment Line  = '--'
 ! Terminals
 ! =============================================================================
 
-{String Ch}        = {Printable} - ["]
+{String Ch}        = {Printable} - ['']
 {Id Ch Standard}   = {Alphanumeric} + [_]
 {Id Ch Extended}   = {Printable} - ['['#']']
 {Hex Ch}           = [0123456789ABCDEF]
@@ -331,9 +331,6 @@ OUTPUT = OUT(PUT)?
 
 <NullLiteral> ::= NULL
 
-<OptionalNot> ::= NOT
-                |
-
 <NullCheck> ::= <NullLiteral>
               | NOT <NullLiteral>
 
@@ -357,11 +354,13 @@ OUTPUT = OUT(PUT)?
 ! =============================================================================
 
 <Root> ::= <StatementGroup>
+         | <StatementGroup> ';'
          | <Statement>
 
 ! In T-SQL, the terminator (;) is usually not required. However, this introduces some ambiguities, so that we require it. 
 <StatementGroup> ::= <StatementBlock>
                    | <Statement> ';'
+                   | ';'
 
 <StatementBlock> ::= BEGIN <StatementList> END
 
@@ -371,29 +370,23 @@ OUTPUT = OUT(PUT)?
 <Statement> ::= <DDLStatement>
               | <DMLStatement>
 
-<DDLStatement> ::= <CreateStatement>
-                 | <DropStatement>
-                 | <AlterStatement>
-
-<CreateStatement> ::= <CreateFulltext>
-                    | <CreateFunction>
-                    | <CreateIndex>
-                    | <CreateProcedure>
-                    | <CreateTable>
-                    | <CreateTrigger>
-                    | <CreateView>
-                    | <CreateXmlSchemaCollection>
-
-<AlterStatement> ::= <AlterTable> ! We don't need anything but this to handle data update scripts
-
-<DropStatement> ::= <DropFulltext>
-                  | <DropFunction>
-                  | <DropIndex>
-                  | <DropProcedure>
-                  | <DropTable>
-                  | <DropTrigger>
-                  | <DropView>
-                  | <DropXmlSchemaCollection>
+<DDLStatement> ::= <CreateFulltext>
+                 | <DropFulltext>
+                 | <CreateFunction>
+                 | <DropFunction>
+                 | <CreateIndex>
+                 | <DropIndex>
+                 | <CreateProcedure>
+                 | <DropProcedure>
+                 | <CreateTable>
+                 | <AlterTable> ! We don't need anything but this to handle data update scripts
+                 | <DropTable>
+                 | <CreateTrigger>
+                 | <DropTrigger>
+                 | <CreateView>
+                 | <DropView>
+                 | <CreateXmlSchemaCollection>
+                 | <DropXmlSchemaCollection>
 
 <DMLStatement> ::= <BreakStatement>
                  | <ContinueStatement>
@@ -410,6 +403,8 @@ OUTPUT = OUT(PUT)?
                  | <ExecuteStatement>
                  | <SetStatement>
                  | <DeclareStatement>
+                 | <PrintStatement>
+                 | <AnyStatement>
 
 ! =============================================================================
 ! Control-of-Flow and simple statements
@@ -436,6 +431,10 @@ OUTPUT = OUT(PUT)?
 <WhileStatement> ::= WHILE <Expression> <StatementGroup>
 
 <WaitforStatement> ::= WAITFOR Id <StringValue>
+
+<PrintStatement> ::= PRINT <Expression>
+
+<AnyStatement> ::= Id <ExpressionList>
 
 ! =============================================================================
 ! Common helper constructs
@@ -856,7 +855,7 @@ OUTPUT = OUT(PUT)?
                     | <IndexOptionGroup>
 
 ! =============================================================================
-! Common Table Expressions and OUTPUT clause
+! Common Table Expressions, TOP and OUTPUT clauses
 ! =============================================================================
 
 <CTEGroup> ::= WITH <CTEList>
@@ -866,6 +865,9 @@ OUTPUT = OUT(PUT)?
             | <CTE>
 
 <CTE> ::= <AliasName> AS '(' <SelectGroup> ')'
+
+<Top> ::= TOP '(' <Expression> ')' <OptionalPercent>
+        |
 
 <OptionalOutputClause> ::= OUTPUT <OutputColumnList> <OutputIntoClause>
                          |
@@ -884,9 +886,7 @@ OUTPUT = OUT(PUT)?
 ! INSERT Statement
 ! =============================================================================
 
-<InsertStatement> ::= <CTEGroup> <InsertGroup>
-
-<InsertGroup> ::= INSERT <Top> <OptionalInto> <WriteableRowset> <InsertData>
+<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <WriteableRowset> <InsertData>
 
 <InsertData> ::= <ColumnNameGroup> <OptionalOutputClause> <InsertSource>
                | DEFAULT VALUES
@@ -903,9 +903,7 @@ OUTPUT = OUT(PUT)?
 ! UPDATE Statement
 ! =============================================================================
 
-<UpdateStatement> ::= <CTEGroup> <UpdateGroup>
-
-<UpdateGroup> ::= UPDATE <Top> <WriteableRowset> SET <UpdateColumnList> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
+<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <WriteableRowset> SET <UpdateColumnList> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
 
 <UpdateColumnList> ::= <UpdateColumn> ',' <UpdateColumnList>
                      | <UpdateColumn>
@@ -924,9 +922,7 @@ OUTPUT = OUT(PUT)?
 ! DELETE Statement
 ! =============================================================================
 
-<DeleteStatement> ::= <CTEGroup> <DeleteGroup>
-
-<DeleteGroup> ::= DELETE <Top> <OptionalFrom> <WriteableRowset> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
+<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <WriteableRowset> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
 
 <OptionalFrom> ::= FROM
                  |
@@ -942,9 +938,6 @@ OUTPUT = OUT(PUT)?
 <TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>
               | <Top>
 
-<Top> ::= TOP '(' <Expression> ')' <OptionalPercent>
-        |
-
 <OptionalPercent> ::= PERCENT
                     |
 
@@ -954,7 +947,7 @@ OUTPUT = OUT(PUT)?
                | <ColumnItem>
 
 <ColumnItem> ::= <ColumnWildQualified>
-               | <Function> OVER '(' <PartitionByClause> ')' <OptionalAlias>
+               | <FunctionCall> OVER '(' <PartitionByClause> ')' <OptionalAlias>
                | <Expression> <OptionalAlias>
 
 <PartitionByClause> ::= PARTITION_BY <ExpressionList>
@@ -1055,6 +1048,9 @@ OUTPUT = OUT(PUT)?
                  | '<'
                  | '<='
 
+<OptionalNot> ::= NOT
+                |
+
 <PredExp> ::= <Expression> <PredBetweenOp> <Expression> AND <Expression>
             | <Expression> IS <NullCheck>
             | <Expression> <OptionalNot> LIKE <StringLiteral> <Escape>
@@ -1084,9 +1080,11 @@ OUTPUT = OUT(PUT)?
 <Function> ::= <CountFunction>
              | <CastFunction>
              | <CoalesceFunction>
-             | <FunctionName> '(' ')'
-             | <FunctionName> '(' <ExpressionList> ')'
+             | <FunctionCall>
              | <Case>
+             
+<FunctionCall> ::= <FunctionName> '(' ')'
+                 | <FunctionName> '(' <ExpressionList> ')'
 
 <CountFunction> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'
 
