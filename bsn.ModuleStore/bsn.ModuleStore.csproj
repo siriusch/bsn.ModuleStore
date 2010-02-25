@@ -51,8 +51,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ModuleStoreSQL.cgt" />
+    <EmbeddedResource Include="ModuleStoreSQL.cgt" />
     <None Include="ModuleStoreSQL.grm" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SqlConverter.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
