@@ -7,7 +7,7 @@
 "About"        = 'Parser for T-SQL subset'
 "Author"       = 'Arsene von Wyss'
 
-"Start Symbol" = <Root>
+"Start Symbol" = <StatementList>
 
 ! CLR UDTs are missing, but may be implemented later
 
@@ -247,6 +247,7 @@ BEGIN_CATCH = BEGIN{Whitespace}+CATCH
 END_CATCH = END{Whitespace}+CATCH
 FULLTEXT_INDEX = FULLTEXT{Whitespace}+INDEX
 WITH_FILLFACTOR = WITH{Whitespace}+FILLFACTOR
+READ_ONLY = READ{Whitespace}+ONLY
 NO_POPULATION = NO{Whitespace}+POPULATION
 TYPE_COLUMN = TYPE{Whitespace}+COLUMN
 PARTITION_BY = PARTITION{Whitespace}+BY
@@ -286,6 +287,8 @@ OUTPUT = OUT(PUT)?
 
 <ConstraintName> ::= Id
 
+<CursorName> ::= Id
+
 <FunctionName> ::= Id
 
 <IndexName> ::= Id
@@ -308,6 +311,7 @@ OUTPUT = OUT(PUT)?
 <TriggerName> ::= Id
 
 <TypeName> ::= Id
+             | Id '(' Id ')' ! e.g. VARCHAR(MAX)
              | Id '(' <IntegerLiteral> ')' ! e.g. VARCHAR(20)
              | Id '(' <IntegerLiteral> ',' <IntegerLiteral> ')' ! e.g. DECIMAL(10,5)
 
@@ -353,58 +357,63 @@ OUTPUT = OUT(PUT)?
 ! Any statements allowed as SQL statements in code
 ! =============================================================================
 
-<Root> ::= <StatementGroup>
-         | <StatementGroup> ';'
-         | <Statement>
-
 ! In T-SQL, the terminator (;) is usually not required. However, this introduces some ambiguities, so that we require it. 
+
 <StatementGroup> ::= <StatementBlock>
-                   | <Statement> ';'
-                   | ';'
+                   | <Statement> 
 
 <StatementBlock> ::= BEGIN <StatementList> END
 
-<StatementList> ::= <StatementGroup> <StatementList>
-                  | <StatementGroup>
+<StatementList> ::= <StatementGroup>
+                  | <StatementGroup> <Terminator>
+                  | <StatementGroup> <Terminator> <StatementList>
+
+<Terminator> ::= <Terminator> ';'
+               | ';'
 
 <Statement> ::= <DDLStatement>
               | <DMLStatement>
+              | <PrgStatement>
 
-<DDLStatement> ::= <CreateFulltext>
-                 | <DropFulltext>
-                 | <CreateFunction>
-                 | <DropFunction>
-                 | <CreateIndex>
-                 | <DropIndex>
-                 | <CreateProcedure>
-                 | <DropProcedure>
-                 | <CreateTable>
-                 | <AlterTable> ! We don't need anything but this to handle data update scripts
-                 | <DropTable>
-                 | <CreateTrigger>
-                 | <DropTrigger>
-                 | <CreateView>
-                 | <DropView>
-                 | <CreateXmlSchemaCollection>
-                 | <DropXmlSchemaCollection>
+<DDLStatement> ::= <CreateFulltextStatement>
+                 | <DropFulltextStatement>
+                 | <CreateFunctionStatement>
+                 | <DropFunctionStatement>
+                 | <CreateIndexStatement>
+                 | <DropIndexStatement>
+                 | <CreateProcedureStatement>
+                 | <DropProcedureStatement>
+                 | <CreateTableStatement>
+                 | <AlterTableStatement> ! We don't need anything but this to handle data update scripts
+                 | <DropTableStatement>
+                 | <CreateTriggerStatement>
+                 | <DropTriggerStatement>
+                 | <CreateViewStatement>
+                 | <DropViewStatement>
+                 | <CreateXmlSchemaCollectionStatement>
+                 | <DropXmlSchemaCollectionStatement>
 
-<DMLStatement> ::= <BreakStatement>
-                 | <ContinueStatement>
-                 | <GotoStatement>
-                 | <IfStatement>
-                 | <ReturnStatement>
-                 | <TryCatchStatement>
-                 | <WaitforStatement>
-                 | <WhileStatement>
-                 | <SelectStatement>
+<DMLStatement> ::= <SelectStatement>
                  | <InsertStatement>
                  | <UpdateStatement>
                  | <DeleteStatement>
-                 | <ExecuteStatement>
-                 | <SetStatement>
+
+<PrgStatement> ::= <AnyStatement>
+                 | <BreakStatement>
+                 | <CloseStatement>
+                 | <ContinueStatement>
+                 | <DeallocateStatement>
                  | <DeclareStatement>
+                 | <ExecuteStatement>
+                 | <GotoStatement>
+                 | <IfStatement>
+                 | <OpenStatement>
                  | <PrintStatement>
-                 | <AnyStatement>
+                 | <ReturnStatement>
+                 | <SetStatement>
+                 | <TryCatchStatement>
+                 | <WaitforStatement>
+                 | <WhileStatement>
 
 ! =============================================================================
 ! Control-of-Flow and simple statements
@@ -435,6 +444,37 @@ OUTPUT = OUT(PUT)?
 <PrintStatement> ::= PRINT <Expression>
 
 <AnyStatement> ::= Id <ExpressionList>
+
+! =============================================================================
+! DECLARE and Cursor statements
+! =============================================================================
+
+<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> <DeclareType>
+                     | DECLARE <VariableName> CURSOR
+                     | <DeclareCursor> <CursorUpdate>
+                     | <DeclareCursor>
+
+<DeclareCursor> ::= DECLARE <CursorName> CURSOR <CursorOptionList> FOR <CTEGroup> <SelectGroup>
+
+<DeclareType> ::= <TypeNameQualified>
+                | TABLE <TableTypeDefinitionGroup>
+
+<CursorOptionList> ::= Id <CursorOptionList>
+                     |
+
+<CloseStatement> ::= CLOSE <GlobalOrLocalCursor>
+
+<OpenStatement> ::= OPEN <GlobalOrLocalCursor>
+
+<DeallocateStatement> ::= DEALLOCATE  <GlobalOrLocalCursor>
+
+<GlobalOrLocalCursor> ::= <VariableName>
+                        | <CursorName>
+                        | Id <CursorName> ! Id should be GLOBAL
+
+<CursorUpdate> ::= FOR UPDATE OF <ColumnNameList>
+                 | FOR UPDATE
+                 | READ_ONLY
 
 ! =============================================================================
 ! Common helper constructs
@@ -496,22 +536,12 @@ OUTPUT = OUT(PUT)?
                 | <VariableName>
 
 ! =============================================================================
-! DECLARE
-! =============================================================================
-
-<DeclareStatement> ::= DECLARE <VariableName> CURSOR
-                     | DECLARE <VariableName> <OptionalAs> <DeclareType>
-
-<DeclareType> ::= <TypeNameQualified>
-                | TABLE <TableTypeDefinitionGroup>
-
-! =============================================================================
 ! CREATE/DROP FULLTEXT
 ! =============================================================================
 
 ! We don't allow to specify the catalog name, since the catalog is automatically assigned (module name)
 
-<CreateFulltext> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
+<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
 
 <FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'
                         |
@@ -534,7 +564,7 @@ OUTPUT = OUT(PUT)?
                                | OFF
                                | OFF ',' NO_POPULATION
 
-<DropFulltext> ::= DROP FULLTEXT_INDEX ON <TableName>
+<DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableName>
 
 ! =============================================================================
 ! CREATE/DROP FUNCTION
@@ -542,7 +572,7 @@ OUTPUT = OUT(PUT)?
 
 ! We don't allow to specify the schema name, it is implicit (module name)
 
-<CreateFunction> ::= CREATE FUNCTION <FunctionName> <FunctionParameterGroup> <FunctionType>
+<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> <FunctionParameterGroup> <FunctionType>
 
 <FunctionParameterGroup> ::= '(' <FunctionParameterList> _RETURNS
                            | '(' _RETURNS
@@ -572,13 +602,13 @@ OUTPUT = OUT(PUT)?
 <FunctionOption> ::= RETURNS_NULL_ON_NULL_INPUT
                    | CALLED_ON_NULL_INPUT
 
-<DropFunction> ::= DROP FUNCTION <FunctionName>
+<DropFunctionStatement> ::= DROP FUNCTION <FunctionName>
 
 ! =============================================================================
 ! CREATE/DROP PROCEDURE and EXECUTE
 ! =============================================================================
 
-<CreateProcedure> ::= CREATE PROCEDURE <ProcedureName> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> AS <StatementBlock>
+<CreateProcedureStatement> ::= CREATE PROCEDURE <ProcedureName> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> AS <StatementBlock>
 
 <ProcedureParameterGroup> ::= <ProcedureParameterList>
                             |
@@ -600,7 +630,7 @@ OUTPUT = OUT(PUT)?
 <ProcedureFor> ::= FOR REPLICATION
                  |
 
-<DropProcedure> ::= DROP PROCEDURE <ProcedureName>
+<DropProcedureStatement> ::= DROP PROCEDURE <ProcedureName>
 
 <ExecuteStatement> ::= EXECUTE <OptionalVariableAssignment> <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>
 
@@ -627,9 +657,9 @@ OUTPUT = OUT(PUT)?
 
 ! We don't support the ON option, filegroup is managed by module manager
 
-<CreateTable> ::= CREATE TABLE <TableName> <TableTypeDefinitionGroup> 
+<CreateTableStatement> ::= CREATE TABLE <TableName> <TableTypeDefinitionGroup> 
 
-<AlterTable> ::= ALTER TABLE <TableName> <AlterTableKind>
+<AlterTableStatement> ::= ALTER TABLE <TableName> <AlterTableKind>
 
 <AlterTableKind> ::= <AlterColumn>
                    | <AddColumnOrConstraint>
@@ -688,13 +718,13 @@ OUTPUT = OUT(PUT)?
 <DropConstraint> ::= DROP CONSTRAINT <ConstraintName>
                    | DROP <ConstraintName>
 
-<DropTable> ::= DROP TABLE <TableName>
+<DropTableStatement> ::= DROP TABLE <TableName>
 
 ! =============================================================================
 ! CREATE/DROP VIEW
 ! =============================================================================
 
-<CreateView> ::= CREATE VIEW <ViewName> <ColumnNameGroup> <ViewOptionalAttribute> AS <SelectStatement> <ViewOptionalCheckOption>
+<CreateViewStatement> ::= CREATE VIEW <ViewName> <ColumnNameGroup> <ViewOptionalAttribute> AS <SelectStatement> <ViewOptionalCheckOption>
 
 <ColumnNameGroup> ::= '(' <ColumnNameList> ')'
                     |
@@ -705,7 +735,7 @@ OUTPUT = OUT(PUT)?
 <ViewOptionalCheckOption> ::= WITH_CHECK_OPTION
                             |
 
-<DropView> ::= DROP VIEW <ViewName>
+<DropViewStatement> ::= DROP VIEW <ViewName>
 
 ! =============================================================================
 ! CREATE/DROP INDEX
@@ -713,8 +743,8 @@ OUTPUT = OUT(PUT)?
 
 ! We don't support the ON option, filegroup is managed by module manager
 
-<CreateIndex> ::= CREATE <ConstraintUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' <IndexInclude> <IndexOptionGroup>
-                | CREATE <IndexPrimary> XML_INDEX <IndexName> ON <TableName> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
+<CreateIndexStatement> ::= CREATE <ConstraintUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' <IndexInclude> <IndexOptionGroup>
+                         | CREATE <IndexPrimary> XML_INDEX <IndexName> ON <TableName> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
 
 <IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>
                     | <IndexColumn>
@@ -746,7 +776,7 @@ OUTPUT = OUT(PUT)?
              | FOR_PATH
              | FOR_PROPERTY
 
-<DropIndex> ::= DROP INDEX <IndexName> ON <TableName> <IndexOptionGroup>
+<DropIndexStatement> ::= DROP INDEX <IndexName> ON <TableName> <IndexOptionGroup>
 
 ! =============================================================================
 ! CREATE/DROP TRIGGER
@@ -754,7 +784,7 @@ OUTPUT = OUT(PUT)?
 
 ! Only DML triggers are supported
 
-<CreateTrigger> ::= CREATE TRIGGER <TriggerName> ON <TableName> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <Statement>
+<CreateTriggerStatement> ::= CREATE TRIGGER <TriggerName> ON <TableName> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <StatementGroup>
 
 <TriggerType> ::= FOR
                 | INSTEAD_OF
@@ -772,15 +802,15 @@ OUTPUT = OUT(PUT)?
 
 <NotForReplication> ::= NOT FOR REPLICATION
 
-<DropTrigger> ::= DROP TRIGGER <TriggerName>
+<DropTriggerStatement> ::= DROP TRIGGER <TriggerName>
 
 ! =============================================================================
 ! CREATE/DROP XML SCHEMA COLLECTION
 ! =============================================================================
 
-<CreateXmlSchemaCollection> ::= CREATE XML_SCHEMA_COLLECTION <XmlSchemaCollectionName> AS <Expression>
+<CreateXmlSchemaCollectionStatement> ::= CREATE XML_SCHEMA_COLLECTION <XmlSchemaCollectionName> AS <Expression>
 
-<DropXmlSchemaCollection> ::= DROP XML_SCHEMA_COLLECTION <XmlSchemaCollectionName>
+<DropXmlSchemaCollectionStatement> ::= DROP XML_SCHEMA_COLLECTION <XmlSchemaCollectionName>
 
 ! =============================================================================
 ! Table/Column Type Definitions
@@ -1029,17 +1059,37 @@ OUTPUT = OUT(PUT)?
 ! Pedicates and Expressions
 ! =============================================================================
 
-<Predicate> ::= <AndExp> OR <Predicate>
-              | <AndExp>
+<Predicate> ::= <OrExp>
+
+<OrExp> ::= <AndExp> OR <OrExp>
+          | <AndExp>
 
 <AndExp> ::= <NotExp> AND <AndExp>
            | <NotExp>
 
-<NotExp> ::= NOT <PredExp>
-           | <PredExp>
+<NotExp> ::= NOT <PredBetween>
+           | <PredBetween>
 
 <PredBetweenOp> ::= BETWEEN
                   | NOT BETWEEN
+
+<PredBetween> ::= <Expression> <PredBetweenOp> <Expression> AND <Expression>
+                | <PredNull>
+
+<PredNull> ::= <Expression> IS <NullCheck>
+             | <PredLike>
+
+<PredLike> ::= <Expression> <OptionalNot> LIKE <StringLiteral> <Escape>
+             | <PredIn>
+
+<OptionalNot> ::= NOT
+                |
+
+<PredIn> ::= <Expression> <OptionalNot> IN <Tuple>
+           | <PredExists>
+
+<PredExists> ::= EXISTS '(' <SelectGroup> ')'
+               | <PredExp>
 
 <PredBinaryOp> ::= '='
                  | '<>'
@@ -1048,22 +1098,16 @@ OUTPUT = OUT(PUT)?
                  | '<'
                  | '<='
 
-<OptionalNot> ::= NOT
-                |
-
-<PredExp> ::= <Expression> <PredBetweenOp> <Expression> AND <Expression>
-            | <Expression> IS <NullCheck>
-            | <Expression> <OptionalNot> LIKE <StringLiteral> <Escape>
-            | <Expression> <OptionalNot> IN <Tuple>
-            | <Expression> <PredBinaryOp> <Expression>
-            | EXISTS '(' <SelectGroup> ')'
-            | '(' <Predicate> ')'
+<PredExp> ::= <Expression> <PredBinaryOp> <Expression>
+            | '(' <OrExp> ')'
 
 <Escape> ::= ESCAPE <StringLiteral>
            |
 
-<Expression> ::= <MultExp> <AddBinaryOp> <Expression>
-               | <MultExp>
+<Expression> ::= <AddExp>
+
+<AddExp> ::= <MultExp> <AddBinaryOp> <AddExp>
+           | <MultExp>
 
 <AddBinaryOp> ::= '+'
                 | '-'
