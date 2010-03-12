@@ -487,6 +487,7 @@ OUTPUT = OUT(PUT)?
                    | <TableNameQualified>
                    | '(' <SelectGroup> ')'
                    | <Openxml>
+                   | <FunctionCall>
 
 <WriteableRowset> ::= <VariableName>
                     | <TableName>
@@ -977,11 +978,7 @@ OUTPUT = OUT(PUT)?
                | <ColumnItem>
 
 <ColumnItem> ::= <ColumnWildQualified>
-               | <FunctionCall> OVER '(' <PartitionByClause> ')' <OptionalAlias>
                | <Expression> <OptionalAlias>
-
-<PartitionByClause> ::= PARTITION_BY <ExpressionList>
-                      | <OrderClause>
 
 <Restriction> ::= ALL
                 | DISTINCT
@@ -993,7 +990,7 @@ OUTPUT = OUT(PUT)?
 
 <FromClause> ::= FROM <Source> <JoinChain>
 
-<FromClauseFull> ::= <FromClause> <WhereClause> <GroupClause> <HavingClause> <OrderClause> 
+<FromClauseFull> ::= <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> 
                |
 
 <JoinChain> ::= <Join> <JoinChain>
@@ -1025,7 +1022,9 @@ OUTPUT = OUT(PUT)?
                 |
 
 <OrderClause> ::= ORDER BY <OrderList>
-                |
+
+<OptionalOrderClause> ::= <OrderClause>
+                        |
 
 <OrderList> ::= <Order> ',' <OrderList>
               | <Order>
@@ -1125,8 +1124,12 @@ OUTPUT = OUT(PUT)?
              | <CastFunction>
              | <CoalesceFunction>
              | <FunctionCall>
+             | <FunctionCall> OVER '(' <PartitionByClause> ')'
              | <Case>
              
+<PartitionByClause> ::= PARTITION_BY <ExpressionList> <OptionalOrderClause>
+                      | <OrderClause>
+
 <FunctionCall> ::= <FunctionName> '(' ')'
                  | <FunctionName> '(' <ExpressionList> ')'
 
