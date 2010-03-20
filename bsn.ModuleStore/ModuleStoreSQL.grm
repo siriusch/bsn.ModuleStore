@@ -340,6 +340,9 @@ OUTPUT = OUT(PUT)?
 
 <StringLiteral> ::= StringLiteral
 
+<CollableStringLiteral> ::= <StringLiteral>
+                          | <StringLiteral> COLLATE <CollationName>
+
 <IntegerLiteral> ::= IntegerLiteral
                    | HexLiteral
 
@@ -347,7 +350,7 @@ OUTPUT = OUT(PUT)?
                   | RealLiteral
 
 <Literal> ::= <NumberLiteral>
-            | <StringLiteral>
+            | <CollableStringLiteral>
             | <NullLiteral>
 
 <Toggle> ::= ON
@@ -839,7 +842,7 @@ OUTPUT = OUT(PUT)?
 
 <ColumnKind> ::= <ColumnIdentity>
                | <ColumnRowguid>
-               | <ColumnDefault> <ColumnCollate>
+               | <OptionalColumnDefault> <OptionalCollate>
 
 <ColumnIdentity> ::= IDENTITY <ColumnIdentityRange>
 
@@ -848,12 +851,14 @@ OUTPUT = OUT(PUT)?
 
 <ColumnRowguid> ::= ROWGUIDCOL
 
-<ColumnDefault> ::= <NamedConstraint> DEFAULT '(' <Literal> ')'
-                  | DEFAULT <Literal> ! No idea if that is really right
-                  |
+<OptionalColumnDefault> ::= <NamedConstraint> DEFAULT '(' <Literal> ')'
+                          | DEFAULT <NumberLiteral>
+                          | DEFAULT <StringLiteral>
+                          | DEFAULT <NullLiteral>
+                          |
 
-<ColumnCollate> ::= COLLATE <CollationName>
-                  |
+<OptionalCollate> ::= COLLATE <CollationName>
+                    |
 
 <ColumnConstraintGroup> ::= <ColumnConstraintList>
                           |
@@ -1078,7 +1083,7 @@ OUTPUT = OUT(PUT)?
 <PredNull> ::= <Expression> IS <NullCheck>
              | <PredLike>
 
-<PredLike> ::= <Expression> <OptionalNot> LIKE <StringLiteral> <Escape>
+<PredLike> ::= <Expression> <OptionalNot> LIKE <CollableStringLiteral> <Escape>
              | <PredIn>
 
 <OptionalNot> ::= NOT
@@ -1100,7 +1105,7 @@ OUTPUT = OUT(PUT)?
 <PredExp> ::= <Expression> <PredBinaryOp> <Expression>
             | '(' <OrExp> ')'
 
-<Escape> ::= ESCAPE <StringLiteral>
+<Escape> ::= ESCAPE StringLiteral
            |
 
 <Expression> ::= <AddExp>
@@ -1150,12 +1155,15 @@ OUTPUT = OUT(PUT)?
 
 <CaseElseExpression> ::= ELSE <Expression>
                        |
-     
-<Value> ::= <Tuple>
-          | <ColumnNameQualified>
-          | <VariableName> ! CLR UDT property, field and methods are not yet implemented
-          | <SystemVariableName>
+
+<Value> ::= <CollableValue>
+          | <CollableValue> COLLATE <CollationName>
           | <Literal>
+     
+<CollableValue> ::= <Tuple>
+                  | <SystemVariableName>
+                  | <ColumnNameQualified>
+                  | <VariableName> ! CLR UDT property, field and methods are not yet implemented
 
 <Tuple> ::= '(' <SelectGroup> ')'
           | '(' <ExpressionList> ')'
