@@ -4,7 +4,7 @@
 
 "Name"         = 'T-SQL CREATE Statements'
 "Version"      = '2005'
-"About"        = 'Parser for T-SQL subset'
+"About"        = 'Parser for T-SQL subset to be supported by ModuleStore'
 "Author"       = 'Arsene von Wyss'
 
 "Start Symbol" = <StatementList>
@@ -340,8 +340,10 @@ OUTPUT = OUT(PUT)?
 
 <StringLiteral> ::= StringLiteral
 
-<CollableStringLiteral> ::= <StringLiteral>
-                          | <StringLiteral> COLLATE <CollationName>
+<OptionalCollate> ::= COLLATE <CollationName>
+                    |
+
+<CollableStringLiteral> ::= <StringLiteral> <OptionalCollate>
 
 <IntegerLiteral> ::= IntegerLiteral
                    | HexLiteral
@@ -857,9 +859,6 @@ OUTPUT = OUT(PUT)?
                           | DEFAULT <NullLiteral>
                           |
 
-<OptionalCollate> ::= COLLATE <CollationName>
-                    |
-
 <ColumnConstraintGroup> ::= <ColumnConstraintList>
                           |
 
@@ -1156,8 +1155,7 @@ OUTPUT = OUT(PUT)?
 <CaseElseExpression> ::= ELSE <Expression>
                        |
 
-<Value> ::= <CollableValue>
-          | <CollableValue> COLLATE <CollationName>
+<Value> ::= <CollableValue> <OptionalCollate>
           | <Literal>
      
 <CollableValue> ::= <Tuple>
