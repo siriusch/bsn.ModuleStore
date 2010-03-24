@@ -40,6 +40,9 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataObject.cs" />
@@ -51,6 +54,7 @@
     <Compile Include="SqlProcedureAttribute.cs" />
     <Compile Include="SqlSetupScriptAttribute.cs" />
     <Compile Include="SqlUpdateScriptAttribute.cs" />
+    <Compile Include="Sql\Definitions\ColumnFlags.cs" />
     <Compile Include="Sql\Definitions\ReferenceComparer.cs" />
     <Compile Include="Sql\Definitions\SqlColumn.cs" />
     <Compile Include="Sql\Definitions\SqlDecType.cs" />
@@ -66,7 +70,7 @@
     <Compile Include="Sql\Definitions\Trigger.cs" />
     <Compile Include="Sql\Inventory.cs" />
     <Compile Include="Sql\InventoryDatabaseReader.cs" />
-    <Compile Include="Sql\InventoryReader.cs" />
+    <Compile Include="Sql\InventoryPopulator.cs" />
     <Compile Include="Sql\InventoryScriptReader.cs" />
     <Compile Include="Sql\Definitions\Metadata.cs" />
     <Compile Include="Sql\Definitions\SqlObject.cs" />
@@ -74,6 +78,7 @@
     <Compile Include="Sql\Definitions\Table.cs" />
     <Compile Include="Sql\Definitions\TableColumn.cs" />
     <Compile Include="Sql\Definitions\View.cs" />
+    <Compile Include="Sql\ScriptParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

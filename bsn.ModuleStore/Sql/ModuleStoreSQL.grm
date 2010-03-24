@@ -250,6 +250,7 @@ FULLTEXT_INDEX = FULLTEXT{Whitespace}+INDEX
 WITH_FILLFACTOR = WITH{Whitespace}+FILLFACTOR
 READ_ONLY = READ{Whitespace}+ONLY
 NO_POPULATION = NO{Whitespace}+POPULATION
+NO_ACTION = NO{Whitespace}+ACTION
 TYPE_COLUMN = TYPE{Whitespace}+COLUMN
 PARTITION_BY = PARTITION{Whitespace}+BY
 INSTEAD_OF = INSTEAD{Whitespace}+OF
@@ -670,7 +671,8 @@ OUTPUT = OUT(PUT)?
 <AlterTableStatement> ::= ALTER TABLE <TableName> <AlterTableKind>
 
 <AlterTableKind> ::= <AlterColumn>
-                   | <AddColumnOrConstraint>
+                   | ADD <ColumnOrConstraintList>
+                   | <WithCheck> ADD <ColumnOrConstraintList>
                    | <DropColumn>
                    | <DropConstraint>
 
@@ -712,8 +714,6 @@ OUTPUT = OUT(PUT)?
 
 <CheckOrNocheck> ::= CHECK
                    | NOCHECK
-
-<AddColumnOrConstraint> ::= ADD <ColumnOrConstraintList>
 
 <ColumnOrConstraintList> ::= <ColumnOrConstraint> ',' <ColumnOrConstraintList>
                            | <ColumnOrConstraint>
@@ -832,13 +832,38 @@ OUTPUT = OUT(PUT)?
 ! This does not match the BNF in the SQL Books Online 2005, but seems to be the correct syntax
 <TableTypeDefinition> ::= <ColumnDefinition>
                         | <ColumnComputedDefinition>
-                        | CONSTRAINT <ConstraintName> <TableConstraintList>
-
-<TableConstraintList> ::= <TableConstraint> <TableConstraintList>
                         | <TableConstraint>
 
-<TableConstraint> ::= <ConstraintPrimaryKey> <ConstraintCluster> <ConstraintIndex>
+<TableConstraint> ::= <NamedConstraint> <TableConstraintType>
+!                    | <TableConstraintType> ! We don't want unnamed table constraints
+
+<TableConstraintType> ::= <ConstraintPrimaryKey> <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
+                    | <ConstraintForeignKey>
                     | <ConstraintCheck>
+
+<ConstraintForeignKey> ::= FOREIGN KEY <ForeignKeyColumnGroup> REFERENCES <TableName> <OptionalForeignKeyRefColumnGroup> <ForeignKeyOptions>
+
+<ForeignKeyOptions> ::= <OptionalNotForReplication>
+                      | <OnDeleteAction> <OptionalNotForReplication>
+                      | <OnUpdateAction> <OptionalNotForReplication>
+                      | <OnDeleteAction> <OnUpdateAction> <OptionalNotForReplication>
+
+<OnDeleteAction> ::= ON DELETE <Action>
+
+<OnUpdateAction> ::= ON UPDATE <Action>
+
+<Action> ::= NO_ACTION
+           | CASCADE
+           | SET NULL
+           | SET DEFAULT
+
+<OptionalForeignKeyRefColumnGroup> ::= <ForeignKeyColumnGroup>
+                                     |
+
+<ForeignKeyColumnGroup> ::= '(' <ForeignKeyColumnList> ')'
+
+<ForeignKeyColumnList> ::= <ColumnName> ',' <ForeignKeyColumnList>
+                         | <ColumnName>
 
 <ColumnDefinition> ::= <ColumnName> <ColumnTypeDefinition>
 
@@ -886,7 +911,7 @@ OUTPUT = OUT(PUT)?
                       | NONCLUSTERED
                       |
 
-<ConstraintCheck> ::= CHECK '(' <Expression> ')'
+<ConstraintCheck> ::= CHECK <OptionalNotForReplication> '(' <Expression> ')'
 
 <ConstraintIndex> ::= WITH_FILLFACTOR '=' <IntegerLiteral>
                     | <IndexOptionGroup>
