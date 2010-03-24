@@ -48,20 +48,35 @@
     <Compile Include="SqlProcedureAttribute.cs" />
     <Compile Include="SqlSetupScriptAttribute.cs" />
     <Compile Include="SqlUpdateScriptAttribute.cs" />
+    <Compile Include="Sql\Definitions\MetadataNameComparer.cs" />
+    <Compile Include="Sql\Definitions\NameCompareAttribute.cs" />
+    <Compile Include="Sql\Inventory.cs" />
+    <Compile Include="Sql\InventoryDatabaseReader.cs" />
+    <Compile Include="Sql\InventoryReader.cs" />
+    <Compile Include="Sql\InventoryScriptReader.cs" />
+    <Compile Include="Sql\Definitions\Metadata.cs" />
+    <Compile Include="Sql\Definitions\SqlObject.cs" />
+    <Compile Include="Sql\Definitions\SqlObjectKind.cs" />
+    <Compile Include="Sql\Definitions\Table.cs" />
+    <Compile Include="Sql\Definitions\TableColumn.cs" />
+    <Compile Include="Sql\Definitions\View.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <EmbeddedResource Include="ModuleStoreSQL.cgt" />
-    <None Include="ModuleStoreSQL.grm" />
+    <EmbeddedResource Include="Sql\ModuleStoreSQL.cgt" />
+    <None Include="Sql\ModuleStoreSQL.grm" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SqlConverter.xslt" />
+    <EmbeddedResource Include="Sql\SqlConverter.xslt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\bsn.GoldParser\bsn.GoldParser.csproj">
       <Project>{1A1A5AE9-7981-471C-9CC7-F7465E675A32}</Project>
       <Name>bsn.GoldParser</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Bootstrapper\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
