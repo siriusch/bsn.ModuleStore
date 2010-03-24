@@ -37,7 +37,8 @@ HexLiteral      = 0x{Hex Ch}+
 ! We use a simplified name convention, which does not allow user/schema, database or server to be specified
 Id             = {Letter}{Id Ch Standard}* | '['{Id Ch Extended}+']' | '"'{Id Ch Standard}*'"'
 LocalId        = '@'{Letter}{Id Ch Standard}*
-SystemId       = '@@'{Letter}{Id Ch Standard}*
+SystemVarId    = '@@'{Letter}{Id Ch Standard}*
+SystemFuncId   = '::'{Letter}{Id Ch Standard}*
 TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{Id Ch Standard}*'"'
 
 ! The reserved keywords as per MSDN: http://msdn.microsoft.com/en-us/library/ms189822.aspx
@@ -290,6 +291,7 @@ OUTPUT = OUT(PUT)?
 <CursorName> ::= Id
 
 <FunctionName> ::= Id
+                 | SystemFuncId
 
 <IndexName> ::= Id
 
@@ -320,7 +322,7 @@ OUTPUT = OUT(PUT)?
 
 <SchemaName> ::= Id
 
-<SystemVariableName> ::= SystemId
+<SystemVariableName> ::= SystemVarId
 
 <VariableName> ::= LocalId
 
