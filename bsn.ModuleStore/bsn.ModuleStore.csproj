@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>bsn.ModuleStore</RootNamespace>
     <AssemblyName>bsn.ModuleStore</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <KeyContainerName>bsn</KeyContainerName>
     <TargetFrameworkSubset>
@@ -35,6 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -48,8 +51,19 @@
     <Compile Include="SqlProcedureAttribute.cs" />
     <Compile Include="SqlSetupScriptAttribute.cs" />
     <Compile Include="SqlUpdateScriptAttribute.cs" />
+    <Compile Include="Sql\Definitions\ReferenceComparer.cs" />
+    <Compile Include="Sql\Definitions\SqlColumn.cs" />
+    <Compile Include="Sql\Definitions\SqlDecType.cs" />
+    <Compile Include="Sql\Definitions\SqlType.cs" />
+    <Compile Include="Sql\Definitions\SqlVarType.cs" />
+    <Compile Include="Sql\Definitions\XmlSchemaCollection.cs" />
+    <Compile Include="Sql\Definitions\FulltextIndex.cs" />
+    <Compile Include="Sql\Definitions\Function.cs" />
+    <Compile Include="Sql\Definitions\Index.cs" />
     <Compile Include="Sql\Definitions\MetadataNameComparer.cs" />
     <Compile Include="Sql\Definitions\NameCompareAttribute.cs" />
+    <Compile Include="Sql\Definitions\Procedure.cs" />
+    <Compile Include="Sql\Definitions\Trigger.cs" />
     <Compile Include="Sql\Inventory.cs" />
     <Compile Include="Sql\InventoryDatabaseReader.cs" />
     <Compile Include="Sql\InventoryReader.cs" />

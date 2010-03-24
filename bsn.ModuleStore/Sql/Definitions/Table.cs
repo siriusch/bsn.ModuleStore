@@ -1,8 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// (C) 2010 Arsène von Wyss / bsn
+using System;
+using System.Runtime.Serialization;
 
 namespace bsn.ModuleStore.Sql.Definitions {
-	public class Table {
+	[Serializable]
+	public class Table: SqlObject {
+		public Table(string name): base(name) {}
+		protected Table(SerializationInfo info, StreamingContext context): base(info, context) {}
+
+		public override SqlObjectKind Kind {
+			get {
+				return SqlObjectKind.Table;
+			}
+		}
 	}
 }

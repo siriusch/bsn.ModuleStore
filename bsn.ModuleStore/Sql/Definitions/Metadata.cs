@@ -8,8 +8,8 @@ namespace bsn.ModuleStore.Sql.Definitions {
 	/// The base class for metadata, such as SQL Objects.
 	/// </summary>
 	/// <typeparam name="TSelf">The type itself (e.g. <c>class X: Metadata&lt;X&gt;</c>.</typeparam>
-	/// <remarks>Whether names are case sensitive or not can be controlled by a <see cref="NameCompareAttribute"/> on the <typeparamref name="TSelf"/> type. If not specified, they are case sensitive.</remarks>
-	public abstract class Metadata<TSelf>: ISerializable, IEquatable<TSelf> where TSelf: Metadata<TSelf> {
+	/// <remarks>Whether names are case sensitive or not can be controlled by a <see cref="NameCompareAttribute"/> on the <typeparamref name="TSelf"/> type. If not specified, they are case insensitive.</remarks>
+	public abstract class Metadata<TSelf> : ISerializable, IEquatable<TSelf> where TSelf : Metadata<TSelf> {
 		private static readonly StringComparer nameComparer = ResolveNameComparer();
 
 		/// <summary>
@@ -27,7 +27,7 @@ namespace bsn.ModuleStore.Sql.Definitions {
 			foreach (NameCompareAttribute nameCompareAttribute in typeof(TSelf).GetCustomAttributes(typeof(NameCompareAttribute), true)) {
 				return nameCompareAttribute.GetComparer();
 			}
-			return StringComparer.Ordinal;
+			return StringComparer.OrdinalIgnoreCase;
 		}
 
 		private readonly string name;
@@ -48,11 +48,17 @@ namespace bsn.ModuleStore.Sql.Definitions {
 		/// </summary>
 		/// <param name="info">The info.</param>
 		/// <param name="context">The context.</param>
-		protected Metadata(SerializationInfo info, StreamingContext context) {
+		protected Metadata(SerializationInfo info, StreamingContext context): this(info, context, null) {
+		}
+
+		internal Metadata(SerializationInfo info, StreamingContext context, Func<string, string> nameProcessor) {
 			if (info == null) {
 				throw new ArgumentNullException("info");
 			}
 			name = info.GetString("name");
+			if (nameProcessor != null) {
+				name = nameProcessor(name);
+			}
 			Debug.Assert(!string.IsNullOrEmpty(name));
 		}
 
@@ -140,6 +146,16 @@ namespace bsn.ModuleStore.Sql.Definitions {
 		/// </returns>
 		protected virtual bool EqualsInternal(TSelf other) {
 			return true;
+		}
+
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents this instance.
+		/// </returns>
+		public override string ToString() {
+			return name;
 		}
 	}
 }

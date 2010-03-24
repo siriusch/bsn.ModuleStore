@@ -6,7 +6,6 @@ namespace bsn.ModuleStore.Sql.Definitions {
 	/// <summary>
 	/// The base class for all SQL object definitions
 	/// </summary>
-	[NameCompare(StringComparison.OrdinalIgnoreCase)]
 	public abstract class SqlObject: Metadata<SqlObject> {
 		protected SqlObject(string name): base(name) {
 		}
