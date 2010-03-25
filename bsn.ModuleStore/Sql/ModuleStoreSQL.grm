@@ -679,8 +679,8 @@ OUTPUT = OUT(PUT)?
 <AlterColumn> ::= ALTER COLUMN <ColumnName> <AlterColumnKind>
 
 <AlterColumnKind> ::= <ColumnTypeDefinition>
-                    | ADD <ColumnRowguid>
-                    | DROP <ColumnRowguid>
+                    | ADD <ConstraintRowguid>
+                    | DROP <ConstraintRowguid>
                     | ADD_PERSISTED
                     | DROP_PERSISTED
                     | ADD <NotForReplication>
@@ -719,7 +719,7 @@ OUTPUT = OUT(PUT)?
                            | <ColumnOrConstraint>
 
 <ColumnOrConstraint> ::= <ColumnDefinition>
-                       | <TableConstraint>
+                       | <NamedTableConstraint>
 
 <DropColumn> ::= DROP COLUMN <ColumnName>
 
@@ -832,21 +832,20 @@ OUTPUT = OUT(PUT)?
 ! This does not match the BNF in the SQL Books Online 2005, but seems to be the correct syntax
 <TableTypeDefinition> ::= <ColumnDefinition>
                         | <ColumnComputedDefinition>
-                        | <TableConstraint>
+                        | <NamedTableConstraint>
 
-<TableConstraint> ::= <NamedConstraint> <TableConstraintType>
-!                    | <TableConstraintType> ! We don't want unnamed table constraints
+<NamedTableConstraint> ::= <NamedConstraint> <TableConstraint>
+                         | <TableConstraint>
 
-<TableConstraintType> ::= <ConstraintPrimaryKey> <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
-                    | <ConstraintForeignKey>
-                    | <ConstraintCheck>
+<TableConstraint> ::= <ConstraintPrimaryKey> <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
+                   | <ConstraintForeignKey>
+                   | <ConstraintCheck>
 
-<ConstraintForeignKey> ::= FOREIGN KEY <ForeignKeyColumnGroup> REFERENCES <TableName> <OptionalForeignKeyRefColumnGroup> <ForeignKeyOptions>
+<ConstraintForeignKey> ::= FOREIGN KEY <ForeignKeyColumnGroup> REFERENCES <TableName> <OptionalForeignKeyRefColumnGroup> <ForeignKeyActionList>
 
-<ForeignKeyOptions> ::= <OptionalNotForReplication>
-                      | <OnDeleteAction> <OptionalNotForReplication>
-                      | <OnUpdateAction> <OptionalNotForReplication>
-                      | <OnDeleteAction> <OnUpdateAction> <OptionalNotForReplication>
+<ForeignKeyActionList> ::= <OnDeleteAction> <ForeignKeyActionList>
+                         | <OnUpdateAction> <ForeignKeyActionList>
+                         |
 
 <OnDeleteAction> ::= ON DELETE <Action>
 
@@ -867,37 +866,35 @@ OUTPUT = OUT(PUT)?
 
 <ColumnDefinition> ::= <ColumnName> <ColumnTypeDefinition>
 
-<ColumnTypeDefinition> ::= <TypeNameQualified> <ColumnKind> <ColumnConstraintGroup>
+<ColumnTypeDefinition> ::= <TypeNameQualified> <ColumnConstraintList>
 
-<ColumnKind> ::= <ColumnIdentity>
-               | <ColumnRowguid>
-               | <OptionalColumnDefault> <OptionalCollate>
+<ConstraintDefault> ::= DEFAULT '(' <Expression> ')'
 
-<ColumnIdentity> ::= IDENTITY <ColumnIdentityRange>
+<ConstraintCollate> ::= COLLATE <CollationName>
 
-<ColumnIdentityRange> ::= '(' IntegerLiteral ',' IntegerLiteral ')'
+<ConstraintRowguid> ::= ROWGUIDCOL
+
+<ConstraintIdentity> ::= IDENTITY <IdentityRange>
+
+<IdentityRange> ::= '(' IntegerLiteral ',' IntegerLiteral ')'
                         |
 
-<ColumnRowguid> ::= ROWGUIDCOL
-
-<OptionalColumnDefault> ::= <NamedConstraint> DEFAULT '(' <Literal> ')'
-                          | DEFAULT <NumberLiteral>
-                          | DEFAULT <StringLiteral>
-                          | DEFAULT <NullLiteral>
-                          |
-
-<ColumnConstraintGroup> ::= <ColumnConstraintList>
-                          |
-
-<ColumnConstraintList> ::= <ColumnConstraint> <ColumnConstraintList>
-                         | <ColumnConstraint>
-
-! The syntax for multiple the constraint checks is not clear from the grammar in the SQL Books 2005 - and where does CONSTRAINT <ConstraintName> fit in?
-<ColumnConstraint> ::= <NullCheck>
-                     | <ConstraintPrimaryKey> <ConstraintCluster> <ConstraintIndex>
-                     | <ConstraintCheck>
+<ColumnConstraintList> ::= <NamedColumnConstraint> <ColumnConstraintList>
+                         | 
 
 <NamedConstraint> ::= CONSTRAINT <ConstraintName>
+
+<NamedColumnConstraint> ::= <NamedConstraint> <ColumnConstraint>
+                          | <ColumnConstraint>
+                          | <ConstraintCollate>
+                          | <ConstraintRowguid>
+                          | <ConstraintIdentity>
+                          | <NullCheck>
+
+<ColumnConstraint> ::= <ConstraintPrimaryKey> <ConstraintCluster> <ConstraintIndex>
+                     | <ConstraintCheck>
+                     | <ConstraintDefault>
+                     | <ConstraintForeignKey>
 
 <ColumnComputedDefinition> ::= <ColumnName> AS <Expression>
 
