@@ -55,6 +55,7 @@
     <Compile Include="SqlSetupScriptAttribute.cs" />
     <Compile Include="SqlUpdateScriptAttribute.cs" />
     <Compile Include="Sql\Definitions\ColumnFlags.cs" />
+    <Compile Include="Sql\Definitions\Constraint.cs" />
     <Compile Include="Sql\Definitions\ReferenceComparer.cs" />
     <Compile Include="Sql\Definitions\SqlColumn.cs" />
     <Compile Include="Sql\Definitions\SqlDecType.cs" />

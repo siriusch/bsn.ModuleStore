@@ -4,6 +4,7 @@ using System;
 namespace bsn.ModuleStore.Sql.Definitions {
 	public enum SqlObjectKind {
 		None,
+		Constraint,
 		FulltextIndex,
 		Function,
 		Index,
