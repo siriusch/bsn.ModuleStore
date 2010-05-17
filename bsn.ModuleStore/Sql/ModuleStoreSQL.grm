@@ -275,7 +275,7 @@ OUTPUT = OUT(PUT)?
                         | <TableName> '.' <ColumnName>
                         | <VariableName> '.' <ColumnName>
 
-<ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>
+<ColumnNameList> ::= <ColumnNameList> ',' <ColumnName>
                    | <ColumnName>
 
 <ColumnWild> ::= '*'
@@ -770,12 +770,8 @@ OUTPUT = OUT(PUT)?
 <IndexOptionList> ::= <IndexOption> ',' <IndexOptionList>
                     | <IndexOption>
 
-<IndexOption> ::= <IndexOptionInteger>
-                | <IndexOptionToggle>
-
-<IndexOptionInteger> ::= Id '=' <IntegerLiteral>
-
-<IndexOptionToggle> ::= Id '=' <Toggle>
+<IndexOption> ::= Id '=' <IntegerLiteral>
+                | Id '=' <Toggle>
 
 <IndexUsing> ::= USING_XML_INDEX <IndexName> <IndexFor>
                |

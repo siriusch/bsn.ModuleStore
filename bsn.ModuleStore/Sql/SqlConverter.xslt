@@ -5,6 +5,12 @@
 	<!-- some of the rules can be empty (e.g. "optional"), therefore this key contains all nonterminal elements which do contain any terminals -->
 	<xsl:key name="hasTerminal" match="//n:*[descendant::t:*]" use="generate-id()" />
 
+	<xsl:template match="@*|node()" priority="200">
+		<xsl:copy>
+			<xsl:apply-templates select="@*|node()" />
+		</xsl:copy>
+	</xsl:template>
+	
 	<!-- the start rule is StatementList -->
 	<xsl:template match="/n:StatementList" priority="100">
 		<Sql>

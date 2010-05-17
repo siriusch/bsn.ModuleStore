@@ -12,8 +12,8 @@
     <AssemblyName>bsn.ModuleStore.Test</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-		<KeyContainerName>bsn</KeyContainerName>
-	</PropertyGroup>
+    <KeyContainerName>bsn</KeyContainerName>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sql\InventoryPopulatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\bsn.ModuleStore\bsn.ModuleStore.csproj">
