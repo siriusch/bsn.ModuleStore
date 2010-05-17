@@ -7,6 +7,8 @@
 "About"        = 'Parser for T-SQL subset to be supported by ModuleStore'
 "Author"       = 'Arsene von Wyss'
 
+"Character Mapping" = 'Unicode'
+
 "Start Symbol" = <StatementList>
 
 ! CLR UDTs are missing, but may be implemented later
