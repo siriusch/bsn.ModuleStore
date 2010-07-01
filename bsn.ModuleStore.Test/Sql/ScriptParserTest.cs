@@ -7,6 +7,10 @@ using NUnit.Framework;
 
 namespace bsn.ModuleStore.Sql {
 	[TestFixture]
-	public class InventoryPopulatorTest: AssertionHelper {
+	public class ScriptParserTest: AssertionHelper {
+		[Test]
+		public void LoadGrammar() {
+			Expect(ScriptParser.LoadGrammar(), Not.Null);
+		}
 	}
 }

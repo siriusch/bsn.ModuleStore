@@ -8,7 +8,7 @@
     <ProjectGuid>{CC654D7A-DF9B-4BF9-AFA5-021A178D12BE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>bsn.ModuleStore.Test</RootNamespace>
+    <RootNamespace>bsn.ModuleStore</RootNamespace>
     <AssemblyName>bsn.ModuleStore.Test</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -49,8 +49,14 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sql\InventoryPopulatorTest.cs" />
+    <Compile Include="Sql\ScriptParserTest.cs" />
+    <Compile Include="Sql\Script\SemanticActionsTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\bsn.GoldParser\bsn.GoldParser.csproj">
+      <Project>{1A1A5AE9-7981-471C-9CC7-F7465E675A32}</Project>
+      <Name>bsn.GoldParser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\bsn.ModuleStore\bsn.ModuleStore.csproj">
       <Project>{085ABCD3-9471-40F7-AC15-5A1F5E369714}</Project>
       <Name>bsn.ModuleStore</Name>

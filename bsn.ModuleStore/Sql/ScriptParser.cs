@@ -5,10 +5,15 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 
+using bsn.GoldParser.Grammar;
 using bsn.GoldParser.Xml;
 
 namespace bsn.ModuleStore.Sql {
 	public static class ScriptParser {
+		internal static CompiledGrammar LoadGrammar() {
+			return CompiledGrammar.Load(typeof(ScriptParser), "ModuleStoreSQL.cgt");
+		}
+
 		private static readonly GrammarXmlProcessor processor = GrammarXmlProcessor.Create(typeof(InventoryPopulator), "ModuleStoreSQL.cgt", "SqlConverter.xslt");
 
 		public static XElement ParseSql(TextReader reader) {

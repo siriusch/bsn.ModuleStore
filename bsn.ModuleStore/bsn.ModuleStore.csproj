@@ -80,6 +80,17 @@
     <Compile Include="Sql\Definitions\TableColumn.cs" />
     <Compile Include="Sql\Definitions\View.cs" />
     <Compile Include="Sql\ScriptParser.cs" />
+    <Compile Include="Sql\Script\Identifier.cs" />
+    <Compile Include="Sql\Script\InsignificantToken.cs" />
+    <Compile Include="Sql\Script\Qualified.cs" />
+    <Compile Include="Sql\Script\Sequence.cs" />
+    <Compile Include="Sql\Script\Literal.cs" />
+    <Compile Include="Sql\Script\Name.cs" />
+    <Compile Include="Sql\Script\NotToken.cs" />
+    <Compile Include="Sql\Script\OperationToken.cs" />
+    <Compile Include="Sql\Script\ReservedWord.cs" />
+    <Compile Include="Sql\Script\SqlToken.cs" />
+    <Compile Include="Sql\Script\TypeName.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
