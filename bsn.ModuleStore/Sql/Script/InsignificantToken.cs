@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using bsn.GoldParser.Semantic;
 
@@ -145,9 +145,9 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("XML_INDEX")]
 	[Terminal("XML_SCHEMA_COLLECTION")]
 	public class InsignificantToken: SqlToken {
-		[Rule("<OptionalAs> ::= AS", AllowTruncation = true)]
+		[Rule("<OptionalAs> ::= AS", AllowTruncationForConstructor = true)]
 		[Rule("<OptionalAs> ::=")]
-		[Rule("<Terminator> ::= <Terminator> ';'", AllowTruncation=true)]
+		[Rule("<Terminator> ::= <Terminator> ';'", AllowTruncationForConstructor=true)]
 		public InsignificantToken() {
 		}
 	}
