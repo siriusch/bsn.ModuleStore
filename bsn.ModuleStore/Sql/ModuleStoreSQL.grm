@@ -1,11 +1,11 @@
-! -----------------------------------------------------------------------------------
+﻿! -----------------------------------------------------------------------------------
 ! T-SQL Script Analyzer
 ! -----------------------------------------------------------------------------------
 
 "Name"         = 'T-SQL CREATE Statements'
 "Version"      = '2005'
 "About"        = 'Parser for T-SQL subset to be supported by ModuleStore'
-"Author"       = 'Arsene von Wyss'
+"Author"       = 'Arsène von Wyss'
 
 "Character Mapping" = 'Unicode'
 
