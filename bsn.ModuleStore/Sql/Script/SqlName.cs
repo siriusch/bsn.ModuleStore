@@ -3,20 +3,20 @@ using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class SqlName: SqlToken {
-		private readonly string name;
+		private readonly string value;
 
 		protected SqlName(string name) {
-			this.name = name;
+			value = name;
 		}
 
 		public string Value {
 			get {
-				return name;
+				return value;
 			}
 		}
 
-		public override string ToString() {
-			return name;
+		public override void WriteTo(System.IO.TextWriter writer) {
+			writer.Write(value);
 		}
 	}
 }

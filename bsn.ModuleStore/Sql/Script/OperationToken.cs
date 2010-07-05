@@ -22,8 +22,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.operation = operation;
 		}
 
-		public override string ToString() {
-			return base.ToString();
+		public override void WriteTo(System.IO.TextWriter writer) {
+			writer.Write(operation);
 		}
 	}
 }

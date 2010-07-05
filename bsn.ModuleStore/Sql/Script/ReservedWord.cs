@@ -90,8 +90,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.text = text;
 		}
 
-		public override string ToString() {
-			return text;
+		public override void WriteTo(System.IO.TextWriter writer) {
+			writer.Write(text);
 		}
 	}
 }

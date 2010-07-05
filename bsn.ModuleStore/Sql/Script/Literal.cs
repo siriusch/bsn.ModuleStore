@@ -16,8 +16,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override string ToString() {
-			return value.ToString(NumberFormatInfo.InvariantInfo);
+		public override void WriteTo(System.IO.TextWriter writer) {
+			writer.Write(value.ToString(NumberFormatInfo.InvariantInfo));
 		}
 	}
 }

@@ -10,18 +10,18 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly T item;
 		private readonly Sequence<T> next;
 
-		[Rule("<CursorOptionList> ::=", typeof(SqlIdentifier))]
+		[Rule("<CursorOptionList> ::=", typeof(Identifier))]
 		public Sequence(): this(null, null) {}
 
-		[Rule("<ColumnNameList> ::= <ColumnName>", typeof(SqlName))]
-		[Rule("<StatementList> ::= <StatementGroup>", typeof(StatementGroup))]
-		[Rule("<StatementList> ::= <StatementGroup> <Terminator>", typeof(StatementGroup), AllowTruncationForConstructor = true)]
+		[Rule("<ColumnNameList> ::= <ColumnName>", typeof(ColumnName))]
+		[Rule("<StatementList> ::= <StatementGroup>", typeof(SqlStatement))]
+		[Rule("<StatementList> ::= <StatementGroup> <Terminator>", typeof(SqlStatement), AllowTruncationForConstructor = true)]
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn>", typeof(OpenxmlColumn))]
 		public Sequence(T item): this(item, null) {}
 
-		[Rule("<ColumnNameList> ::= <ColumnNameList> ',' <ColumnName>", typeof(SqlName), ConstructorParameterMapping = new[] {2, 0})]
-		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(StatementGroup), ConstructorParameterMapping = new[] {0, 2})]
-		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(SqlIdentifier))]
+		[Rule("<ColumnNameList> ::= <ColumnNameList> ',' <ColumnName>", typeof(ColumnName), ConstructorParameterMapping = new[] {2, 0})]
+		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(SqlStatement), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>", typeof(OpenxmlColumn), ConstructorParameterMapping = new[] {0, 2})]
 		public Sequence(T item, Sequence<T> next) {
 			this.next = next;
@@ -50,6 +50,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		IEnumerator IEnumerable.GetEnumerator() {
 			return GetEnumerator();
+		}
+
+		public override void WriteTo(System.IO.TextWriter writer) {
+			throw new NotSupportedException();
 		}
 	}
 }

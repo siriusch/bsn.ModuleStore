@@ -1,11 +1,11 @@
-﻿! -----------------------------------------------------------------------------------
+! -----------------------------------------------------------------------------------
 ! T-SQL Script Analyzer
 ! -----------------------------------------------------------------------------------
 
 "Name"         = 'T-SQL CREATE Statements'
 "Version"      = '2005'
 "About"        = 'Parser for T-SQL subset to be supported by ModuleStore'
-"Author"       = 'Arsène von Wyss'
+"Author"       = 'Ars?ne von Wyss'
 
 "Character Mapping" = 'Unicode'
 
@@ -231,6 +231,7 @@ RETURNS_NULL_ON_NULL_INPUT = RETURNS{Whitespace}+NULL{Whitespace}+ON{Whitespace}
 CALLED_ON_NULL_INPUT = CALLED{Whitespace}+ON{Whitespace}+NULL{Whitespace}+INPUT
 FOR_XML = FOR{Whitespace}+XML
 FOR_PATH = FOR{Whitespace}+PATH
+FOR_UPDATE = FOR{Whitespace}+UPDATE
 FOR_VALUE = FOR{Whitespace}+VALUE
 FOR_PROPERTY = FOR{Whitespace}+PROPERTY
 XML_INDEX = XML{Whitespace}+INDEX
@@ -459,15 +460,17 @@ OUTPUT = OUT(PUT)?
 ! DECLARE and Cursor statements
 ! =============================================================================
 
-<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> <DeclareType>
-                     | DECLARE <VariableName> CURSOR
-                     | <DeclareCursor> <CursorUpdate>
-                     | <DeclareCursor>
+<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> TABLE <TableTypeDefinitionGroup>
+                     | DECLARE <DeclareItemList>
+                     | DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement>
+                     | DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement> <CursorUpdate>
 
-<DeclareCursor> ::= DECLARE <CursorName> CURSOR <CursorOptionList> FOR <CTEGroup> <SelectGroup>
+<DeclareItem> ::= <VariableName> CURSOR
+                | <VariableName> <OptionalAs> <TypeNameQualified>
+                | <VariableName> <OptionalAs> <TypeNameQualified> '=' <Expression>
 
-<DeclareType> ::= <TypeNameQualified>
-                | TABLE <TableTypeDefinitionGroup>
+<DeclareItemList> ::= <DeclareItemList> ',' <DeclareItem>
+                    | <DeclareItem>
 
 <CursorOptionList> ::= Id <CursorOptionList>
                      |
@@ -476,14 +479,14 @@ OUTPUT = OUT(PUT)?
 
 <OpenStatement> ::= OPEN <GlobalOrLocalCursor>
 
-<DeallocateStatement> ::= DEALLOCATE  <GlobalOrLocalCursor>
+<DeallocateStatement> ::= DEALLOCATE <GlobalOrLocalCursor>
 
 <GlobalOrLocalCursor> ::= <VariableName>
                         | <CursorName>
                         | Id <CursorName> ! Id should be GLOBAL
 
-<CursorUpdate> ::= FOR UPDATE OF <ColumnNameList>
-                 | FOR UPDATE
+<CursorUpdate> ::= FOR_UPDATE OF <ColumnNameList>
+                 | FOR_UPDATE
                  | READ_ONLY
 
 ! =============================================================================
