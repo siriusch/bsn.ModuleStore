@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class AnyStatement: SqlStatement {
 		private readonly string statementText;
 
-		[Rule("Id <ExpressionList>")]
+		[Rule("<AnyStatement> ::= Id <ExpressionList>")]
 		public AnyStatement(Identifier identifier, Sequence<Expression> expressions) {
 			using (StringWriter statementWriter = CreateWriter()) {
 				statementWriter.Write(identifier.Value);

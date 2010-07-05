@@ -4,7 +4,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class WhileStatement: SqlStatement {
-		[Rule("")]
-		public WhileStatement() {}
+		[Rule("<WhileStatement> ::= WHILE <Expression> <StatementGroup>", ConstructorParameterMapping = new[] {1, 2})]
+		public WhileStatement(Expression expression, SqlStatement statement) {}
 	}
 }

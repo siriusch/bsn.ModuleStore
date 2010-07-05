@@ -4,7 +4,22 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class ReturnStatement: SqlStatement {
-		[Rule("")]
-		public ReturnStatement() {}
+		private readonly Expression expression;
+
+		[Rule("<ReturnStatement> ::= RETURN")]
+		public ReturnStatement(): this(null) {}
+
+		[Rule("<ReturnStatement> ::= RETURN <Expression>")]
+		public ReturnStatement(Expression expression) {
+			this.expression = expression;
+		}
+
+		public override void WriteTo(System.IO.TextWriter writer) {
+			writer.Write("RETURN");
+			if (expression != null) {
+				writer.Write(' ');
+				expression.WriteTo(writer);
+			}
+		}
 	}
 }

@@ -96,8 +96,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("NONCLUSTERED")]
 	[Terminal("NULL")]
 	[Terminal("OF")]
-	[Terminal("OFF")]
-	[Terminal("ON")]
 	[Terminal("OPEN")]
 	[Terminal("OPENXML")]
 	[Terminal("ORDER")]

@@ -436,12 +436,10 @@ OUTPUT = OUT(PUT)?
 
 <GotoStatement> ::= GOTO <LabelName>
 
-<IfStatement> ::= IF <Predicate> THEN <IfElseStatement>
-                | IF <Predicate> <Statement>
-
 ! To avoid the hanging ELSE problem/ambiguity, we just require a block - even if this is more restrictive than T-SQL
-<IfElseStatement> ::= <StatementBlock> ELSE <StatementGroup>
-                    | <StatementGroup>
+<IfStatement> ::= IF <Predicate> THEN <StatementBlock> ELSE <StatementGroup>
+                | IF <Predicate> THEN <StatementGroup>
+                | IF <Predicate> <Statement>
 
 <ReturnStatement> ::= RETURN
                     | RETURN <Expression>
