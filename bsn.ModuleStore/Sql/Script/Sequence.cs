@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +10,20 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly T item;
 		private readonly Sequence<T> next;
 
-		[Rule("<ColumnNameList> ::= <ColumnName>", typeof(Name))]
+		[Rule("<CursorOptionList> ::=", typeof(SqlIdentifier))]
+		public Sequence(): this(null, null) {}
+
+		[Rule("<ColumnNameList> ::= <ColumnName>", typeof(SqlName))]
+		[Rule("<StatementList> ::= <StatementGroup>", typeof(StatementGroup))]
+		[Rule("<StatementList> ::= <StatementGroup> <Terminator>", typeof(StatementGroup), AllowTruncationForConstructor = true)]
+		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn>", typeof(OpenxmlColumn))]
 		public Sequence(T item): this(item, null) {}
 
-		[Rule("<ColumnNameList> ::= <ColumnNameList> ',' <ColumnName>", typeof(Name))]
-		public Sequence(Sequence<T> next, InsignificantToken dummy, T item): this(item, next) {}
-
-		private Sequence(T item, Sequence<T> next) {
-			if (item == null) {
-				throw new ArgumentNullException("item");
-			}
+		[Rule("<ColumnNameList> ::= <ColumnNameList> ',' <ColumnName>", typeof(SqlName), ConstructorParameterMapping = new[] {2, 0})]
+		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(StatementGroup), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(SqlIdentifier))]
+		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>", typeof(OpenxmlColumn), ConstructorParameterMapping = new[] {0, 2})]
+		public Sequence(T item, Sequence<T> next) {
 			this.next = next;
 			this.item = item;
 		}
@@ -29,6 +33,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				return item;
 			}
 		}
+
 		public Sequence<T> Next {
 			get {
 				return next;
@@ -37,7 +42,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public IEnumerator<T> GetEnumerator() {
 			for (Sequence<T> sequence = this; sequence != null; sequence = sequence.Next) {
-				yield return sequence.Item;
+				if (sequence.Item != null) {
+					yield return sequence.Item;
+				}
 			}
 		}
 

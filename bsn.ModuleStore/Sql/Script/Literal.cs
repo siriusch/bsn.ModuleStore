@@ -1,30 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-
-using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	[Terminal("HexLiteral")]
-	[Terminal("IntegerLiteral")]
-	[Terminal("RealLiteral")]
-	[Terminal("StringLiteral")]
-	public class Literal: SqlToken {
-		private readonly string value;
+	public abstract class Literal<T>: SqlToken where T: IConvertible {
+		private readonly T value;
 
-		public Literal(string value) {
+		protected Literal(T value) {
 			this.value = value;
 		}
 
-		public string Value {
+		public T Value {
 			get {
 				return value;
 			}
 		}
 
 		public override string ToString() {
-			return Value;
+			return value.ToString(NumberFormatInfo.InvariantInfo);
 		}
 	}
 }

@@ -147,6 +147,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class InsignificantToken: SqlToken {
 		[Rule("<OptionalAs> ::= AS", AllowTruncationForConstructor = true)]
 		[Rule("<OptionalAs> ::=")]
+		[Rule("<Terminator> ::= ';'", AllowTruncationForConstructor = true)]
 		[Rule("<Terminator> ::= <Terminator> ';'", AllowTruncationForConstructor = true)]
 		public InsignificantToken() {}
 	}
