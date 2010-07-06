@@ -1,11 +1,11 @@
-! -----------------------------------------------------------------------------------
+﻿! -----------------------------------------------------------------------------------
 ! T-SQL Script Analyzer
 ! -----------------------------------------------------------------------------------
 
 "Name"         = 'T-SQL CREATE Statements'
 "Version"      = '2005'
 "About"        = 'Parser for T-SQL subset to be supported by ModuleStore'
-"Author"       = 'Ars?ne von Wyss'
+"Author"       = 'Arsène von Wyss'
 
 "Character Mapping" = 'Unicode'
 
@@ -25,23 +25,24 @@ Comment Line  = '--'
 ! Terminals
 ! =============================================================================
 
-{String Ch}        = {Printable} - ['']
-{Id Ch Standard}   = {Alphanumeric} + [_]
-{Id Ch Extended}   = {Printable} - ['['#']']
-{Hex Ch}           = [0123456789ABCDEF]
-{Nonspace Ch}      = {Printable} - {Whitespace}
+{String Ch}               = {Printable} - ['']
+{Id Ch Standard}          = {Alphanumeric} + [_]
+{Id Ch Delimited Bracket} = {Printable Extended} - ['['#']']
+{Id Ch Delimited Quote}   = {Printable Extended} - ["]
+{Hex Ch}                  = [0123456789ABCDEF]
+{Nonspace Ch}             = {Printable} - {Whitespace}
 
-StringLiteral   = N?(''{String Ch}*'')+
-IntegerLiteral  = {Digit}+
-RealLiteral     = {Digit}+'.'{Digit}+
-HexLiteral      = 0x{Hex Ch}+
+StringLiteral  = N?(''{String Ch}*'')+
+IntegerLiteral = {Digit}+
+RealLiteral    = {Digit}+'.'{Digit}+
+HexLiteral     = 0x{Hex Ch}+
 
 ! We use a simplified name convention, which does not allow user/schema, database or server to be specified
-Id             = {Letter}{Id Ch Standard}* | '['{Id Ch Extended}+']' | '"'{Id Ch Standard}*'"'
-LocalId        = '@'{Letter}{Id Ch Standard}*
-SystemVarId    = '@@'{Letter}{Id Ch Standard}*
-SystemFuncId   = '::'{Letter}{Id Ch Standard}*
-TempTableId    = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Extended}+']' | '"#'{Id Ch Standard}*'"'
+Id           = {Letter}{Id Ch Standard}* | '['{Id Ch Delimited Bracket}+']' | '"'{Id Ch Delimited Quote}+'"'
+LocalId      = '@'{Letter}{Id Ch Standard}*
+SystemVarId  = '@@'{Letter}{Id Ch Standard}*
+SystemFuncId = '::'{Letter}{Id Ch Standard}*
+TempTableId  = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Delimited Bracket}+']' | '"#'{Id Ch Delimited Quote}+'"'
 
 ! The reserved keywords as per MSDN: http://msdn.microsoft.com/en-us/library/ms189822.aspx
 ! By specifying them explicitly here, we should not see those in the log as implicit when generating the grammar tables, and the unsed ones are still reserved keywords

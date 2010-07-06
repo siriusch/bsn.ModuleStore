@@ -89,6 +89,11 @@
     <Compile Include="Sql\Script\ColumnName.cs" />
     <Compile Include="Sql\Script\ConstraintName.cs" />
     <Compile Include="Sql\Script\ContinueStatement.cs" />
+    <Compile Include="Sql\Script\CursorVariableDeclaration.cs" />
+    <Compile Include="Sql\Script\DeclareVariableStatement.cs" />
+    <Compile Include="Sql\Script\SelectStatement.cs" />
+    <Compile Include="Sql\Script\SqlQuotedName.cs" />
+    <Compile Include="Sql\Script\TypedVariableDeclaration.cs" />
     <Compile Include="Sql\Script\UpdateMode.cs" />
     <Compile Include="Sql\Script\Predicate.cs" />
     <Compile Include="Sql\Script\SqlCreateStatement.cs" />
@@ -141,6 +146,7 @@
     <Compile Include="Sql\Script\TriggerName.cs" />
     <Compile Include="Sql\Script\TryCatchStatement.cs" />
     <Compile Include="Sql\Script\TypeName.cs" />
+    <Compile Include="Sql\Script\VariableDeclaration.cs" />
     <Compile Include="Sql\Script\VariableName.cs" />
     <Compile Include="Sql\Script\ViewName.cs" />
     <Compile Include="Sql\Script\WaitforStatement.cs" />

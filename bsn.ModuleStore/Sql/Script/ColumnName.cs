@@ -3,7 +3,7 @@ using System;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ColumnName: SqlName {
+	public class ColumnName: SqlQuotedName {
 		[Rule("<ColumnWild> ::= '*'", AllowTruncationForConstructor = true)]
 		public ColumnName(): this("*") {}
 
