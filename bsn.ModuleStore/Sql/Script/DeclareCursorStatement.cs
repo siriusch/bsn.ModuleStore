@@ -9,11 +9,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		private static readonly Identifier globalIdentifier = new Identifier("GLOBAL");
 
 		private readonly SelectStatement selectStatement;
-		private readonly CursorUpdateMode cursorUpdate;
+		private readonly UpdateMode cursorUpdate;
 		private readonly List<string> cursorOptions;
 
-		[Rule("<DeclareStatement> ::= DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement> <CursorUpdate>")]
-		public DeclareCursorStatement(CursorName cursorName, Sequence<Identifier> cursorOptions, SelectStatement selectStatement, CursorUpdateMode cursorUpdate): base(cursorOptions.Contains(globalIdentifier) ? cursorName.AsGlobal() : cursorName) {
+		[Rule("<DeclareStatement> ::= DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement> <CursorUpdate>", ConstructorParameterMapping=new[] { 1, 3, 5, 6 })]
+		public DeclareCursorStatement(CursorName cursorName, Sequence<Identifier> cursorOptions, SelectStatement selectStatement, UpdateMode cursorUpdate): base(cursorOptions.Contains(globalIdentifier) ? cursorName.AsGlobal() : cursorName) {
 			if (selectStatement == null) {
 				throw new ArgumentNullException("selectStatement");
 			}

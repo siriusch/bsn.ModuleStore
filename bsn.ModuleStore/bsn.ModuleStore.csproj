@@ -89,7 +89,7 @@
     <Compile Include="Sql\Script\ColumnName.cs" />
     <Compile Include="Sql\Script\ConstraintName.cs" />
     <Compile Include="Sql\Script\ContinueStatement.cs" />
-    <Compile Include="Sql\Script\CursorUpdateMode.cs" />
+    <Compile Include="Sql\Script\UpdateMode.cs" />
     <Compile Include="Sql\Script\Predicate.cs" />
     <Compile Include="Sql\Script\SqlCreateStatement.cs" />
     <Compile Include="Sql\Script\CursorName.cs" />

@@ -4,7 +4,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class OpenStatement: SqlCursorStatement {
-		[Rule("<OpenStatement> ::= OPEN <GlobDealOrLocalCursor>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<OpenStatement> ::= OPEN <GlobalOrLocalCursor>", ConstructorParameterMapping = new[] {1})]
 		public OpenStatement(CursorName cursorName): base(cursorName) {}
 
 		public override void WriteTo(System.IO.TextWriter writer) {

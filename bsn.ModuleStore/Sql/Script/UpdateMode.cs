@@ -5,18 +5,18 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("READ_ONLY")]
 	[Terminal("FOR_UPDATE")]
-	public class CursorUpdateMode: SqlToken {
+	public class UpdateMode: SqlToken {
 		private static readonly Regex rxReadOnly = new Regex(@"READ\s+ONLY", RegexOptions.CultureInvariant|RegexOptions.IgnoreCase);
 
 		private readonly string mode;
 		private readonly Sequence<ColumnName> columns;
 
-		public CursorUpdateMode(string mode) {
+		public UpdateMode(string mode) {
 			this.mode = rxReadOnly.IsMatch(mode) ? "READ ONLY" : "FOR UPDATE";
 		}
 
 		[Rule("<CursorUpdate> ::= FOR_UPDATE OF <ColumnNameList>", ConstructorParameterMapping = new[] {2})]
-		public CursorUpdateMode(Sequence<ColumnName> columns): this("FOR UPDATE") {
+		public UpdateMode(Sequence<ColumnName> columns): this("FOR UPDATE") {
 			this.columns = columns;
 		}
 

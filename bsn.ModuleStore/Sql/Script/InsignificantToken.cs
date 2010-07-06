@@ -109,7 +109,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("PROCEDURE")]
 	[Terminal("PUBLIC")]
 	[Terminal("RAISERROR")]
-	[Terminal("READ_ONLY")]
 	[Terminal("REFERENCES")]
 	[Terminal("REPLICATION")]
 	[Terminal("RETURN")]

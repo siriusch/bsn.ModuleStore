@@ -14,10 +14,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public CursorName(Identifier identifier): this(identifier.Value, false) {}
 
 		[Rule("<GlobalOrLocalCursor> ::= <VariableName>")]
-		public CursorName(VariableName variableName) : this(variableName.Value, false) {
-		}
+		public CursorName(VariableName variableName) : this(variableName.Value, false) {}
 
-		[Rule("<CursorName> ::= Id")]
+		[Rule("<GlobalOrLocalCursor> ::= Id <CursorName>")]
 		public CursorName(Identifier global, CursorName name) : this(name.Value, true) {
 			if (!string.Equals(global.Value, "GLOBAL", StringComparison.OrdinalIgnoreCase)) {
 				throw new ArgumentException("GLOBAl expected", "global");
