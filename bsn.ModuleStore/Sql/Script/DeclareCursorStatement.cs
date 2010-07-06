@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly UpdateMode cursorUpdate;
 		private readonly SelectStatement selectStatement;
 
-		[Rule("<DeclareStatement> ::= DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement>", ConstructorParameterMapping = new[] {1, 3, 5, 6})]
+		[Rule("<DeclareStatement> ::= DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement>", ConstructorParameterMapping = new[] {1, 3, 5})]
 		public DeclareCursorStatement(CursorName cursorName, Sequence<Identifier> cursorOptions, SelectStatement selectStatement): this(cursorName, cursorOptions, selectStatement, null) {}
 
 		[Rule("<DeclareStatement> ::= DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement> <CursorUpdate>", ConstructorParameterMapping = new[] {1, 3, 5, 6})]

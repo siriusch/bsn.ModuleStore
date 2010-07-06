@@ -3,7 +3,9 @@ using System.Globalization;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class Literal<T>: SqlToken where T: IConvertible {
+	public abstract class Literal: SqlToken {}
+
+	public abstract class Literal<T>: Literal where T: IConvertible {
 		private readonly T value;
 
 		protected Literal(T value) {

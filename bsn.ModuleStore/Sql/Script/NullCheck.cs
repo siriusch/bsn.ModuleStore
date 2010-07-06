@@ -7,10 +7,10 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class NullCheck: SqlToken {
 		private readonly bool not;
 
-		[Rule("<NullCheck> ::= <NullLiteral>", AllowTruncationForConstructor = true)]
+		[Rule("<NullCheck> ::= NULL", AllowTruncationForConstructor = true)]
 		public NullCheck(): this(null) {}
 
-		[Rule("<NullCheck> ::= NOT <NullLiteral>", AllowTruncationForConstructor = true)]
+		[Rule("<NullCheck> ::= NOT NULL", AllowTruncationForConstructor = true)]
 		public NullCheck(NotToken not) {
 			this.not = not != null;
 		}

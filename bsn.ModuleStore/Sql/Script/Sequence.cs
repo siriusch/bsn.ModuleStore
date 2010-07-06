@@ -18,6 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<StatementList> ::= <StatementGroup> <Terminator>", typeof(SqlStatement), AllowTruncationForConstructor = true)]
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn>", typeof(OpenxmlColumn))]
 		[Rule("<DeclareItemList> ::= <DeclareItem>", typeof(VariableDeclaration), AllowTruncationForConstructor = true)]
+		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlToken))]
 		public Sequence(T item) : this(item, null) {
 		}
 
@@ -26,6 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>", typeof(OpenxmlColumn), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<DeclareItemList> ::= <DeclareItemList> ',' <DeclareItem>", typeof(VariableDeclaration), ConstructorParameterMapping = new[] {2, 0})]
+		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlToken))]
 		public Sequence(T item, Sequence<T> next) {
 			this.next = next;
 			this.item = item;

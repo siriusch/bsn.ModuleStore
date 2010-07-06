@@ -340,10 +340,8 @@ OUTPUT = OUT(PUT)?
 <OptionalAs> ::= AS
                |
 
-<NullLiteral> ::= NULL
-
-<NullCheck> ::= <NullLiteral>
-              | NOT <NullLiteral>
+<NullCheck> ::= NULL
+              | NOT NULL
 
 <StringLiteral> ::= StringLiteral
 
@@ -360,7 +358,7 @@ OUTPUT = OUT(PUT)?
 
 <Literal> ::= <NumberLiteral>
             | <CollableStringLiteral>
-            | <NullLiteral>
+            | NULL
 
 <Toggle> ::= ON
            | OFF
@@ -459,7 +457,7 @@ OUTPUT = OUT(PUT)?
 ! DECLARE and Cursor statements
 ! =============================================================================
 
-<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> TABLE <TableTypeDefinitionGroup>
+<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> TABLE <TableDefinitionGroup>
                      | DECLARE <DeclareItemList>
                      | DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement>
                      | DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement> <CursorUpdate>
@@ -495,35 +493,23 @@ OUTPUT = OUT(PUT)?
 <OptionalDefault> ::= '=' <Literal>
                     |
 
-<ReadableRowset> ::= <VariableName>
-                   | <TableNameQualified>
-                   | '(' <SelectGroup> ')'
-                   | <Openxml>
-                   | <FunctionCall>
-
-<WriteableRowset> ::= <VariableName>
+<DestinationRowset> ::= <VariableName>
                     | <TableName>
 !                    | <Openrowset> -- not supported
 !                    | <Openquery> -- not supported
 
-<Openxml> ::= OPENXML '(' <VariableName> ',' <StringValue> <OptionalOpenxmlFlags> ')' <OptionalOpenxmlSchema>
+<Openxml> ::= OPENXML '(' <VariableName> ',' <StringValue> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>
+            | OPENXML '(' <VariableName> ',' <StringValue> ')' <OptionalOpenxmlSchema>
 
-<OptionalOpenxmlFlags> ::= ',' <IntegerLiteral>
-                         |
-
-<OptionalOpenxmlSchema> ::= WITH '(' <OpenxmlSchemaGroup> ')'
+<OptionalOpenxmlSchema> ::= WITH '(' <TableNameQualified> ')'
+                          | WITH '(' <OpenxmlColumnList> ')'
                           |
-
-<OpenxmlSchemaGroup> ::= <TableNameQualified>
-                       | <OpenxmlColumnList>
 
 <OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>
                       | <OpenxmlColumn>
 
-<OpenxmlColumn> ::= <ColumnName> <TypeName> <OptionalOpenxmlColumnPattern>
-
-<OptionalOpenxmlColumnPattern> ::= <StringLiteral>
-                                 |
+<OpenxmlColumn> ::= <ColumnName> <TypeName> <StringLiteral>
+                  | <ColumnName> <TypeName>
 
 ! =============================================================================
 ! SET (both variables and options, but not yet CLR UDT properties and fields)
@@ -606,7 +592,7 @@ OUTPUT = OUT(PUT)?
 <FunctionInlineSelect> ::= <SelectStatement>
                          | '(' <SelectStatement> ')'
 
-<FunctionTable> ::= <VariableName> TABLE <TableTypeDefinitionGroup> <FunctionOptionGroup> <OptionalAs> <StatementBlock>
+<FunctionTable> ::= <VariableName> TABLE <TableDefinitionGroup> <FunctionOptionGroup> <OptionalAs> <StatementBlock>
 
 <FunctionOptionGroup> ::= WITH <FunctionOption>
                         |
@@ -670,7 +656,7 @@ OUTPUT = OUT(PUT)?
 
 ! We don't support the ON option, filegroup is managed by module manager
 
-<CreateTableStatement> ::= CREATE TABLE <TableName> <TableTypeDefinitionGroup> 
+<CreateTableStatement> ::= CREATE TABLE <TableName> <TableDefinitionGroup>
 
 <AlterTableStatement> ::= ALTER TABLE <TableName> <AlterTableKind>
 
@@ -683,12 +669,12 @@ OUTPUT = OUT(PUT)?
 <AlterColumn> ::= ALTER COLUMN <ColumnName> <AlterColumnKind>
 
 <AlterColumnKind> ::= <ColumnTypeDefinition>
-                    | ADD <ConstraintRowguid>
-                    | DROP <ConstraintRowguid>
+                    | ADD ROWGUIDCOL
+                    | DROP ROWGUIDCOL
                     | ADD_PERSISTED
                     | DROP_PERSISTED
-                    | ADD <NotForReplication>
-                    | DROP <NotForReplication>
+                    | ADD NOT FOR REPLICATION
+                    | DROP NOT FOR REPLICATION
                     | ADD <TableTypeDefinition>
                     | <WithCheck> ADD <TableTypeDefinition>
                     | <DropConstraint>
@@ -805,10 +791,8 @@ OUTPUT = OUT(PUT)?
                      | UPDATE
                      | DELETE
 
-<OptionalNotForReplication> ::= <NotForReplication>
+<OptionalNotForReplication> ::= NOT FOR REPLICATION
                               |
-
-<NotForReplication> ::= NOT FOR REPLICATION
 
 <DropTriggerStatement> ::= DROP TRIGGER <TriggerName>
 
@@ -824,42 +808,36 @@ OUTPUT = OUT(PUT)?
 ! Table/Column Type Definitions
 ! =============================================================================
 
-<TableTypeDefinitionGroup> ::= '(' <TableTypeDefinitionList> ')'
+<TableDefinitionGroup> ::= '(' <TableTypeDefinitionList> ')'
 
 <TableTypeDefinitionList> ::= <TableTypeDefinition> ',' <TableTypeDefinitionList>
                             | <TableTypeDefinition>
 
 ! This does not match the BNF in the SQL Books Online 2005, but seems to be the correct syntax
 <TableTypeDefinition> ::= <ColumnDefinition>
-                        | <ColumnComputedDefinition>
+                        | <ColumnName> AS <Expression>
                         | <NamedTableConstraint>
 
-<NamedTableConstraint> ::= <NamedConstraint> <TableConstraint>
+<NamedTableConstraint> ::= CONSTRAINT <ConstraintName> <TableConstraint>
                          | <TableConstraint>
 
 <TableConstraint> ::= <ConstraintPrimaryKey> <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
                    | <ConstraintForeignKey>
                    | <ConstraintCheck>
 
-<ConstraintForeignKey> ::= FOREIGN KEY <ForeignKeyColumnGroup> REFERENCES <TableName> <OptionalForeignKeyRefColumnGroup> <ForeignKeyActionList>
+<ConstraintForeignKey> ::= FOREIGN KEY '(' <ForeignKeyColumnList> ')' REFERENCES <TableName> <OptionalForeignKeyRefColumnGroup> <ForeignKeyActionList>
 
-<ForeignKeyActionList> ::= <OnDeleteAction> <ForeignKeyActionList>
-                         | <OnUpdateAction> <ForeignKeyActionList>
+<ForeignKeyActionList> ::= ON DELETE <Action> <ForeignKeyActionList>
+                         | ON UPDATE <Action> <ForeignKeyActionList>
                          |
-
-<OnDeleteAction> ::= ON DELETE <Action>
-
-<OnUpdateAction> ::= ON UPDATE <Action>
 
 <Action> ::= NO_ACTION
            | CASCADE
            | SET NULL
            | SET DEFAULT
 
-<OptionalForeignKeyRefColumnGroup> ::= <ForeignKeyColumnGroup>
+<OptionalForeignKeyRefColumnGroup> ::= '(' <ForeignKeyColumnList> ')'
                                      |
-
-<ForeignKeyColumnGroup> ::= '(' <ForeignKeyColumnList> ')'
 
 <ForeignKeyColumnList> ::= <ColumnName> ',' <ForeignKeyColumnList>
                          | <ColumnName>
@@ -872,8 +850,6 @@ OUTPUT = OUT(PUT)?
 
 <ConstraintCollate> ::= COLLATE <CollationName>
 
-<ConstraintRowguid> ::= ROWGUIDCOL
-
 <ConstraintIdentity> ::= IDENTITY <IdentityRange>
 
 <IdentityRange> ::= '(' IntegerLiteral ',' IntegerLiteral ')'
@@ -882,12 +858,10 @@ OUTPUT = OUT(PUT)?
 <ColumnConstraintList> ::= <NamedColumnConstraint> <ColumnConstraintList>
                          | 
 
-<NamedConstraint> ::= CONSTRAINT <ConstraintName>
-
-<NamedColumnConstraint> ::= <NamedConstraint> <ColumnConstraint>
+<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> <ColumnConstraint>
                           | <ColumnConstraint>
                           | <ConstraintCollate>
-                          | <ConstraintRowguid>
+                          | ROWGUIDCOL
                           | <ConstraintIdentity>
                           | <NullCheck>
 
@@ -895,8 +869,6 @@ OUTPUT = OUT(PUT)?
                      | <ConstraintCheck>
                      | <ConstraintDefault>
                      | <ConstraintForeignKey>
-
-<ColumnComputedDefinition> ::= <ColumnName> AS <Expression>
 
 <ConstraintPrimaryKey> ::= PRIMARY KEY
                          | UNIQUE
@@ -945,7 +917,7 @@ OUTPUT = OUT(PUT)?
 ! INSERT Statement
 ! =============================================================================
 
-<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <WriteableRowset> <InsertData>
+<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <InsertData>
 
 <InsertData> ::= <ColumnNameGroup> <OptionalOutputClause> <InsertSource>
                | DEFAULT VALUES
@@ -957,12 +929,11 @@ OUTPUT = OUT(PUT)?
                  | <SelectGroup>
                  | <ExecuteStatement>
 
-
 ! =============================================================================
 ! UPDATE Statement
 ! =============================================================================
 
-<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <WriteableRowset> SET <UpdateColumnList> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
+<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateColumnList> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
 
 <UpdateColumnList> ::= <UpdateColumn> ',' <UpdateColumnList>
                      | <UpdateColumn>
@@ -981,7 +952,7 @@ OUTPUT = OUT(PUT)?
 ! DELETE Statement
 ! =============================================================================
 
-<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <WriteableRowset> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
+<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <DestinationRowset> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
 
 <OptionalFrom> ::= FROM
                  |
@@ -1016,7 +987,7 @@ OUTPUT = OUT(PUT)?
                | INTO <VariableName>
                |
 
-<FromClause> ::= FROM <Source> <JoinChain>
+<FromClause> ::= FROM <SourceRowset> <JoinChain>
 
 <FromClauseFull> ::= <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> 
                |
@@ -1024,8 +995,8 @@ OUTPUT = OUT(PUT)?
 <JoinChain> ::= <Join> <JoinChain>
               |
 
-<Join> ::= <JoinKind> JOIN <Source> ON <Predicate>
-         | CROSS JOIN <Source>
+<Join> ::= <JoinKind> JOIN <SourceRowset> ON <Predicate>
+         | CROSS JOIN <SourceRowset>
 
 <JoinKind> ::= <OptionalInner>
              | LEFT <OptionalOuter>
@@ -1038,7 +1009,11 @@ OUTPUT = OUT(PUT)?
 <OptionalOuter> ::= OUTER
                   |
 
-<Source> ::= <ReadableRowset> <OptionalAlias>
+<SourceRowset> ::= <VariableName> <OptionalAlias>
+                 | <TableNameQualified> <OptionalAlias>
+                 | '(' <SelectGroup> ')' <OptionalAlias>
+                 | <Openxml> <OptionalAlias>
+                 | <FunctionCall> <OptionalAlias>
 
 <OptionalAlias> ::= <OptionalAs> <AliasName>
                   |
