@@ -20,9 +20,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<DeclareItemList> ::= <DeclareItem>", typeof(VariableDeclaration))]
 		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlToken))]
 		[Rule("<FulltextColumnList> ::= <FulltextColumn>", typeof(FulltextColumn))]
-		public Sequence(T item)
-			: this(item, null) {
-		}
+		[Rule("<FunctionParameterList> ::= <FunctionParameter>", typeof(FunctionParameter))]
+		public Sequence(T item): this(item, null) {}
 
 		[Rule("<ColumnNameList> ::= <ColumnNameList> ',' <ColumnName>", typeof(ColumnName), ConstructorParameterMapping = new[] {2, 0})]
 		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(SqlStatement), ConstructorParameterMapping = new[] {0, 2})]
@@ -31,6 +30,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<DeclareItemList> ::= <DeclareItemList> ',' <DeclareItem>", typeof(VariableDeclaration), ConstructorParameterMapping = new[] {2, 0})]
 		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlToken))]
 		[Rule("<FulltextColumnList> ::= <FulltextColumn> ',' <FulltextColumnList>", typeof(FulltextColumn), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<FunctionParameterList> ::= <FunctionParameter> ',' <FunctionParameterList>", typeof(FunctionParameter), ConstructorParameterMapping = new[] {0, 2})]
 		public Sequence(T item, Sequence<T> next) {
 			this.next = next;
 			this.item = item;
@@ -48,6 +48,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override void WriteTo(System.IO.TextWriter writer) {
+			throw new NotSupportedException();
+		}
+
 		public IEnumerator<T> GetEnumerator() {
 			for (Sequence<T> sequence = this; sequence != null; sequence = sequence.Next) {
 				if (sequence.Item != null) {
@@ -58,10 +62,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		IEnumerator IEnumerable.GetEnumerator() {
 			return GetEnumerator();
-		}
-
-		public override void WriteTo(System.IO.TextWriter writer) {
-			throw new NotSupportedException();
 		}
 	}
 }

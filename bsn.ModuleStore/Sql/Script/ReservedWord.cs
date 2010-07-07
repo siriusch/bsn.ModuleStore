@@ -87,7 +87,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly string text;
 
 		public ReservedWord(string text) {
-			this.text = text;
+			this.text = text.ToUpperInvariant();
 		}
 
 		public override void WriteTo(System.IO.TextWriter writer) {

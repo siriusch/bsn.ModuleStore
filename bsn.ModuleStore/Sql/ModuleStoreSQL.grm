@@ -5,7 +5,7 @@
 "Name"         = 'T-SQL CREATE Statements'
 "Version"      = '2005'
 "About"        = 'Parser for T-SQL subset to be supported by ModuleStore'
-"Author"       = 'Arsène von Wyss'
+"Author"       = 'Ars?ne von Wyss'
 
 "Character Mapping" = 'Unicode'
 
@@ -575,10 +575,10 @@ OUTPUT = OUT(PUT)?
 
 ! We don't allow to specify the schema name, it is implicit (module name)
 
-<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> <FunctionParameterGroup> <FunctionType>
+<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <FunctionType>
 
-<FunctionParameterGroup> ::= '(' <FunctionParameterList> _RETURNS
-                           | '(' _RETURNS
+<OptionalFunctionParameterList> ::= <FunctionParameterList>
+                                  |
 
 <FunctionParameterList> ::= <FunctionParameter> ',' <FunctionParameterList>
                           | <FunctionParameter>
