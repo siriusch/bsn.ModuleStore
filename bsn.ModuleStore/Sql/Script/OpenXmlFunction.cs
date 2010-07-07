@@ -13,11 +13,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly OpenxmlSchema schema;
 
 		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <StringValue> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping=new[] { 2, 4, 6 })]
-		public OpenxmlFunction(VariableName variableName, SqlToken stringValue, OpenxmlSchema schema): this(variableName, stringValue, null, schema) {
+		public OpenxmlFunction(VariableName variableName, SqlToken stringValue, Optional<OpenxmlSchema> schema): this(variableName, stringValue, null, schema) {
 		}
 
 		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <StringValue> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping=new[] { 2, 4, 6, 8 })]
-		public OpenxmlFunction(VariableName variableName, SqlToken stringValue, IntegerLiteral flags, OpenxmlSchema schema) {
+		public OpenxmlFunction(VariableName variableName, SqlToken stringValue, IntegerLiteral flags, Optional<OpenxmlSchema> schema) {
 			if (variableName == null) {
 				throw new ArgumentNullException("variableName");
 			}
@@ -32,20 +32,5 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.flags = flags;
 			this.schema = schema;
 		}
-	}
-
-	public class OpenxmlSchema: SqlToken {
-		[Rule("<OptionalOpenxmlSchema> ::=")]
-		public OpenxmlSchema() {}
-	}
-
-	public class OpenxmlImplicitSchema: OpenxmlSchema {
-		[Rule("<OptionalOpenxmlSchema> ::= WITH '(' <TableNameQualified> ')'", ConstructorParameterMapping = new[] {2})]
-		public OpenxmlImplicitSchema(Qualified<TableName> tableName) {}
-	}
-
-	public class OpenxmlExplicitSchema: OpenxmlSchema {
-		[Rule("<OptionalOpenxmlSchema> ::= WITH '(' <OpenxmlColumnList> ')'",  ConstructorParameterMapping = new[] {2})]
-		public OpenxmlExplicitSchema(Sequence<OpenxmlColumn> columns) {}
 	}
 }

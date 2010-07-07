@@ -17,9 +17,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<StatementList> ::= <StatementGroup>", typeof(SqlStatement))]
 		[Rule("<StatementList> ::= <StatementGroup> <Terminator>", typeof(SqlStatement), AllowTruncationForConstructor = true)]
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn>", typeof(OpenxmlColumn))]
-		[Rule("<DeclareItemList> ::= <DeclareItem>", typeof(VariableDeclaration), AllowTruncationForConstructor = true)]
+		[Rule("<DeclareItemList> ::= <DeclareItem>", typeof(VariableDeclaration))]
 		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlToken))]
-		public Sequence(T item) : this(item, null) {
+		[Rule("<FulltextColumnList> ::= <FulltextColumn>", typeof(FulltextColumn))]
+		public Sequence(T item)
+			: this(item, null) {
 		}
 
 		[Rule("<ColumnNameList> ::= <ColumnNameList> ',' <ColumnName>", typeof(ColumnName), ConstructorParameterMapping = new[] {2, 0})]
@@ -28,6 +30,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>", typeof(OpenxmlColumn), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<DeclareItemList> ::= <DeclareItemList> ',' <DeclareItem>", typeof(VariableDeclaration), ConstructorParameterMapping = new[] {2, 0})]
 		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlToken))]
+		[Rule("<FulltextColumnList> ::= <FulltextColumn> ',' <FulltextColumnList>", typeof(FulltextColumn), ConstructorParameterMapping = new[] {0, 2})]
 		public Sequence(T item, Sequence<T> next) {
 			this.next = next;
 			this.item = item;

@@ -25,12 +25,12 @@ Comment Line  = '--'
 ! Terminals
 ! =============================================================================
 
-{String Ch}               = {Printable} - ['']
+{String Ch}               = {Printable Extended} - ['']
 {Id Ch Standard}          = {Alphanumeric} + [_]
 {Id Ch Delimited Bracket} = {Printable Extended} - ['['#']']
 {Id Ch Delimited Quote}   = {Printable Extended} - ["]
 {Hex Ch}                  = [0123456789ABCDEF]
-{Nonspace Ch}             = {Printable} - {Whitespace}
+{Nonspace Ch}             = {Printable Extended} - {Whitespace}
 
 StringLiteral  = N?(''{String Ch}*'')+
 IntegerLiteral = {Digit}+
@@ -262,7 +262,7 @@ INCLUDE_ = INCLUDE{Whitespace}*'('
 COUNT_ = COUNT{Whitespace}*'('
 CAST_ = CAST{Whitespace}*'('
 _RETURNS = ')'{Whitespace}*RETURNS
-LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|''{String Ch}+('-'{String Ch}+)?'')
+LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|(''{String Ch}+'')+)
 OUTPUT = OUT(PUT)?
 
 ! =============================================================================
@@ -501,9 +501,13 @@ OUTPUT = OUT(PUT)?
 <Openxml> ::= OPENXML '(' <VariableName> ',' <StringValue> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>
             | OPENXML '(' <VariableName> ',' <StringValue> ')' <OptionalOpenxmlSchema>
 
-<OptionalOpenxmlSchema> ::= WITH '(' <TableNameQualified> ')'
-                          | WITH '(' <OpenxmlColumnList> ')'
+<OptionalOpenxmlSchema> ::= <OpenxmlImplicitSchema>
+                          | <OpenxmlExplicitSchema>
                           |
+
+<OpenxmlImplicitSchema> ::= WITH '(' <TableNameQualified> ')'
+
+<OpenxmlExplicitSchema> ::= WITH '(' <OpenxmlColumnList> ')'
 
 <OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>
                       | <OpenxmlColumn>
@@ -540,7 +544,7 @@ OUTPUT = OUT(PUT)?
 
 ! We don't allow to specify the catalog name, since the catalog is automatically assigned (module name)
 
-<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
+<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <OptionalFulltextChangeTracking>
 
 <FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'
                         |
@@ -548,20 +552,20 @@ OUTPUT = OUT(PUT)?
 <FulltextColumnList> ::= <FulltextColumn> ',' <FulltextColumnList>
                        | <FulltextColumn>
 
-<FulltextColumn> ::= <ColumnName> <FulltextColumnType> <FulltextColumnLanguage>
+<FulltextColumn> ::= <ColumnName> <FulltextColumnType> <OptionalLanguage>
 
 <FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>
                        |
 
-<FulltextColumnLanguage> ::= LANGUAGE_LCID
-                           |
+<OptionalLanguage> ::= LANGUAGE_LCID
+                     |
 
-<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING <FulltextChangeTrackingName>
-                           |
+<OptionalFulltextChangeTracking> ::= <FulltextChangeTracking>
+                                   |
 
-<FulltextChangeTrackingName> ::= Id
-                               | OFF
-                               | OFF ',' NO_POPULATION
+<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING Id
+                           | WITH_CHANGE_TRACKING OFF
+                           | WITH_CHANGE_TRACKING OFF ',' NO_POPULATION
 
 <DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableName>
 

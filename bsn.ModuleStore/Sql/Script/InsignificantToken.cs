@@ -87,7 +87,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("IS")]
 	[Terminal("JOIN")]
 	[Terminal("KEY")]
-	[Terminal("LANGUAGE_LCID")]
 	[Terminal("LEFT")]
 	[Terminal("LIKE")]
 	[Terminal("NO_ACTION")]

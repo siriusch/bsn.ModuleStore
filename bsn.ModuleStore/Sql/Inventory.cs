@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-using bsn.ModuleStore.Sql.Definitions;
+using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	[Serializable]
 	public class Inventory: ISerializable {
-		private readonly Dictionary<string, SqlObject> objects = new Dictionary<string, SqlObject>();
+		private readonly Dictionary<string, SqlToken> objects = new Dictionary<string, SqlToken>();
 
 		public Inventory() {}
 
@@ -16,7 +16,7 @@ namespace bsn.ModuleStore.Sql {
 			if (info == null) {
 				throw new ArgumentNullException("info");
 			}
-			objects = (Dictionary<string, SqlObject>)info.GetValue("objects", typeof(Dictionary<string, SqlObject>));
+			objects = (Dictionary<string, SqlToken>)info.GetValue("objects", typeof(Dictionary<string, SqlToken>));
 		}
 
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context) {

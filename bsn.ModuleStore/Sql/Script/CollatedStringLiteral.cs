@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly CollationName collation;
 
 		[Rule("<CollableStringLiteral> ::= <StringLiteral> <OptionalCollate>")]
-		public CollatedStringLiteral(StringLiteral literal, CollationName collation): base(literal.Value) {
+		public CollatedStringLiteral(StringLiteral literal, Optional<CollationName> collation): base(literal.Value) {
 			this.collation = collation;
 		}
 
