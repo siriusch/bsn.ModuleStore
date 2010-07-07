@@ -21,7 +21,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlToken))]
 		[Rule("<FulltextColumnList> ::= <FulltextColumn>", typeof(FulltextColumn))]
 		[Rule("<FunctionParameterList> ::= <FunctionParameter>", typeof(FunctionParameter))]
-		public Sequence(T item): this(item, null) {}
+		[Rule("<ProcedureParameterList> ::= <ProcedureParameter>", typeof(ProcedureParameter))]
+		public Sequence(T item) : this(item, null) {
+		}
 
 		[Rule("<ColumnNameList> ::= <ColumnNameList> ',' <ColumnName>", typeof(ColumnName), ConstructorParameterMapping = new[] {2, 0})]
 		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(SqlStatement), ConstructorParameterMapping = new[] {0, 2})]
@@ -31,6 +33,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlToken))]
 		[Rule("<FulltextColumnList> ::= <FulltextColumn> ',' <FulltextColumnList>", typeof(FulltextColumn), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<FunctionParameterList> ::= <FunctionParameter> ',' <FunctionParameterList>", typeof(FunctionParameter), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<ProcedureParameterList> ::= <ProcedureParameter> ',' <ProcedureParameterList>", typeof(ProcedureParameter), ConstructorParameterMapping=new[] { 0, 2 })]
 		public Sequence(T item, Sequence<T> next) {
 			this.next = next;
 			this.item = item;

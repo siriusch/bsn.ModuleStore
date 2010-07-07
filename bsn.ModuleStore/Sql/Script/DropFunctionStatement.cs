@@ -4,7 +4,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class DropFunctionStatement: SqlStatement {
+	public class DropFunctionStatement: SqlDropStatement {
 		private readonly FunctionName functionName;
 
 		[Rule("<DropFunctionStatement> ::= DROP FUNCTION <FunctionName>", ConstructorParameterMapping = new[] {2})]

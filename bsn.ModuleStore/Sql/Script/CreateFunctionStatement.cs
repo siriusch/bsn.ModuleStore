@@ -7,7 +7,7 @@ using bsn.GoldParser.Semantic;
 [assembly: RuleTrim("<FunctionInlineSelect> ::= '(' <FunctionInlineSelect> ')'", "<FunctionInlineSelect>")]
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateFunctionStatement<TBody>: SqlStatement where TBody: SqlStatement {
+	public abstract class CreateFunctionStatement<TBody>: SqlCreateStatement where TBody: SqlStatement {
 		private readonly TBody body;
 		private readonly FunctionName functionName;
 		private readonly FunctionOption options;

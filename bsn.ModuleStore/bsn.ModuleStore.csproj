@@ -76,11 +76,14 @@
     <Compile Include="Sql\Script\CreateFunctionScalarStatement.cs" />
     <Compile Include="Sql\Script\CreateFunctionStatement.cs" />
     <Compile Include="Sql\Script\CreateFunctionInlineStatement.cs" />
+    <Compile Include="Sql\Script\CreateProcedureStatement.cs" />
     <Compile Include="Sql\Script\CursorVariableDeclaration.cs" />
     <Compile Include="Sql\Script\DeclareTableStatement.cs" />
     <Compile Include="Sql\Script\DeclareVariableStatement.cs" />
     <Compile Include="Sql\Script\DropFulltextStatement.cs" />
     <Compile Include="Sql\Script\DropFunctionStatement.cs" />
+    <Compile Include="Sql\Script\DropProcedureStatement.cs" />
+    <Compile Include="Sql\Script\ForReplication.cs" />
     <Compile Include="Sql\Script\FulltextChangeTracking.cs" />
     <Compile Include="Sql\Script\FunctionOption.cs" />
     <Compile Include="Sql\Script\FunctionParameter.cs" />
@@ -92,6 +95,9 @@
     <Compile Include="Sql\Script\LanguageLcid.cs" />
     <Compile Include="Sql\Script\NamedTableConstraint.cs" />
     <Compile Include="Sql\Script\OpenXmlFunction.cs" />
+    <Compile Include="Sql\Script\Output.cs" />
+    <Compile Include="Sql\Script\ProcedureParameter.cs" />
+    <Compile Include="Sql\Script\SqlDropStatement.cs" />
     <Compile Include="Sql\Script\SqlParens.cs" />
     <Compile Include="Sql\Script\SelectStatement.cs" />
     <Compile Include="Sql\Script\SqlQuotedName.cs" />
@@ -154,9 +160,11 @@
     <Compile Include="Sql\Script\TypeName.cs" />
     <Compile Include="Sql\Script\VariableDeclaration.cs" />
     <Compile Include="Sql\Script\VariableName.cs" />
+    <Compile Include="Sql\Script\Varying.cs" />
     <Compile Include="Sql\Script\ViewName.cs" />
     <Compile Include="Sql\Script\WaitforStatement.cs" />
     <Compile Include="Sql\Script\WhileStatement.cs" />
+    <Compile Include="Sql\Script\WithRecompile.cs" />
     <Compile Include="Sql\Script\XmlElementName.cs" />
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
   </ItemGroup>

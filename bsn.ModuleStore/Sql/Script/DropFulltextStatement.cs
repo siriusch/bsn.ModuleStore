@@ -4,7 +4,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class DropFulltextStatement: SqlStatement {
+	public class DropFulltextStatement: SqlDropStatement {
 		private readonly TableName tableName;
 
 		[Rule("<DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableName>", ConstructorParameterMapping = new[] {3})]

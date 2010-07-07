@@ -22,6 +22,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalFulltextChangeTracking> ::=", typeof(FulltextChangeTracking))]
 		[Rule("<OptionalFunctionParameterList> ::=", typeof(Sequence<FunctionParameter>))]
 		[Rule("<OptionalFunctionOption> ::=", typeof(FunctionOption))]
+		[Rule("<OptionalVarying> ::=", typeof(Varying))]
+		[Rule("<OptionalOutput> ::=", typeof(Output))]
+		[Rule("<OptionalReadonly> ::=", typeof(Identifier))]
+		[Rule("<ProcedureParameterGroup> ::=", typeof(Sequence<ProcedureParameter>))]
+		[Rule("<ProcedureFor> ::=", typeof(ForReplication))]
+		[Rule("<ProcedureOptionGroup> ::=", typeof(WithRecompile))]
 		public Optional()
 			: this(null) {
 		}
@@ -36,6 +42,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalFulltextChangeTracking> ::= <FulltextChangeTracking>", typeof(FulltextChangeTracking))]
 		[Rule("<OptionalFunctionParameterList> ::= <FunctionParameterList>", typeof(Sequence<FunctionParameter>))]
 		[Rule("<OptionalFunctionOption> ::= WITH <FunctionOption>", typeof(FunctionOption), ConstructorParameterMapping = new[] {1})]
+		[Rule("<OptionalVarying> ::= VARYING", typeof(Varying))]
+		[Rule("<OptionalOutput> ::= OUTPUT", typeof(Output))]
+		[Rule("<OptionalReadonly> ::= Id", typeof(Identifier))]
+		[Rule("<ProcedureParameterGroup> ::= <ProcedureParameterList>", typeof(Sequence<ProcedureParameter>))]
+		[Rule("<ProcedureFor> ::= FOR_REPLICATION", typeof(ForReplication))]
+		[Rule("<ProcedureOptionGroup> ::= WITH_RECOMPILE", typeof(WithRecompile))]
 		public Optional(T value) {
 			this.value = value;
 		}

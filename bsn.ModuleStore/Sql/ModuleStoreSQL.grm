@@ -5,7 +5,7 @@
 "Name"         = 'T-SQL CREATE Statements'
 "Version"      = '2005'
 "About"        = 'Parser for T-SQL subset to be supported by ModuleStore'
-"Author"       = 'Ars?ne von Wyss'
+"Author"       = 'Arsène von Wyss'
 
 "Character Mapping" = 'Unicode'
 
@@ -235,6 +235,7 @@ FOR_PATH = FOR{Whitespace}+PATH
 FOR_UPDATE = FOR{Whitespace}+UPDATE
 FOR_VALUE = FOR{Whitespace}+VALUE
 FOR_PROPERTY = FOR{Whitespace}+PROPERTY
+FOR_REPLICATION = FOR{Whitespace}+REPLICATION
 XML_INDEX = XML{Whitespace}+INDEX
 XML_SCHEMA_COLLECTION = XML{Whitespace}+SCHEMA{Whitespace}+COLLECTION
 USING_XML_INDEX = USING{Whitespace}+XML{Whitespace}+INDEX
@@ -575,7 +576,9 @@ OUTPUT = OUT(PUT)?
 
 ! We don't allow to specify the schema name, it is implicit (module name)
 
-<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <FunctionType>
+<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
+                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>
+                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
 
 <OptionalFunctionParameterList> ::= <FunctionParameterList>
                                   |
@@ -585,21 +588,11 @@ OUTPUT = OUT(PUT)?
 
 <FunctionParameter> ::= <ParameterName> <OptionalAs> <TypeNameQualified> <OptionalDefault>
 
-<FunctionType> ::= <FunctionScalar>
-                 | <FunctionInline>
-                 | <FunctionTable>
-
-<FunctionScalar> ::= <TypeName> <FunctionOptionGroup> <OptionalAs> <StatementBlock>
-
-<FunctionInline> ::= TABLE <FunctionOptionGroup> <OptionalAs> RETURN <FunctionInlineSelect>
-
 <FunctionInlineSelect> ::= <SelectStatement>
-                         | '(' <SelectStatement> ')'
+                         | '(' <FunctionInlineSelect> ')'
 
-<FunctionTable> ::= <VariableName> TABLE <TableDefinitionGroup> <FunctionOptionGroup> <OptionalAs> <StatementBlock>
-
-<FunctionOptionGroup> ::= WITH <FunctionOption>
-                        |
+<OptionalFunctionOption> ::= WITH <FunctionOption>
+                           |
 
 ! The options ENCRYPTION and SCHEMABINDING are handled by the module and therefore not allowed
 <FunctionOption> ::= RETURNS_NULL_ON_NULL_INPUT
@@ -619,7 +612,7 @@ OUTPUT = OUT(PUT)?
 <ProcedureParameterList> ::= <ProcedureParameter> ',' <ProcedureParameterList>
                            | <ProcedureParameter>
 
-<ProcedureParameter> ::= <ParameterName> <TypeNameQualified> <OptionalVarying> <OptionalDefault> <OptionalOutput>
+<ProcedureParameter> ::= <ParameterName> <TypeNameQualified> <OptionalVarying> <OptionalDefault> <OptionalOutput> <OptionalReadonly>
 
 <OptionalVarying> ::= VARYING
                     |
@@ -627,15 +620,19 @@ OUTPUT = OUT(PUT)?
 <OptionalOutput> ::= OUTPUT
                    |
 
+<OptionalReadonly> ::= Id
+                     |
+
 <ProcedureOptionGroup> ::= WITH_RECOMPILE
                          |
 
-<ProcedureFor> ::= FOR REPLICATION
+<ProcedureFor> ::= FOR_REPLICATION
                  |
 
 <DropProcedureStatement> ::= DROP PROCEDURE <ProcedureName>
 
-<ExecuteStatement> ::= EXECUTE <OptionalVariableAssignment> <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>
+<ExecuteStatement> ::= EXECUTE <VariableName> '=' <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>
+                     | EXECUTE <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>
 
 <ExecuteParameterGroup> ::= <ExecuteParameterList>
                           |
@@ -651,9 +648,6 @@ OUTPUT = OUT(PUT)?
                           | <SystemVariableName>
                           | <Literal>
 
-<OptionalVariableAssignment> ::= <VariableName> '='
-                               |
-
 ! =============================================================================
 ! CREATE/ALTER/DROP TABLE
 ! =============================================================================
@@ -662,30 +656,23 @@ OUTPUT = OUT(PUT)?
 
 <CreateTableStatement> ::= CREATE TABLE <TableName> <TableDefinitionGroup>
 
-<AlterTableStatement> ::= ALTER TABLE <TableName> <AlterTableKind>
-
-<AlterTableKind> ::= <AlterColumn>
-                   | ADD <ColumnOrConstraintList>
-                   | <WithCheck> ADD <ColumnOrConstraintList>
-                   | <DropColumn>
-                   | <DropConstraint>
-
-<AlterColumn> ::= ALTER COLUMN <ColumnName> <AlterColumnKind>
-
-<AlterColumnKind> ::= <ColumnTypeDefinition>
-                    | ADD ROWGUIDCOL
-                    | DROP ROWGUIDCOL
-                    | ADD_PERSISTED
-                    | DROP_PERSISTED
-                    | ADD NOT FOR REPLICATION
-                    | DROP NOT FOR REPLICATION
-                    | ADD <TableTypeDefinition>
-                    | <WithCheck> ADD <TableTypeDefinition>
-                    | <DropConstraint>
-                    | <DropColumn>
-                    | <WithCheck> <AlterConstraint> 
-                    | <AlterConstraint>
-                    | <EnableOrDisableTrigger>
+<AlterTableStatement> ::= ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <ColumnTypeDefinition>
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD ROWGUIDCOL
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP ROWGUIDCOL
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD_PERSISTED
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP_PERSISTED
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD NOT FOR_REPLICATION
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP NOT FOR_REPLICATION
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD <TableTypeDefinition>
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> WITH <CheckOrNocheck> ADD <TableTypeDefinition>
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <CheckOrNocheck> CONSTRAINT <AllOrConstraintNameList> 
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> WITH <CheckOrNocheck> <CheckOrNocheck> CONSTRAINT <AllOrConstraintNameList> 
+                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <EnableOrDisableTrigger>
+                        | ALTER TABLE <TableName> ADD <ColumnOrConstraintList>
+                        | ALTER TABLE <TableName> WITH <CheckOrNocheck> ADD <ColumnOrConstraintList>
+                        | ALTER TABLE <TableName> DROP COLUMN <ColumnName>
+                        | ALTER TABLE <TableName> DROP CONSTRAINT <ConstraintName>
+                        | ALTER TABLE <TableName> DROP <ConstraintName>
 
 <EnableOrDisableTrigger> ::= ENABLE_TRIGGER <AllOrTriggerNameList>
                            | DISABLE_TRIGGER <AllOrTriggerNameList>
@@ -696,15 +683,11 @@ OUTPUT = OUT(PUT)?
 <TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>
                     | <TriggerName>
 
-<AlterConstraint> ::= <CheckOrNocheck> CONSTRAINT <AllOrConstraintNameList>
-
 <AllOrConstraintNameList> ::= ALL
                         | <ConstraintNameList>
 
 <ConstraintNameList> ::= <ConstraintName> ',' <ConstraintNameList>
                        | <ConstraintName>
-
-<WithCheck> ::= WITH <CheckOrNocheck>
 
 <CheckOrNocheck> ::= CHECK
                    | NOCHECK
@@ -714,11 +697,6 @@ OUTPUT = OUT(PUT)?
 
 <ColumnOrConstraint> ::= <ColumnDefinition>
                        | <NamedTableConstraint>
-
-<DropColumn> ::= DROP COLUMN <ColumnName>
-
-<DropConstraint> ::= DROP CONSTRAINT <ConstraintName>
-                   | DROP <ConstraintName>
 
 <DropTableStatement> ::= DROP TABLE <TableName>
 
@@ -745,15 +723,13 @@ OUTPUT = OUT(PUT)?
 
 ! We don't support the ON option, filegroup is managed by module manager
 
-<CreateIndexStatement> ::= CREATE <ConstraintUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' <IndexInclude> <IndexOptionGroup>
+<CreateIndexStatement> ::= CREATE <ConstraintUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' INCLUDE_ <ColumnNameList> ')' <IndexOptionGroup>
                          | CREATE <IndexPrimary> XML_INDEX <IndexName> ON <TableName> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
 
 <IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>
                     | <IndexColumn>
 
 <IndexColumn> ::= <ColumnName> <OrderType> 
-
-<IndexInclude> ::= INCLUDE_ <ColumnNameList> ')'
 
 <IndexPrimary> ::= PRIMARY
                  |
@@ -795,7 +771,7 @@ OUTPUT = OUT(PUT)?
                      | UPDATE
                      | DELETE
 
-<OptionalNotForReplication> ::= NOT FOR REPLICATION
+<OptionalNotForReplication> ::= NOT FOR_REPLICATION
                               |
 
 <DropTriggerStatement> ::= DROP TRIGGER <TriggerName>
