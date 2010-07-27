@@ -25,12 +25,13 @@ Comment Line  = '--'
 ! Terminals
 ! =============================================================================
 
-{String Ch}               = {Printable Extended} - ['']
+{Any Ch}                  = {All Valid} - {Control Codes}
+{String Ch}               = {Any Ch} - ['']
 {Id Ch Standard}          = {Alphanumeric} + [_]
-{Id Ch Delimited Bracket} = {Printable Extended} - ['['#']']
-{Id Ch Delimited Quote}   = {Printable Extended} - ["]
+{Id Ch Delimited Bracket} = {Any Ch} - ['['#']']
+{Id Ch Delimited Quote}   = {Any Ch} - ["#]
 {Hex Ch}                  = [0123456789ABCDEF]
-{Nonspace Ch}             = {Printable Extended} - {Whitespace}
+{Nonspace Ch}             = {Any Ch} - {Whitespace}
 
 StringLiteral  = N?(''{String Ch}*'')+
 IntegerLiteral = {Digit}+
