@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
@@ -25,16 +26,15 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalVarying> ::=", typeof(Varying))]
 		[Rule("<OptionalOutput> ::=", typeof(Output))]
 		[Rule("<OptionalReadonly> ::=", typeof(Identifier))]
+		[Rule("<ExecuteParameterGroup> ::=", typeof(Sequence<ExecuteParameter>))]
 		[Rule("<ProcedureParameterGroup> ::=", typeof(Sequence<ProcedureParameter>))]
 		[Rule("<ProcedureFor> ::=", typeof(ForReplication))]
 		[Rule("<ProcedureOptionGroup> ::=", typeof(WithRecompile))]
-		public Optional()
-			: this(null) {
-		}
+		public Optional(): this(null) {}
 
 		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
-		[Rule("<FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'", typeof(Sequence<FulltextColumn>), ConstructorParameterMapping=new[] { 1 })]
-		[Rule("<OptionalCollate> ::= COLLATE <CollationName>", typeof(CollationName), ConstructorParameterMapping=new[] { 1 })]
+		[Rule("<FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'", typeof(Sequence<FulltextColumn>), ConstructorParameterMapping = new[] {1})]
+		[Rule("<OptionalCollate> ::= COLLATE <CollationName>", typeof(CollationName), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalLanguage> ::= LANGUAGE_LCID", typeof(LanguageLcid))]
 		[Rule("<OptionalDefault> ::= '=' <Literal>", typeof(Literal), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalOpenxmlSchema> ::= <OpenxmlImplicitSchema>", typeof(OpenxmlSchema))]
@@ -45,6 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalVarying> ::= VARYING", typeof(Varying))]
 		[Rule("<OptionalOutput> ::= OUTPUT", typeof(Output))]
 		[Rule("<OptionalReadonly> ::= Id", typeof(Identifier))]
+		[Rule("<ExecuteParameterGroup> ::= <ExecuteParameterList>", typeof(Sequence<ExecuteParameter>))]
 		[Rule("<ProcedureParameterGroup> ::= <ProcedureParameterList>", typeof(Sequence<ProcedureParameter>))]
 		[Rule("<ProcedureFor> ::= FOR_REPLICATION", typeof(ForReplication))]
 		[Rule("<ProcedureOptionGroup> ::= WITH_RECOMPILE", typeof(WithRecompile))]
@@ -58,7 +59,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			throw new NotSupportedException();
 		}
 	}

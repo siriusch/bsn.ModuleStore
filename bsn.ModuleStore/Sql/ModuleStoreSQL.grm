@@ -281,7 +281,7 @@ OUTPUT = OUT(PUT)?
                         | <TableName> '.' <ColumnName>
                         | <VariableName> '.' <ColumnName>
 
-<ColumnNameList> ::= <ColumnNameList> ',' <ColumnName>
+<ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>
                    | <ColumnName>
 
 <ColumnWild> ::= '*'
@@ -468,7 +468,7 @@ OUTPUT = OUT(PUT)?
                 | <VariableName> <OptionalAs> <TypeNameQualified>
                 | <VariableName> <OptionalAs> <TypeNameQualified> '=' <Expression>
 
-<DeclareItemList> ::= <DeclareItemList> ',' <DeclareItem>
+<DeclareItemList> ::= <DeclareItem> ',' <DeclareItemList>
                     | <DeclareItem>
 
 <CursorOptionList> ::= Id <CursorOptionList>
@@ -642,12 +642,12 @@ OUTPUT = OUT(PUT)?
                          | <ExecuteParameter>
 
 <ExecuteParameter> ::= <TableNameQualified> ! for the system "sp_*" SPs
-                     | <ParameterName> '=' <ExecuteParameterValue> <OptionalOutput>
-                     | <ExecuteParameterValue> <OptionalOutput>
-
-<ExecuteParameterValue> ::= <VariableName>
-                          | <SystemVariableName>
-                          | <Literal>
+                     | <ParameterName> '=' <VariableName> <OptionalOutput>
+                     | <ParameterName> '=' <SystemVariableName> <OptionalOutput>
+                     | <ParameterName> '=' <Literal> <OptionalOutput>
+                     | <VariableName> <OptionalOutput>
+                     | <SystemVariableName> <OptionalOutput>
+                     | <Literal> <OptionalOutput>
 
 ! =============================================================================
 ! CREATE/ALTER/DROP TABLE
@@ -657,47 +657,32 @@ OUTPUT = OUT(PUT)?
 
 <CreateTableStatement> ::= CREATE TABLE <TableName> <TableDefinitionGroup>
 
-<AlterTableStatement> ::= ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <ColumnTypeDefinition>
+<AlterTableStatement> ::= ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <ColumnDefinition>
                         | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD ROWGUIDCOL
                         | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP ROWGUIDCOL
                         | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD_PERSISTED
                         | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP_PERSISTED
                         | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD NOT FOR_REPLICATION
                         | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP NOT FOR_REPLICATION
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD <TableTypeDefinition>
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> WITH <CheckOrNocheck> ADD <TableTypeDefinition>
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <CheckOrNocheck> CONSTRAINT <AllOrConstraintNameList> 
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> WITH <CheckOrNocheck> <CheckOrNocheck> CONSTRAINT <AllOrConstraintNameList> 
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <EnableOrDisableTrigger>
-                        | ALTER TABLE <TableName> ADD <ColumnOrConstraintList>
-                        | ALTER TABLE <TableName> WITH <CheckOrNocheck> ADD <ColumnOrConstraintList>
-                        | ALTER TABLE <TableName> DROP COLUMN <ColumnName>
-                        | ALTER TABLE <TableName> DROP CONSTRAINT <ConstraintName>
+                        | ALTER TABLE <TableName> <TableCheck> ADD <TableDefinitionList>
                         | ALTER TABLE <TableName> DROP <ConstraintName>
+                        | ALTER TABLE <TableName> DROP CONSTRAINT <ConstraintName>
+                        | ALTER TABLE <TableName> DROP COLUMN <ColumnName>
 
-<EnableOrDisableTrigger> ::= ENABLE_TRIGGER <AllOrTriggerNameList>
-                           | DISABLE_TRIGGER <AllOrTriggerNameList>
+<TableCheck> ::= WITH CHECK
+               | WITH NOCHECK
+               |
 
-<AllOrTriggerNameList> ::= ALL
-                        | <TriggerNameList>
+<EnableOrDisableTrigger> ::= ENABLE_TRIGGER ALL
+                           | ENABLE_TRIGGER <TriggerNameList>
+                           | DISABLE_TRIGGER ALL
+                           | DISABLE_TRIGGER <ConstraintNameList>
 
 <TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>
                     | <TriggerName>
 
-<AllOrConstraintNameList> ::= ALL
-                        | <ConstraintNameList>
-
 <ConstraintNameList> ::= <ConstraintName> ',' <ConstraintNameList>
                        | <ConstraintName>
-
-<CheckOrNocheck> ::= CHECK
-                   | NOCHECK
-
-<ColumnOrConstraintList> ::= <ColumnOrConstraint> ',' <ColumnOrConstraintList>
-                           | <ColumnOrConstraint>
-
-<ColumnOrConstraint> ::= <ColumnDefinition>
-                       | <NamedTableConstraint>
 
 <DropTableStatement> ::= DROP TABLE <TableName>
 
@@ -789,15 +774,13 @@ OUTPUT = OUT(PUT)?
 ! Table/Column Type Definitions
 ! =============================================================================
 
-<TableDefinitionGroup> ::= '(' <TableTypeDefinitionList> ')'
+<TableDefinitionGroup> ::= '(' <TableDefinitionList> ')'
 
-<TableTypeDefinitionList> ::= <TableTypeDefinition> ',' <TableTypeDefinitionList>
-                            | <TableTypeDefinition>
+<TableDefinitionList> ::= <TableDefinition> ',' <TableDefinitionList>
+                        | <TableDefinition>
 
-! This does not match the BNF in the SQL Books Online 2005, but seems to be the correct syntax
-<TableTypeDefinition> ::= <ColumnDefinition>
-                        | <ColumnName> AS <Expression>
-                        | <NamedTableConstraint>
+<TableDefinition> ::= <ColumnName> <ColumnDefinition>
+                    | <NamedTableConstraint>
 
 <NamedTableConstraint> ::= CONSTRAINT <ConstraintName> <TableConstraint>
                          | <TableConstraint>
@@ -823,15 +806,8 @@ OUTPUT = OUT(PUT)?
 <ForeignKeyColumnList> ::= <ColumnName> ',' <ForeignKeyColumnList>
                          | <ColumnName>
 
-<ColumnDefinition> ::= <ColumnName> <ColumnTypeDefinition>
-
-<ColumnTypeDefinition> ::= <TypeNameQualified> <ColumnConstraintList>
-
-<ConstraintDefault> ::= DEFAULT '(' <Expression> ')'
-
-<ConstraintCollate> ::= COLLATE <CollationName>
-
-<ConstraintIdentity> ::= IDENTITY <IdentityRange>
+<ColumnDefinition> ::= <TypeNameQualified> <ColumnConstraintList>
+                     | AS <Expression>
 
 <IdentityRange> ::= '(' IntegerLiteral ',' IntegerLiteral ')'
                         |
@@ -841,14 +817,15 @@ OUTPUT = OUT(PUT)?
 
 <NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> <ColumnConstraint>
                           | <ColumnConstraint>
-                          | <ConstraintCollate>
+                          | COLLATE <CollationName>
+                          | IDENTITY <IdentityRange>
                           | ROWGUIDCOL
-                          | <ConstraintIdentity>
-                          | <NullCheck>
+                          | NOT NULL
+                          | NULL
 
 <ColumnConstraint> ::= <ConstraintPrimaryKey> <ConstraintCluster> <ConstraintIndex>
                      | <ConstraintCheck>
-                     | <ConstraintDefault>
+                     | DEFAULT '(' <Expression> ')'
                      | <ConstraintForeignKey>
 
 <ConstraintPrimaryKey> ::= PRIMARY KEY

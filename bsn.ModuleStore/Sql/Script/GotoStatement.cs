@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
+using System.IO;
 using System.Linq;
-using System.Text;
 
 using bsn.GoldParser.Semantic;
 
@@ -17,7 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.labelName = labelName;
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("GOTO ");
 			labelName.WriteTo(writer);
 		}

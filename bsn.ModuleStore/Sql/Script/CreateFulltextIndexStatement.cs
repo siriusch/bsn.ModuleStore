@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
@@ -10,7 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly IndexName indexName;
 		private readonly TableName tableName;
 
-		[Rule("<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <OptionalFulltextChangeTracking>", ConstructorParameterMapping = new[] { 4, 5, 8, 9})]
+		[Rule("<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <OptionalFulltextChangeTracking>", ConstructorParameterMapping = new[] {4, 5, 8, 9})]
 		public CreateFulltextIndexStatement(TableName tableName, Optional<Sequence<FulltextColumn>> columns, IndexName indexName, Optional<FulltextChangeTracking> changeTracking) {
 			if (tableName == null) {
 				throw new ArgumentNullException("tableName");
@@ -24,7 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.changeTracking = changeTracking;
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("CREATE FULLTEXT INDEX ON TABLE ");
 			tableName.WriteTo(writer);
 			if (columns != null) {

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class SqlCursorStatement: SqlStatement {
@@ -17,7 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			cursorName.WriteTo(writer);
 		}
 	}

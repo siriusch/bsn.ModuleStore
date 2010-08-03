@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -18,7 +19,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write(value.ToString(NumberFormatInfo.InvariantInfo));
 		}
 	}

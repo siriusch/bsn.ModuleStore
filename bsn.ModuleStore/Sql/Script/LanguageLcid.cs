@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
 using bsn.GoldParser.Semantic;
@@ -18,7 +19,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.value = match.Groups["value"].Value;
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("LANGUAGE ");
 			writer.Write(value);
 		}

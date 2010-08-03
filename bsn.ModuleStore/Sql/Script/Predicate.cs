@@ -1,5 +1,5 @@
-﻿namespace bsn.ModuleStore.Sql.Script {
-	public class Predicate: SqlToken {
-		
-	}
+using System;
+
+namespace bsn.ModuleStore.Sql.Script {
+	public class Predicate: SqlToken {}
 }

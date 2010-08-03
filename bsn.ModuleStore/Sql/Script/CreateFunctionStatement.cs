@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script;
 
-[assembly: RuleTrim("<FunctionInlineSelect> ::= '(' <FunctionInlineSelect> ')'", "<FunctionInlineSelect>")]
+[assembly: RuleTrim("<FunctionInlineSelect> ::= '(' <FunctionInlineSelect> ')'", "<FunctionInlineSelect>", SemanticTokenType = typeof(SqlToken))]
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateFunctionStatement<TBody>: SqlCreateStatement where TBody: SqlStatement {
@@ -43,13 +44,14 @@ namespace bsn.ModuleStore.Sql.Script {
 				return options;
 			}
 		}
+
 		public Sequence<FunctionParameter> Parameters {
 			get {
 				return parameters;
 			}
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("CREATE FUNCTION ");
 			functionName.WriteTo(writer);
 			writer.Write(" (");

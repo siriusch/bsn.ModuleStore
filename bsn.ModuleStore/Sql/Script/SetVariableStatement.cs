@@ -1,11 +1,12 @@
 using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class SetVariableStatement: SqlStatement {
-		private readonly VariableName variable;
 		private readonly Expression expression;
+		private readonly VariableName variable;
 
 		[Rule("<SetVariableStatement> ::= SET <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {1, 3})]
 		public SetVariableStatement(VariableName variable, Expression expression) {
@@ -19,7 +20,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expression = expression;
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("SET ");
 			variable.WriteTo(writer);
 			writer.Write("=");

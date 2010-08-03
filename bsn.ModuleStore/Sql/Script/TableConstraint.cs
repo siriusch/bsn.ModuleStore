@@ -1,3 +1,5 @@
+using System;
+
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class TableConstraint: TableDefinitionItem {}
+	public abstract class TableConstraint: TableDefinition {}
 }

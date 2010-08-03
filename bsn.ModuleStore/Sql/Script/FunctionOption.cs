@@ -1,4 +1,7 @@
-﻿using bsn.GoldParser.Semantic;
+using System;
+using System.IO;
+
+using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("CALLED_ON_NULL_INPUT")]
@@ -10,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.value = value.ToUpperInvariant();
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write(value);
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
@@ -26,7 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.body = body;
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("CREATE PROCEDURE ");
 			procedureName.WriteTo(writer);
 			if (parameters != null) {

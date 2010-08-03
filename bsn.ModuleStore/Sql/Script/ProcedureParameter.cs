@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Diagnostics;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
@@ -34,7 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			parameterName.WriteTo(writer);
 			writer.Write(' ');
 			parameterTypeName.WriteTo(writer);
@@ -46,7 +47,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.Write(" = ");
 				defaultValue.WriteTo(writer);
 			}
-			if (output	 != null) {
+			if (output != null) {
 				writer.Write(' ');
 				output.WriteTo(writer);
 			}

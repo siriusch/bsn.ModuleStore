@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class SqlParens<T>: SqlToken where T: SqlToken {
@@ -14,7 +15,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		protected abstract string Separator {
+			get;
+		}
+
+		public override void WriteTo(TextWriter writer) {
 			if (inner != null) {
 				writer.Write('(');
 				string separator = string.Empty;
@@ -25,10 +30,6 @@ namespace bsn.ModuleStore.Sql.Script {
 				}
 				writer.Write(')');
 			}
-		}
-
-		protected abstract string Separator {
-			get;
 		}
 	}
 }

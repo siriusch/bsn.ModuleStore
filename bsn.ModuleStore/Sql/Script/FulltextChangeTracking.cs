@@ -1,11 +1,10 @@
-﻿using System;
+using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class FulltextChangeTracking: SqlToken {
-		private readonly TrackingMode mode;
-
 		public enum TrackingMode {
 			Off,
 			OffNoPopulation,
@@ -13,13 +12,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			Auto
 		}
 
+		private readonly TrackingMode mode;
+
 		[Rule("<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING Id", ConstructorParameterMapping = new[] {1})]
 		public FulltextChangeTracking(Identifier identifier) {
 			if (string.Equals(identifier.Value, "MANUAL", StringComparison.OrdinalIgnoreCase)) {
 				mode = TrackingMode.Manual;
 			} else if (string.Equals(identifier.Value, "AUTO", StringComparison.OrdinalIgnoreCase)) {
 				mode = TrackingMode.Auto;
-			} 
+			}
 		}
 
 		[Rule("<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING OFF", ConstructorParameterMapping = new[] {1})]
@@ -32,7 +33,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("WITH CHANGE TRACKING ");
 			if (mode == TrackingMode.OffNoPopulation) {
 				writer.Write("OFF, NO POPULATION");

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -6,10 +6,10 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class DeclareTableStatement: VariableDeclaration {
-		private readonly TableDefinition tableDefinition;
+		private readonly TableDefinitionGroup tableDefinition;
 
 		[Rule("<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> TABLE <TableDefinitionGroup>", ConstructorParameterMapping = new[] {1, 4})]
-		public DeclareTableStatement(VariableName name, TableDefinition tableDefinition): base(name) {
+		public DeclareTableStatement(VariableName name, TableDefinitionGroup tableDefinition): base(name) {
 			if (tableDefinition == null) {
 				throw new ArgumentNullException("tableDefinition");
 			}

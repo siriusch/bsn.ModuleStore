@@ -11,15 +11,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			return new StringWriter(CultureInfo.InvariantCulture);
 		}
 
-		public virtual void WriteTo(TextWriter writer) {
-			throw new NotImplementedException();
-		}
-
-		public sealed override string ToString() {
+		public override sealed string ToString() {
 			using (StringWriter writer = CreateWriter()) {
 				WriteTo(writer);
 				return writer.ToString();
 			}
+		}
+
+		public virtual void WriteTo(TextWriter writer) {
+			throw new NotImplementedException();
 		}
 	}
 }

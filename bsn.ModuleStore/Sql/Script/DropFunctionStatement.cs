@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
@@ -15,7 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.functionName = functionName;
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("DROP FUNCTION ");
 			functionName.WriteTo(writer);
 		}

@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
@@ -14,7 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.returnTypeName = returnTypeName;
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			base.WriteTo(writer);
 			returnTypeName.WriteTo(writer);
 			WriteOptions(writer);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class DeclareVariableStatement: SqlStatement {
 		private readonly Sequence<VariableDeclaration> declarations;
 
-		[Rule("<DeclareStatement> ::= DECLARE <DeclareItemList>", ConstructorParameterMapping=new[] { 1 })]
+		[Rule("<DeclareStatement> ::= DECLARE <DeclareItemList>", ConstructorParameterMapping = new[] {1})]
 		public DeclareVariableStatement(Sequence<VariableDeclaration> declarations) {
 			if (declarations == null) {
 				throw new ArgumentNullException("declarations");

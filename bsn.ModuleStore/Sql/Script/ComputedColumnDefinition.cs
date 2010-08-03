@@ -7,8 +7,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class ComputedColumnDefinition: ColumnDefinition {
 		private readonly Expression expression;
 
-		[Rule("<TableTypeDefinition> ::= <ColumnName> AS <Expression>", ConstructorParameterMapping = new[] {0, 2})]
-		public ComputedColumnDefinition(ColumnName columnName, Expression expression): base(columnName) {
+		[Rule("<ColumnDefinition> ::= AS <Expression>", ConstructorParameterMapping = new[] {1})]
+		public ComputedColumnDefinition(Expression expression): base() {
 			if (expression == null) {
 				throw new ArgumentNullException("expression");
 			}
@@ -16,8 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(TextWriter writer) {
-			ColumnName.WriteTo(writer);
-			writer.Write(" AS ");
+			writer.Write("AS ");
 			expression.WriteTo(writer);
 		}
 	}
