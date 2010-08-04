@@ -30,6 +30,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ProcedureParameterGroup> ::=", typeof(Sequence<ProcedureParameter>))]
 		[Rule("<ProcedureFor> ::=", typeof(ForReplication))]
 		[Rule("<ProcedureOptionGroup> ::=", typeof(WithRecompile))]
+		[Rule("<ViewOptionalAttribute> ::=", typeof(WithViewMetadata))]
+		[Rule("<ViewOptionalCheckOption> ::=", typeof(WithCheckOption))]
+		[Rule("<ColumnNameGroup> ::=", typeof(Sequence<ColumnName>))]
 		public Optional(): this(null) {}
 
 		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
@@ -49,6 +52,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ProcedureParameterGroup> ::= <ProcedureParameterList>", typeof(Sequence<ProcedureParameter>))]
 		[Rule("<ProcedureFor> ::= FOR_REPLICATION", typeof(ForReplication))]
 		[Rule("<ProcedureOptionGroup> ::= WITH_RECOMPILE", typeof(WithRecompile))]
+		[Rule("<ViewOptionalAttribute> ::= WITH_VIEW_METADATA", typeof(WithViewMetadata))]
+		[Rule("<ViewOptionalCheckOption> ::= WITH_CHECK_OPTION", typeof(WithCheckOption))]
+		[Rule("<ColumnNameGroup> ::= '(' <ColumnNameList> ')'", typeof(Sequence<ColumnName>), ConstructorParameterMapping=new[] { 1 })]
 		public Optional(T value) {
 			this.value = value;
 		}

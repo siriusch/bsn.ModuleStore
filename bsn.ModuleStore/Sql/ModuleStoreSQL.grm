@@ -399,6 +399,8 @@ OUTPUT = OUT(PUT)?
                  | <AlterTableStatement> ! We don't need anything but this to handle data update scripts
                  | <DropTableStatement>
                  | <CreateTriggerStatement>
+                 | <EnableTriggerStatement>
+                 | <DisableTriggerStatement>
                  | <DropTriggerStatement>
                  | <CreateViewStatement>
                  | <DropViewStatement>
@@ -673,17 +675,6 @@ OUTPUT = OUT(PUT)?
                | WITH NOCHECK
                |
 
-<EnableOrDisableTrigger> ::= ENABLE_TRIGGER ALL
-                           | ENABLE_TRIGGER <TriggerNameList>
-                           | DISABLE_TRIGGER ALL
-                           | DISABLE_TRIGGER <ConstraintNameList>
-
-<TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>
-                    | <TriggerName>
-
-<ConstraintNameList> ::= <ConstraintName> ',' <ConstraintNameList>
-                       | <ConstraintName>
-
 <DropTableStatement> ::= DROP TABLE <TableName>
 
 ! =============================================================================
@@ -759,6 +750,15 @@ OUTPUT = OUT(PUT)?
 
 <OptionalNotForReplication> ::= NOT FOR_REPLICATION
                               |
+
+<EnableTriggerStatement> ::= ENABLE_TRIGGER ALL ON <TableName>
+                           | ENABLE_TRIGGER <TriggerNameList> ON <TableName>
+
+<DisableTriggerStatement> ::= DISABLE_TRIGGER ALL ON <TableName>
+                            | DISABLE_TRIGGER <TriggerNameList> ON <TableName>
+
+<TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>
+                    | <TriggerName>
 
 <DropTriggerStatement> ::= DROP TRIGGER <TriggerName>
 

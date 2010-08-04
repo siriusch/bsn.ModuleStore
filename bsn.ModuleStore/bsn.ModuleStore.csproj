@@ -90,6 +90,7 @@
     <Compile Include="Sql\Script\CreateFunctionInlineStatement.cs" />
     <Compile Include="Sql\Script\CreateProcedureStatement.cs" />
     <Compile Include="Sql\Script\CreateTableStatement.cs" />
+    <Compile Include="Sql\Script\CreateViewStatement.cs" />
     <Compile Include="Sql\Script\CursorVariableDeclaration.cs" />
     <Compile Include="Sql\Script\DdlOperation.cs" />
     <Compile Include="Sql\Script\DeclareTableStatement.cs" />
@@ -98,6 +99,8 @@
     <Compile Include="Sql\Script\DropFulltextStatement.cs" />
     <Compile Include="Sql\Script\DropFunctionStatement.cs" />
     <Compile Include="Sql\Script\DropProcedureStatement.cs" />
+    <Compile Include="Sql\Script\DropTableStatement.cs" />
+    <Compile Include="Sql\Script\DropViewStatement.cs" />
     <Compile Include="Sql\Script\ExecuteParameter.cs" />
     <Compile Include="Sql\Script\ExecuteParameterTable.cs" />
     <Compile Include="Sql\Script\ExecuteStatement.cs" />
@@ -184,7 +187,9 @@
     <Compile Include="Sql\Script\ViewName.cs" />
     <Compile Include="Sql\Script\WaitforStatement.cs" />
     <Compile Include="Sql\Script\WhileStatement.cs" />
+    <Compile Include="Sql\Script\WithCheckOption.cs" />
     <Compile Include="Sql\Script\WithRecompile.cs" />
+    <Compile Include="Sql\Script\WithViewMetadata.cs" />
     <Compile Include="Sql\Script\XmlElementName.cs" />
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
   </ItemGroup>

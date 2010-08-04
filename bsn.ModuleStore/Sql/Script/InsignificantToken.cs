@@ -124,9 +124,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("WHILE")]
 	[Terminal("WITH")]
 	[Terminal("WITH_CHANGE_TRACKING")]
-	[Terminal("WITH_CHECK_OPTION")]
 	[Terminal("WITH_FILLFACTOR")]
-	[Terminal("WITH_VIEW_METADATA")]
 	[Terminal("XML_INDEX")]
 	[Terminal("XML_SCHEMA_COLLECTION")]
 	public class InsignificantToken: SqlToken {
