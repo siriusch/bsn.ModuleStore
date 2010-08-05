@@ -16,7 +16,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<FulltextColumnType> ::=", typeof(Qualified<TypeName>))]
 		[Rule("<FulltextColumnGroup> ::=", typeof(Sequence<FulltextColumn>))]
-		[Rule("<OptionalCollate> ::=", typeof(CollationName))]
 		[Rule("<OptionalLanguage> ::=", typeof(LanguageLcid))]
 		[Rule("<OptionalDefault> ::=", typeof(Literal))]
 		[Rule("<OptionalOpenxmlSchema> ::=", typeof(OpenxmlSchema))]
@@ -53,7 +52,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'", typeof(Sequence<FulltextColumn>), ConstructorParameterMapping = new[] {1})]
-		[Rule("<OptionalCollate> ::= COLLATE <CollationName>", typeof(CollationName), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalLanguage> ::= LANGUAGE_LCID", typeof(LanguageLcid))]
 		[Rule("<OptionalDefault> ::= '=' <Literal>", typeof(Literal), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalOpenxmlSchema> ::= <OpenxmlImplicitSchema>", typeof(OpenxmlSchema))]

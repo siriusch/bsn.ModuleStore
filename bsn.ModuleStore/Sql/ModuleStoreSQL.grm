@@ -346,15 +346,10 @@ OUTPUT = OUT(PUT)?
 <OptionalAs> ::= AS
                |
 
-<NullCheck> ::= NULL
-              | NOT NULL
-
 <StringLiteral> ::= StringLiteral
 
-<OptionalCollate> ::= COLLATE <CollationName>
-                    |
-
-<CollableStringLiteral> ::= <StringLiteral> <OptionalCollate>
+<CollableStringLiteral> ::= <StringLiteral> COLLATE <CollationName>
+                          | <StringLiteral>
 
 <IntegerLiteral> ::= IntegerLiteral
                    | HexLiteral
@@ -1010,105 +1005,36 @@ OUTPUT = OUT(PUT)?
 ! Pedicates and Expressions
 ! =============================================================================
 
-<Predicate> ::= <OrExp>
+<Predicate> ::= <PredicateOr>
 
-<OrExp> ::= <AndExp> OR <OrExp>
-          | <AndExp>
+<PredicateOr> ::= <PredicateAnd> OR <PredicateOr>
+                | <PredicateAnd>
 
-<AndExp> ::= <NotExp> AND <AndExp>
-           | <NotExp>
+<PredicateAnd> ::= <PredicateNot> AND <PredicateAnd>
+                 | <PredicateNot>
 
-<NotExp> ::= NOT <PredBetween>
-           | <PredBetween>
+<PredicateNot> ::= NOT <PredicateBetween>
+                 | <PredicateBetween>
 
-<PredBetweenOp> ::= BETWEEN
-                  | NOT BETWEEN
+<PredicateBetween> ::= <Expression> BETWEEN <Expression> AND <Expression>
+                     | <Expression> NOT BETWEEN <Expression> AND <Expression>
+                     | <PredicateNull>
 
-<PredBetween> ::= <Expression> <PredBetweenOp> <Expression> AND <Expression>
-                | <PredNull>
+<PredicateNull> ::= <Expression> IS NULL
+                  | <Expression> IS NOT NULL
+                  | <PredicateLike>
 
-<PredNull> ::= <Expression> IS <NullCheck>
-             | <PredLike>
+<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral>
+                  | <Expression> LIKE <CollableStringLiteral> ESCAPE StringLiteral
+                  | <Expression> NOT LIKE <CollableStringLiteral>
+                  | <Expression> NOT LIKE <CollableStringLiteral> ESCAPE StringLiteral
+                  | <PredicateIn>
 
-<PredLike> ::= <Expression> LIKE <CollableStringLiteral> <OptionalEscape>
-             | <Expression> NOT LIKE <CollableStringLiteral> <OptionalEscape>
-             | <PredIn>
+<PredicateIn> ::= <Expression> IN <Tuple>
+                | <Expression> NOT IN <Tuple>
+                | <PredicateExists>
 
-<PredIn> ::= <Expression> IN <Tuple>
-           | <Expression> NOT IN <Tuple>
-           | <PredExists>
-
-<PredExists> ::= EXISTS '(' <SelectQuery> ')'
-               | <PredExp>
-
-<PredBinaryOp> ::= '='
-                 | '<>'
-                 | '>'
-                 | '>='
-                 | '<'
-                 | '<='
-
-<PredExp> ::= <Expression> <PredBinaryOp> <Expression>
-            | '(' <OrExp> ')'
-
-<OptionalEscape> ::= ESCAPE StringLiteral
-                   |
-
-<Expression> ::= <AddExp>
-
-<AddExp> ::= <MultExp> <AddBinaryOp> <AddExp>
-           | <MultExp>
-
-<AddBinaryOp> ::= '+'
-                | '-'
-
-<MultExp> ::= <MultExp> <MultBinaryOp> <NegateExp> 
-            | <NegateExp>
-
-<MultBinaryOp> ::= '*'
-                 | '/'
-
-<NegateExp> ::= '-' <Function>
-              | <Function>
-
-<Function> ::= <CountFunction>
-             | <CastFunction>
-             | <CoalesceFunction>
-             | <FunctionCall>
-             | <FunctionCall> OVER '(' <PartitionByClause> ')'
-             | <Case>
-             
-<PartitionByClause> ::= PARTITION_BY <ExpressionList> <OptionalOrderClause>
-                      | <OrderClause>
-
-<FunctionCall> ::= <FunctionName> '(' ')'
-                 | <FunctionName> '(' <ExpressionList> ')'
-
-<CountFunction> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'
-
-<CastFunction> ::= CAST_ <Expression> AS <TypeName> ')'
-
-<CoalesceFunction> ::= COALESCE '(' <ExpressionList> ')'
-
-<Case> ::= CASE <Expression> <CaseWhenExpressionList> END
-         | CASE <CaseWhenExpressionList> END
-         | <Value>
-
-<CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>
-                           | <CaseWhenExpression> <CaseElseExpression>
-                           
-<CaseWhenExpression> ::= WHEN <Predicate> THEN <Expression>
-
-<CaseElseExpression> ::= ELSE <Expression>
-                       |
-
-<Value> ::= <CollableValue> <OptionalCollate>
-          | <Literal>
-     
-<CollableValue> ::= <Tuple>
-                  | <SystemVariableName>
-                  | <ColumnNameQualified>
-                  | <VariableName> ! CLR UDT property, field and methods are not yet implemented
+! support for SOME/ANY/ALL comparisons on sets is missing: http://msdn.microsoft.com/en-US/library/ms175064(v=SQL.90).aspx
 
 <Tuple> ::= '(' <SelectQuery> ')'
           | '(' <ExpressionList> ')'
@@ -1116,3 +1042,67 @@ OUTPUT = OUT(PUT)?
 <ExpressionList> ::= <Expression> ',' <ExpressionList>
                    | <Expression>
 
+<PredicateExists> ::= EXISTS '(' <SelectQuery> ')'
+                    | <PredicateCompare>
+
+<PredicateCompare> ::= <Expression> '=' <Expression>
+                     | <Expression> '<>' <Expression>
+                     | <Expression> '>' <Expression>
+                     | <Expression> '>=' <Expression>
+                     | <Expression> '<' <Expression>
+                     | <Expression> '<=' <Expression>
+                     | <PredicateParens>
+
+<PredicateParens> ::= '(' <Predicate> ')'
+
+<Expression> ::= <ExpressionAdd>
+
+<ExpressionAdd> ::= <ExpressionMult> '+' <ExpressionAdd>
+                  | <ExpressionMult> '-' <ExpressionAdd>
+                  | <ExpressionMult>
+
+<ExpressionMult> ::= <ExpressionMult> '*' <ExpressionNegate> 
+                   | <ExpressionMult> '/' <ExpressionNegate> 
+                   | <ExpressionMult> '%' <ExpressionNegate> 
+                   | <ExpressionNegate>
+
+<ExpressionNegate> ::= '-' <ExpressionFunction>
+                     | '+' <ExpressionFunction> ! the "unary plus" also belongs somewhere here
+                     | <ExpressionFunction>
+
+<ExpressionFunction> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'
+                       | CAST_ <Expression> AS <TypeName> ')'
+                       | COALESCE '(' <ExpressionList> ')'
+                       | <FunctionCall>
+                       | <FunctionCall> OVER '(' <PartitionByClause> ')'
+                       | <ExpressionCase>
+             
+<PartitionByClause> ::= PARTITION_BY <ExpressionList> <OptionalOrderClause>
+                      | <OrderClause>
+
+<FunctionCall> ::= <FunctionName> '(' ')'
+                 | <FunctionName> '(' <ExpressionList> ')'
+
+<ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> END
+                   | CASE <CaseWhenExpressionList> END
+                   | <CollatedValue>
+
+<CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>
+                           | <CaseWhenExpression> <CaseElseExpression>
+                           | <CaseWhenExpression>
+                           
+<CaseWhenExpression> ::= WHEN <Predicate> THEN <Expression>
+
+<CaseElseExpression> ::= ELSE <Expression>
+
+<CollatedValue> ::= <Value> COLLATE <CollationName>
+                  | <Value>
+                  | <Literal>
+     
+<Value> ::= <SystemVariableName>
+          | <ColumnNameQualified>
+          | <VariableName> ! CLR UDT property, field and methods are not yet implemented
+          | <ExpressionParens>
+
+<ExpressionParens> ::= '(' <SelectQuery> ')'
+                     | '(' <Expression> ')'

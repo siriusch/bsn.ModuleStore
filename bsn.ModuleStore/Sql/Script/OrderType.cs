@@ -17,7 +17,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (token == null) {
 				order = SortOrder.Unspecified;
 			} else {
-				order = (token.Symbol.Name.Equals("DESC", StringComparison.Ordinal)) ? SortOrder.Descending : SortOrder.Ascending;
+				order = (token.NameIs("DESC")) ? SortOrder.Descending : SortOrder.Ascending;
 			}
 		}
 

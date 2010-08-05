@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Restriction> ::= ALL")]
 		[Rule("<Restriction> ::= DISTINCT")]
 		public DuplicateRestriction(IToken token) {
-			distinct = (token != null) && token.Symbol.Name.Equals("DISTINCT", StringComparison.Ordinal);
+			distinct = (token != null) && token.NameIs("DISTINCT");
 		}
 
 		public bool Distinct {

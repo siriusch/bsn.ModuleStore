@@ -12,7 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public TopExpression(): this(null, null, null) {}
 
 		[Rule("<TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>", ConstructorParameterMapping = new[] {1, 2})]
-		public TopExpression(IntegerLiteral integerLiteral, Optional<Percent> percent): this(new Expression(integerLiteral), percent, null) {}
+		public TopExpression(IntegerLiteral integerLiteral, Optional<Percent> percent): this(integerLiteral, percent, null) {}
 
 		[Rule("<Top> ::= TOP '(' <Expression> ')' <OptionalPercent> <OptionalWithTies>", ConstructorParameterMapping = new[] {2, 4, 5})]
 		public TopExpression(Expression expression, Optional<Percent> percent, Optional<WithTies> withTies) {

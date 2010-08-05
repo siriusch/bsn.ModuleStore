@@ -72,7 +72,9 @@
     <Compile Include="Sql\Script\AlterTableDropConstraintStatement.cs" />
     <Compile Include="Sql\Script\AlterTableStatement.cs" />
     <Compile Include="Sql\Script\AnyStatement.cs" />
+    <Compile Include="Sql\Script\BinaryExpression.cs" />
     <Compile Include="Sql\Script\BreakStatement.cs" />
+    <Compile Include="Sql\Script\Collable.cs" />
     <Compile Include="Sql\Script\ColumnCheckConstraint.cs" />
     <Compile Include="Sql\Script\ColumnCollateConstraint.cs" />
     <Compile Include="Sql\Script\ColumnDefaultConstraint.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="Sql\Script\DeleteStatement.cs" />
     <Compile Include="Sql\Script\DestinationRowset.cs" />
     <Compile Include="Sql\Script\DuplicateRestriction.cs" />
+    <Compile Include="Sql\Script\ExpressionTuple.cs" />
     <Compile Include="Sql\Script\ForXmlKind.cs" />
     <Compile Include="Sql\Script\FromClause.cs" />
     <Compile Include="Sql\Script\FunctionCall.cs" />
@@ -104,10 +107,19 @@
     <Compile Include="Sql\Script\JoinKind.cs" />
     <Compile Include="Sql\Script\Order.cs" />
     <Compile Include="Sql\Script\OutputClause.cs" />
+    <Compile Include="Sql\Script\Parens.cs" />
     <Compile Include="Sql\Script\Percent.cs" />
     <Compile Include="Sql\Script\ForBrowsingClause.cs" />
     <Compile Include="Sql\Script\ForClause.cs" />
     <Compile Include="Sql\Script\ForXmlClause.cs" />
+    <Compile Include="Sql\Script\PredicateBetween.cs" />
+    <Compile Include="Sql\Script\PredicateBinaryOperation.cs" />
+    <Compile Include="Sql\Script\PredicateExists.cs" />
+    <Compile Include="Sql\Script\PredicateIn.cs" />
+    <Compile Include="Sql\Script\PredicateLike.cs" />
+    <Compile Include="Sql\Script\PredicateNegable.cs" />
+    <Compile Include="Sql\Script\PredicateNot.cs" />
+    <Compile Include="Sql\Script\PredicateNull.cs" />
     <Compile Include="Sql\Script\SelectFromQuery.cs" />
     <Compile Include="Sql\Script\SelectQuery.cs" />
     <Compile Include="Sql\Script\SourceFunctionRowset.cs" />
@@ -116,9 +128,9 @@
     <Compile Include="Sql\Script\SourceRowset.cs" />
     <Compile Include="Sql\Script\SourceTableRowset.cs" />
     <Compile Include="Sql\Script\SourceTableVariableRowset.cs" />
+    <Compile Include="Sql\Script\SqlComputable.cs" />
     <Compile Include="Sql\Script\TableCheckConstraint.cs" />
     <Compile Include="Sql\Script\CloseStatement.cs" />
-    <Compile Include="Sql\Script\CollatedStringLiteral.cs" />
     <Compile Include="Sql\Script\CollationName.cs" />
     <Compile Include="Sql\Script\ColumnConstraint.cs" />
     <Compile Include="Sql\Script\ColumnDefinition.cs" />
@@ -196,6 +208,7 @@
     <Compile Include="Sql\Script\TableDefinition.cs" />
     <Compile Include="Sql\Script\TopExpression.cs" />
     <Compile Include="Sql\Script\TriggerOperation.cs" />
+    <Compile Include="Sql\Script\Tuple.cs" />
     <Compile Include="Sql\Script\TypedColumnDefinition.cs" />
     <Compile Include="Sql\Script\TypedVariableDeclaration.cs" />
     <Compile Include="Sql\Script\UnionClause.cs" />
@@ -232,7 +245,6 @@
     <Compile Include="Sql\Script\SetVariableStatement.cs" />
     <Compile Include="Sql\Script\SqlIdentifier.cs" />
     <Compile Include="Sql\Script\InsignificantToken.cs" />
-    <Compile Include="Sql\Script\NullCheck.cs" />
     <Compile Include="Sql\Script\OpenxmlColumn.cs" />
     <Compile Include="Sql\Script\Qualified.cs" />
     <Compile Include="Sql\Script\Sequence.cs" />

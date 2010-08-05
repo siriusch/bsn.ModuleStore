@@ -15,7 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<UnionClause> ::= UNION ALL <SelectQuery>", ConstructorParameterMapping = new[] {1, 2})]
 		public UnionClause(IToken all, SelectQuery selectQuery): this() {
 			this.selectQuery = selectQuery;
-			this.all = all.Symbol.Name.Equals("ALL", StringComparison.Ordinal);
+			this.all = all.NameIs("ALL");
 		}
 	}
 }

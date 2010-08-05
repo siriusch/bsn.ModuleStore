@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class Literal: SqlToken {}
+	public abstract class Literal: Expression {}
 
 	public abstract class Literal<T>: Literal where T: IConvertible {
 		private readonly T value;

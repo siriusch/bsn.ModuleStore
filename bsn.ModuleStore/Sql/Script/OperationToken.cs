@@ -8,6 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("-")]
 	[Terminal("/")]
 	[Terminal("*")]
+	[Terminal("%")]
 	[Terminal("=")]
 	[Terminal("<>")]
 	[Terminal(">")]

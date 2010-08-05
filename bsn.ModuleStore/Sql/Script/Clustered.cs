@@ -15,7 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ConstraintCluster> ::= NONCLUSTERED")]
 		private Clustered(IToken token) {
 			if (token != null) {
-				clustered = token.Symbol.Name.Equals("CLUSTERED", StringComparison.Ordinal);
+				clustered = token.NameIs("CLUSTERED");
 			}
 		}
 	}

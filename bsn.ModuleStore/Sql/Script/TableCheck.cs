@@ -15,7 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TableCheck> ::= WITH CHECK", ConstructorParameterMapping = new[] {1})]
 		[Rule("<TableCheck> ::= WITH NOCHECK", ConstructorParameterMapping = new[] {1})]
 		public TableCheck(IToken check) {
-			this.check = check.Symbol.Name.Equals("CHECK", StringComparison.Ordinal);
+			this.check = check.NameIs("CHECK");
 		}
 
 		public bool? Check {

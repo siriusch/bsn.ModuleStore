@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ColumnConstraint> ::= NULL")]
 		[Rule("<ColumnConstraint> ::= NOT NULL", AllowTruncationForConstructor = true)]
 		public ColumnNullableConstraint(IToken token) {
-			nullable = token.Symbol.Name.Equals("NULL", StringComparison.Ordinal);
+			nullable = token.NameIs("NULL");
 		}
 	}
 }
