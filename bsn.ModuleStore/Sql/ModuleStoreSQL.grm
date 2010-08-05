@@ -700,11 +700,14 @@ OUTPUT = OUT(PUT)?
 
 ! We don't support the ON option, filegroup is managed by module manager
 
-<CreateIndexStatement> ::= CREATE <ConstraintUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' INCLUDE_ <ColumnNameList> ')' <IndexOptionGroup>
+<CreateIndexStatement> ::= CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' INCLUDE_ <ColumnNameList> ')' <IndexOptionGroup>
                          | CREATE <IndexPrimary> XML_INDEX <IndexName> ON <TableName> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
 
 <IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>
                     | <IndexColumn>
+
+<IndexOptionalUnique> ::= UNIQUE
+                        |
 
 <IndexColumn> ::= <ColumnName> <OrderType> 
 
@@ -830,9 +833,6 @@ OUTPUT = OUT(PUT)?
 
 <ConstraintPrimaryKey> ::= PRIMARY KEY
                          | UNIQUE
-
-<ConstraintUnique> ::= UNIQUE
-                     |
 
 <ConstraintCluster> ::= CLUSTERED
                       | NONCLUSTERED

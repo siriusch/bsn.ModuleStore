@@ -25,7 +25,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ProcedureParameterList> ::= <ProcedureParameter>", typeof(ProcedureParameter))]
 		[Rule("<ExecuteParameterList> ::= <ExecuteParameter>", typeof(ExecuteParameter))]
 		[Rule("<TableDefinitionList> ::= <TableDefinition>", typeof(TableDefinition))]
-		public Sequence(T item): this(item, null) {}
+		[Rule("<IndexColumnList> ::= <IndexColumn>", typeof(IndexColumn))]
+		[Rule("<IndexOptionList> ::= <IndexOption>", typeof(IndexOption))]
+		public Sequence(T item) : this(item, null) {
+		}
 
 		[Rule("<ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>", typeof(ColumnName), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(SqlStatement), ConstructorParameterMapping = new[] {0, 2})]
@@ -38,6 +41,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ProcedureParameterList> ::= <ProcedureParameter> ',' <ProcedureParameterList>", typeof(ProcedureParameter), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<ExecuteParameterList> ::= <ExecuteParameter> ',' <ExecuteParameterList>", typeof(ExecuteParameter), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<TableDefinitionList> ::= <TableDefinition> ',' <TableDefinitionList>", typeof(TableDefinition), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>", typeof(IndexColumn), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<IndexOptionList> ::= <IndexOption> ',' <IndexOptionList>", typeof(IndexOption), ConstructorParameterMapping = new[] {0, 2})]
 		public Sequence(T item, Sequence<T> next) {
 			this.next = next;
 			this.item = item;

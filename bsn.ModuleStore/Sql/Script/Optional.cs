@@ -33,6 +33,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ViewOptionalAttribute> ::=", typeof(WithViewMetadata))]
 		[Rule("<ViewOptionalCheckOption> ::=", typeof(WithCheckOption))]
 		[Rule("<ColumnNameGroup> ::=", typeof(Sequence<ColumnName>))]
+		[Rule("<IndexOptionalUnique> ::=", typeof(Unique))]
+		[Rule("<IndexOptionGroup> ::=", typeof(Sequence<IndexOption>))]
+		[Rule("<IndexPrimary> ::=", typeof(Primary))]
 		public Optional(): this(null) {}
 
 		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
@@ -55,6 +58,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ViewOptionalAttribute> ::= WITH_VIEW_METADATA", typeof(WithViewMetadata))]
 		[Rule("<ViewOptionalCheckOption> ::= WITH_CHECK_OPTION", typeof(WithCheckOption))]
 		[Rule("<ColumnNameGroup> ::= '(' <ColumnNameList> ')'", typeof(Sequence<ColumnName>), ConstructorParameterMapping=new[] { 1 })]
+		[Rule("<IndexOptionalUnique> ::= UNIQUE", typeof(Unique))]
+		[Rule("<IndexOptionGroup> ::= WITH '(' <IndexOptionList> ')'", typeof(Sequence<IndexOption>), ConstructorParameterMapping = new[] {2})]
+		[Rule("<IndexPrimary> ::= PRIMARY", typeof(Primary))]
 		public Optional(T value) {
 			this.value = value;
 		}
