@@ -89,6 +89,7 @@
     <Compile Include="Sql\Script\ColumnWildcardItem.cs" />
     <Compile Include="Sql\Script\CommonTableExpression.cs" />
     <Compile Include="Sql\Script\DuplicateRestriction.cs" />
+    <Compile Include="Sql\Script\ForXmlKind.cs" />
     <Compile Include="Sql\Script\FromClause.cs" />
     <Compile Include="Sql\Script\FunctionCall.cs" />
     <Compile Include="Sql\Script\Join.cs" />
@@ -96,6 +97,9 @@
     <Compile Include="Sql\Script\Order.cs" />
     <Compile Include="Sql\Script\OutputClause.cs" />
     <Compile Include="Sql\Script\Percent.cs" />
+    <Compile Include="Sql\Script\ForBrowsingClause.cs" />
+    <Compile Include="Sql\Script\ForClause.cs" />
+    <Compile Include="Sql\Script\ForXmlClause.cs" />
     <Compile Include="Sql\Script\SelectFromQuery.cs" />
     <Compile Include="Sql\Script\SelectQuery.cs" />
     <Compile Include="Sql\Script\SourceFunctionRowset.cs" />
@@ -251,7 +255,7 @@
     <Compile Include="Sql\Script\WithRecompile.cs" />
     <Compile Include="Sql\Script\WithTies.cs" />
     <Compile Include="Sql\Script\WithViewMetadata.cs" />
-    <Compile Include="Sql\Script\XmlElementName.cs" />
+    <Compile Include="Sql\Script\XmlDirective.cs" />
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
   </ItemGroup>
   <ItemGroup>

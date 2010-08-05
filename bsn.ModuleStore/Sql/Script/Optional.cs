@@ -47,6 +47,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalAlias> ::=", typeof(AliasName))]
 		[Rule("<OptionalPercent> ::=", typeof(Percent))]
 		[Rule("<OptionalWithTies> ::=", typeof(WithTies))]
+		[Rule("<OptionalElementName> ::=", typeof(StringLiteral))]
 		public Optional(): this(null) {}
 
 		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
@@ -84,6 +85,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalAlias> ::= <OptionalAs> <AliasName>", typeof(AliasName), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalPercent> ::= PERCENT", typeof(Percent))]
 		[Rule("<OptionalWithTies> ::= WITH_TIES", typeof(WithTies))]
+		[Rule("<OptionalElementName> ::= '(' StringLiteral ')'", typeof(StringLiteral), ConstructorParameterMapping = new[] {1})]
 		public Optional(T value) {
 			this.value = value;
 		}

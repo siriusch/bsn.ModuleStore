@@ -233,7 +233,10 @@ WRITETEXT = WRITETEXT
 ! Compound reserved words to keep the grammar context-free
 RETURNS_NULL_ON_NULL_INPUT = RETURNS{Whitespace}+NULL{Whitespace}+ON{Whitespace}+NULL{Whitespace}+INPUT
 CALLED_ON_NULL_INPUT = CALLED{Whitespace}+ON{Whitespace}+NULL{Whitespace}+INPUT
-FOR_XML = FOR{Whitespace}+XML
+FOR_XML_AUTO = FOR{Whitespace}+XML{Whitespace}+AUTO
+FOR_XML_RAW = FOR{Whitespace}+XML{Whitespace}+RAW
+FOR_XML_EXPLICIT = FOR{Whitespace}+XML{Whitespace}+EXPLICIT
+FOR_XML_PATH = FOR{Whitespace}+XML{Whitespace}+PATH
 FOR_PATH = FOR{Whitespace}+PATH
 FOR_UPDATE = FOR{Whitespace}+UPDATE
 FOR_VALUE = FOR{Whitespace}+VALUE
@@ -337,8 +340,6 @@ OUTPUT = OUT(PUT)?
 <VariableName> ::= LocalId
 
 <ViewName> ::= Id
-
-<XmlElementName> ::= Id
 
 <XmlSchemaCollectionName> ::= Id
 
@@ -919,7 +920,7 @@ OUTPUT = OUT(PUT)?
 ! SELECT Statement
 ! =============================================================================
 
-<SelectStatement> ::= <CTEGroup> <SelectQuery> <SelectFor>
+<SelectStatement> ::= <CTEGroup> <SelectQuery> <ForClause>
 
 <SelectQuery> ::= SELECT <TopLegacy> <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
                 | SELECT <TopLegacy> <Restriction> <ColumnItemList> <IntoClause> <UnionClause>
@@ -992,17 +993,26 @@ OUTPUT = OUT(PUT)?
                 | UNION ALL <SelectQuery>
                 |
 
-<SelectFor> ::= FOR BROWSE
-              | FOR_XML <SelectForList>
+<ForClause> ::= FOR BROWSE
+              | FOR_XML_AUTO
+              | FOR_XML_AUTO <XmlDirectiveList>
+              | FOR_XML_RAW <OptionalElementName>
+              | FOR_XML_RAW <OptionalElementName> <XmlDirectiveList>
+              | FOR_XML_EXPLICIT
+              | FOR_XML_EXPLICIT <XmlDirectiveList>
+              | FOR_XML_PATH <OptionalElementName>
+              | FOR_XML_PATH <OptionalElementName> <XmlDirectiveList>
               |
 
-<SelectForList> ::= <SelectForIdList>
-                  | <SelectForIdList> ',' <SelectForList>
+<OptionalElementName> ::= '(' StringLiteral ')'
+                        |
 
-<SelectForIdList> ::= Id <SelectForIdList>
-                    | Id '(' <XmlElementName> ')'
-                    | Id '(' <StringLiteral> ')'
-                    | Id
+<XmlDirectiveList> ::= <XmlDirective> ',' <XmlDirectiveList>
+                     | <XmlDirective>
+
+<XmlDirective> ::= Id
+                 | Id Id
+                 | Id '(' <StringLiteral> ')'
            
 ! ============================================================================= 
 ! Pedicates and Expressions
