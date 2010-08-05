@@ -38,6 +38,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OrderList> ::= <Order>", typeof(Order))]
 		[Rule("<ExpressionList> ::= <Expression>", typeof(Expression))]
 		[Rule("<XmlDirectiveList> ::= <XmlDirective>", typeof(XmlDirective))]
+		[Rule("<UpdateItemList> ::= <UpdateItem>", typeof(UpdateItem))]
 		public Sequence(T item): this(item, null) {}
 
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
@@ -63,6 +64,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OrderList> ::= <Order> ',' <OrderList>", typeof(Order), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<ExpressionList> ::= <Expression> ',' <ExpressionList>", typeof(Expression), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<XmlDirectiveList> ::= <XmlDirective> ',' <XmlDirectiveList>", typeof(XmlDirective), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<UpdateItemList> ::= <UpdateItem> ',' <UpdateItemList>", typeof(UpdateItem), ConstructorParameterMapping = new[] {0, 2})]
 		public Sequence(T item, Sequence<T> next) {
 			if (next != null) {
 				if (next.Item != null) {

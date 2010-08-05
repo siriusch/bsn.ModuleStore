@@ -200,6 +200,7 @@
     <Compile Include="Sql\Script\UnionClause.cs" />
     <Compile Include="Sql\Script\Unique.cs" />
     <Compile Include="Sql\Script\TableUniqueConstraint.cs" />
+    <Compile Include="Sql\Script\UpdateItem.cs" />
     <Compile Include="Sql\Script\UpdateMode.cs" />
     <Compile Include="Sql\Script\Predicate.cs" />
     <Compile Include="Sql\Script\SqlCreateStatement.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Sql\Script\TriggerName.cs" />
     <Compile Include="Sql\Script\TryCatchStatement.cs" />
     <Compile Include="Sql\Script\TypeName.cs" />
+    <Compile Include="Sql\Script\UpdateStatement.cs" />
     <Compile Include="Sql\Script\VariableDeclaration.cs" />
     <Compile Include="Sql\Script\VariableName.cs" />
     <Compile Include="Sql\Script\Varying.cs" />

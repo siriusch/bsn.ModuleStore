@@ -887,17 +887,16 @@ OUTPUT = OUT(PUT)?
 ! UPDATE Statement
 ! =============================================================================
 
-<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateColumnList> <OutputClause> <OptionalFromClause> <WhereClause>
+<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause>
 
-<UpdateColumnList> ::= <UpdateColumn> ',' <UpdateColumnList>
-                     | <UpdateColumn>
+<UpdateItemList> ::= <UpdateItem> ',' <UpdateItemList>
+                   | <UpdateItem>
 
-<UpdateColumn> ::= <ColumnNameQualified> '=' <ExpressionOrDefault>
-                 | <VariableName> '=' <Expression>
-                 | <VariableName> '=' <ColumnNameQualified> '=' <Expression>
-
-<ExpressionOrDefault> ::= <Expression>
-                        | DEFAULT
+<UpdateItem> ::= <ColumnNameQualified> '=' <Expression>
+!               | <ColumnNameQualified> '=' <ColumnNameQualified> .WRITE -- syntax not yet implemented
+               | <ColumnNameQualified> '=' DEFAULT
+               | <VariableName> '=' <Expression>
+               | <VariableName> '=' <ColumnNameQualified> '=' <Expression>
 
 <OptionalFromClause> ::= <FromClause>
                        |
