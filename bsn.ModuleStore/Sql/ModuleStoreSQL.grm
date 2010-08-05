@@ -866,16 +866,10 @@ OUTPUT = OUT(PUT)?
 <OptionalWithTies> ::= WITH_TIES
                      |
 
-<OutputClause> ::= OUTPUT <OutputColumnList>
-                 | OUTPUT <OutputColumnList> INTO <TableName> <ColumnNameGroup>
-                 | OUTPUT <OutputColumnList> INTO <VariableName> <ColumnNameGroup>
+<OutputClause> ::= OUTPUT <ColumnItemList>
+                 | OUTPUT <ColumnItemList> INTO <TableName> <ColumnNameGroup>
+                 | OUTPUT <ColumnItemList> INTO <VariableName> <ColumnNameGroup>
                  |
-
-<OutputColumnList> ::= <OutputColumn> ',' <OutputColumnList>
-                     | <OutputColumn>
-
-<OutputColumn> ::= <ColumnWildQualified> <OptionalAs> ! this includes DELETED and INSERTED pseudo-table names
-                 | <Expression> <OptionalAs>
 
 ! =============================================================================
 ! INSERT Statement

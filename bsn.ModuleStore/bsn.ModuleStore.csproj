@@ -94,6 +94,7 @@
     <Compile Include="Sql\Script\Join.cs" />
     <Compile Include="Sql\Script\JoinKind.cs" />
     <Compile Include="Sql\Script\Order.cs" />
+    <Compile Include="Sql\Script\OutputClause.cs" />
     <Compile Include="Sql\Script\Percent.cs" />
     <Compile Include="Sql\Script\SelectFromQuery.cs" />
     <Compile Include="Sql\Script\SelectQuery.cs" />

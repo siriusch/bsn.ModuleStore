@@ -6,7 +6,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script;
 
 [assembly: RuleTrim("<FunctionInlineSelect> ::= '(' <FunctionInlineSelect> ')'", "<FunctionInlineSelect>", SemanticTokenType = typeof(SqlToken))]
-[assembly: RuleTrim("<OrderClause> ::= ORDER BY <OrderList>", "<OrderList>", SemanticTokenType=typeof(SqlToken))]
+[assembly: RuleTrim("<OrderClause> ::= ORDER BY <OrderList>", "<OrderList>", SemanticTokenType = typeof(SqlToken))]
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateFunctionStatement<TBody>: SqlCreateStatement where TBody: SqlStatement {

@@ -1,4 +1,6 @@
-﻿namespace bsn.ModuleStore.Sql.Script {
+﻿using System;
+
+namespace bsn.ModuleStore.Sql.Script {
 	public enum JoinKind {
 		Cross,
 		Inner,

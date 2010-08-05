@@ -37,8 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ColumnItemList> ::= <ColumnItem>", typeof(ColumnItem))]
 		[Rule("<OrderList> ::= <Order>", typeof(Order))]
 		[Rule("<ExpressionList> ::= <Expression>", typeof(Expression))]
-		public Sequence(T item) : this(item, null) {
-		}
+		public Sequence(T item): this(item, null) {}
 
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
 		[Rule("<ForeignKeyActionList> ::= <ForeignKeyAction> <ForeignKeyActionList>", typeof(ForeignKeyAction))]

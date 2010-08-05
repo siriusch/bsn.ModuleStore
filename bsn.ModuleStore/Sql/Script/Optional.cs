@@ -47,11 +47,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalAlias> ::=", typeof(AliasName))]
 		[Rule("<OptionalPercent> ::=", typeof(Percent))]
 		[Rule("<OptionalWithTies> ::=", typeof(WithTies))]
-		public Optional()
-			: this(null) {
-		}
+		public Optional(): this(null) {}
 
-		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping=new[] { 1 })]
+		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'", typeof(Sequence<FulltextColumn>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalCollate> ::= COLLATE <CollationName>", typeof(CollationName), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalLanguage> ::= LANGUAGE_LCID", typeof(LanguageLcid))]
@@ -78,9 +76,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalForeignRefColumn> ::= '(' <ColumnName> ')'", typeof(ColumnName), ConstructorParameterMapping = new[] {1})]
 		[Rule("<CTEGroup> ::= WITH <CTEList>", typeof(Sequence<CommonTableExpression>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<IntoClause> ::= INTO <TableName>", typeof(SqlName), ConstructorParameterMapping = new[] {1})]
-		[Rule("<IntoClause> ::= INTO <VariableName>", typeof(SqlName), ConstructorParameterMapping=new[] { 1 })]
+		[Rule("<IntoClause> ::= INTO <VariableName>", typeof(SqlName), ConstructorParameterMapping = new[] {1})]
 		[Rule("<WhereClause> ::= WHERE <Predicate>", typeof(Predicate), ConstructorParameterMapping = new[] {1})]
-		[Rule("<GroupClause> ::= GROUP BY <ExpressionList>", typeof(Sequence<Expression>), ConstructorParameterMapping=new[] { 2 })]
+		[Rule("<GroupClause> ::= GROUP BY <ExpressionList>", typeof(Sequence<Expression>), ConstructorParameterMapping = new[] {2})]
 		[Rule("<HavingClause> ::= HAVING <Predicate>", typeof(Predicate), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalOrderClause> ::= <OrderClause>", typeof(Sequence<Order>))]
 		[Rule("<OptionalAlias> ::= <OptionalAs> <AliasName>", typeof(AliasName), ConstructorParameterMapping = new[] {1})]

@@ -1,4 +1,6 @@
-﻿namespace bsn.ModuleStore.Sql.Script {
+﻿using System;
+
+namespace bsn.ModuleStore.Sql.Script {
 	public abstract class ColumnNamedConstraintBase: ColumnConstraint {
 		private readonly ConstraintName constraintName;
 
