@@ -94,7 +94,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("OUTER")]
 	[Terminal("OVER")]
 	[Terminal("PARTITION_BY")]
-	[Terminal("PERCENT")]
 	[Terminal("PRINT")]
 	[Terminal("PROCEDURE")]
 	[Terminal("PUBLIC")]

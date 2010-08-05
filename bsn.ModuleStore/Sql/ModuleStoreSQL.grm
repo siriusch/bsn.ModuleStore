@@ -244,6 +244,7 @@ XML_SCHEMA_COLLECTION = XML{Whitespace}+SCHEMA{Whitespace}+COLLECTION
 USING_XML_INDEX = USING{Whitespace}+XML{Whitespace}+INDEX
 WITH_CHANGE_TRACKING = WITH{Whitespace}+CHANGE_TRACKING
 WITH_RECOMPILE = WITH{Whitespace}+RECOMPILE
+WITH_TIES = WITH{Whitespace}+TIES
 WITH_VIEW_METADATA = WITH{Whitespace}+VIEW_METADATA
 WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 ENABLE_TRIGGER = ENABLE{Whitespace}+TRIGGER
@@ -854,17 +855,21 @@ OUTPUT = OUT(PUT)?
 <CTEList> ::= <CTE> ',' <CTEList>
             | <CTE>
 
-<CTE> ::= <AliasName> AS '(' <SelectGroup> ')'
+<CTE> ::= <AliasName> AS '(' <SelectQuery> ')'
 
-<Top> ::= TOP '(' <Expression> ')' <OptionalPercent>
+<Top> ::= TOP '(' <Expression> ')' <OptionalPercent> <OptionalWithTies>
         |
 
-<OptionalOutputClause> ::= OUTPUT <OutputColumnList> <OutputIntoClause>
-                         |
+<OptionalPercent> ::= PERCENT
+                    |
 
-<OutputIntoClause> ::= INTO <TableName> <ColumnNameGroup>
-                     | INTO <VariableName> <ColumnNameGroup>
+<OptionalWithTies> ::= WITH_TIES
                      |
+
+<OutputClause> ::= OUTPUT <OutputColumnList>
+                 | OUTPUT <OutputColumnList> INTO <TableName> <ColumnNameGroup>
+                 | OUTPUT <OutputColumnList> INTO <VariableName> <ColumnNameGroup>
+                 |
 
 <OutputColumnList> ::= <OutputColumn> ',' <OutputColumnList>
                      | <OutputColumn>
@@ -878,21 +883,21 @@ OUTPUT = OUT(PUT)?
 
 <InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <InsertData>
 
-<InsertData> ::= <ColumnNameGroup> <OptionalOutputClause> <InsertSource>
+<InsertData> ::= <ColumnNameGroup> <OutputClause> <InsertSource>
                | DEFAULT VALUES
 
 <OptionalInto> ::= INTO
                  |
 
 <InsertSource> ::= VALUES '(' <ExpressionList> ')'
-                 | <SelectGroup>
+                 | <SelectQuery>
                  | <ExecuteStatement>
 
 ! =============================================================================
 ! UPDATE Statement
 ! =============================================================================
 
-<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateColumnList> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
+<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateColumnList> <OutputClause> <OptionalFromClause> <WhereClause>
 
 <UpdateColumnList> ::= <UpdateColumn> ',' <UpdateColumnList>
                      | <UpdateColumn>
@@ -911,7 +916,7 @@ OUTPUT = OUT(PUT)?
 ! DELETE Statement
 ! =============================================================================
 
-<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <DestinationRowset> <OptionalOutputClause> <OptionalFromClause> <WhereClause>
+<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause>
 
 <OptionalFrom> ::= FROM
                  |
@@ -920,20 +925,16 @@ OUTPUT = OUT(PUT)?
 ! SELECT Statement
 ! =============================================================================
 
-<SelectStatement> ::= <CTEGroup> <SelectGroup> <SelectFor>
+<SelectStatement> ::= <CTEGroup> <SelectQuery> <SelectFor>
 
-<SelectGroup> ::= SELECT <TopLegacy> <Columns> <IntoClause> <FromClauseFull> <UnionClause>
+<SelectQuery> ::= SELECT <TopLegacy> <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <TopLegacy> <Restriction> <ColumnItemList> <IntoClause> <UnionClause>
 
 <TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>
               | <Top>
 
-<OptionalPercent> ::= PERCENT
-                    |
-
-<Columns> ::= <Restriction> <ColumnList>
-
-<ColumnList> ::= <ColumnItem> ',' <ColumnList>
-               | <ColumnItem>
+<ColumnItemList> ::= <ColumnItem> ',' <ColumnItemList>
+                   | <ColumnItem>
 
 <ColumnItem> ::= <ColumnWildQualified>
                | <Expression> <OptionalAlias>
@@ -948,29 +949,22 @@ OUTPUT = OUT(PUT)?
 
 <FromClause> ::= FROM <SourceRowset> <JoinChain>
 
-<FromClauseFull> ::= <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> 
-               |
-
 <JoinChain> ::= <Join> <JoinChain>
               |
 
-<Join> ::= <JoinKind> JOIN <SourceRowset> ON <Predicate>
+<Join> ::= JOIN <SourceRowset> ON <Predicate>
+         | INNER JOIN <SourceRowset> ON <Predicate>
+         | LEFT JOIN <SourceRowset> ON <Predicate>
+         | LEFT OUTER JOIN <SourceRowset> ON <Predicate>
+         | RIGHT JOIN <SourceRowset> ON <Predicate>
+         | RIGHT OUTER JOIN <SourceRowset> ON <Predicate>
+         | FULL JOIN <SourceRowset> ON <Predicate>
+         | FULL OUTER JOIN <SourceRowset> ON <Predicate>
          | CROSS JOIN <SourceRowset>
-
-<JoinKind> ::= <OptionalInner>
-             | LEFT <OptionalOuter>
-             | RIGHT <OptionalOuter>
-             | FULL <OptionalOuter>
-
-<OptionalInner> ::= INNER
-                  |
-
-<OptionalOuter> ::= OUTER
-                  |
 
 <SourceRowset> ::= <VariableName> <OptionalAlias>
                  | <TableNameQualified> <OptionalAlias>
-                 | '(' <SelectGroup> ')' <OptionalAlias>
+                 | '(' <SelectQuery> ')' <OptionalAlias>
                  | <Openxml> <OptionalAlias>
                  | <FunctionCall> <OptionalAlias>
 
@@ -1000,8 +994,8 @@ OUTPUT = OUT(PUT)?
 <HavingClause> ::= HAVING <Predicate>
                  |
 
-<UnionClause> ::= UNION <SelectGroup>
-                | UNION ALL <SelectGroup>
+<UnionClause> ::= UNION <SelectQuery>
+                | UNION ALL <SelectQuery>
                 |
 
 <SelectFor> ::= FOR BROWSE
@@ -1048,7 +1042,7 @@ OUTPUT = OUT(PUT)?
            | <Expression> NOT IN <Tuple>
            | <PredExists>
 
-<PredExists> ::= EXISTS '(' <SelectGroup> ')'
+<PredExists> ::= EXISTS '(' <SelectQuery> ')'
                | <PredExp>
 
 <PredBinaryOp> ::= '='
@@ -1120,7 +1114,7 @@ OUTPUT = OUT(PUT)?
                   | <ColumnNameQualified>
                   | <VariableName> ! CLR UDT property, field and methods are not yet implemented
 
-<Tuple> ::= '(' <SelectGroup> ')'
+<Tuple> ::= '(' <SelectQuery> ')'
           | '(' <ExpressionList> ')'
 
 <ExpressionList> ::= <Expression> ',' <ExpressionList>

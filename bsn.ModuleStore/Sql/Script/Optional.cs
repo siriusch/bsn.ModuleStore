@@ -38,9 +38,20 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexPrimary> ::=", typeof(Primary))]
 		[Rule("<OptionalNotForReplication> ::=", typeof(ForReplication))]
 		[Rule("<OptionalForeignRefColumn> ::=", typeof(ColumnName))]
-		public Optional(): this(null) {}
+		[Rule("<CTEGroup> ::=", typeof(Sequence<CommonTableExpression>))]
+		[Rule("<IntoClause> ::=", typeof(SqlName))]
+		[Rule("<WhereClause> ::=", typeof(Predicate))]
+		[Rule("<GroupClause> ::=", typeof(Sequence<Expression>))]
+		[Rule("<HavingClause> ::=", typeof(Predicate))]
+		[Rule("<OptionalOrderClause> ::=", typeof(Sequence<Order>))]
+		[Rule("<OptionalAlias> ::=", typeof(AliasName))]
+		[Rule("<OptionalPercent> ::=", typeof(Percent))]
+		[Rule("<OptionalWithTies> ::=", typeof(WithTies))]
+		public Optional()
+			: this(null) {
+		}
 
-		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
+		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping=new[] { 1 })]
 		[Rule("<FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'", typeof(Sequence<FulltextColumn>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalCollate> ::= COLLATE <CollationName>", typeof(CollationName), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalLanguage> ::= LANGUAGE_LCID", typeof(LanguageLcid))]
@@ -65,6 +76,16 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexPrimary> ::= PRIMARY", typeof(Primary))]
 		[Rule("<OptionalNotForReplication> ::= NOT FOR_REPLICATION", typeof(ForReplication), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalForeignRefColumn> ::= '(' <ColumnName> ')'", typeof(ColumnName), ConstructorParameterMapping = new[] {1})]
+		[Rule("<CTEGroup> ::= WITH <CTEList>", typeof(Sequence<CommonTableExpression>), ConstructorParameterMapping = new[] {1})]
+		[Rule("<IntoClause> ::= INTO <TableName>", typeof(SqlName), ConstructorParameterMapping = new[] {1})]
+		[Rule("<IntoClause> ::= INTO <VariableName>", typeof(SqlName), ConstructorParameterMapping=new[] { 1 })]
+		[Rule("<WhereClause> ::= WHERE <Predicate>", typeof(Predicate), ConstructorParameterMapping = new[] {1})]
+		[Rule("<GroupClause> ::= GROUP BY <ExpressionList>", typeof(Sequence<Expression>), ConstructorParameterMapping=new[] { 2 })]
+		[Rule("<HavingClause> ::= HAVING <Predicate>", typeof(Predicate), ConstructorParameterMapping = new[] {1})]
+		[Rule("<OptionalOrderClause> ::= <OrderClause>", typeof(Sequence<Order>))]
+		[Rule("<OptionalAlias> ::= <OptionalAs> <AliasName>", typeof(AliasName), ConstructorParameterMapping = new[] {1})]
+		[Rule("<OptionalPercent> ::= PERCENT", typeof(Percent))]
+		[Rule("<OptionalWithTies> ::= WITH_TIES", typeof(WithTies))]
 		public Optional(T value) {
 			this.value = value;
 		}

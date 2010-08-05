@@ -15,6 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CursorOptionList> ::=", typeof(Identifier))]
 		[Rule("<ForeignKeyActionList> ::=", typeof(ForeignKeyAction))]
 		[Rule("<ColumnConstraintList> ::=", typeof(ColumnConstraint))]
+		[Rule("<JoinChain> ::=", typeof(Join))]
 		public Sequence(): this(null, null) {}
 
 		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlToken))]
@@ -32,11 +33,17 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexOptionList> ::= <IndexOption>", typeof(IndexOption))]
 		[Rule("<TriggerOperationList> ::= <TriggerOperation>", typeof(TriggerOperation))]
 		[Rule("<TriggerNameList> ::= <TriggerName>", typeof(TriggerName))]
-		public Sequence(T item): this(item, null) {}
+		[Rule("<CTEList> ::= <CTE>", typeof(CommonTableExpression))]
+		[Rule("<ColumnItemList> ::= <ColumnItem>", typeof(ColumnItem))]
+		[Rule("<OrderList> ::= <Order>", typeof(Order))]
+		[Rule("<ExpressionList> ::= <Expression>", typeof(Expression))]
+		public Sequence(T item) : this(item, null) {
+		}
 
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
 		[Rule("<ForeignKeyActionList> ::= <ForeignKeyAction> <ForeignKeyActionList>", typeof(ForeignKeyAction))]
 		[Rule("<ColumnConstraintList> ::= <ColumnConstraint> <ColumnConstraintList>", typeof(ColumnConstraint))]
+		[Rule("<JoinChain> ::= <Join> <JoinChain>", typeof(Join))]
 		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlToken))]
 		[Rule("<ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>", typeof(ColumnName), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(SqlStatement), ConstructorParameterMapping = new[] {0, 2})]
@@ -51,6 +58,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexOptionList> ::= <IndexOption> ',' <IndexOptionList>", typeof(IndexOption), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<TriggerOperationList> ::= <TriggerOperation> ',' <TriggerOperationList>", typeof(TriggerOperation), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>", typeof(TriggerName), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<CTEList> ::= <CTE> ',' <CTEList>", typeof(CommonTableExpression), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<ColumnItemList> ::= <ColumnItem> ',' <ColumnItemList>", typeof(ColumnItem), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<OrderList> ::= <Order> ',' <OrderList>", typeof(Order), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<ExpressionList> ::= <Expression> ',' <ExpressionList>", typeof(Expression), ConstructorParameterMapping = new[] {0, 2})]
 		public Sequence(T item, Sequence<T> next) {
 			if (next != null) {
 				if (next.Item != null) {
