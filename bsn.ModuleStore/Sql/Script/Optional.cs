@@ -37,6 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexOptionGroup> ::=", typeof(Sequence<IndexOption>))]
 		[Rule("<IndexPrimary> ::=", typeof(Primary))]
 		[Rule("<OptionalNotForReplication> ::=", typeof(ForReplication))]
+		[Rule("<OptionalForeignRefColumn> ::=", typeof(ColumnName))]
 		public Optional(): this(null) {}
 
 		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
@@ -58,24 +59,25 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ProcedureOptionGroup> ::= WITH_RECOMPILE", typeof(WithRecompile))]
 		[Rule("<ViewOptionalAttribute> ::= WITH_VIEW_METADATA", typeof(WithViewMetadata))]
 		[Rule("<ViewOptionalCheckOption> ::= WITH_CHECK_OPTION", typeof(WithCheckOption))]
-		[Rule("<ColumnNameGroup> ::= '(' <ColumnNameList> ')'", typeof(Sequence<ColumnName>), ConstructorParameterMapping=new[] { 1 })]
+		[Rule("<ColumnNameGroup> ::= '(' <ColumnNameList> ')'", typeof(Sequence<ColumnName>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<IndexOptionalUnique> ::= UNIQUE", typeof(Unique))]
 		[Rule("<IndexOptionGroup> ::= WITH '(' <IndexOptionList> ')'", typeof(Sequence<IndexOption>), ConstructorParameterMapping = new[] {2})]
 		[Rule("<IndexPrimary> ::= PRIMARY", typeof(Primary))]
 		[Rule("<OptionalNotForReplication> ::= NOT FOR_REPLICATION", typeof(ForReplication), ConstructorParameterMapping = new[] {1})]
+		[Rule("<OptionalForeignRefColumn> ::= '(' <ColumnName> ')'", typeof(ColumnName), ConstructorParameterMapping = new[] {1})]
 		public Optional(T value) {
 			this.value = value;
-		}
-
-		public T Value {
-			get {
-				return value;
-			}
 		}
 
 		public bool HasValue {
 			get {
 				return value != null;
+			}
+		}
+
+		public T Value {
+			get {
+				return value;
 			}
 		}
 

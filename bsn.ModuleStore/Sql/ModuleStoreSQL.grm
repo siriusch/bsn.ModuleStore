@@ -814,16 +814,14 @@ OUTPUT = OUT(PUT)?
 <ColumnDefinition> ::= <TypeNameQualified> <ColumnConstraintList>
                      | AS <Expression>
 
-<IdentityRange> ::= '(' IntegerLiteral ',' IntegerLiteral ')'
-                        |
-
 <ColumnConstraintList> ::= <ColumnConstraint> <ColumnConstraintList>
                          | 
 
 <ColumnConstraint> ::= <NamedColumnConstraint>
                      | DEFAULT '(' <Expression> ')'
                      | COLLATE <CollationName>
-                     | IDENTITY <IdentityRange>
+                     | IDENTITY 
+                     | IDENTITY '(' IntegerLiteral ',' IntegerLiteral ')'
                      | ROWGUIDCOL
                      | NOT NULL
                      | NULL

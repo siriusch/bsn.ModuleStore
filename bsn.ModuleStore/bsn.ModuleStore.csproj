@@ -73,7 +73,18 @@
     <Compile Include="Sql\Script\AlterTableStatement.cs" />
     <Compile Include="Sql\Script\AnyStatement.cs" />
     <Compile Include="Sql\Script\BreakStatement.cs" />
-    <Compile Include="Sql\Script\CheckTableConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnCheckConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnCollateConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnDefaultConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnForeignKeyConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnIdentityConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnNamedConstraintBase.cs" />
+    <Compile Include="Sql\Script\ColumnNullableConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnPrimaryKeyConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnRowguidcolConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnUniqueConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnUniqueConstraintBase.cs" />
+    <Compile Include="Sql\Script\TableCheckConstraint.cs" />
     <Compile Include="Sql\Script\CloseStatement.cs" />
     <Compile Include="Sql\Script\CollatedStringLiteral.cs" />
     <Compile Include="Sql\Script\CollationName.cs" />
@@ -121,7 +132,7 @@
     <Compile Include="Sql\Script\ExecuteParameterTable.cs" />
     <Compile Include="Sql\Script\ExecuteStatement.cs" />
     <Compile Include="Sql\Script\ForeignKeyAction.cs" />
-    <Compile Include="Sql\Script\ForeignKeyTableConstraint.cs" />
+    <Compile Include="Sql\Script\TableForeignKeyConstraint.cs" />
     <Compile Include="Sql\Script\ForReplication.cs" />
     <Compile Include="Sql\Script\FulltextChangeTracking.cs" />
     <Compile Include="Sql\Script\FunctionOption.cs" />
@@ -129,7 +140,7 @@
     <Compile Include="Sql\Script\IndexColumn.cs" />
     <Compile Include="Sql\Script\IndexOption.cs" />
     <Compile Include="Sql\Script\IndexUsing.cs" />
-    <Compile Include="Sql\Script\LocalKeyTableConstraint.cs" />
+    <Compile Include="Sql\Script\TableUniqueConstraintBase.cs" />
     <Compile Include="Sql\Script\OpenxmlExplicitSchema.cs" />
     <Compile Include="Sql\Script\OpenxmlImplicitSchema.cs" />
     <Compile Include="Sql\Script\OpenxmlSchema.cs" />
@@ -140,7 +151,7 @@
     <Compile Include="Sql\Script\OrderType.cs" />
     <Compile Include="Sql\Script\Output.cs" />
     <Compile Include="Sql\Script\Primary.cs" />
-    <Compile Include="Sql\Script\PrimaryKeyTableConstraint.cs" />
+    <Compile Include="Sql\Script\TablePrimaryKeyConstraint.cs" />
     <Compile Include="Sql\Script\ProcedureParameter.cs" />
     <Compile Include="Sql\Script\SqlDropStatement.cs" />
     <Compile Include="Sql\Script\SqlParens.cs" />
@@ -155,7 +166,7 @@
     <Compile Include="Sql\Script\TypedColumnDefinition.cs" />
     <Compile Include="Sql\Script\TypedVariableDeclaration.cs" />
     <Compile Include="Sql\Script\Unique.cs" />
-    <Compile Include="Sql\Script\UniqueTableConstraint.cs" />
+    <Compile Include="Sql\Script\TableUniqueConstraint.cs" />
     <Compile Include="Sql\Script\UpdateMode.cs" />
     <Compile Include="Sql\Script\Predicate.cs" />
     <Compile Include="Sql\Script\SqlCreateStatement.cs" />

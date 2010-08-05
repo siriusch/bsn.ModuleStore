@@ -6,7 +6,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class OrderType: SqlToken {
-		private SortOrder order;
+		private readonly SortOrder order;
 
 		[Rule("<OrderType> ::=")]
 		public OrderType(): this(null) {}
