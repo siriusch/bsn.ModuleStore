@@ -25,13 +25,15 @@ Comment Line  = '--'
 ! Terminals
 ! =============================================================================
 
-{Any Ch}                  = {All Valid} - {Control Codes}
-{String Ch}               = {Any Ch} - ['']
-{Id Ch Standard}          = {Alphanumeric} + [_]
-{Id Ch Delimited Bracket} = {Any Ch} - ['['#']']
-{Id Ch Delimited Quote}   = {Any Ch} - ["#]
-{Hex Ch}                  = [0123456789ABCDEF]
-{Nonspace Ch}             = {Any Ch} - {Whitespace}
+{Any Ch}                        = {All Valid} - {Control Codes}
+{String Ch}                     = {Any Ch} - ['']
+{Id Ch Standard}                = {Alphanumeric} + [_]
+{Id Ch Delimited Bracket}       = {Any Ch} - ['['']']
+{Id Ch Delimited Bracket Start} = {Id Ch Delimited Bracket} - [#]
+{Id Ch Delimited Quote}         = {Any Ch} - ["#]
+{Id Ch Delimited Quote Start}   = {Id Ch Delimited Quote} - [#]
+{Hex Ch}                        = [0123456789ABCDEF]
+{Nonspace Ch}                   = {Any Ch} - {Whitespace}
 
 StringLiteral  = N?(''{String Ch}*'')+
 IntegerLiteral = {Digit}+
@@ -39,7 +41,7 @@ RealLiteral    = {Digit}+'.'{Digit}+
 HexLiteral     = 0x{Hex Ch}+
 
 ! We use a simplified name convention, which does not allow user/schema, database or server to be specified
-Id           = {Letter}{Id Ch Standard}* | '['{Id Ch Delimited Bracket}+']' | '"'{Id Ch Delimited Quote}+'"'
+Id           = {Letter}{Id Ch Standard}* | '['{Id Ch Delimited Bracket Start}{Id Ch Delimited Bracket}*']' | '"'{Id Ch Delimited Quote Start}{Id Ch Delimited Quote}*'"'
 LocalId      = '@'{Letter}{Id Ch Standard}*
 SystemVarId  = '@@'{Letter}{Id Ch Standard}*
 SystemFuncId = '::'{Letter}{Id Ch Standard}*
@@ -783,31 +785,31 @@ OUTPUT = OUT(PUT)?
                         | <TableDefinition>
 
 <TableDefinition> ::= <ColumnName> <ColumnDefinition>
-                    | <NamedTableConstraint>
+                    | <TableConstraint>
 
-<NamedTableConstraint> ::= CONSTRAINT <ConstraintName> <TableConstraint>
-                         | <TableConstraint>
+<TableConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
+                    | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
+                    | CONSTRAINT <ConstraintName> FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableName> <ColumnNameGroup> <ForeignKeyActionList>
+                    | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Expression> ')'
+                    | PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
+                    | UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
+                    | FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableName> <ColumnNameGroup> <ForeignKeyActionList>
+                    | CHECK <OptionalNotForReplication> '(' <Expression> ')'
 
-<TableConstraint> ::= <ConstraintPrimaryKey> <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
-                   | <ConstraintForeignKey>
-                   | <ConstraintCheck>
-
-<ConstraintForeignKey> ::= FOREIGN KEY '(' <ForeignKeyColumnList> ')' REFERENCES <TableName> <OptionalForeignKeyRefColumnGroup> <ForeignKeyActionList>
-
-<ForeignKeyActionList> ::= ON DELETE <Action> <ForeignKeyActionList>
-                         | ON UPDATE <Action> <ForeignKeyActionList>
+<ForeignKeyActionList> ::= <ForeignKeyAction> <ForeignKeyActionList>
                          |
 
-<Action> ::= NO_ACTION
-           | CASCADE
-           | SET NULL
-           | SET DEFAULT
+<ForeignKeyAction> ::= ON DELETE NO_ACTION
+                     | ON DELETE CASCADE
+                     | ON DELETE SET NULL
+                     | ON DELETE SET DEFAULT
+                     | ON UPDATE NO_ACTION
+                     | ON UPDATE CASCADE
+                     | ON UPDATE SET NULL
+                     | ON UPDATE SET DEFAULT
 
-<OptionalForeignKeyRefColumnGroup> ::= '(' <ForeignKeyColumnList> ')'
-                                     |
-
-<ForeignKeyColumnList> ::= <ColumnName> ',' <ForeignKeyColumnList>
-                         | <ColumnName>
+<OptionalForeignRefColumn> ::= '(' <ColumnName> ')'
+                             |
 
 <ColumnDefinition> ::= <TypeNameQualified> <ColumnConstraintList>
                      | AS <Expression>
@@ -815,30 +817,31 @@ OUTPUT = OUT(PUT)?
 <IdentityRange> ::= '(' IntegerLiteral ',' IntegerLiteral ')'
                         |
 
-<ColumnConstraintList> ::= <NamedColumnConstraint> <ColumnConstraintList>
+<ColumnConstraintList> ::= <ColumnConstraint> <ColumnConstraintList>
                          | 
 
-<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> <ColumnConstraint>
-                          | <ColumnConstraint>
-                          | COLLATE <CollationName>
-                          | IDENTITY <IdentityRange>
-                          | ROWGUIDCOL
-                          | NOT NULL
-                          | NULL
-
-<ColumnConstraint> ::= <ConstraintPrimaryKey> <ConstraintCluster> <ConstraintIndex>
-                     | <ConstraintCheck>
+<ColumnConstraint> ::= <NamedColumnConstraint>
                      | DEFAULT '(' <Expression> ')'
-                     | <ConstraintForeignKey>
+                     | COLLATE <CollationName>
+                     | IDENTITY <IdentityRange>
+                     | ROWGUIDCOL
+                     | NOT NULL
+                     | NULL
 
-<ConstraintPrimaryKey> ::= PRIMARY KEY
-                         | UNIQUE
+<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> <ConstraintIndex>
+                          | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> <ConstraintIndex>
+                          | CONSTRAINT <ConstraintName> FOREIGN KEY REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
+                          | CONSTRAINT <ConstraintName> REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
+                          | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Expression> ')'
+                          | PRIMARY KEY <ConstraintCluster> <ConstraintIndex>
+                          | UNIQUE <ConstraintCluster> <ConstraintIndex>
+                          | FOREIGN KEY REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
+                          | REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
+                          | CHECK <OptionalNotForReplication> '(' <Expression> ')'
 
 <ConstraintCluster> ::= CLUSTERED
                       | NONCLUSTERED
                       |
-
-<ConstraintCheck> ::= CHECK <OptionalNotForReplication> '(' <Expression> ')'
 
 <ConstraintIndex> ::= WITH_FILLFACTOR '=' <IntegerLiteral>
                     | <IndexOptionGroup>
@@ -1039,13 +1042,12 @@ OUTPUT = OUT(PUT)?
 <PredNull> ::= <Expression> IS <NullCheck>
              | <PredLike>
 
-<PredLike> ::= <Expression> <OptionalNot> LIKE <CollableStringLiteral> <Escape>
+<PredLike> ::= <Expression> LIKE <CollableStringLiteral> <OptionalEscape>
+             | <Expression> NOT LIKE <CollableStringLiteral> <OptionalEscape>
              | <PredIn>
 
-<OptionalNot> ::= NOT
-                |
-
-<PredIn> ::= <Expression> <OptionalNot> IN <Tuple>
+<PredIn> ::= <Expression> IN <Tuple>
+           | <Expression> NOT IN <Tuple>
            | <PredExists>
 
 <PredExists> ::= EXISTS '(' <SelectGroup> ')'
@@ -1061,8 +1063,8 @@ OUTPUT = OUT(PUT)?
 <PredExp> ::= <Expression> <PredBinaryOp> <Expression>
             | '(' <OrExp> ')'
 
-<Escape> ::= ESCAPE StringLiteral
-           |
+<OptionalEscape> ::= ESCAPE StringLiteral
+                   |
 
 <Expression> ::= <AddExp>
 

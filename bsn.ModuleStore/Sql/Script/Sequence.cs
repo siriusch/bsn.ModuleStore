@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -12,14 +13,15 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Sequence<T> next;
 
 		[Rule("<CursorOptionList> ::=", typeof(Identifier))]
+		[Rule("<ForeignKeyActionList> ::=", typeof(ForeignKeyAction))]
 		public Sequence(): this(null, null) {}
 
+		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlToken))]
 		[Rule("<ColumnNameList> ::= <ColumnName>", typeof(ColumnName))]
 		[Rule("<StatementList> ::= <StatementGroup>", typeof(SqlStatement))]
 		[Rule("<StatementList> ::= <StatementGroup> <Terminator>", typeof(SqlStatement), AllowTruncationForConstructor = true)]
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn>", typeof(OpenxmlColumn))]
 		[Rule("<DeclareItemList> ::= <DeclareItem>", typeof(VariableDeclaration))]
-		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlToken))]
 		[Rule("<FulltextColumnList> ::= <FulltextColumn>", typeof(FulltextColumn))]
 		[Rule("<FunctionParameterList> ::= <FunctionParameter>", typeof(FunctionParameter))]
 		[Rule("<ProcedureParameterList> ::= <ProcedureParameter>", typeof(ProcedureParameter))]
@@ -32,12 +34,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		public Sequence(T item) : this(item, null) {
 		}
 
-		[Rule("<ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>", typeof(ColumnName), ConstructorParameterMapping = new[] {0, 2})]
-		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(SqlStatement), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
-		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>", typeof(OpenxmlColumn), ConstructorParameterMapping = new[] {0, 2})]
-		[Rule("<DeclareItemList> ::= <DeclareItem> ',' <DeclareItemList>", typeof(VariableDeclaration), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<ForeignKeyActionList> ::= <ForeignKeyAction> <ForeignKeyActionList>", typeof(ForeignKeyAction))]
 		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlToken))]
+		[Rule("<ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>", typeof(ColumnName), ConstructorParameterMapping=new[] { 0, 2 })]
+		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(SqlStatement), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>", typeof(OpenxmlColumn), ConstructorParameterMapping=new[] { 0, 2 })]
+		[Rule("<DeclareItemList> ::= <DeclareItem> ',' <DeclareItemList>", typeof(VariableDeclaration), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<FulltextColumnList> ::= <FulltextColumn> ',' <FulltextColumnList>", typeof(FulltextColumn), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<FunctionParameterList> ::= <FunctionParameter> ',' <FunctionParameterList>", typeof(FunctionParameter), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<ProcedureParameterList> ::= <ProcedureParameter> ',' <ProcedureParameterList>", typeof(ProcedureParameter), ConstructorParameterMapping = new[] {0, 2})]
@@ -48,7 +51,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TriggerOperationList> ::= <TriggerOperation> ',' <TriggerOperationList>", typeof(TriggerOperation), ConstructorParameterMapping=new[] { 0, 2 })]
 		[Rule("<TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>", typeof(TriggerName), ConstructorParameterMapping=new[] { 0, 2 })]
 		public Sequence(T item, Sequence<T> next) {
-			this.next = next;
+			if (next != null) {
+				if (next.Item != null) {
+					this.next = next;
+				} else {
+					Debug.Assert(next.Next == null);
+				}
+			}
 			this.item = item;
 		}
 
