@@ -132,6 +132,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalAs> ::=")]
 		[Rule("<Terminator> ::= ';'", AllowTruncationForConstructor = true)]
 		[Rule("<Terminator> ::= <Terminator> ';'", AllowTruncationForConstructor = true)]
+		[Rule("<OptionalInto> ::=")]
+		[Rule("<OptionalInto> ::= INTO", AllowTruncationForConstructor = true)]
 		public InsignificantToken() {}
 	}
 }

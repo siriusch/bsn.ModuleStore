@@ -502,9 +502,9 @@ OUTPUT = OUT(PUT)?
                     |
 
 <DestinationRowset> ::= <VariableName>
-                    | <TableName>
-!                    | <Openrowset> -- not supported
-!                    | <Openquery> -- not supported
+                      | <TableName>
+!                      | <Openrowset> -- not supported
+!                      | <Openquery> -- not supported
 
 <Openxml> ::= OPENXML '(' <VariableName> ',' <StringValue> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>
             | OPENXML '(' <VariableName> ',' <StringValue> ')' <OptionalOpenxmlSchema>
@@ -868,25 +868,20 @@ OUTPUT = OUT(PUT)?
                      |
 
 <OutputClause> ::= OUTPUT <ColumnItemList>
-                 | OUTPUT <ColumnItemList> INTO <TableName> <ColumnNameGroup>
-                 | OUTPUT <ColumnItemList> INTO <VariableName> <ColumnNameGroup>
+                 | OUTPUT <ColumnItemList> INTO <DestinationRowset> <ColumnNameGroup>
                  |
 
 ! =============================================================================
 ! INSERT Statement
 ! =============================================================================
 
-<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <InsertData>
-
-<InsertData> ::= <ColumnNameGroup> <OutputClause> <InsertSource>
-               | DEFAULT VALUES
+<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')'
+                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery>
+                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement>
+                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> DEFAULT VALUES
 
 <OptionalInto> ::= INTO
                  |
-
-<InsertSource> ::= VALUES '(' <ExpressionList> ')'
-                 | <SelectQuery>
-                 | <ExecuteStatement>
 
 ! =============================================================================
 ! UPDATE Statement
@@ -938,8 +933,7 @@ OUTPUT = OUT(PUT)?
                 | DISTINCT
                 |
 
-<IntoClause> ::= INTO <TableName>
-               | INTO <VariableName>
+<IntoClause> ::= INTO <DestinationRowset>
                |
 
 <FromClause> ::= FROM <SourceRowset> <JoinChain>
@@ -1010,9 +1004,8 @@ OUTPUT = OUT(PUT)?
 <XmlDirectiveList> ::= <XmlDirective> ',' <XmlDirectiveList>
                      | <XmlDirective>
 
-<XmlDirective> ::= Id
+<XmlDirective> ::= Id <OptionalElementName>
                  | Id Id
-                 | Id '(' <StringLiteral> ')'
            
 ! ============================================================================= 
 ! Pedicates and Expressions

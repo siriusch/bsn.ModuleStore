@@ -88,10 +88,17 @@
     <Compile Include="Sql\Script\ColumnUniqueConstraintBase.cs" />
     <Compile Include="Sql\Script\ColumnWildcardItem.cs" />
     <Compile Include="Sql\Script\CommonTableExpression.cs" />
+    <Compile Include="Sql\Script\DestinationRowset.cs" />
     <Compile Include="Sql\Script\DuplicateRestriction.cs" />
     <Compile Include="Sql\Script\ForXmlKind.cs" />
     <Compile Include="Sql\Script\FromClause.cs" />
     <Compile Include="Sql\Script\FunctionCall.cs" />
+    <Compile Include="Sql\Script\InsertDefaultsStatement.cs" />
+    <Compile Include="Sql\Script\InsertExecuteValuesStatement.cs" />
+    <Compile Include="Sql\Script\InsertExpressionValuesStatement.cs" />
+    <Compile Include="Sql\Script\InsertSelectValuesStatement.cs" />
+    <Compile Include="Sql\Script\InsertStatement.cs" />
+    <Compile Include="Sql\Script\InsertValuesStatement.cs" />
     <Compile Include="Sql\Script\Join.cs" />
     <Compile Include="Sql\Script\JoinKind.cs" />
     <Compile Include="Sql\Script\Order.cs" />
