@@ -88,6 +88,7 @@
     <Compile Include="Sql\Script\ColumnUniqueConstraintBase.cs" />
     <Compile Include="Sql\Script\ColumnWildcardItem.cs" />
     <Compile Include="Sql\Script\CommonTableExpression.cs" />
+    <Compile Include="Sql\Script\DeleteStatement.cs" />
     <Compile Include="Sql\Script\DestinationRowset.cs" />
     <Compile Include="Sql\Script\DuplicateRestriction.cs" />
     <Compile Include="Sql\Script\ForXmlKind.cs" />

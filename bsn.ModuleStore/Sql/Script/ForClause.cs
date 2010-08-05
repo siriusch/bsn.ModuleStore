@@ -1,5 +1,10 @@
 ﻿using System;
 
+using bsn.GoldParser.Semantic;
+
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class ForClause: SqlToken {}
+	public class ForClause: SqlToken {
+		[Rule("<ForClause> ::=")]
+		public ForClause() {}
+	}
 }

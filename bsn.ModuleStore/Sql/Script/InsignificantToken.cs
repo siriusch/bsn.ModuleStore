@@ -134,6 +134,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Terminator> ::= <Terminator> ';'", AllowTruncationForConstructor = true)]
 		[Rule("<OptionalInto> ::=")]
 		[Rule("<OptionalInto> ::= INTO", AllowTruncationForConstructor = true)]
-		public InsignificantToken() {}
+		[Rule("<OptionalFrom> ::=")]
+		[Rule("<OptionalFrom> ::= FROM", AllowTruncationForConstructor=true)]
+		public InsignificantToken() {
+		}
 	}
 }
