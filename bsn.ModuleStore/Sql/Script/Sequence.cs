@@ -27,6 +27,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TableDefinitionList> ::= <TableDefinition>", typeof(TableDefinition))]
 		[Rule("<IndexColumnList> ::= <IndexColumn>", typeof(IndexColumn))]
 		[Rule("<IndexOptionList> ::= <IndexOption>", typeof(IndexOption))]
+		[Rule("<TriggerOperationList> ::= <TriggerOperation>", typeof(TriggerOperation))]
+		[Rule("<TriggerNameList> ::= <TriggerName>", typeof(TriggerName))]
 		public Sequence(T item) : this(item, null) {
 		}
 
@@ -43,6 +45,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TableDefinitionList> ::= <TableDefinition> ',' <TableDefinitionList>", typeof(TableDefinition), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>", typeof(IndexColumn), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<IndexOptionList> ::= <IndexOption> ',' <IndexOptionList>", typeof(IndexOption), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<TriggerOperationList> ::= <TriggerOperation> ',' <TriggerOperationList>", typeof(TriggerOperation), ConstructorParameterMapping=new[] { 0, 2 })]
+		[Rule("<TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>", typeof(TriggerName), ConstructorParameterMapping=new[] { 0, 2 })]
 		public Sequence(T item, Sequence<T> next) {
 			this.next = next;
 			this.item = item;

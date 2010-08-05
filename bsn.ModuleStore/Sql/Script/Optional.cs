@@ -36,6 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexOptionalUnique> ::=", typeof(Unique))]
 		[Rule("<IndexOptionGroup> ::=", typeof(Sequence<IndexOption>))]
 		[Rule("<IndexPrimary> ::=", typeof(Primary))]
+		[Rule("<OptionalNotForReplication> ::=", typeof(ForReplication))]
 		public Optional(): this(null) {}
 
 		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
@@ -61,6 +62,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexOptionalUnique> ::= UNIQUE", typeof(Unique))]
 		[Rule("<IndexOptionGroup> ::= WITH '(' <IndexOptionList> ')'", typeof(Sequence<IndexOption>), ConstructorParameterMapping = new[] {2})]
 		[Rule("<IndexPrimary> ::= PRIMARY", typeof(Primary))]
+		[Rule("<OptionalNotForReplication> ::= NOT FOR_REPLICATION", typeof(ForReplication), ConstructorParameterMapping = new[] {1})]
 		public Optional(T value) {
 			this.value = value;
 		}
@@ -68,6 +70,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public T Value {
 			get {
 				return value;
+			}
+		}
+
+		public bool HasValue {
+			get {
+				return value != null;
 			}
 		}
 
