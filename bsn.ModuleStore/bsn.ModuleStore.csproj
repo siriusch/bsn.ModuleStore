@@ -96,6 +96,7 @@
     <Compile Include="Sql\Script\CreateTriggerStatement.cs" />
     <Compile Include="Sql\Script\CreateViewStatement.cs" />
     <Compile Include="Sql\Script\CreateXmlIndexStatement.cs" />
+    <Compile Include="Sql\Script\CreateXmlSchemaCollectionStatement.cs" />
     <Compile Include="Sql\Script\CursorVariableDeclaration.cs" />
     <Compile Include="Sql\Script\DdlOperation.cs" />
     <Compile Include="Sql\Script\DeclareTableStatement.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Sql\Script\DropTableStatement.cs" />
     <Compile Include="Sql\Script\DropTriggerStatement.cs" />
     <Compile Include="Sql\Script\DropViewStatement.cs" />
+    <Compile Include="Sql\Script\DropXmlSchemaCollectionStatement.cs" />
     <Compile Include="Sql\Script\EnableDisableTriggerStatement.cs" />
     <Compile Include="Sql\Script\EnableTriggerStatement.cs" />
     <Compile Include="Sql\Script\ExecuteParameter.cs" />
