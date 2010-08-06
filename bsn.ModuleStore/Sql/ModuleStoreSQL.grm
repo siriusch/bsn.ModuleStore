@@ -357,9 +357,11 @@ OUTPUT = OUT(PUT)?
 <NumberLiteral> ::= <IntegerLiteral>
                   | RealLiteral
 
+<NullLiteral> ::= NULL
+
 <Literal> ::= <NumberLiteral>
             | <CollableStringLiteral>
-            | NULL
+            | <NullLiteral>
 
 <Toggle> ::= ON
            | OFF
@@ -815,7 +817,10 @@ OUTPUT = OUT(PUT)?
                          | 
 
 <ColumnConstraint> ::= <NamedColumnConstraint>
-                     | DEFAULT '(' <Expression> ')'
+                     | DEFAULT '(' <FunctionCall> ')'
+                     | DEFAULT <NumberLiteral>
+                     | DEFAULT <StringLiteral>
+                     | DEFAULT <NullLiteral>
                      | COLLATE <CollationName>
                      | IDENTITY 
                      | IDENTITY '(' IntegerLiteral ',' IntegerLiteral ')'

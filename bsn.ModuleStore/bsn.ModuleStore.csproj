@@ -105,6 +105,7 @@
     <Compile Include="Sql\Script\InsertValuesStatement.cs" />
     <Compile Include="Sql\Script\Join.cs" />
     <Compile Include="Sql\Script\JoinKind.cs" />
+    <Compile Include="Sql\Script\NullLiteral.cs" />
     <Compile Include="Sql\Script\Order.cs" />
     <Compile Include="Sql\Script\OutputClause.cs" />
     <Compile Include="Sql\Script\Parens.cs" />
