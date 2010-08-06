@@ -4,8 +4,11 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
+	[Terminal("COALESCE")]
 	public class FunctionName: SqlQuotedName {
 		private readonly bool systemFunction;
+
+		public FunctionName(string name): base(name) {}
 
 		[Rule("<FunctionName> ::= Id")]
 		[Rule("<FunctionName> ::= SystemFuncId")]

@@ -1079,26 +1079,25 @@ OUTPUT = OUT(PUT)?
                        | CAST_ <Expression> AS <TypeName> ')'
                        | COALESCE '(' <ExpressionList> ')'
                        | <FunctionCall>
-                       | <FunctionCall> OVER '(' <PartitionByClause> ')'
+                       | <FunctionCall> OVER '(' <RankingArguments> ')'
                        | <ExpressionCase>
              
-<PartitionByClause> ::= PARTITION_BY <ExpressionList> <OptionalOrderClause>
-                      | <OrderClause>
+<RankingArguments> ::= PARTITION_BY <ExpressionList> <OptionalOrderClause>
+                     | <OrderClause>
 
 <FunctionCall> ::= <FunctionName> '(' ')'
                  | <FunctionName> '(' <ExpressionList> ')'
 
-<ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> END
+<ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> ELSE <Expression> END
+                   | CASE <Expression> <CaseWhenExpressionList> END
+                   | CASE <CaseWhenExpressionList> ELSE <Expression> END
                    | CASE <CaseWhenExpressionList> END
                    | <CollatedValue>
 
 <CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>
-                           | <CaseWhenExpression> <CaseElseExpression>
                            | <CaseWhenExpression>
                            
 <CaseWhenExpression> ::= WHEN <Predicate> THEN <Expression>
-
-<CaseElseExpression> ::= ELSE <Expression>
 
 <CollatedValue> ::= <Value> COLLATE <CollationName>
                   | <Value>

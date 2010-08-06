@@ -31,7 +31,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("CHECK")]
 	[Terminal("CLOSE")]
 	[Terminal("CLUSTERED")]
-	[Terminal("COALESCE")]
 	[Terminal("COLLATE")]
 	[Terminal("COLUMN")]
 	[Terminal("CONSTRAINT")]

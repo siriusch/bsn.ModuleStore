@@ -74,6 +74,7 @@
     <Compile Include="Sql\Script\AnyStatement.cs" />
     <Compile Include="Sql\Script\BinaryExpression.cs" />
     <Compile Include="Sql\Script\BreakStatement.cs" />
+    <Compile Include="Sql\Script\CaseWhen.cs" />
     <Compile Include="Sql\Script\Collable.cs" />
     <Compile Include="Sql\Script\ColumnCheckConstraint.cs" />
     <Compile Include="Sql\Script\ColumnCollateConstraint.cs" />
@@ -93,10 +94,19 @@
     <Compile Include="Sql\Script\DeleteStatement.cs" />
     <Compile Include="Sql\Script\DestinationRowset.cs" />
     <Compile Include="Sql\Script\DuplicateRestriction.cs" />
+    <Compile Include="Sql\Script\ExpressionBinaryOperation.cs" />
+    <Compile Include="Sql\Script\ExpressionCase.cs" />
+    <Compile Include="Sql\Script\ExpressionCastFunction.cs" />
+    <Compile Include="Sql\Script\ExpressionCountFunction.cs" />
+    <Compile Include="Sql\Script\ExpressionFunction.cs" />
+    <Compile Include="Sql\Script\ExpressionNegate.cs" />
+    <Compile Include="Sql\Script\ExpressionRankingFunction.cs" />
+    <Compile Include="Sql\Script\ExpressionSearchedCase.cs" />
+    <Compile Include="Sql\Script\ExpressionSimpleCase.cs" />
     <Compile Include="Sql\Script\ExpressionTuple.cs" />
     <Compile Include="Sql\Script\ForXmlKind.cs" />
     <Compile Include="Sql\Script\FromClause.cs" />
-    <Compile Include="Sql\Script\FunctionCall.cs" />
+    <Compile Include="Sql\Script\ExpressionFunctionCall.cs" />
     <Compile Include="Sql\Script\InsertDefaultsStatement.cs" />
     <Compile Include="Sql\Script\InsertExecuteValuesStatement.cs" />
     <Compile Include="Sql\Script\InsertExpressionValuesStatement.cs" />
@@ -121,6 +131,7 @@
     <Compile Include="Sql\Script\PredicateNegable.cs" />
     <Compile Include="Sql\Script\PredicateNot.cs" />
     <Compile Include="Sql\Script\PredicateNull.cs" />
+    <Compile Include="Sql\Script\RankingArguments.cs" />
     <Compile Include="Sql\Script\SelectFromQuery.cs" />
     <Compile Include="Sql\Script\SelectQuery.cs" />
     <Compile Include="Sql\Script\SourceFunctionRowset.cs" />
@@ -199,7 +210,6 @@
     <Compile Include="Sql\Script\TablePrimaryKeyConstraint.cs" />
     <Compile Include="Sql\Script\ProcedureParameter.cs" />
     <Compile Include="Sql\Script\SqlDropStatement.cs" />
-    <Compile Include="Sql\Script\SqlParens.cs" />
     <Compile Include="Sql\Script\SelectStatement.cs" />
     <Compile Include="Sql\Script\SqlQuotedName.cs" />
     <Compile Include="Sql\Script\TableCheck.cs" />
@@ -209,6 +219,7 @@
     <Compile Include="Sql\Script\TableDefinition.cs" />
     <Compile Include="Sql\Script\TopExpression.cs" />
     <Compile Include="Sql\Script\TriggerOperation.cs" />
+    <Compile Include="Sql\Script\NestedSelectQuery.cs" />
     <Compile Include="Sql\Script\Tuple.cs" />
     <Compile Include="Sql\Script\TypedColumnDefinition.cs" />
     <Compile Include="Sql\Script\TypedVariableDeclaration.cs" />
