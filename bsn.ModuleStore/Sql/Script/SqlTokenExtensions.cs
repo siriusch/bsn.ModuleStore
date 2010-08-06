@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -32,6 +34,35 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public static bool HasValue<T>(this Optional<T> optional) where T: SqlToken {
 			return (optional != null) && (optional.Value != null);
+		}
+
+		public static void WriteSequence<T>(this TextWriter writer, IEnumerable<T> sequence, string itemPrefix, string itemSeparator, string itemSuffix) where T: SqlToken {
+			if (sequence != null) {
+				IEnumerator<T> enumerator = sequence.GetEnumerator();
+				if (enumerator.MoveNext()) {
+					WriteString(writer, itemPrefix);
+					WriteItem(writer, enumerator.Current);
+					while (enumerator.MoveNext()) {
+						WriteString(writer, itemSeparator);
+						WriteString(writer, itemSuffix);
+						WriteString(writer, itemPrefix);
+						WriteItem(writer, enumerator.Current);
+					}
+					WriteString(writer, itemSuffix);
+				}
+			}
+		}
+
+		private static void WriteString(TextWriter writer, string value) {
+			if (!string.IsNullOrEmpty(value)) {
+				writer.Write(value);
+			}
+		}
+
+		private static void WriteItem<T>(TextWriter writer, T item) where T: SqlToken {
+			if (item != null) {
+				item.WriteTo(writer);
+			}
 		}
 	}
 }

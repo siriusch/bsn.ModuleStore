@@ -11,5 +11,19 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			this.tableName = tableName;
 		}
+
+		public abstract void ApplyTo(CreateTableStatement createTable);
+
+		public override void WriteTo(System.IO.TextWriter writer) {
+			writer.Write("ALTER TABLE ");
+			tableName.WriteTo(writer);
+			writer.Write(' ');
+		}
+
+		public TableName TableName {
+			get {
+				return tableName;
+			}
+		}
 	}
 }

@@ -64,6 +64,7 @@
     <Compile Include="Sql\Script\LeftOuterJoin.cs" />
     <Compile Include="Sql\Script\PredicateJoin.cs" />
     <Compile Include="Sql\Script\RightOuterJoin.cs" />
+    <Compile Include="Sql\Script\TableCheck.cs" />
     <Compile Include="Sql\Script\Tokens\AddToken.cs" />
     <Compile Include="Sql\Script\AliasName.cs" />
     <Compile Include="Sql\Script\Tokens\AlterToken.cs" />
@@ -224,11 +225,12 @@
     <Compile Include="Sql\Script\SqlDropStatement.cs" />
     <Compile Include="Sql\Script\SelectStatement.cs" />
     <Compile Include="Sql\Script\SqlQuotedName.cs" />
-    <Compile Include="Sql\Script\TableCheck.cs" />
+    <Compile Include="Sql\Script\Tokens\TableCheckToken.cs" />
     <Compile Include="Sql\Script\TableColumnDefinition.cs" />
     <Compile Include="Sql\Script\TableConstraint.cs" />
-    <Compile Include="Sql\Script\TableDefinitionGroup.cs" />
     <Compile Include="Sql\Script\TableDefinition.cs" />
+    <Compile Include="Sql\Script\Tokens\TableWithCheckToken.cs" />
+    <Compile Include="Sql\Script\Tokens\TableWithNocheckToken.cs" />
     <Compile Include="Sql\Script\Tokens\TriggerTypeAfterToken.cs" />
     <Compile Include="Sql\Script\Tokens\TriggerTypeForToken.cs" />
     <Compile Include="Sql\Script\Tokens\TriggerTypeInsteadOfToken.cs" />
