@@ -2,7 +2,7 @@ using System;
 
 using bsn.GoldParser.Semantic;
 
-namespace bsn.ModuleStore.Sql.Script {
+namespace bsn.ModuleStore.Sql.Script.Tokens {
 	[Terminal("(EOF)")]
 	[Terminal("(Error)")]
 	[Terminal("(Whitespace)")]
@@ -30,7 +30,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("CAST_")]
 	[Terminal("CHECK")]
 	[Terminal("CLOSE")]
-	[Terminal("CLUSTERED")]
 	[Terminal("COLLATE")]
 	[Terminal("COLUMN")]
 	[Terminal("CONSTRAINT")]
@@ -87,8 +86,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("NO_ACTION")]
 	[Terminal("NO_POPULATION")]
 	[Terminal("NOCHECK")]
-	[Terminal("NONCLUSTERED")]
-	[Terminal("NULL")]
 	[Terminal("OF")]
 	[Terminal("OPEN")]
 	[Terminal("OPENXML")]

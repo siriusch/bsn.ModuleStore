@@ -2,6 +2,7 @@ using System;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class Optional<T>: SqlToken where T: SqlToken {
@@ -22,20 +23,20 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalFulltextChangeTracking> ::=", typeof(FulltextChangeTracking))]
 		[Rule("<OptionalFunctionParameterList> ::=", typeof(Sequence<FunctionParameter>))]
 		[Rule("<OptionalFunctionOption> ::=", typeof(FunctionOption))]
-		[Rule("<OptionalVarying> ::=", typeof(Varying))]
-		[Rule("<OptionalOutput> ::=", typeof(Output))]
+		[Rule("<OptionalVarying> ::=", typeof(VaryingToken))]
+		[Rule("<OptionalOutput> ::=", typeof(OutputToken))]
 		[Rule("<OptionalReadonly> ::=", typeof(Identifier))]
 		[Rule("<ExecuteParameterGroup> ::=", typeof(Sequence<ExecuteParameter>))]
 		[Rule("<ProcedureParameterGroup> ::=", typeof(Sequence<ProcedureParameter>))]
-		[Rule("<ProcedureFor> ::=", typeof(ForReplication))]
-		[Rule("<ProcedureOptionGroup> ::=", typeof(WithRecompile))]
-		[Rule("<ViewOptionalAttribute> ::=", typeof(WithViewMetadata))]
-		[Rule("<ViewOptionalCheckOption> ::=", typeof(WithCheckOption))]
+		[Rule("<ProcedureFor> ::=", typeof(ForReplicationToken))]
+		[Rule("<ProcedureOptionGroup> ::=", typeof(WithRecompileToken))]
+		[Rule("<ViewOptionalAttribute> ::=", typeof(WithViewMetadataToken))]
+		[Rule("<ViewOptionalCheckOption> ::=", typeof(WithCheckOptionToken))]
 		[Rule("<ColumnNameGroup> ::=", typeof(Sequence<ColumnName>))]
-		[Rule("<IndexOptionalUnique> ::=", typeof(Unique))]
+		[Rule("<IndexOptionalUnique> ::=", typeof(UniqueToken))]
 		[Rule("<IndexOptionGroup> ::=", typeof(Sequence<IndexOption>))]
-		[Rule("<IndexPrimary> ::=", typeof(Primary))]
-		[Rule("<OptionalNotForReplication> ::=", typeof(ForReplication))]
+		[Rule("<IndexPrimary> ::=", typeof(PrimaryToken))]
+		[Rule("<OptionalNotForReplication> ::=", typeof(ForReplicationToken))]
 		[Rule("<OptionalForeignRefColumn> ::=", typeof(ColumnName))]
 		[Rule("<CTEGroup> ::=", typeof(Sequence<CommonTableExpression>))]
 		[Rule("<IntoClause> ::=", typeof(DestinationRowset))]
@@ -44,8 +45,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<HavingClause> ::=", typeof(Predicate))]
 		[Rule("<OptionalOrderClause> ::=", typeof(Sequence<Order>))]
 		[Rule("<OptionalAlias> ::=", typeof(AliasName))]
-		[Rule("<OptionalPercent> ::=", typeof(Percent))]
-		[Rule("<OptionalWithTies> ::=", typeof(WithTies))]
+		[Rule("<OptionalPercent> ::=", typeof(PercentToken))]
+		[Rule("<OptionalWithTies> ::=", typeof(WithTiesToken))]
 		[Rule("<OptionalElementName> ::=", typeof(StringLiteral))]
 		[Rule("<OptionalFromClause> ::=", typeof(FromClause))]
 		public Optional(): this(null) {}
@@ -59,20 +60,20 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalFulltextChangeTracking> ::= <FulltextChangeTracking>", typeof(FulltextChangeTracking))]
 		[Rule("<OptionalFunctionParameterList> ::= <FunctionParameterList>", typeof(Sequence<FunctionParameter>))]
 		[Rule("<OptionalFunctionOption> ::= WITH <FunctionOption>", typeof(FunctionOption), ConstructorParameterMapping = new[] {1})]
-		[Rule("<OptionalVarying> ::= VARYING", typeof(Varying))]
-		[Rule("<OptionalOutput> ::= OUTPUT", typeof(Output))]
+		[Rule("<OptionalVarying> ::= VARYING", typeof(VaryingToken))]
+		[Rule("<OptionalOutput> ::= OUTPUT", typeof(OutputToken))]
 		[Rule("<OptionalReadonly> ::= Id", typeof(Identifier))]
 		[Rule("<ExecuteParameterGroup> ::= <ExecuteParameterList>", typeof(Sequence<ExecuteParameter>))]
 		[Rule("<ProcedureParameterGroup> ::= <ProcedureParameterList>", typeof(Sequence<ProcedureParameter>))]
-		[Rule("<ProcedureFor> ::= FOR_REPLICATION", typeof(ForReplication))]
-		[Rule("<ProcedureOptionGroup> ::= WITH_RECOMPILE", typeof(WithRecompile))]
-		[Rule("<ViewOptionalAttribute> ::= WITH_VIEW_METADATA", typeof(WithViewMetadata))]
-		[Rule("<ViewOptionalCheckOption> ::= WITH_CHECK_OPTION", typeof(WithCheckOption))]
+		[Rule("<ProcedureFor> ::= FOR_REPLICATION", typeof(ForReplicationToken))]
+		[Rule("<ProcedureOptionGroup> ::= WITH_RECOMPILE", typeof(WithRecompileToken))]
+		[Rule("<ViewOptionalAttribute> ::= WITH_VIEW_METADATA", typeof(WithViewMetadataToken))]
+		[Rule("<ViewOptionalCheckOption> ::= WITH_CHECK_OPTION", typeof(WithCheckOptionToken))]
 		[Rule("<ColumnNameGroup> ::= '(' <ColumnNameList> ')'", typeof(Sequence<ColumnName>), ConstructorParameterMapping = new[] {1})]
-		[Rule("<IndexOptionalUnique> ::= UNIQUE", typeof(Unique))]
+		[Rule("<IndexOptionalUnique> ::= UNIQUE", typeof(UniqueToken))]
 		[Rule("<IndexOptionGroup> ::= WITH '(' <IndexOptionList> ')'", typeof(Sequence<IndexOption>), ConstructorParameterMapping = new[] {2})]
-		[Rule("<IndexPrimary> ::= PRIMARY", typeof(Primary))]
-		[Rule("<OptionalNotForReplication> ::= NOT FOR_REPLICATION", typeof(ForReplication), ConstructorParameterMapping = new[] {1})]
+		[Rule("<IndexPrimary> ::= PRIMARY", typeof(PrimaryToken))]
+		[Rule("<OptionalNotForReplication> ::= NOT FOR_REPLICATION", typeof(ForReplicationToken), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalForeignRefColumn> ::= '(' <ColumnName> ')'", typeof(ColumnName), ConstructorParameterMapping = new[] {1})]
 		[Rule("<CTEGroup> ::= WITH <CTEList>", typeof(Sequence<CommonTableExpression>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<IntoClause> ::= INTO <DestinationRowset>", typeof(DestinationRowset), ConstructorParameterMapping = new[] {1})]
@@ -81,18 +82,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<HavingClause> ::= HAVING <Predicate>", typeof(Predicate), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalOrderClause> ::= <OrderClause>", typeof(Sequence<Order>))]
 		[Rule("<OptionalAlias> ::= <OptionalAs> <AliasName>", typeof(AliasName), ConstructorParameterMapping = new[] {1})]
-		[Rule("<OptionalPercent> ::= PERCENT", typeof(Percent))]
-		[Rule("<OptionalWithTies> ::= WITH_TIES", typeof(WithTies))]
+		[Rule("<OptionalPercent> ::= PERCENT", typeof(PercentToken))]
+		[Rule("<OptionalWithTies> ::= WITH_TIES", typeof(WithTiesToken))]
 		[Rule("<OptionalElementName> ::= '(' StringLiteral ')'", typeof(StringLiteral), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalFromClause> ::= <FromClause>", typeof(FromClause))]
 		public Optional(T value) {
 			this.value = value;
-		}
-
-		public bool HasValue {
-			get {
-				return value != null;
-			}
 		}
 
 		public T Value {

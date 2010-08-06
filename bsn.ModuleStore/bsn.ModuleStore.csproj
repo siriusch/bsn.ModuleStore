@@ -58,9 +58,15 @@
     <Compile Include="Sql\InventoryDatabaseReader.cs" />
     <Compile Include="Sql\InventoryScriptReader.cs" />
     <Compile Include="Sql\ScriptParser.cs" />
-    <Compile Include="Sql\Script\Add.cs" />
+    <Compile Include="Sql\Script\CrossJoin.cs" />
+    <Compile Include="Sql\Script\FullOuterJoin.cs" />
+    <Compile Include="Sql\Script\InnerJoin.cs" />
+    <Compile Include="Sql\Script\LeftOuterJoin.cs" />
+    <Compile Include="Sql\Script\PredicateJoin.cs" />
+    <Compile Include="Sql\Script\RightOuterJoin.cs" />
+    <Compile Include="Sql\Script\Tokens\AddToken.cs" />
     <Compile Include="Sql\Script\AliasName.cs" />
-    <Compile Include="Sql\Script\Alter.cs" />
+    <Compile Include="Sql\Script\Tokens\AlterToken.cs" />
     <Compile Include="Sql\Script\AlterTableAddStatement.cs" />
     <Compile Include="Sql\Script\AlterTableColumnAttributeStatement.cs" />
     <Compile Include="Sql\Script\AlterTableColumnDefinitionStatement.cs" />
@@ -90,6 +96,7 @@
     <Compile Include="Sql\Script\ColumnUniqueConstraintBase.cs" />
     <Compile Include="Sql\Script\ColumnWildcardItem.cs" />
     <Compile Include="Sql\Script\CommonTableExpression.cs" />
+    <Compile Include="Sql\Script\DdlOperation.cs" />
     <Compile Include="Sql\Script\DeleteStatement.cs" />
     <Compile Include="Sql\Script\DestinationRowset.cs" />
     <Compile Include="Sql\Script\DuplicateRestriction.cs" />
@@ -120,7 +127,7 @@
     <Compile Include="Sql\Script\Order.cs" />
     <Compile Include="Sql\Script\OutputClause.cs" />
     <Compile Include="Sql\Script\PredicateParens.cs" />
-    <Compile Include="Sql\Script\Percent.cs" />
+    <Compile Include="Sql\Script\Tokens\PercentToken.cs" />
     <Compile Include="Sql\Script\ForBrowsingClause.cs" />
     <Compile Include="Sql\Script\ForClause.cs" />
     <Compile Include="Sql\Script\ForXmlClause.cs" />
@@ -142,6 +149,7 @@
     <Compile Include="Sql\Script\SourceTableRowset.cs" />
     <Compile Include="Sql\Script\SourceTableVariableRowset.cs" />
     <Compile Include="Sql\Script\SqlComputable.cs" />
+    <Compile Include="Sql\Script\SqlTokenExtensions.cs" />
     <Compile Include="Sql\Script\TableCheckConstraint.cs" />
     <Compile Include="Sql\Script\CloseStatement.cs" />
     <Compile Include="Sql\Script\CollationName.cs" />
@@ -150,12 +158,15 @@
     <Compile Include="Sql\Script\ColumnName.cs" />
     <Compile Include="Sql\Script\ComputedColumnDefinition.cs" />
     <Compile Include="Sql\Script\Clustered.cs" />
+    <Compile Include="Sql\Script\Tokens\ConstraintClusterToken.cs" />
     <Compile Include="Sql\Script\ConstraintIndex.cs" />
     <Compile Include="Sql\Script\ConstraintIndexFillfactor.cs" />
     <Compile Include="Sql\Script\ConstraintIndexOptions.cs" />
     <Compile Include="Sql\Script\ConstraintName.cs" />
     <Compile Include="Sql\Script\ContinueStatement.cs" />
-    <Compile Include="Sql\Script\Create.cs" />
+    <Compile Include="Sql\Script\Tokens\ConstraintClusteredToken.cs" />
+    <Compile Include="Sql\Script\Tokens\ConstraintNonclusteredToken.cs" />
+    <Compile Include="Sql\Script\Tokens\CreateToken.cs" />
     <Compile Include="Sql\Script\CreateColumnIndexStatement.cs" />
     <Compile Include="Sql\Script\CreateFulltextIndexStatement.cs" />
     <Compile Include="Sql\Script\CreateFunctionTableStatement.cs" />
@@ -170,11 +181,11 @@
     <Compile Include="Sql\Script\CreateXmlIndexStatement.cs" />
     <Compile Include="Sql\Script\CreateXmlSchemaCollectionStatement.cs" />
     <Compile Include="Sql\Script\CursorVariableDeclaration.cs" />
-    <Compile Include="Sql\Script\DdlOperation.cs" />
+    <Compile Include="Sql\Script\Tokens\DdlOperationToken.cs" />
     <Compile Include="Sql\Script\DeclareTableStatement.cs" />
     <Compile Include="Sql\Script\DeclareVariableStatement.cs" />
     <Compile Include="Sql\Script\DisableTriggerStatement.cs" />
-    <Compile Include="Sql\Script\Drop.cs" />
+    <Compile Include="Sql\Script\Tokens\DropToken.cs" />
     <Compile Include="Sql\Script\DropFulltextStatement.cs" />
     <Compile Include="Sql\Script\DropFunctionStatement.cs" />
     <Compile Include="Sql\Script\DropIndexStatement.cs" />
@@ -190,7 +201,7 @@
     <Compile Include="Sql\Script\ExecuteStatement.cs" />
     <Compile Include="Sql\Script\ForeignKeyAction.cs" />
     <Compile Include="Sql\Script\TableForeignKeyConstraint.cs" />
-    <Compile Include="Sql\Script\ForReplication.cs" />
+    <Compile Include="Sql\Script\Tokens\ForReplicationToken.cs" />
     <Compile Include="Sql\Script\FulltextChangeTracking.cs" />
     <Compile Include="Sql\Script\FunctionOption.cs" />
     <Compile Include="Sql\Script\FunctionParameter.cs" />
@@ -206,8 +217,8 @@
     <Compile Include="Sql\Script\LanguageLcid.cs" />
     <Compile Include="Sql\Script\OpenxmlFunction.cs" />
     <Compile Include="Sql\Script\OrderType.cs" />
-    <Compile Include="Sql\Script\Output.cs" />
-    <Compile Include="Sql\Script\Primary.cs" />
+    <Compile Include="Sql\Script\Tokens\OutputToken.cs" />
+    <Compile Include="Sql\Script\Tokens\PrimaryToken.cs" />
     <Compile Include="Sql\Script\TablePrimaryKeyConstraint.cs" />
     <Compile Include="Sql\Script\ProcedureParameter.cs" />
     <Compile Include="Sql\Script\SqlDropStatement.cs" />
@@ -218,14 +229,19 @@
     <Compile Include="Sql\Script\TableConstraint.cs" />
     <Compile Include="Sql\Script\TableDefinitionGroup.cs" />
     <Compile Include="Sql\Script\TableDefinition.cs" />
+    <Compile Include="Sql\Script\Tokens\TriggerTypeAfterToken.cs" />
+    <Compile Include="Sql\Script\Tokens\TriggerTypeForToken.cs" />
+    <Compile Include="Sql\Script\Tokens\TriggerTypeInsteadOfToken.cs" />
+    <Compile Include="Sql\Script\Tokens\TriggerTypeToken.cs" />
     <Compile Include="Sql\Script\TopExpression.cs" />
+    <Compile Include="Sql\Script\TriggerType.cs" />
     <Compile Include="Sql\Script\TriggerOperation.cs" />
     <Compile Include="Sql\Script\NestedSelectQuery.cs" />
     <Compile Include="Sql\Script\Tuple.cs" />
     <Compile Include="Sql\Script\TypedColumnDefinition.cs" />
     <Compile Include="Sql\Script\TypedVariableDeclaration.cs" />
     <Compile Include="Sql\Script\UnionClause.cs" />
-    <Compile Include="Sql\Script\Unique.cs" />
+    <Compile Include="Sql\Script\Tokens\UniqueToken.cs" />
     <Compile Include="Sql\Script\TableUniqueConstraint.cs" />
     <Compile Include="Sql\Script\UpdateItem.cs" />
     <Compile Include="Sql\Script\UpdateMode.cs" />
@@ -257,13 +273,13 @@
     <Compile Include="Sql\Script\SetOptionStatement.cs" />
     <Compile Include="Sql\Script\SetVariableStatement.cs" />
     <Compile Include="Sql\Script\SqlIdentifier.cs" />
-    <Compile Include="Sql\Script\InsignificantToken.cs" />
+    <Compile Include="Sql\Script\Tokens\InsignificantToken.cs" />
     <Compile Include="Sql\Script\OpenxmlColumn.cs" />
     <Compile Include="Sql\Script\Qualified.cs" />
     <Compile Include="Sql\Script\Sequence.cs" />
     <Compile Include="Sql\Script\Literal.cs" />
     <Compile Include="Sql\Script\SqlName.cs" />
-    <Compile Include="Sql\Script\NotToken.cs" />
+    <Compile Include="Sql\Script\Tokens\NotToken.cs" />
     <Compile Include="Sql\Script\OperationToken.cs" />
     <Compile Include="Sql\Script\ReservedWord.cs" />
     <Compile Include="Sql\Script\SqlToken.cs" />
@@ -275,21 +291,21 @@
     <Compile Include="Sql\Script\SysVariableIdentifier.cs" />
     <Compile Include="Sql\Script\TableName.cs" />
     <Compile Include="Sql\Script\TempTableIdentifier.cs" />
-    <Compile Include="Sql\Script\Toggle.cs" />
+    <Compile Include="Sql\Script\Tokens\ToggleToken.cs" />
     <Compile Include="Sql\Script\TriggerName.cs" />
     <Compile Include="Sql\Script\TryCatchStatement.cs" />
     <Compile Include="Sql\Script\TypeName.cs" />
     <Compile Include="Sql\Script\UpdateStatement.cs" />
     <Compile Include="Sql\Script\DeclareStatement.cs" />
     <Compile Include="Sql\Script\VariableName.cs" />
-    <Compile Include="Sql\Script\Varying.cs" />
+    <Compile Include="Sql\Script\Tokens\VaryingToken.cs" />
     <Compile Include="Sql\Script\ViewName.cs" />
     <Compile Include="Sql\Script\WaitforStatement.cs" />
     <Compile Include="Sql\Script\WhileStatement.cs" />
-    <Compile Include="Sql\Script\WithCheckOption.cs" />
-    <Compile Include="Sql\Script\WithRecompile.cs" />
-    <Compile Include="Sql\Script\WithTies.cs" />
-    <Compile Include="Sql\Script\WithViewMetadata.cs" />
+    <Compile Include="Sql\Script\Tokens\WithCheckOptionToken.cs" />
+    <Compile Include="Sql\Script\Tokens\WithRecompileToken.cs" />
+    <Compile Include="Sql\Script\Tokens\WithTiesToken.cs" />
+    <Compile Include="Sql\Script\Tokens\WithViewMetadataToken.cs" />
     <Compile Include="Sql\Script\XmlDirective.cs" />
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
   </ItemGroup>
@@ -303,13 +319,6 @@
       <Project>{1A1A5AE9-7981-471C-9CC7-F7465E675A32}</Project>
       <Name>bsn.GoldParser</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Sql\Passthrough.xslt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Sql\SqlConverter.xslt" />
-    <EmbeddedResource Include="Sql\SqlDeserialize.xslt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Bootstrapper\" />

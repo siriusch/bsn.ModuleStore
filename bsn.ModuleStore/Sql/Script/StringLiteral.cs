@@ -56,15 +56,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.collation = collation;
 		}
 
-		public bool IsUnicode {
-			get {
-				return isUnicode;
-			}
-		}
-
 		public CollationName Collation {
 			get {
 				return collation;
+			}
+		}
+
+		public bool IsUnicode {
+			get {
+				return isUnicode;
 			}
 		}
 	}

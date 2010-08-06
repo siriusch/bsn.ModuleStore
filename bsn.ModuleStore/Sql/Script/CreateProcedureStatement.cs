@@ -1,19 +1,21 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class CreateProcedureStatement: SqlCreateStatement {
 		private readonly StatementBlock body;
-		private readonly ForReplication forReplication;
-		private readonly Sequence<ProcedureParameter> parameters;
+		private readonly bool forReplication;
+		private readonly List<ProcedureParameter> parameters;
 		private readonly ProcedureName procedureName;
-		private readonly WithRecompile recompile;
+		private readonly bool recompile;
 
 		[Rule("<CreateProcedureStatement> ::= CREATE PROCEDURE <ProcedureName> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> AS <StatementBlock>", ConstructorParameterMapping = new[] {2, 3, 4, 5, 7})]
-		public CreateProcedureStatement(ProcedureName procedureName, Optional<Sequence<ProcedureParameter>> parameters, Optional<WithRecompile> recompile, Optional<ForReplication> forReplication, StatementBlock body) {
+		public CreateProcedureStatement(ProcedureName procedureName, Optional<Sequence<ProcedureParameter>> parameters, Optional<WithRecompileToken> recompile, Optional<ForReplicationToken> forReplication, StatementBlock body) {
 			if (procedureName == null) {
 				throw new ArgumentNullException("procedureName");
 			}
@@ -21,9 +23,9 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("body");
 			}
 			this.procedureName = procedureName;
-			this.parameters = parameters;
-			this.recompile = recompile;
-			this.forReplication = forReplication;
+			this.parameters = parameters.ToList();
+			this.recompile = recompile.HasValue();
+			this.forReplication = forReplication.HasValue();
 			this.body = body;
 		}
 
@@ -38,13 +40,11 @@ namespace bsn.ModuleStore.Sql.Script {
 					separator = ", ";
 				}
 			}
-			if (recompile != null) {
-				writer.Write(' ');
-				recompile.WriteTo(writer);
+			if (recompile) {
+				writer.Write(" WITH RECOMPILE");
 			}
-			if (forReplication != null) {
-				writer.Write(' ');
-				forReplication.WriteTo(writer);
+			if (forReplication) {
+				writer.Write(" FOR REPLICATION");
 			}
 			writer.Write(" AS ");
 			body.WriteTo(writer);

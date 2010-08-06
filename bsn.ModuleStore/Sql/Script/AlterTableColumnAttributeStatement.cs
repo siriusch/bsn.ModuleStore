@@ -1,14 +1,16 @@
 using System;
 
+using bsn.ModuleStore.Sql.Script.Tokens;
+
 namespace bsn.ModuleStore.Sql.Script {
 	public class AlterTableColumnAttributeStatement: AlterTableColumnStatement {
 		private readonly DdlOperation ddlOperation;
 
-		protected AlterTableColumnAttributeStatement(TableName tableName, ColumnName columnName, DdlOperation ddlOperation): base(tableName, columnName) {
-			if (ddlOperation == null) {
-				throw new ArgumentNullException("ddlOperation");
+		protected AlterTableColumnAttributeStatement(TableName tableName, ColumnName columnName, DdlOperationToken ddlOperationToken): base(tableName, columnName) {
+			if (ddlOperationToken == null) {
+				throw new ArgumentNullException("ddlOperationToken");
 			}
-			this.ddlOperation = ddlOperation;
+			ddlOperation = ddlOperationToken.Operation;
 		}
 	}
 }

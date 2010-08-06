@@ -3,17 +3,13 @@ using System.IO;
 
 using bsn.GoldParser.Semantic;
 
-namespace bsn.ModuleStore.Sql.Script {
+namespace bsn.ModuleStore.Sql.Script.Tokens {
 	[Terminal("ON")]
 	[Terminal("OFF")]
-	public class Toggle: SqlToken {
-		public static implicit operator bool(Toggle toggle) {
-			return toggle.On;
-		}
-
+	public class ToggleToken: SqlToken {
 		private readonly bool on;
 
-		public Toggle(string value) {
+		public ToggleToken(string value) {
 			on = string.Equals("ON", value, StringComparison.OrdinalIgnoreCase);
 		}
 

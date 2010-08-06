@@ -18,7 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Test]
 		public void ConsistencyCheck() {
-			new SemanticTypeActions<SqlToken>(grammar).Initialize();
+			new SemanticTypeActions<SqlToken>(grammar).Initialize(true);
 		}
 	}
 }

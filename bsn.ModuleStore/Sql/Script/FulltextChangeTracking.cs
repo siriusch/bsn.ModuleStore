@@ -2,6 +2,7 @@ using System;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class FulltextChangeTracking: SqlToken {
@@ -26,7 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING OFF", ConstructorParameterMapping = new[] {1})]
 		[Rule("<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING OFF ',' NO_POPULATION", ConstructorParameterMapping = new[] {3})]
 		public FulltextChangeTracking(SqlToken mode) {
-			if (mode is Toggle) {
+			if (mode is ToggleToken) {
 				this.mode = TrackingMode.Off;
 			} else {
 				this.mode = TrackingMode.OffNoPopulation;

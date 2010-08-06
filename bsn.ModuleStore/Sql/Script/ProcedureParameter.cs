@@ -3,18 +3,19 @@ using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class ProcedureParameter: SqlToken {
 		private readonly Literal defaultValue;
-		private readonly Output output;
+		private readonly OutputToken output;
 		private readonly ParameterName parameterName;
 		private readonly Qualified<TypeName> parameterTypeName;
 		private readonly bool readOnly;
-		private readonly Varying varying;
+		private readonly VaryingToken varying;
 
 		[Rule("<ProcedureParameter> ::= <ParameterName> <TypeNameQualified> <OptionalVarying> <OptionalDefault> <OptionalOutput> <OptionalReadonly>")]
-		public ProcedureParameter(ParameterName parameterName, Qualified<TypeName> parameterTypeName, Optional<Varying> varying, Optional<Literal> defaultValue, Optional<Output> output, Optional<Identifier> readonlyIdentifier) {
+		public ProcedureParameter(ParameterName parameterName, Qualified<TypeName> parameterTypeName, Optional<VaryingToken> varying, Optional<Literal> defaultValue, Optional<OutputToken> output, Optional<Identifier> readonlyIdentifier) {
 			if (parameterName == null) {
 				throw new ArgumentNullException("parameterName");
 			}
