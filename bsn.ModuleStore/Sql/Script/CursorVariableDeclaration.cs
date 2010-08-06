@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CursorVariableDeclaration: VariableDeclaration {
+	public class CursorVariableDeclaration: DeclareStatement {
 		[Rule("<DeclareItem> ::= <VariableName> CURSOR", ConstructorParameterMapping = new[] {0})]
 		public CursorVariableDeclaration(VariableName variable): base(variable) {}
 

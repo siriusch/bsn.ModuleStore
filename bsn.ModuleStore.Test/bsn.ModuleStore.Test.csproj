@@ -51,6 +51,7 @@
     <Compile Include="Sql\InventoryPopulatorTest.cs" />
     <Compile Include="Sql\ScriptParserTest.cs" />
     <Compile Include="Sql\Script\SemanticActionsTest.cs" />
+    <Compile Include="Sql\Script\StringLiteralTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GoldParser\bsn.GoldParser\bsn.GoldParser.csproj">

@@ -2,10 +2,10 @@
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class VariableDeclaration: SqlToken {
+	public abstract class DeclareStatement: SqlStatement {
 		private readonly VariableName variable;
 
-		protected VariableDeclaration(VariableName variable): base() {
+		protected DeclareStatement(VariableName variable): base() {
 			if (variable == null) {
 				throw new ArgumentNullException("variable");
 			}

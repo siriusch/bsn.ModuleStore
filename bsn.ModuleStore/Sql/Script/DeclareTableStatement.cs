@@ -5,7 +5,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class DeclareTableStatement: VariableDeclaration {
+	public class DeclareTableStatement: DeclareStatement {
 		private readonly TableDefinitionGroup tableDefinition;
 
 		[Rule("<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> TABLE <TableDefinitionGroup>", ConstructorParameterMapping = new[] {1, 4})]

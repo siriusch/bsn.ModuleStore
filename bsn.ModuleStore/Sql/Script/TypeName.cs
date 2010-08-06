@@ -13,6 +13,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		public TypeName(SqlIdentifier identifier, InsignificantToken openBrace, SqlToken size, InsignificantToken closeBrace): this(identifier) {}
 
 		[Rule("<TypeName> ::= Id '(' <IntegerLiteral> ',' <IntegerLiteral> ')'")]
-		public TypeName(SqlIdentifier identifier, InsignificantToken openBrace, Literal<int> precision, InsignificantToken comma, Literal<int> scale, InsignificantToken closeBrace): this(identifier) {}
+		public TypeName(SqlIdentifier identifier, InsignificantToken openBrace, IntegerLiteral precision, InsignificantToken comma, IntegerLiteral scale, InsignificantToken closeBrace): this(identifier) {}
 	}
 }

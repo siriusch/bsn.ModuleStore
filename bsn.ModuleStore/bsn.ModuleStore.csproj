@@ -72,10 +72,9 @@
     <Compile Include="Sql\Script\AlterTableDropConstraintStatement.cs" />
     <Compile Include="Sql\Script\AlterTableStatement.cs" />
     <Compile Include="Sql\Script\AnyStatement.cs" />
-    <Compile Include="Sql\Script\BinaryExpression.cs" />
     <Compile Include="Sql\Script\BreakStatement.cs" />
     <Compile Include="Sql\Script\CaseWhen.cs" />
-    <Compile Include="Sql\Script\Collable.cs" />
+    <Compile Include="Sql\Script\CollableValue.cs" />
     <Compile Include="Sql\Script\ColumnCheckConstraint.cs" />
     <Compile Include="Sql\Script\ColumnCollateConstraint.cs" />
     <Compile Include="Sql\Script\ColumnDefaultConstraint.cs" />
@@ -100,10 +99,12 @@
     <Compile Include="Sql\Script\ExpressionCountFunction.cs" />
     <Compile Include="Sql\Script\ExpressionFunction.cs" />
     <Compile Include="Sql\Script\ExpressionNegate.cs" />
+    <Compile Include="Sql\Script\ExpressionParens.cs" />
     <Compile Include="Sql\Script\ExpressionRankingFunction.cs" />
     <Compile Include="Sql\Script\ExpressionSearchedCase.cs" />
     <Compile Include="Sql\Script\ExpressionSimpleCase.cs" />
     <Compile Include="Sql\Script\ExpressionTuple.cs" />
+    <Compile Include="Sql\Script\ExpressionValue.cs" />
     <Compile Include="Sql\Script\ForXmlKind.cs" />
     <Compile Include="Sql\Script\FromClause.cs" />
     <Compile Include="Sql\Script\ExpressionFunctionCall.cs" />
@@ -118,7 +119,7 @@
     <Compile Include="Sql\Script\NullLiteral.cs" />
     <Compile Include="Sql\Script\Order.cs" />
     <Compile Include="Sql\Script\OutputClause.cs" />
-    <Compile Include="Sql\Script\Parens.cs" />
+    <Compile Include="Sql\Script\PredicateParens.cs" />
     <Compile Include="Sql\Script\Percent.cs" />
     <Compile Include="Sql\Script\ForBrowsingClause.cs" />
     <Compile Include="Sql\Script\ForClause.cs" />
@@ -279,7 +280,7 @@
     <Compile Include="Sql\Script\TryCatchStatement.cs" />
     <Compile Include="Sql\Script\TypeName.cs" />
     <Compile Include="Sql\Script\UpdateStatement.cs" />
-    <Compile Include="Sql\Script\VariableDeclaration.cs" />
+    <Compile Include="Sql\Script\DeclareStatement.cs" />
     <Compile Include="Sql\Script\VariableName.cs" />
     <Compile Include="Sql\Script\Varying.cs" />
     <Compile Include="Sql\Script\ViewName.cs" />

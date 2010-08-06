@@ -6,10 +6,10 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class DeclareVariableStatement: SqlStatement {
-		private readonly Sequence<VariableDeclaration> declarations;
+		private readonly Sequence<DeclareStatement> declarations;
 
 		[Rule("<DeclareStatement> ::= DECLARE <DeclareItemList>", ConstructorParameterMapping = new[] {1})]
-		public DeclareVariableStatement(Sequence<VariableDeclaration> declarations) {
+		public DeclareVariableStatement(Sequence<DeclareStatement> declarations) {
 			if (declarations == null) {
 				throw new ArgumentNullException("declarations");
 			}
@@ -19,7 +19,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("DECLARE");
 			string prepend = " ";
-			foreach (VariableDeclaration declaration in declarations) {
+			foreach (DeclareStatement declaration in declarations) {
 				writer.Write(prepend);
 				declaration.WriteTo(writer);
 				prepend = ", ";

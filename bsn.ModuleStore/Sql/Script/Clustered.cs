@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<ConstraintCluster> ::= CLUSTERED")]
 		[Rule("<ConstraintCluster> ::= NONCLUSTERED")]
-		private Clustered(IToken token) {
+		public Clustered(IToken token) {
 			if (token != null) {
 				clustered = token.NameIs("CLUSTERED");
 			}

@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		[Rule("<RankingArguments> ::= <OrderClause>")]
-		private RankingArguments(Sequence<Order> orders) {
+		public RankingArguments(Sequence<Order> orders) {
 			this.orders = orders;
 		}
 	}

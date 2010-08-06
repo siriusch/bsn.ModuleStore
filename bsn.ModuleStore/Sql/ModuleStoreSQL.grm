@@ -348,7 +348,7 @@ OUTPUT = OUT(PUT)?
 
 <StringLiteral> ::= StringLiteral
 
-<CollableStringLiteral> ::= <StringLiteral> COLLATE <CollationName>
+<CollableStringLiteral> ::= StringLiteral COLLATE <CollationName>
                           | <StringLiteral>
 
 <IntegerLiteral> ::= IntegerLiteral
@@ -1090,14 +1090,19 @@ OUTPUT = OUT(PUT)?
 
 <ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> ELSE <Expression> END
                    | CASE <Expression> <CaseWhenExpressionList> END
-                   | CASE <CaseWhenExpressionList> ELSE <Expression> END
-                   | CASE <CaseWhenExpressionList> END
+                   | CASE <CaseWhenPredicateList> ELSE <Expression> END
+                   | CASE <CaseWhenPredicateList> END
                    | <CollatedValue>
 
 <CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>
                            | <CaseWhenExpression>
                            
-<CaseWhenExpression> ::= WHEN <Predicate> THEN <Expression>
+<CaseWhenExpression> ::= WHEN <Expression> THEN <Expression>
+
+<CaseWhenPredicateList> ::= <CaseWhenPredicate> <CaseWhenPredicateList>
+                           | <CaseWhenPredicate>
+                           
+<CaseWhenPredicate> ::= WHEN <Predicate> THEN <Expression>
 
 <CollatedValue> ::= <Value> COLLATE <CollationName>
                   | <Value>

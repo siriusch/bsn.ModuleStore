@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class TypedVariableDeclaration: VariableDeclaration {
+	public class TypedVariableDeclaration: DeclareStatement {
 		private readonly Expression initialization;
 		private readonly Qualified<TypeName> typeName;
 

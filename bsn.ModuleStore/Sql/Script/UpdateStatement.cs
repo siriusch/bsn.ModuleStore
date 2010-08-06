@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Predicate whereClause;
 
 		[Rule("<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause>", ConstructorParameterMapping = new[] {0, 2, 3, 5, 6, 7, 8})]
-		public UpdateStatement(Sequence<CommonTableExpression> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Sequence<UpdateItem> updateItems, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause) {
+		public UpdateStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Sequence<UpdateItem> updateItems, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause) {
 			this.ctes = ctes;
 			this.topExpression = topExpression;
 			this.destinationRowset = destinationRowset;

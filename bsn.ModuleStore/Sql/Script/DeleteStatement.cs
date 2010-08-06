@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Predicate whereClause;
 
 		[Rule("<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause>", ConstructorParameterMapping = new[] {0, 2, 4, 5, 6, 7})]
-		public DeleteStatement(Sequence<CommonTableExpression> ctes, TopExpression topExpression, DestinationRowset destinationRowset, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause) {
+		public DeleteStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause) {
 			this.ctes = ctes;
 			this.topExpression = topExpression;
 			this.destinationRowset = destinationRowset;
