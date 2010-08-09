@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class AlterTableStatement: SqlStatement, IScriptable {
+	public abstract class AlterTableStatement: SqlStatement {
 		private readonly TableName tableName;
 
 		protected AlterTableStatement(TableName tableName) {
