@@ -13,5 +13,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			this.definition = definition;
 		}
+
+		public override void ApplyTo(CreateTableStatement createTable) {
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -12,5 +12,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			ddlOperation = ddlOperationToken.Operation;
 		}
+
+		public override void ApplyTo(CreateTableStatement createTable) {
+			throw new NotImplementedException();
+		}
 	}
 }

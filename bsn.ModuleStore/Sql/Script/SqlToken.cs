@@ -12,14 +12,14 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override sealed string ToString() {
-			using (StringWriter writer = CreateWriter()) {
-				WriteTo(writer);
-				return writer.ToString();
+			IScriptable scriptable = this as IScriptable;
+			if (scriptable != null) {
+				using (StringWriter writer = CreateWriter()) {
+					scriptable.WriteTo(writer);
+					return writer.ToString();
+				}
 			}
-		}
-
-		public virtual void WriteTo(TextWriter writer) {
-			throw new NotImplementedException();
+			return base.ToString();
 		}
 	}
 }

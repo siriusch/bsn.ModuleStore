@@ -1,8 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class AlterTableStatement: SqlStatement {
+	public abstract class AlterTableStatement: SqlStatement, IScriptable {
 		private readonly TableName tableName;
 
 		protected AlterTableStatement(TableName tableName) {
@@ -14,16 +15,16 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public abstract void ApplyTo(CreateTableStatement createTable);
 
-		public override void WriteTo(System.IO.TextWriter writer) {
-			writer.Write("ALTER TABLE ");
-			tableName.WriteTo(writer);
-			writer.Write(' ');
-		}
-
 		public TableName TableName {
 			get {
 				return tableName;
 			}
+		}
+
+		public virtual void WriteTo(TextWriter writer) {
+			writer.Write("ALTER TABLE ");
+			writer.WriteScript(tableName);
+			writer.Write(' ');
 		}
 	}
 }

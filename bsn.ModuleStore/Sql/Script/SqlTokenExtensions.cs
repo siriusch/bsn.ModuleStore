@@ -41,27 +41,27 @@ namespace bsn.ModuleStore.Sql.Script {
 				IEnumerator<T> enumerator = sequence.GetEnumerator();
 				if (enumerator.MoveNext()) {
 					WriteString(writer, itemPrefix);
-					WriteItem(writer, enumerator.Current);
+					WriteScript(writer, enumerator.Current);
 					while (enumerator.MoveNext()) {
 						WriteString(writer, itemSeparator);
 						WriteString(writer, itemSuffix);
 						WriteString(writer, itemPrefix);
-						WriteItem(writer, enumerator.Current);
+						WriteScript(writer, enumerator.Current);
 					}
 					WriteString(writer, itemSuffix);
 				}
 			}
 		}
 
-		private static void WriteString(TextWriter writer, string value) {
-			if (!string.IsNullOrEmpty(value)) {
-				writer.Write(value);
+		public static void WriteScript<T>(this TextWriter writer, T value) where T: SqlToken {
+			if (value != null) {
+				value.WriteTo(writer);
 			}
 		}
 
-		private static void WriteItem<T>(TextWriter writer, T item) where T: SqlToken {
-			if (item != null) {
-				item.WriteTo(writer);
+		private static void WriteString(TextWriter writer, string value) {
+			if (!string.IsNullOrEmpty(value)) {
+				writer.Write(value);
 			}
 		}
 	}
