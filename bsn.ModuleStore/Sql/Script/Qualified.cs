@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class Qualified<T>: SqlToken where T: SqlName {
+	public sealed class Qualified<T>: SqlToken, IScriptable where T: SqlName {
 		private readonly T name;
 		private readonly SqlName qualification;
 
@@ -31,10 +32,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public string FullName {
 			get {
-				if (qualification != null) {
-					return string.Format("{0}.{1}", qualification, name);
+				using (StringWriter writer = new StringWriter()) {
+					WriteTo(writer);
+					return writer.ToString();
 				}
-				return name.ToString();
 			}
 		}
 
@@ -54,6 +55,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return qualification;
 			}
+		}
+
+		public void WriteTo(TextWriter writer) {
+			if (IsQualified) {
+				writer.WriteScript(Qualification);
+				writer.Write(".");
+			}
+			writer.WriteScript(Name);
 		}
 	}
 }

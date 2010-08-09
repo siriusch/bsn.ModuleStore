@@ -1,11 +1,26 @@
 ﻿using System;
-
-using bsn.GoldParser.Semantic;
+using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class IndexOption: SqlToken {
-		[Rule("<IndexOption> ::= Id '=' <IntegerLiteral>", ConstructorParameterMapping = new[] {0, 2})]
-		[Rule("<IndexOption> ::= Id '=' <Toggle>", ConstructorParameterMapping = new[] {0, 2})]
-		public IndexOption(Identifier key, SqlToken value) {}
+	public abstract class IndexOption: SqlToken, IScriptable {
+		private readonly Identifier key;
+
+		protected IndexOption(Identifier key) {
+			if (key == null) {
+				throw new ArgumentNullException("key");
+			}
+			this.key = key;
+		}
+
+		public Identifier Key {
+			get {
+				return key;
+			}
+		}
+
+		public virtual void WriteTo(TextWriter writer) {
+			writer.WriteScript(key);
+			writer.Write("=");
+		}
 	}
 }

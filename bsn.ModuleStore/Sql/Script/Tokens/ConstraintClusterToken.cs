@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 
 		public virtual Clustered Clustered {
 			get {
-				return Clustered.Undefined;
+				return Clustered.Unspecified;
 			}
 		}
 	}

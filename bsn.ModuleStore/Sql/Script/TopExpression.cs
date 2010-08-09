@@ -1,10 +1,11 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class TopExpression: SqlToken {
+	public sealed class TopExpression: SqlToken, IScriptable, IOptional {
 		private readonly Expression expression;
 		private readonly bool percent;
 		private readonly bool withTies;
@@ -37,6 +38,22 @@ namespace bsn.ModuleStore.Sql.Script {
 		public bool WithTies {
 			get {
 				return withTies;
+			}
+		}
+
+		public bool HasValue {
+			get {
+				return expression != null;
+			}
+		}
+
+		public void WriteTo(TextWriter writer) {
+			if (HasValue) {
+				writer.Write("TOP (");
+				writer.WriteScript(expression);
+				writer.Write(')');
+				writer.WritePercent(percent, " ", null);
+				writer.WriteWithTies(withTies, " ", null);
 			}
 		}
 	}

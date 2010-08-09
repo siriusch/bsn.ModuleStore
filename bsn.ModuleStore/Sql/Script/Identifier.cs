@@ -1,10 +1,15 @@
 using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("Id")]
-	public class Identifier: SqlIdentifier {
+	public sealed class Identifier: SqlIdentifier, IScriptable {
 		public Identifier(string id): base(id) {}
+	
+		public void WriteTo(TextWriter writer) {
+			writer.Write(Original);
+		}
 	}
 }

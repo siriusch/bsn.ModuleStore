@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class FunctionParameter: SqlToken {
+	public sealed class FunctionParameter: SqlToken, IScriptable {
 		private readonly Literal defaultValue;
 		private readonly ParameterName parameterName;
 		private readonly Qualified<TypeName> parameterTypeName;
@@ -22,13 +22,31 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.defaultValue = defaultValue;
 		}
 
-		public override void WriteTo(TextWriter writer) {
-			parameterName.WriteTo(writer);
-			writer.Write(" ");
-			parameterTypeName.WriteTo(writer);
+		public void WriteTo(TextWriter writer) {
+			writer.WriteScript(parameterName);
+			writer.Write(' ');
+			writer.WriteScript(parameterTypeName);
 			if (defaultValue != null) {
 				writer.Write(" = ");
-				defaultValue.WriteTo(writer);
+				writer.WriteScript(defaultValue);
+			}
+		}
+
+		public Literal DefaultValue {
+			get {
+				return defaultValue;
+			}
+		}
+
+		public ParameterName ParameterName {
+			get {
+				return parameterName;
+			}
+		}
+
+		public Qualified<TypeName> ParameterTypeName {
+			get {
+				return parameterTypeName;
 			}
 		}
 	}

@@ -13,5 +13,13 @@ namespace bsn.ModuleStore.Sql.Script {
 				return constraintName;
 			}
 		}
+
+		public override void WriteTo(System.IO.TextWriter writer) {
+			if (constraintName != null) {
+				writer.Write("CONSTRAINT ");
+				writer.WriteScript(constraintName);
+				writer.Write(' ');
+			}
+		}
 	}
 }

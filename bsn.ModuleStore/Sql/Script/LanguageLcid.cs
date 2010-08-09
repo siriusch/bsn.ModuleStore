@@ -6,7 +6,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("LANGUAGE_LCID")]
-	public class LanguageLcid: SqlToken {
+	public sealed class LanguageLcid: SqlToken, IScriptable {
 		private static readonly Regex rxParse = new Regex(@"^LANGUAGE\s+(?<value>0x(?<hex>[0-9a-f]+)|(?<int>[0-9]+)|'(?<str>([^']+|'')*)')$", RegexOptions.CultureInvariant|RegexOptions.ExplicitCapture|RegexOptions.IgnoreCase|RegexOptions.Singleline);
 
 		private readonly string value;
@@ -19,9 +19,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.value = match.Groups["value"].Value;
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public void WriteTo(TextWriter writer) {
 			writer.Write("LANGUAGE ");
 			writer.Write(value);
+		}
+
+		public string Value {
+			get {
+				return value;
+			}
 		}
 	}
 }

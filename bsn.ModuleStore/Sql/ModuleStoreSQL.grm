@@ -485,7 +485,7 @@ OUTPUT = OUT(PUT)?
 
 <GlobalOrLocalCursor> ::= <VariableName>
                         | <CursorName>
-                        | Id <CursorName> ! Id should be GLOBAL
+                        | Id <CursorName> ! Id should be GLOBAL, but GLOBAL isn't a reserved word
 
 <CursorUpdate> ::= FOR_UPDATE OF <ColumnNameList>
                  | FOR_UPDATE
@@ -549,7 +549,7 @@ OUTPUT = OUT(PUT)?
 
 ! We don't allow to specify the catalog name, since the catalog is automatically assigned (module name)
 
-<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <OptionalFulltextChangeTracking>
+<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
 
 <FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'
                         |
@@ -565,12 +565,10 @@ OUTPUT = OUT(PUT)?
 <OptionalLanguage> ::= LANGUAGE_LCID
                      |
 
-<OptionalFulltextChangeTracking> ::= <FulltextChangeTracking>
-                                   |
-
 <FulltextChangeTracking> ::= WITH_CHANGE_TRACKING Id
                            | WITH_CHANGE_TRACKING OFF
                            | WITH_CHANGE_TRACKING OFF ',' NO_POPULATION
+                           |
 
 <DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableName>
 
@@ -580,9 +578,9 @@ OUTPUT = OUT(PUT)?
 
 ! We don't allow to specify the schema name, it is implicit (module name)
 
-<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
-                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>
-                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
+<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <FunctionOption> <OptionalAs> <StatementBlock>
+                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS TABLE <FunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>
+                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <FunctionOption> <OptionalAs> <StatementBlock>
 
 <OptionalFunctionParameterList> ::= <FunctionParameterList>
                                   |
@@ -595,12 +593,10 @@ OUTPUT = OUT(PUT)?
 <FunctionInlineSelect> ::= <SelectStatement>
                          | '(' <FunctionInlineSelect> ')'
 
-<OptionalFunctionOption> ::= WITH <FunctionOption>
-                           |
-
 ! The options ENCRYPTION and SCHEMABINDING are handled by the module and therefore not allowed
-<FunctionOption> ::= RETURNS_NULL_ON_NULL_INPUT
-                   | CALLED_ON_NULL_INPUT
+<FunctionOption> ::= WITH RETURNS_NULL_ON_NULL_INPUT
+                   | WITH CALLED_ON_NULL_INPUT
+                   |
 
 <DropFunctionStatement> ::= DROP FUNCTION <FunctionName>
 
@@ -724,12 +720,10 @@ OUTPUT = OUT(PUT)?
 <IndexOption> ::= Id '=' <IntegerLiteral>
                 | Id '=' <Toggle>
 
-<IndexUsing> ::= USING_XML_INDEX <IndexName> <IndexFor>
+<IndexUsing> ::= USING_XML_INDEX <IndexName> FOR_VALUE
+               | USING_XML_INDEX <IndexName> FOR_PATH
+               | USING_XML_INDEX <IndexName> FOR_PROPERTY
                |
-
-<IndexFor> ::= FOR_VALUE
-             | FOR_PATH
-             | FOR_PROPERTY
 
 <DropIndexStatement> ::= DROP INDEX <IndexName> ON <TableName> <IndexOptionGroup>
 

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CreateColumnIndexStatement: CreateIndexStatement {
+	public sealed class CreateColumnIndexStatement: CreateIndexStatement {
 		private readonly Clustered clustered;
 		private readonly List<ColumnName> columnNames;
 		private readonly List<IndexColumn> indexColumns;
-		private readonly List<IndexOption> indexOptions;
 		private readonly bool unique;
 
 		[Rule("<CreateIndexStatement> ::= CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' INCLUDE_ <ColumnNameList> ')' <IndexOptionGroup>", ConstructorParameterMapping = new[] {1, 2, 4, 6, 8, 11, 13})]
@@ -21,7 +21,20 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.clustered = clustered.Clustered;
 			this.indexColumns = indexColumns.ToList();
 			this.columnNames = columnNames.ToList();
-			this.indexOptions = indexOptions.ToList();
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.Write("CREATE ");
+			if (unique) {
+				writer.Write("UNIQUE ");
+			}
+			writer.WriteValue(clustered, null, " ");
+			writer.Write("INDEX ");
+			writer.WriteScript(IndexName);
+			writer.Write(" ON ");
+			writer.WriteScript(TableName);
+			writer.Write(" (");
+			writer.WriteSequence(indexColumns, null, ", ", null);
 		}
 	}
 }

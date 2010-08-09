@@ -6,7 +6,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class DeclareCursorStatement: SqlCursorStatement {
+	public sealed class DeclareCursorStatement: SqlCursorStatement {
 		private static readonly Identifier globalIdentifier = new Identifier("GLOBAL");
 
 		private readonly List<string> cursorOptions;

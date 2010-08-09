@@ -11,8 +11,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		public SetOptionStatement(Identifier identifier, Sequence<SqlToken> valueList) {
 			using (StringWriter writer = CreateWriter()) {
 				writer.Write("SET ");
-				identifier.WriteTo(writer);
-				foreach (SqlToken token in valueList) {
+				writer.WriteScript(identifier);
+				foreach (IScriptable token in valueList) {
 					writer.Write(' ');
 					token.WriteTo(writer);
 				}

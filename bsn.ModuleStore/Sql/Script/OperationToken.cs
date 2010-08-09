@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -17,14 +18,15 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("<=")]
 	[Terminal("OR")]
 	[Terminal("AND")]
-	public class OperationToken: SqlToken {
+	public sealed class OperationToken: SqlToken, IScriptable {
 		private readonly string operation;
 
 		public OperationToken(string operation) {
+			Debug.Assert(operation != null);
 			this.operation = operation;
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public void WriteTo(TextWriter writer) {
 			writer.Write(operation);
 		}
 	}

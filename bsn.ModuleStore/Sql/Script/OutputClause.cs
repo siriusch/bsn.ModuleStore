@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class OutputClause: SqlToken {
+	public sealed class OutputClause: SqlToken, IScriptable, IOptional {
+		private readonly DestinationRowset destinationName;
+		private readonly List<ColumnName> destinationColumnNames;
+		private readonly List<ColumnItem> columnItems;
+
 		[Rule("<OutputClause> ::=")]
 		public OutputClause(): this(null, null, null) {}
 
@@ -12,6 +18,50 @@ namespace bsn.ModuleStore.Sql.Script {
 		public OutputClause(Sequence<ColumnItem> columnItems): this(columnItems, null, null) {}
 
 		[Rule("<OutputClause> ::= OUTPUT <ColumnItemList> INTO <DestinationRowset> <ColumnNameGroup>", ConstructorParameterMapping = new[] {1, 3, 4})]
-		public OutputClause(Sequence<ColumnItem> columnItems, DestinationRowset destinationName, Optional<Sequence<ColumnName>> destinationColumnNames) {}
+		public OutputClause(Sequence<ColumnItem> columnItems, DestinationRowset destinationName, Optional<Sequence<ColumnName>> destinationColumnNames) {
+			this.destinationName = destinationName;
+			this.destinationColumnNames = destinationColumnNames.ToList();
+			this.columnItems = columnItems.ToList();
+		}
+
+		public bool HasValue {
+			get {
+				return columnItems.Count > 0;
+			}
+		}
+
+		public DestinationRowset DestinationName {
+			get {
+				return destinationName;
+			}
+		}
+
+		public List<ColumnName> DestinationColumnNames {
+			get {
+				return destinationColumnNames;
+			}
+		}
+
+		public List<ColumnItem> ColumnItems {
+			get {
+				return columnItems;
+			}
+		}
+
+		public void WriteTo(TextWriter writer) {
+			if (HasValue) {
+				writer.Write("OUTPUT ");
+				writer.WriteSequence(columnItems, null, ", ", null);
+				if (destinationName != null) {
+					writer.Write(" INTO ");
+					writer.WriteScript(destinationName);
+					if (destinationColumnNames.Count > 0) {
+						writer.Write(" (");
+						writer.WriteSequence(destinationColumnNames, null, ", ", null);
+						writer.Write(")");
+					}
+				}
+			}
+		}
 	}
 }

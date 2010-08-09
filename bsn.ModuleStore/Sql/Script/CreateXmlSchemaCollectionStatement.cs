@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
@@ -18,6 +19,25 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			this.xmlSchemaCollectionName = xmlSchemaCollectionName;
 			this.expression = expression;
+		}
+
+		public Expression Expression {
+			get {
+				return expression;
+			}
+		}
+
+		public XmlSchemaCollectionName XmlSchemaCollectionName {
+			get {
+				return xmlSchemaCollectionName;
+			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.Write("CERATE XML SCHEMA COLLECTION ");
+			writer.WriteScript(xmlSchemaCollectionName);
+			writer.Write(" AS ");
+			writer.WriteScript(expression);
 		}
 	}
 }

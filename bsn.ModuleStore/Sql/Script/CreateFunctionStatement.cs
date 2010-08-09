@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -12,10 +13,10 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateFunctionStatement<TBody>: SqlCreateStatement where TBody: SqlStatement {
 		private readonly TBody body;
 		private readonly FunctionName functionName;
-		private readonly FunctionOption options;
-		private readonly Sequence<FunctionParameter> parameters;
+		private readonly FunctionOption option;
+		private readonly List<FunctionParameter> parameters;
 
-		protected CreateFunctionStatement(FunctionName functionName, Optional<Sequence<FunctionParameter>> parameters, FunctionOption options, TBody body) {
+		protected CreateFunctionStatement(FunctionName functionName, Sequence<FunctionParameter> parameters, FunctionOptionToken option, TBody body) {
 			if (functionName == null) {
 				throw new ArgumentNullException("functionName");
 			}
@@ -23,8 +24,8 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("body");
 			}
 			this.functionName = functionName;
-			this.parameters = parameters;
-			this.options = options;
+			this.parameters = parameters.ToList();
+			this.option = option.FunctionOption;
 			this.body = body;
 		}
 
@@ -40,13 +41,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public FunctionOption Options {
+		public FunctionOption Option {
 			get {
-				return options;
+				return option;
 			}
 		}
 
-		public Sequence<FunctionParameter> Parameters {
+		public List<FunctionParameter> Parameters {
 			get {
 				return parameters;
 			}
@@ -54,24 +55,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("CREATE FUNCTION ");
-			functionName.WriteTo(writer);
+			writer.WriteScript(functionName);
 			writer.Write(" (");
-			if (parameters != null) {
-				string separator = string.Empty;
-				foreach (FunctionParameter parameter in parameters) {
-					writer.Write(separator);
-					parameter.WriteTo(writer);
-					separator = ", ";
-				}
-			}
+			writer.WriteSequence(parameters, null, ", ", null);
 			writer.Write(") RETURNS ");
-		}
-
-		protected void WriteOptions(TextWriter writer) {
-			if (Options != null) {
-				writer.Write(' ');
-				Options.WriteTo(writer);
-			}
 		}
 	}
 }

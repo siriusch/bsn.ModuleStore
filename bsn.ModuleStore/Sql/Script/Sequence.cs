@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class Sequence<T>: SqlToken, IEnumerable<T> where T: SqlToken {
@@ -31,11 +32,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TableDefinitionList> ::= <TableDefinition>", typeof(TableDefinition))]
 		[Rule("<IndexColumnList> ::= <IndexColumn>", typeof(IndexColumn))]
 		[Rule("<IndexOptionList> ::= <IndexOption>", typeof(IndexOption))]
-		[Rule("<TriggerOperationList> ::= <TriggerOperation>", typeof(TriggerOperation))]
+		[Rule("<TriggerOperationList> ::= <TriggerOperation>", typeof(DmlOperationToken))]
 		[Rule("<TriggerNameList> ::= <TriggerName>", typeof(TriggerName))]
 		[Rule("<CTEList> ::= <CTE>", typeof(CommonTableExpression))]
 		[Rule("<ColumnItemList> ::= <ColumnItem>", typeof(ColumnItem))]
-		[Rule("<OrderList> ::= <Order>", typeof(Order))]
+		[Rule("<OrderList> ::= <Order>", typeof(OrderExpression))]
 		[Rule("<ExpressionList> ::= <Expression>", typeof(Expression))]
 		[Rule("<XmlDirectiveList> ::= <XmlDirective>", typeof(XmlDirective))]
 		[Rule("<UpdateItemList> ::= <UpdateItem>", typeof(UpdateItem))]
@@ -59,11 +60,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TableDefinitionList> ::= <TableDefinition> ',' <TableDefinitionList>", typeof(TableDefinition), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>", typeof(IndexColumn), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<IndexOptionList> ::= <IndexOption> ',' <IndexOptionList>", typeof(IndexOption), ConstructorParameterMapping = new[] {0, 2})]
-		[Rule("<TriggerOperationList> ::= <TriggerOperation> ',' <TriggerOperationList>", typeof(TriggerOperation), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<TriggerOperationList> ::= <TriggerOperation> ',' <TriggerOperationList>", typeof(DmlOperationToken), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>", typeof(TriggerName), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<CTEList> ::= <CTE> ',' <CTEList>", typeof(CommonTableExpression), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<ColumnItemList> ::= <ColumnItem> ',' <ColumnItemList>", typeof(ColumnItem), ConstructorParameterMapping = new[] {0, 2})]
-		[Rule("<OrderList> ::= <Order> ',' <OrderList>", typeof(Order), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<OrderList> ::= <Order> ',' <OrderList>", typeof(OrderExpression), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<ExpressionList> ::= <Expression> ',' <ExpressionList>", typeof(Expression), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<XmlDirectiveList> ::= <XmlDirective> ',' <XmlDirectiveList>", typeof(XmlDirective), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<UpdateItemList> ::= <UpdateItem> ',' <UpdateItemList>", typeof(UpdateItem), ConstructorParameterMapping = new[] {0, 2})]
@@ -90,10 +91,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return next;
 			}
-		}
-
-		public override void WriteTo(TextWriter writer) {
-			throw new NotSupportedException();
 		}
 
 		public IEnumerator<T> GetEnumerator() {

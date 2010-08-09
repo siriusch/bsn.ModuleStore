@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class SqlName: SqlToken {
+	public abstract class SqlName: SqlToken, IScriptable {
 		private readonly string value;
 
 		protected SqlName(string name) {
@@ -22,7 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public virtual void WriteTo(TextWriter writer) {
 			writer.Write(value);
 		}
 	}

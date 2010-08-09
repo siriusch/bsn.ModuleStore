@@ -5,26 +5,26 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class SetIdentityInsertStatement: SqlStatement {
+	public sealed class SetIdentityInsertStatement: SqlStatement {
 		private readonly bool enabled;
-		private readonly TableName table;
+		private readonly TableName tableName;
 
 		[Rule("<SetOptionStatement> ::= SET IDENTITY_INSERT <TableName> <Toggle>", ConstructorParameterMapping = new[] {2, 3})]
-		public SetIdentityInsertStatement(TableName tableName, ToggleToken toggle) {
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
+		public SetIdentityInsertStatement(TableName tableNameName, ToggleToken toggle) {
+			if (tableNameName == null) {
+				throw new ArgumentNullException("tableNameName");
 			}
 			if (toggle == null) {
 				throw new ArgumentNullException("toggle");
 			}
-			table = tableName;
+			this.tableName = tableNameName;
 			enabled = toggle.On;
 		}
 
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("SET IDENTITY INSERT ");
-			table.WriteTo(writer);
-			writer.Write(enabled ? " ON" : " OFF");
+			writer.WriteScript(tableName);
+			writer.WriteToggle(enabled, " ", null);
 		}
 	}
 }

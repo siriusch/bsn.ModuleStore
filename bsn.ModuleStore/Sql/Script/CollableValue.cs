@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CollableValue: Expression {
+	public sealed class CollableValue: Expression {
 		private readonly CollationName collation;
 		private readonly Expression valueExpression;
 
@@ -17,6 +18,24 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			this.valueExpression = valueExpression;
 			this.collation = collation;
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.WriteScript(valueExpression);
+			writer.Write(" COLLATE ");
+			writer.WriteScript(collation);
+		}
+
+		public CollationName Collation {
+			get {
+				return collation;
+			}
+		}
+
+		public Expression ValueExpression {
+			get {
+				return valueExpression;
+			}
 		}
 	}
 }

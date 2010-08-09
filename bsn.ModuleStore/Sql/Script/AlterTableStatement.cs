@@ -13,7 +13,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableName = tableName;
 		}
 
-		public abstract void ApplyTo(CreateTableStatement createTable);
+		public virtual void ApplyTo(CreateTableStatement createTable) {
+			throw new NotImplementedException();
+		}
 
 		public TableName TableName {
 			get {
@@ -21,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public virtual void WriteTo(TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("ALTER TABLE ");
 			writer.WriteScript(tableName);
 			writer.Write(' ');

@@ -2,7 +2,7 @@
 
 namespace bsn.ModuleStore.Sql.Script {
 	public enum Clustered {
-		Undefined,
+		Unspecified,
 		Clustered,
 		Nonclustered
 	}
