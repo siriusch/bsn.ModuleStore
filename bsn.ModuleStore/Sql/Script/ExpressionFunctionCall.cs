@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ExpressionFunctionCall: ExpressionFunction {
-		private readonly Sequence<Expression> arguments;
+	public sealed class ExpressionFunctionCall: ExpressionFunction {
+		private readonly List<Expression> arguments;
 		private readonly FunctionName functionName;
 
 		[Rule("<FunctionCall> ::= <FunctionName> '(' ')'", AllowTruncationForConstructor = true)]
@@ -17,10 +19,10 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("functionName");
 			}
 			this.functionName = functionName;
-			this.arguments = arguments;
+			this.arguments = arguments.ToList();
 		}
 
-		public Sequence<Expression> Arguments {
+		public List<Expression> Arguments {
 			get {
 				return arguments;
 			}
@@ -30,6 +32,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return functionName;
 			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.WriteScript(functionName);
+			writer.Write('(');
+			writer.WriteSequence(arguments, null, ", ", null);
+			writer.Write(')');
 		}
 	}
 }

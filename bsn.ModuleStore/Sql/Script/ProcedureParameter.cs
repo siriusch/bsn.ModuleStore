@@ -6,13 +6,13 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ProcedureParameter: SqlToken {
+	public sealed class ProcedureParameter: SqlToken, IScriptable {
 		private readonly Literal defaultValue;
-		private readonly OutputToken output;
+		private readonly bool output;
 		private readonly ParameterName parameterName;
 		private readonly Qualified<TypeName> parameterTypeName;
 		private readonly bool readOnly;
-		private readonly VaryingToken varying;
+		private readonly bool varying;
 
 		[Rule("<ProcedureParameter> ::= <ParameterName> <TypeNameQualified> <OptionalVarying> <OptionalDefault> <OptionalOutput> <OptionalReadonly>")]
 		public ProcedureParameter(ParameterName parameterName, Qualified<TypeName> parameterTypeName, Optional<VaryingToken> varying, Optional<Literal> defaultValue, Optional<OutputToken> output, Optional<Identifier> readonlyIdentifier) {
@@ -24,10 +24,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			this.parameterName = parameterName;
 			this.parameterTypeName = parameterTypeName;
-			this.varying = varying;
+			this.varying = varying.HasValue();
 			this.defaultValue = defaultValue;
-			this.output = output;
-			if (readonlyIdentifier != null) {
+			this.output = output.HasValue();
+			if (readonlyIdentifier.HasValue()) {
 				if (string.Equals(readonlyIdentifier.Value.Value, "READONLY", StringComparison.OrdinalIgnoreCase)) {
 					readOnly = true;
 				} else {
@@ -36,21 +36,52 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
-			parameterName.WriteTo(writer);
+		public Literal DefaultValue {
+			get {
+				return defaultValue;
+			}
+		}
+
+		public bool Output {
+			get {
+				return output;
+			}
+		}
+
+		public ParameterName ParameterName {
+			get {
+				return parameterName;
+			}
+		}
+
+		public Qualified<TypeName> ParameterTypeName {
+			get {
+				return parameterTypeName;
+			}
+		}
+
+		public bool ReadOnly {
+			get {
+				return readOnly;
+			}
+		}
+
+		public bool Varying {
+			get {
+				return varying;
+			}
+		}
+
+		public void WriteTo(TextWriter writer) {
+			writer.WriteScript(parameterName);
 			writer.Write(' ');
-			parameterTypeName.WriteTo(writer);
-			if (varying != null) {
-				writer.Write(' ');
-				varying.WriteTo(writer);
+			writer.WriteScript(parameterTypeName);
+			if (varying) {
+				writer.Write(" VARYING");
 			}
-			if (defaultValue != null) {
-				writer.Write(" = ");
-				defaultValue.WriteTo(writer);
-			}
-			if (output != null) {
-				writer.Write(' ');
-				output.WriteTo(writer);
+			writer.WriteScript(defaultValue, " = ", null);
+			if (varying) {
+				writer.Write(" OUTPUT");
 			}
 			if (readOnly) {
 				writer.Write(" READONLY");

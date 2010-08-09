@@ -1,20 +1,60 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class PredicateLike: PredicateNegable {
+		private readonly Expression valueExpression;
+		private readonly StringLiteral text;
+		private readonly StringLiteral escape;
+
 		[Rule("<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral>", ConstructorParameterMapping = new[] {0, 2})]
-		public PredicateLike(Expression value, StringLiteral text): this(value, null, text, null) {}
+		public PredicateLike(Expression valueExpression, StringLiteral text): this(valueExpression, false, text, null) {}
 
-		[Rule("<PredicateLike> ::= <Expression> NOT LIKE <CollableStringLiteral>", ConstructorParameterMapping = new[] {0, 1, 3})]
-		public PredicateLike(Expression value, IToken not, StringLiteral text): this(value, not, text, null) {}
+		[Rule("<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral> ESCAPE StringLiteral", ConstructorParameterMapping=new[] { 0, 2, 4 })]
+		public PredicateLike(Expression valueExpression, StringLiteral text, StringLiteral escape): this(valueExpression, false, text, escape) {}
 
-		[Rule("<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral> ESCAPE StringLiteral", ConstructorParameterMapping = new[] {0, 2, 4})]
-		public PredicateLike(Expression value, StringLiteral text, StringLiteral escape): this(value, null, text, escape) {}
+		protected PredicateLike(Expression valueExpression, bool not, StringLiteral text, StringLiteral escape): base(not) {
+			if (valueExpression == null) {
+				throw new ArgumentNullException("valueExpression");
+			}
+			if (text == null) {
+				throw new ArgumentNullException("text");
+			}
+			this.valueExpression = valueExpression;
+			this.text = text;
+			this.escape = escape;
+		}
 
-		[Rule("<PredicateLike> ::= <Expression> NOT LIKE <CollableStringLiteral> ESCAPE StringLiteral", ConstructorParameterMapping = new[] {0, 1, 3, 5})]
-		public PredicateLike(Expression value, IToken not, StringLiteral text, StringLiteral escape): base(not != null) {}
+		public Expression ValueExpression {
+			get {
+				return valueExpression;
+			}
+		}
+
+		public StringLiteral Text {
+			get {
+				return text;
+			}
+		}
+
+		public StringLiteral Escape {
+			get {
+				return escape;
+			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.WriteScript(valueExpression);
+			base.WriteTo(writer);
+			writer.Write(" LIKE ");
+			writer.WriteScript(text);
+			if (escape != null) {
+				writer.Write(" ESCAPE ");
+				writer.WriteScript(escape);
+			}
+		}
 	}
 }

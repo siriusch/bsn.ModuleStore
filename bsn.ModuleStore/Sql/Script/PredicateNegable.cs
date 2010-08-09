@@ -13,5 +13,11 @@ namespace bsn.ModuleStore.Sql.Script {
 				return not;
 			}
 		}
+
+		public override void WriteTo(System.IO.TextWriter writer) {
+			if (not) {
+				writer.Write(" NOT");
+			}
+		}
 	}
 }

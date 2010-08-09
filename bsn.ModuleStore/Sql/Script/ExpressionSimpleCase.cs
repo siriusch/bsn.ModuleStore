@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ExpressionSimpleCase: ExpressionCase<Expression> {
+	public sealed class ExpressionSimpleCase: ExpressionCase<Expression> {
 		private readonly Expression inputExpression;
 
 		[Rule("<ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> END", ConstructorParameterMapping = new[] {1, 2})]
@@ -15,6 +16,18 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("inputExpression");
 			}
 			this.inputExpression = inputExpression;
+		}
+
+		public Expression InputExpression {
+			get {
+				return inputExpression;
+			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.Write("CASE ");
+			writer.WriteScript(inputExpression);
+			base.WriteTo(writer);
 		}
 	}
 }

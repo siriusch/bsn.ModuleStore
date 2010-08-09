@@ -9,10 +9,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly SelectQuery selectQuery;
 
 		[Rule("<UnionClause> ::=")]
-		public UnionClause(): this(null) {}
+		public UnionClause(): this(null) {
+		}
 
 		[Rule("<UnionClause> ::= UNION <SelectQuery>", ConstructorParameterMapping=new[] { 1 })]
-		public UnionClause(SelectQuery selectQuery) : base() {}
+		public UnionClause(SelectQuery selectQuery) : base() {
+			this.selectQuery = selectQuery;
+		}
 
 		public virtual bool All {
 			get {

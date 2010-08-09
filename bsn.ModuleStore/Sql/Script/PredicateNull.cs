@@ -1,18 +1,32 @@
 ﻿using System;
 
-using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class PredicateNull: PredicateNegable {
-		private readonly Expression value;
+		private readonly Expression valueExpression;
 
 		[Rule("<PredicateNull> ::= <Expression> IS NULL", AllowTruncationForConstructor = true)]
-		public PredicateNull(Expression value): this(value, null) {}
+		public PredicateNull(Expression valueExpression): this(valueExpression, false) {}
 
-		[Rule("<PredicateNull> ::= <Expression> IS NOT NULL", ConstructorParameterMapping = new[] {0, 2})]
-		public PredicateNull(Expression value, IToken not): base(not != null) {
-			this.value = value;
+		protected PredicateNull(Expression valueExpression, bool not): base(not) {
+			if (valueExpression == null) {
+				throw new ArgumentNullException("valueExpression");
+			}
+			this.valueExpression = valueExpression;
+		}
+
+		public Expression ValueExpression {
+			get {
+				return valueExpression;
+			}
+		}
+
+		public override void WriteTo(System.IO.TextWriter writer) {
+			writer.WriteScript(valueExpression);
+			writer.Write(" IS");
+			base.WriteTo(writer);
+			writer.Write(" NULL");
 		}
 	}
 }

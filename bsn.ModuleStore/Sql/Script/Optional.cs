@@ -91,9 +91,5 @@ namespace bsn.ModuleStore.Sql.Script {
 				return value;
 			}
 		}
-
-		public override void WriteTo(TextWriter writer) {
-			throw new NotSupportedException();
-		}
 	}
 }

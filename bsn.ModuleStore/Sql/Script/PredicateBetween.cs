@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
@@ -7,14 +8,13 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class PredicateBetween: PredicateNegable {
 		private readonly Expression lowerBound;
 		private readonly Expression upperBound;
-		private readonly Expression value;
+		private readonly Expression valueExpression;
 
 		[Rule("<PredicateBetween> ::= <Expression> BETWEEN <Expression> AND <Expression>", ConstructorParameterMapping = new[] {0, 2, 4})]
-		public PredicateBetween(Expression value, Expression min, Expression max): this(value, null, min, max) {}
+		public PredicateBetween(Expression valueExpression, Expression min, Expression max): this(valueExpression, false, min, max) {}
 
-		[Rule("<PredicateBetween> ::= <Expression> NOT BETWEEN <Expression> AND <Expression>", ConstructorParameterMapping = new[] {0, 1, 3, 5})]
-		public PredicateBetween(Expression value, IToken not, Expression lowerBound, Expression upperBound): base(not != null) {
-			this.value = value;
+		protected PredicateBetween(Expression valueExpression, bool not, Expression lowerBound, Expression upperBound): base(not) {
+			this.valueExpression = valueExpression;
 			this.lowerBound = lowerBound;
 			this.upperBound = upperBound;
 		}
@@ -31,10 +31,19 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Expression Value {
+		public Expression ValueExpression {
 			get {
-				return value;
+				return valueExpression;
 			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.WriteScript(valueExpression);
+			base.WriteTo(writer);
+			writer.Write(" BETWEEN ");
+			writer.WriteScript(lowerBound);
+			writer.Write(" AND ");
+			writer.WriteScript(upperBound);
 		}
 	}
 }

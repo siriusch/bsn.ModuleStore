@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class PredicateBinaryOperation<T>: Predicate where T: SqlComputable {
+	public sealed class PredicateBinaryOperation<T>: Predicate where T: SqlComputable {
 		private readonly T left;
 		private readonly OperationToken operation;
 		private readonly T right;
@@ -47,6 +48,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return right;
 			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.WriteScript(left);
+			writer.WriteScript(operation);
+			writer.WriteScript(right);
 		}
 	}
 }

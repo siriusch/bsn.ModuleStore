@@ -70,6 +70,10 @@
     <Compile Include="Sql\Script\IScriptable.cs" />
     <Compile Include="Sql\Script\LeftOuterJoin.cs" />
     <Compile Include="Sql\Script\PredicateJoin.cs" />
+    <Compile Include="Sql\Script\PredicateNotBetween.cs" />
+    <Compile Include="Sql\Script\PredicateNotIn.cs" />
+    <Compile Include="Sql\Script\PredicateNotLike.cs" />
+    <Compile Include="Sql\Script\PredicateNotNull.cs" />
     <Compile Include="Sql\Script\RightOuterJoin.cs" />
     <Compile Include="Sql\Script\TableCheck.cs" />
     <Compile Include="Sql\Script\Tokens\AddToken.cs" />

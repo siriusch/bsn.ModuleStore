@@ -84,14 +84,14 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("USE")]
 	[Terminal("USER")]
 	[Terminal("WRITETEXT")]
-	public class ReservedWord: SqlToken {
+	public sealed class ReservedWord: SqlToken, IScriptable {
 		private readonly string text;
 
 		public ReservedWord(string text) {
 			this.text = text.ToUpperInvariant();
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public void WriteTo(TextWriter writer) {
 			writer.Write(text);
 		}
 	}

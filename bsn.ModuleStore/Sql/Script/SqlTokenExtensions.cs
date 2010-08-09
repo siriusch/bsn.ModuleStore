@@ -185,6 +185,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public static void WriteDuplicateRestriction(this TextWriter writer, bool? distinct, string prefix, string suffix) {
+			if (distinct.HasValue) {
+				WriteString(writer, prefix);
+				writer.Write(distinct.Value ? "DISTINCT" : "ALL");
+				WriteString(writer, suffix);
+			}
+		}
+
 		public static void WritePrimary(this TextWriter writer, bool primary, string prefix, string suffix) {
 			if (primary) {
 				WriteString(writer, prefix);
@@ -213,6 +221,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (withCheckOption) {
 				WriteString(writer, prefix);
 				writer.Write("WITH CHECK OPTION");
+				WriteString(writer, suffix);
+			}
+		}
+
+		public static void WriteWithRecompile(this TextWriter writer, bool withCheckOption, string prefix, string suffix) {
+			if (withCheckOption) {
+				WriteString(writer, prefix);
+				writer.Write("WITH RECOMPILE");
 				WriteString(writer, suffix);
 			}
 		}

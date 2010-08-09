@@ -910,8 +910,8 @@ OUTPUT = OUT(PUT)?
 
 <SelectStatement> ::= <CTEGroup> <SelectQuery> <ForClause>
 
-<SelectQuery> ::= SELECT <TopLegacy> <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
-                | SELECT <TopLegacy> <Restriction> <ColumnItemList> <IntoClause> <UnionClause>
+<SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>
 
 <TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>
               | <Top>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
@@ -19,6 +20,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return expression;
 			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.Write('(');
+			writer.WriteScript(expression);
+			writer.Write(')');
 		}
 	}
 }
