@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class XmlDirective: SqlToken {
+	public sealed class XmlDirective: SqlToken, IScriptable {
 		private readonly StringLiteral elementName;
 		private readonly Identifier key;
 		private readonly Identifier value;
@@ -23,6 +24,12 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("key");
 			}
 			this.key = key;
+		}
+
+		public void WriteTo(TextWriter writer) {
+			writer.WriteScript(key);
+			writer.WriteScript(value, " ", null);
+			writer.WriteScript(elementName, " ", null);
 		}
 	}
 }

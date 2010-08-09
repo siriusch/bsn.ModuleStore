@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class AnyStatement: SqlStatement {
+	public sealed class AnyStatement: SqlStatement {
 		private readonly string statementText;
 
 		[Rule("<AnyStatement> ::= Id <ExpressionList>")]

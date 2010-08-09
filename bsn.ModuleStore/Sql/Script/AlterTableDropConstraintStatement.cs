@@ -15,6 +15,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.constraintName = constraintName;
 		}
 
+		public override void WriteTo(TextWriter writer) {
+			throw new NotImplementedException();
+		}
+
 		public override void ApplyTo(CreateTableStatement createTable) {
 			throw new NotImplementedException();
 		}

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class UpdateItem: SqlToken {
+	public sealed class UpdateItem: SqlToken, IScriptable {
 		private readonly Qualified<ColumnName> columnName;
 		private readonly Expression expression;
 		private readonly VariableName variableName;
@@ -22,6 +23,32 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnName = columnName;
 			this.variableName = variableName;
 			this.expression = expression;
+		}
+
+		public Qualified<ColumnName> ColumnName {
+			get {
+				return columnName;
+			}
+		}
+		public Expression Expression {
+			get {
+				return expression;
+			}
+		}
+		public VariableName VariableName {
+			get {
+				return variableName;
+			}
+		}
+
+		public void WriteTo(TextWriter writer) {
+			writer.WriteScript(variableName, null, "=");
+			writer.WriteScript(columnName, null, "=");
+			if (expression == null) {
+				writer.Write("DEFAULT");
+			} else {
+				writer.WriteScript(expression);
+			}
 		}
 	}
 }

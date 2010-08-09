@@ -14,5 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.clustered = clustered.Clustered;
 			this.indexColumns = indexColumns.ToList();
 		}
+
+#error implement from this file UP
 	}
 }

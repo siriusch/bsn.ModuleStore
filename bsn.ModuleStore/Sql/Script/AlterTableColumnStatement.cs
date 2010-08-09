@@ -11,5 +11,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			TableColumnDefinition.AssertIsNotWildcard(columnName);
 			this.columnName = columnName;
 		}
+
+		public override void WriteTo(TextWriter writer) {
+			throw new NotImplementedException();
+		}
 	}
 }

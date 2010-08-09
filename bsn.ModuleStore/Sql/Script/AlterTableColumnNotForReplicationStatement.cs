@@ -8,5 +8,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD NOT FOR_REPLICATION", ConstructorParameterMapping = new[] {2, 5, 6})]
 		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP NOT FOR_REPLICATION", ConstructorParameterMapping = new[] {2, 5, 6})]
 		public AlterTableColumnNotForReplicationStatement(TableName tableName, ColumnName columnName, DdlOperationToken ddlOperationToken): base(tableName, columnName, ddlOperationToken) {}
+
+		public override void WriteTo(TextWriter writer) {
+			throw new NotImplementedException();
+		}
 	}
 }

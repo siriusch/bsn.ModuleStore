@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
@@ -18,6 +19,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			this.check = check.TableCheck;
 			this.definitions = definitions.ToList();
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			throw new NotImplementedException();
 		}
 
 		public override void ApplyTo(CreateTableStatement createTable) {

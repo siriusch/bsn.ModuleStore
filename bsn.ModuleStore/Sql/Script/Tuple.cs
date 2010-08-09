@@ -1,5 +1,5 @@
 ﻿using System;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class Tuple: Expression {}
+	public abstract class Tuple: Expression {}
 }

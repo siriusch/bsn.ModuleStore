@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class TypedVariableDeclaration: DeclareStatement {
+	public sealed class TypedVariableDeclaration: DeclareStatement {
 		private readonly Expression initialization;
 		private readonly Qualified<TypeName> typeName;
 
@@ -20,15 +20,23 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.initialization = initialization;
 		}
 
+		public Expression Initialization {
+			get {
+				return initialization;
+			}
+		}
+		public Qualified<TypeName> TypeName {
+			get {
+				return typeName;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("DECLARE ");
-			Variable.WriteTo(writer);
+			writer.WriteScript(Variable);
 			writer.Write(" ");
-			typeName.WriteTo(writer);
-			if (initialization != null) {
-				writer.Write(" = ");
-				initialization.WriteTo(writer);
-			}
+			writer.WriteScript(typeName);
+			writer.WriteScript(initialization, "=", null);
 		}
 	}
 }

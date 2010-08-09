@@ -1,12 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class TypedColumnDefinition: ColumnDefinition {
+	public sealed class TypedColumnDefinition: ColumnDefinition {
 		private readonly Qualified<TypeName> columnType;
-		private readonly Sequence<ColumnConstraint> constraints;
+		private readonly List<ColumnConstraint> constraints;
 
 		[Rule("<ColumnDefinition> ::= <TypeNameQualified> <ColumnConstraintList>")]
 		public TypedColumnDefinition(Qualified<TypeName> columnType, Sequence<ColumnConstraint> constraints): base() {
@@ -17,15 +18,24 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("constraints");
 			}
 			this.columnType = columnType;
-			this.constraints = constraints;
+			this.constraints = constraints.ToList();
+		}
+
+		public Qualified<TypeName> ColumnType {
+			get {
+				return columnType;
+			}
+		}
+
+		public List<ColumnConstraint> Constraints {
+			get {
+				return constraints;
+			}
 		}
 
 		public override void WriteTo(TextWriter writer) {
-			columnType.WriteTo(writer);
-			foreach (ColumnConstraint constraint in constraints) {
-				writer.Write(' ');
-				constraint.WriteTo(writer);
-			}
+			writer.WriteScript(columnType);
+			writer.WriteSequence(constraints, " ", null, null);
 		}
 	}
 }
