@@ -150,7 +150,7 @@
     <Compile Include="Sql\Script\Tokens\DeleteToken.cs" />
     <Compile Include="Sql\Script\Tokens\DmlOperationToken.cs" />
     <Compile Include="Sql\Script\Tokens\DuplicateRestrictionTokenAll.cs" />
-    <Compile Include="Sql\Script\Tokens\DuplicateRestrictionTokenDistinct.cs" />
+    <Compile Include="Sql\Script\Tokens\DuplicateRestrictionDistinctToken.cs" />
     <Compile Include="Sql\Script\Tokens\ForXmlAutoToken.cs" />
     <Compile Include="Sql\Script\Tokens\ForXmlExplicitToken.cs" />
     <Compile Include="Sql\Script\Tokens\ForXmlPathToken.cs" />

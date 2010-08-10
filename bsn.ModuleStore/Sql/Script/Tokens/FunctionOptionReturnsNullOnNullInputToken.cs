@@ -4,7 +4,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class FunctionOptionReturnsNullOnNullInputToken: FunctionOptionToken {
-		[Rule("<FunctionOption> ::= WITH RETURNS_NULL_ON_NULL_INPUT", AllowTruncationForConstructor = true)]
+		[Rule("<OptionalFunctionOption> ::= WITH RETURNS_NULL_ON_NULL_INPUT", AllowTruncationForConstructor = true)]
 		public FunctionOptionReturnsNullOnNullInputToken() {}
 
 		public override FunctionOption FunctionOption {

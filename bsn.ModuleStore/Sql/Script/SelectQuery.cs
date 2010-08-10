@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly UnionClause unionClause;
 
 		[Rule("<SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>", ConstructorParameterMapping = new[] {1, 2, 3, 4, 5})]
-		public SelectQuery(TopExpression top, DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause) {
+		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause) {
 			this.top = top;
 			this.intoClause = intoClause;
 			this.unionClause = unionClause;

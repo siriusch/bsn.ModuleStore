@@ -452,7 +452,8 @@ OUTPUT = OUT(PUT)?
 
 <WhileStatement> ::= WHILE <Expression> <StatementGroup>
 
-<WaitforStatement> ::= WAITFOR Id <StringValue>
+<WaitforStatement> ::= WAITFOR Id <StringLiteral>
+                     | WAITFOR Id <VariableName>
 
 <PrintStatement> ::= PRINT <Expression>
 
@@ -503,8 +504,10 @@ OUTPUT = OUT(PUT)?
 !                      | <Openrowset> -- not supported
 !                      | <Openquery> -- not supported
 
-<Openxml> ::= OPENXML '(' <VariableName> ',' <StringValue> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>
-            | OPENXML '(' <VariableName> ',' <StringValue> ')' <OptionalOpenxmlSchema>
+<Openxml> ::= OPENXML '(' <VariableName> ',' <StringLiteral> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>
+            | OPENXML '(' <VariableName> ',' <VariableName> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>
+            | OPENXML '(' <VariableName> ',' <StringLiteral> ')' <OptionalOpenxmlSchema>
+            | OPENXML '(' <VariableName> ',' <VariableName> ')' <OptionalOpenxmlSchema>
 
 <OptionalOpenxmlSchema> ::= <OpenxmlImplicitSchema>
                           | <OpenxmlExplicitSchema>
@@ -578,9 +581,9 @@ OUTPUT = OUT(PUT)?
 
 ! We don't allow to specify the schema name, it is implicit (module name)
 
-<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <FunctionOption> <OptionalAs> <StatementBlock>
-                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS TABLE <FunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>
-                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <FunctionOption> <OptionalAs> <StatementBlock>
+<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
+                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>
+                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
 
 <OptionalFunctionParameterList> ::= <FunctionParameterList>
                                   |
@@ -594,9 +597,9 @@ OUTPUT = OUT(PUT)?
                          | '(' <FunctionInlineSelect> ')'
 
 ! The options ENCRYPTION and SCHEMABINDING are handled by the module and therefore not allowed
-<FunctionOption> ::= WITH RETURNS_NULL_ON_NULL_INPUT
-                   | WITH CALLED_ON_NULL_INPUT
-                   |
+<OptionalFunctionOption> ::= WITH RETURNS_NULL_ON_NULL_INPUT
+                           | WITH CALLED_ON_NULL_INPUT
+                           |
 
 <DropFunctionStatement> ::= DROP FUNCTION <FunctionName>
 

@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class SqlIdentifier: SqlToken {
-		private static readonly Regex rxDequote = new Regex(@"(?<=^\[)[^\]]+(?=\]$)|(?<=^"")[^""]+(?=""$)|^[^""\[\]]+$");
+		private static readonly Regex rxDequote = new Regex(@"(?<=^\[)[^\]]+(?=\]$)|(?<=^"")[^""]+(?=""$)|^[^""\[\]\s]+$");
 
 		internal static bool TryDequote(string id, out string value) {
 			Match match = rxDequote.Match(id);

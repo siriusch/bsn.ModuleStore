@@ -16,21 +16,21 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Test]
 		public void TryDequoteInvalidBracket() {
 			string result;
-			Expect(SqlIdentifier.TryDequote("Some[Identifier", out result));
+			Expect(!SqlIdentifier.TryDequote("Some[Identifier", out result));
 			Expect(result, Null);
 		}
 
 		[Test]
 		public void TryDequoteInvalidQuote() {
 			string result;
-			Expect(SqlIdentifier.TryDequote("Some\"Identifier", out result));
+			Expect(!SqlIdentifier.TryDequote("Some\"Identifier", out result));
 			Expect(result, Null);
 		}
 
 		[Test]
 		public void TryDequoteInvalidText() {
 			string result;
-			Expect(SqlIdentifier.TryDequote("Some Identifier", out result));
+			Expect(!SqlIdentifier.TryDequote("Some Identifier", out result));
 			Expect(result, Null);
 		}
 
