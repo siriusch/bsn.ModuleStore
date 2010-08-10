@@ -7,9 +7,9 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class OutputClause: SqlToken, IScriptable, IOptional {
-		private readonly DestinationRowset destinationName;
-		private readonly List<ColumnName> destinationColumnNames;
 		private readonly List<ColumnItem> columnItems;
+		private readonly List<ColumnName> destinationColumnNames;
+		private readonly DestinationRowset destinationName;
 
 		[Rule("<OutputClause> ::=")]
 		public OutputClause(): this(null, null, null) {}
@@ -24,15 +24,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnItems = columnItems.ToList();
 		}
 
-		public bool HasValue {
+		public List<ColumnItem> ColumnItems {
 			get {
-				return columnItems.Count > 0;
-			}
-		}
-
-		public DestinationRowset DestinationName {
-			get {
-				return destinationName;
+				return columnItems;
 			}
 		}
 
@@ -42,9 +36,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<ColumnItem> ColumnItems {
+		public DestinationRowset DestinationName {
 			get {
-				return columnItems;
+				return destinationName;
+			}
+		}
+
+		public bool HasValue {
+			get {
+				return columnItems.Count > 0;
 			}
 		}
 

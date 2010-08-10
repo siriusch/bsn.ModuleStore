@@ -14,6 +14,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 				mode = FulltextChangeTracking.Auto;
 			}
 		}
+
 		public override FulltextChangeTracking FulltextChangeTracking {
 			get {
 				return mode;

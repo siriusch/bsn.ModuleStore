@@ -5,7 +5,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CreateFunctionTableStatement: CreateFunctionStatement<StatementBlock> {
+	public sealed class CreateFunctionTableStatement: CreateFunctionStatement<StatementBlock> {
 		private readonly VariableName resultVariableName;
 		private readonly List<TableDefinition> tableDefinitions;
 
@@ -35,7 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(TextWriter writer) {
 			base.WriteTo(writer);
-			resultVariableName.WriteTo(writer);
+			writer.WriteScript(resultVariableName);
 			writer.WriteLine(" TABLE (");
 			writer.WriteSequence(tableDefinitions, "\t", ";", Environment.NewLine);
 			writer.Write(')');

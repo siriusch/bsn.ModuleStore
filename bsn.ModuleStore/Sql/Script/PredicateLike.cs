@@ -1,19 +1,18 @@
 ﻿using System;
 using System.IO;
 
-using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class PredicateLike: PredicateNegable {
-		private readonly Expression valueExpression;
-		private readonly StringLiteral text;
 		private readonly StringLiteral escape;
+		private readonly StringLiteral text;
+		private readonly Expression valueExpression;
 
 		[Rule("<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral>", ConstructorParameterMapping = new[] {0, 2})]
 		public PredicateLike(Expression valueExpression, StringLiteral text): this(valueExpression, false, text, null) {}
 
-		[Rule("<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral> ESCAPE StringLiteral", ConstructorParameterMapping=new[] { 0, 2, 4 })]
+		[Rule("<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral> ESCAPE StringLiteral", ConstructorParameterMapping = new[] {0, 2, 4})]
 		public PredicateLike(Expression valueExpression, StringLiteral text, StringLiteral escape): this(valueExpression, false, text, escape) {}
 
 		protected PredicateLike(Expression valueExpression, bool not, StringLiteral text, StringLiteral escape): base(not) {
@@ -28,9 +27,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.escape = escape;
 		}
 
-		public Expression ValueExpression {
+		public StringLiteral Escape {
 			get {
-				return valueExpression;
+				return escape;
 			}
 		}
 
@@ -40,9 +39,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public StringLiteral Escape {
+		public Expression ValueExpression {
 			get {
-				return escape;
+				return valueExpression;
 			}
 		}
 

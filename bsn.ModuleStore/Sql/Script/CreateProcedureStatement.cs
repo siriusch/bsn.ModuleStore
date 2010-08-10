@@ -7,7 +7,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CreateProcedureStatement: SqlCreateStatement {
+	public sealed class CreateProcedureStatement: CreateStatement {
 		private readonly StatementBlock body;
 		private readonly bool forReplication;
 		private readonly List<ProcedureParameter> parameters;
@@ -29,25 +29,48 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.body = body;
 		}
 
+		public StatementBlock Body {
+			get {
+				return body;
+			}
+		}
+
+		public bool ForReplication {
+			get {
+				return forReplication;
+			}
+		}
+
+		public List<ProcedureParameter> Parameters {
+			get {
+				return parameters;
+			}
+		}
+
+		public ProcedureName ProcedureName {
+			get {
+				return procedureName;
+			}
+		}
+
+		public bool Recompile {
+			get {
+				return recompile;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("CREATE PROCEDURE ");
-			procedureName.WriteTo(writer);
-			if (parameters != null) {
-				string separator = " ";
-				foreach (ProcedureParameter parameter in parameters) {
-					writer.Write(separator);
-					parameter.WriteTo(writer);
-					separator = ", ";
-				}
-			}
+			writer.WriteScript(procedureName);
+			writer.WriteSequence(parameters, " ", ",", null);
 			if (recompile) {
 				writer.Write(" WITH RECOMPILE");
 			}
 			if (forReplication) {
 				writer.Write(" FOR REPLICATION");
 			}
-			writer.Write(" AS ");
-			body.WriteTo(writer);
+			writer.WriteLine(" AS");
+			writer.WriteScript(body);
 		}
 	}
 }

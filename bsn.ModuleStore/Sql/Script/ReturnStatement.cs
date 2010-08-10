@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ReturnStatement: SqlStatement {
+	public sealed class ReturnStatement: Statement {
 		private readonly Expression expression;
 
 		[Rule("<ReturnStatement> ::= RETURN", AllowTruncationForConstructor = true)]
@@ -15,12 +15,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expression = expression;
 		}
 
+		public Expression Expression {
+			get {
+				return expression;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("RETURN");
-			if (expression != null) {
-				writer.Write(' ');
-				expression.WriteTo(writer);
-			}
+			writer.WriteScript(expression, " ", null);
 		}
 	}
 }

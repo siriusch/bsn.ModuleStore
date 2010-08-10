@@ -5,7 +5,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class DropProcedureStatement: SqlDropStatement {
+	public sealed class DropProcedureStatement: DropStatement {
 		private readonly ProcedureName procedureName;
 
 		[Rule("<DropProcedureStatement> ::= DROP PROCEDURE <ProcedureName>", ConstructorParameterMapping = new[] {2})]
@@ -16,9 +16,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.procedureName = procedureName;
 		}
 
+		public ProcedureName ProcedureName {
+			get {
+				return procedureName;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("DROP PROCEDURE ");
-			procedureName.WriteTo(writer);
+			writer.WriteScript(procedureName);
 		}
 	}
 }

@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class SetVariableStatement: SqlStatement {
+	public sealed class SetVariableStatement: Statement {
 		private readonly Expression expression;
 		private readonly VariableName variable;
 
@@ -20,11 +20,23 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expression = expression;
 		}
 
+		public Expression Expression {
+			get {
+				return expression;
+			}
+		}
+
+		public VariableName Variable {
+			get {
+				return variable;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("SET ");
-			variable.WriteTo(writer);
+			writer.WriteScript(variable);
 			writer.Write("=");
-			expression.WriteTo(writer);
+			writer.WriteScript(expression);
 		}
 	}
 }

@@ -9,12 +9,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<ColumnName> columns = new List<ColumnName>();
 
 		[Rule("<CursorUpdate> ::= FOR_UPDATE", AllowTruncationForConstructor = true)]
-		public UpdateModeForUpdate() {
-		}
+		public UpdateModeForUpdate() {}
 
-		[Rule("<CursorUpdate> ::= FOR_UPDATE OF <ColumnNameList>", ConstructorParameterMapping=new[] { 2 })]
-		public UpdateModeForUpdate(Sequence<ColumnName> columns)
-				: base() {
+		[Rule("<CursorUpdate> ::= FOR_UPDATE OF <ColumnNameList>", ConstructorParameterMapping = new[] {2})]
+		public UpdateModeForUpdate(Sequence<ColumnName> columns): base() {
 			if (columns == null) {
 				throw new ArgumentNullException("columns");
 			}
@@ -35,7 +33,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("FOR UPDATE");
-			if (columns.Count>0) {
+			if (columns.Count > 0) {
 				writer.Write(" OF ");
 				writer.WriteSequence(columns, null, ", ", null);
 			}

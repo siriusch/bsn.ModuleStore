@@ -7,7 +7,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CreateViewStatement: SqlCreateStatement {
+	public sealed class CreateViewStatement: CreateStatement {
 		private readonly List<ColumnName> columnNames;
 		private readonly SelectStatement selectStatement;
 		private readonly ViewName viewName;

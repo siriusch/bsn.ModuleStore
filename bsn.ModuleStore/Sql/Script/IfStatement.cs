@@ -4,17 +4,17 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class IfStatement: SqlStatement {
+	public sealed class IfStatement: Statement {
 		private readonly Predicate condition;
-		private readonly SqlStatement elseStatement;
-		private readonly SqlStatement thenStatement;
+		private readonly Statement elseStatement;
+		private readonly Statement thenStatement;
 
 		[Rule("<IfStatement> ::= IF <Predicate> THEN <StatementGroup>", ConstructorParameterMapping = new[] {1, 3})]
 		[Rule("<IfStatement> ::= IF <Predicate> <Statement>", ConstructorParameterMapping = new[] {1, 2})]
-		public IfStatement(Predicate condition, SqlStatement thenStatement): this(condition, thenStatement, null) {}
+		public IfStatement(Predicate condition, Statement thenStatement): this(condition, thenStatement, null) {}
 
 		[Rule("<IfStatement> ::= IF <Predicate> THEN <StatementBlock> ELSE <StatementGroup>", ConstructorParameterMapping = new[] {1, 3, 5})]
-		public IfStatement(Predicate condition, SqlStatement thenStatement, SqlStatement elseStatement) {
+		public IfStatement(Predicate condition, Statement thenStatement, Statement elseStatement) {
 			if (condition == null) {
 				throw new ArgumentNullException("condition");
 			}
@@ -26,15 +26,30 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.elseStatement = elseStatement;
 		}
 
+		public Predicate Condition {
+			get {
+				return condition;
+			}
+		}
+
+		public Statement ElseStatement {
+			get {
+				return elseStatement;
+			}
+		}
+
+		public Statement ThenStatement {
+			get {
+				return thenStatement;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("IF ");
-			condition.WriteTo(writer);
+			writer.WriteScript(condition);
 			writer.Write(" THEN ");
-			thenStatement.WriteTo(writer);
-			if (elseStatement != null) {
-				writer.Write(" ELSE ");
-				elseStatement.WriteTo(writer);
-			}
+			writer.WriteScript(thenStatement);
+			writer.WriteScript(elseStatement, " ELSE ", null);
 		}
 	}
 }

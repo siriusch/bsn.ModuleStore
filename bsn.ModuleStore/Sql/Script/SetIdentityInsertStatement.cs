@@ -5,7 +5,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class SetIdentityInsertStatement: SqlStatement {
+	public sealed class SetIdentityInsertStatement: Statement {
 		private readonly bool enabled;
 		private readonly TableName tableName;
 
@@ -17,8 +17,20 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (toggle == null) {
 				throw new ArgumentNullException("toggle");
 			}
-			this.tableName = tableNameName;
+			tableName = tableNameName;
 			enabled = toggle.On;
+		}
+
+		public bool Enabled {
+			get {
+				return enabled;
+			}
+		}
+
+		public TableName TableName {
+			get {
+				return tableName;
+			}
 		}
 
 		public override void WriteTo(TextWriter writer) {

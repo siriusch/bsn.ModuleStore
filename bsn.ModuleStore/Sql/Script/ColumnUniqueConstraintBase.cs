@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 using bsn.ModuleStore.Sql.Script.Tokens;
 
@@ -6,10 +7,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class ColumnUniqueConstraintBase: ColumnNamedConstraintBase {
 		private readonly Clustered clustered;
 		private readonly ConstraintIndex constraintIndex;
-		private readonly ConstraintName constraintName;
 
 		protected ColumnUniqueConstraintBase(ConstraintName constraintName, ConstraintClusterToken clustered, ConstraintIndex constraintIndex): base(constraintName) {
-			this.constraintName = constraintName;
 			this.constraintIndex = constraintIndex;
 			this.clustered = clustered.Clustered;
 		}
@@ -26,10 +25,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public ConstraintName ConstraintName {
-			get {
-				return constraintName;
-			}
+		protected abstract string UniqueKindName {
+			get;
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			base.WriteTo(writer);
+			writer.Write(UniqueKindName);
+			writer.WriteValue(clustered, " ", null);
+			writer.WriteScript(constraintIndex, " ", null);
 		}
 	}
 }

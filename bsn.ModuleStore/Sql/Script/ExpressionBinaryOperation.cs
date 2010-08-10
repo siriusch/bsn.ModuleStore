@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ExpressionBinaryOperation: Expression {
+	public sealed class ExpressionBinaryOperation: Expression {
 		private readonly Expression left;
 		private readonly OperationToken operation;
 		private readonly Expression right;
@@ -34,11 +34,13 @@ namespace bsn.ModuleStore.Sql.Script {
 				return left;
 			}
 		}
+
 		public OperationToken Operation {
 			get {
 				return operation;
 			}
 		}
+
 		public Expression Right {
 			get {
 				return right;

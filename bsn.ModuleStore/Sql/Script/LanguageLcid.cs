@@ -19,15 +19,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.value = match.Groups["value"].Value;
 		}
 
-		public void WriteTo(TextWriter writer) {
-			writer.Write("LANGUAGE ");
-			writer.Write(value);
-		}
-
 		public string Value {
 			get {
 				return value;
 			}
+		}
+
+		public void WriteTo(TextWriter writer) {
+			writer.Write("LANGUAGE ");
+			writer.Write(value);
 		}
 	}
 }

@@ -7,16 +7,16 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateTriggerStatement: SqlCreateStatement {
+	public sealed class CreateTriggerStatement: CreateStatement {
 		private readonly bool notForReplication;
-		private readonly SqlStatement statement;
+		private readonly Statement statement;
 		private readonly TableName tableName;
 		private readonly TriggerName triggerName;
 		private readonly List<DmlOperation> triggerOperations;
 		private readonly TriggerType type;
 
 		[Rule("<CreateTriggerStatement> ::= CREATE TRIGGER <TriggerName> ON <TableName> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <StatementGroup>", ConstructorParameterMapping = new[] {2, 4, 5, 6, 7, 9})]
-		public CreateTriggerStatement(TriggerName triggerName, TableName tableName, TriggerTypeToken triggerType, Sequence<DmlOperationToken> triggerOperations, Optional<ForReplicationToken> notForReplication, SqlStatement statement) {
+		public CreateTriggerStatement(TriggerName triggerName, TableName tableName, TriggerTypeToken triggerType, Sequence<DmlOperationToken> triggerOperations, Optional<ForReplicationToken> notForReplication, Statement statement) {
 			if (triggerName == null) {
 				throw new ArgumentNullException("triggerName");
 			}
@@ -46,7 +46,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public SqlStatement Statement {
+		public Statement Statement {
 			get {
 				return statement;
 			}

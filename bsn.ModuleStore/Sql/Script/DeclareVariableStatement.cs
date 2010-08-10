@@ -6,7 +6,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DeclareVariableStatement: SqlStatement {
+	public sealed class DeclareVariableStatement: Statement {
 		private readonly List<DeclareStatement> declarations;
 
 		[Rule("<DeclareStatement> ::= DECLARE <DeclareItemList>", ConstructorParameterMapping = new[] {1})]

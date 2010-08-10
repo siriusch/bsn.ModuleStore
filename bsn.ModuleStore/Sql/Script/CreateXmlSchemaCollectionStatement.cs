@@ -5,7 +5,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CreateXmlSchemaCollectionStatement: SqlCreateStatement {
+	public sealed class CreateXmlSchemaCollectionStatement: CreateStatement {
 		private readonly Expression expression;
 		private readonly XmlSchemaCollectionName xmlSchemaCollectionName;
 

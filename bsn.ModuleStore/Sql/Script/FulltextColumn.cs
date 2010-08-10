@@ -6,8 +6,8 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class FulltextColumn: SqlToken, IScriptable {
 		private readonly ColumnName columnName;
-		private readonly Qualified<TypeName> typeColumn;
 		private readonly LanguageLcid language;
+		private readonly Qualified<TypeName> typeColumn;
 
 		[Rule("<FulltextColumn> ::= <ColumnName> <FulltextColumnType> <OptionalLanguage>")]
 		public FulltextColumn(ColumnName columnName, Optional<Qualified<TypeName>> typeColumn, Optional<LanguageLcid> language) {
@@ -25,28 +25,22 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Qualified<TypeName> TypeColumn {
-			get {
-				return typeColumn;
-			}
-		}
-
 		public LanguageLcid Language {
 			get {
 				return language;
 			}
 		}
 
+		public Qualified<TypeName> TypeColumn {
+			get {
+				return typeColumn;
+			}
+		}
+
 		public void WriteTo(TextWriter writer) {
 			writer.WriteScript(columnName);
-			if (typeColumn != null) {
-				writer.Write(" TYPE COLUMN ");
-				writer.WriteScript(typeColumn);
-			}
-			if (language != null) {
-				writer.Write(' ');
-				writer.WriteScript(language);
-			}
+			writer.WriteScript(typeColumn, " TYPE COLUMN ", null);
+			writer.WriteScript(language, " ", null);
 		}
 	}
 }

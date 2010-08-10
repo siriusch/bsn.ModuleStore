@@ -1,9 +1,10 @@
 using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class TableColumnDefinition: TableDefinition {
+	public sealed class TableColumnDefinition: TableDefinition {
 		internal static void AssertIsNotWildcard(ColumnName columnName) {
 			if (columnName.IsWildcard) {
 				throw new ArgumentException("Wilcard column names are not allowed for table column definitions", "columnName");
@@ -24,6 +25,24 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			this.columnName = columnName;
 			this.columnDefinition = columnDefinition;
+		}
+
+		public ColumnDefinition ColumnDefinition {
+			get {
+				return columnDefinition;
+			}
+		}
+
+		public ColumnName ColumnName {
+			get {
+				return columnName;
+			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.WriteScript(columnName);
+			writer.Write(' ');
+			writer.WriteScript(columnDefinition);
 		}
 	}
 }

@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class BreakStatement: SqlStatement {
+	public sealed class BreakStatement: Statement {
 		[Rule("<BreakStatement> ::= BREAK", AllowTruncationForConstructor = true)]
 		public BreakStatement() {}
 

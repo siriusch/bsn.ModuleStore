@@ -1,10 +1,11 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ColumnCheckConstraint: ColumnNamedConstraintBase {
+	public sealed class ColumnCheckConstraint: ColumnNamedConstraintBase {
 		private readonly Expression expression;
 		private readonly bool notForReplication;
 
@@ -18,6 +19,27 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			this.expression = expression;
 			this.notForReplication = notForReplication.HasValue();
+		}
+
+		public Expression Expression {
+			get {
+				return expression;
+			}
+		}
+
+		public bool NotForReplication {
+			get {
+				return notForReplication;
+			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			base.WriteTo(writer);
+			writer.Write("CHECK ");
+			writer.WriteNotForReplication(notForReplication, null, " ");
+			writer.Write('(');
+			writer.WriteScript(expression);
+			writer.Write(')');
 		}
 	}
 }

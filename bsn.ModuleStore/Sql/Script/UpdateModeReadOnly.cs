@@ -1,12 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class UpdateModeReadOnly: UpdateMode {
-		[Rule("<CursorUpdate> ::= READ_ONLY", AllowTruncationForConstructor=true)]
-		public UpdateModeReadOnly() {
-		}
+		[Rule("<CursorUpdate> ::= READ_ONLY", AllowTruncationForConstructor = true)]
+		public UpdateModeReadOnly() {}
 
 		public override UpdateModeKind Kind {
 			get {

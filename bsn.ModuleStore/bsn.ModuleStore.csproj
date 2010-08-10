@@ -58,8 +58,14 @@
     <Compile Include="Sql\InventoryDatabaseReader.cs" />
     <Compile Include="Sql\InventoryScriptReader.cs" />
     <Compile Include="Sql\ScriptParser.cs" />
+    <Compile Include="Sql\Script\ColumnDefaultParensConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnNotNullableConstraint.cs" />
     <Compile Include="Sql\Script\CrossJoin.cs" />
     <Compile Include="Sql\Script\DmlOperation.cs" />
+    <Compile Include="Sql\Script\ForeignKeyActionKind.cs" />
+    <Compile Include="Sql\Script\ForeignKeyCascadeAction.cs" />
+    <Compile Include="Sql\Script\ForeignKeySetDefaultAction.cs" />
+    <Compile Include="Sql\Script\ForeignKeySetNullAction.cs" />
     <Compile Include="Sql\Script\FullOuterJoin.cs" />
     <Compile Include="Sql\Script\FunctionOption.cs" />
     <Compile Include="Sql\Script\IndexFor.cs" />
@@ -75,6 +81,7 @@
     <Compile Include="Sql\Script\PredicateNotLike.cs" />
     <Compile Include="Sql\Script\PredicateNotNull.cs" />
     <Compile Include="Sql\Script\RightOuterJoin.cs" />
+    <Compile Include="Sql\Script\SelectFor.cs" />
     <Compile Include="Sql\Script\TableCheck.cs" />
     <Compile Include="Sql\Script\Tokens\AddToken.cs" />
     <Compile Include="Sql\Script\AliasName.cs" />
@@ -144,6 +151,11 @@
     <Compile Include="Sql\Script\Tokens\DmlOperationToken.cs" />
     <Compile Include="Sql\Script\Tokens\DuplicateRestrictionTokenAll.cs" />
     <Compile Include="Sql\Script\Tokens\DuplicateRestrictionTokenDistinct.cs" />
+    <Compile Include="Sql\Script\Tokens\ForXmlAutoToken.cs" />
+    <Compile Include="Sql\Script\Tokens\ForXmlExplicitToken.cs" />
+    <Compile Include="Sql\Script\Tokens\ForXmlPathToken.cs" />
+    <Compile Include="Sql\Script\Tokens\ForXmlRawToken.cs" />
+    <Compile Include="Sql\Script\Tokens\ForXmlToken.cs" />
     <Compile Include="Sql\Script\Tokens\FulltextChangeTrackingCustomToken.cs" />
     <Compile Include="Sql\Script\Tokens\FulltextChangeTrackingOffNoPopulationToken.cs" />
     <Compile Include="Sql\Script\Tokens\FulltextChangeTrackingOffToken.cs" />
@@ -250,7 +262,7 @@
     <Compile Include="Sql\Script\Tokens\PrimaryToken.cs" />
     <Compile Include="Sql\Script\TablePrimaryKeyConstraint.cs" />
     <Compile Include="Sql\Script\ProcedureParameter.cs" />
-    <Compile Include="Sql\Script\SqlDropStatement.cs" />
+    <Compile Include="Sql\Script\DropStatement.cs" />
     <Compile Include="Sql\Script\SelectStatement.cs" />
     <Compile Include="Sql\Script\SqlQuotedName.cs" />
     <Compile Include="Sql\Script\Tokens\SelectToken.cs" />
@@ -280,9 +292,9 @@
     <Compile Include="Sql\Script\UpdateItem.cs" />
     <Compile Include="Sql\Script\UpdateMode.cs" />
     <Compile Include="Sql\Script\Predicate.cs" />
-    <Compile Include="Sql\Script\SqlCreateStatement.cs" />
+    <Compile Include="Sql\Script\CreateStatement.cs" />
     <Compile Include="Sql\Script\CursorName.cs" />
-    <Compile Include="Sql\Script\SqlCursorStatement.cs" />
+    <Compile Include="Sql\Script\CursorStatement.cs" />
     <Compile Include="Sql\Script\DeallocateStatement.cs" />
     <Compile Include="Sql\Script\DeclareCursorStatement.cs" />
     <Compile Include="Sql\Script\Expression.cs" />
@@ -317,7 +329,7 @@
     <Compile Include="Sql\Script\OperationToken.cs" />
     <Compile Include="Sql\Script\ReservedWord.cs" />
     <Compile Include="Sql\Script\SqlToken.cs" />
-    <Compile Include="Sql\Script\SqlStatement.cs" />
+    <Compile Include="Sql\Script\Statement.cs" />
     <Compile Include="Sql\Script\StatementBlock.cs" />
     <Compile Include="Sql\Script\StringLiteral.cs" />
     <Compile Include="Sql\Script\SysFunctionIdentifier.cs" />

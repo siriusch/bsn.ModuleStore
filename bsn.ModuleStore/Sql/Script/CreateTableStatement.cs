@@ -8,7 +8,7 @@ using bsn.GoldParser.Semantic;
 [assembly: RuleTrim("<TableDefinitionGroup> ::= '(' <TableDefinitionList> ')'", "<TableDefinitionList>")]
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CreateTableStatement: SqlCreateStatement {
+	public sealed class CreateTableStatement: CreateStatement {
 		private readonly List<TableDefinition> definitions;
 		private readonly TableName tableName;
 
@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("CREATE TABLE ");
-			tableName.WriteTo(writer);
+			writer.WriteScript(tableName);
 			writer.WriteLine(" (");
 			writer.WriteSequence(definitions, "\t", ",", Environment.NewLine);
 			writer.WriteLine(")");

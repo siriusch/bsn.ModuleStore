@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class RightOuterJoin: PredicateJoin {
+	public sealed class RightOuterJoin: PredicateJoin {
 		[Rule("<Join> ::= RIGHT JOIN <SourceRowset> ON <Predicate>", ConstructorParameterMapping = new[] {2, 4})]
 		[Rule("<Join> ::= RIGHT OUTER JOIN <SourceRowset> ON <Predicate>", ConstructorParameterMapping = new[] {3, 5})]
 		public RightOuterJoin(SourceRowset joinRowset, Predicate predicate): base(joinRowset, predicate) {}
@@ -12,6 +13,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return JoinKind.Right;
 			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.Write("RIGHT ");
+			base.WriteTo(writer);
 		}
 	}
 }

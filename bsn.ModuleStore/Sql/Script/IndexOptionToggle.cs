@@ -8,9 +8,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class IndexOptionToggle: IndexOption {
 		private readonly bool value;
 
-		[Rule("<IndexOption> ::= Id '=' <Toggle>", ConstructorParameterMapping=new[] { 0, 2 })]
-		public IndexOptionToggle(Identifier key, ToggleToken value)
-				: base(key) {
+		[Rule("<IndexOption> ::= Id '=' <Toggle>", ConstructorParameterMapping = new[] {0, 2})]
+		public IndexOptionToggle(Identifier key, ToggleToken value): base(key) {
 			if (value == null) {
 				throw new ArgumentNullException("value");
 			}

@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ExpressionCastFunction: ExpressionFunction {
+	public sealed class ExpressionCastFunction: ExpressionFunction {
 		private readonly Expression expression;
 		private readonly TypeName typeName;
 
@@ -25,6 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				return expression;
 			}
 		}
+
 		public TypeName TypeName {
 			get {
 				return typeName;

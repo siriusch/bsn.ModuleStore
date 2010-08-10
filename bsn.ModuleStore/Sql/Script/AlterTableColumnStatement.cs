@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class AlterTableColumnStatement: AlterTableStatement {
@@ -12,8 +13,17 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnName = columnName;
 		}
 
+		public ColumnName ColumnName {
+			get {
+				return columnName;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
-			throw new NotImplementedException();
+			base.WriteTo(writer);
+			writer.Write("ALTER COLUMN ");
+			writer.WriteScript(columnName);
+			writer.Write(' ');
 		}
 	}
 }

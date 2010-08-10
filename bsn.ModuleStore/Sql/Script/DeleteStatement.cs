@@ -6,7 +6,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class DeleteStatement: SqlStatement {
+	public sealed class DeleteStatement: Statement {
 		private readonly List<CommonTableExpression> ctes;
 		private readonly DestinationRowset destinationRowset;
 		private readonly FromClause fromClause;
@@ -24,6 +24,42 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.whereClause = whereClause;
 		}
 
+		public List<CommonTableExpression> Ctes {
+			get {
+				return ctes;
+			}
+		}
+
+		public DestinationRowset DestinationRowset {
+			get {
+				return destinationRowset;
+			}
+		}
+
+		public FromClause FromClause {
+			get {
+				return fromClause;
+			}
+		}
+
+		public OutputClause OutputClause {
+			get {
+				return outputClause;
+			}
+		}
+
+		public TopExpression TopExpression {
+			get {
+				return topExpression;
+			}
+		}
+
+		public Predicate WhereClause {
+			get {
+				return whereClause;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.WriteCommonTableExpressions(ctes);
 			writer.Write("DELETE");
@@ -31,7 +67,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write(" FROM ");
 			writer.WriteScript(destinationRowset);
 			writer.WriteScript(outputClause, " ", null);
-
+			writer.WriteScript(fromClause, " ", null);
+			writer.WriteScript(whereClause, " WHERE ", null);
 		}
 	}
 }

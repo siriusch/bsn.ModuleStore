@@ -1,9 +1,10 @@
 using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class AlterTableColumnDefinitionStatement: AlterTableColumnStatement {
+	public sealed class AlterTableColumnDefinitionStatement: AlterTableColumnStatement {
 		private readonly ColumnDefinition definition;
 
 		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <ColumnDefinition>", ConstructorParameterMapping = new[] {2, 5, 6})]
@@ -14,12 +15,19 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.definition = definition;
 		}
 
-		public override void WriteTo(TextWriter writer) {
-			throw new NotImplementedException();
+		public ColumnDefinition Definition {
+			get {
+				return definition;
+			}
 		}
 
 		public override void ApplyTo(CreateTableStatement createTable) {
 			throw new NotImplementedException();
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			base.WriteTo(writer);
+			writer.WriteScript(definition);
 		}
 	}
 }

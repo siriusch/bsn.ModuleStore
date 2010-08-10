@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 using bsn.GoldParser.Semantic;
@@ -66,6 +67,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return isUnicode;
 			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.Write('\'');
+			writer.Write(Value.Replace("'", "''"));
+			writer.Write('\'');
+			writer.WriteScript(collation, " ", null);
 		}
 	}
 }

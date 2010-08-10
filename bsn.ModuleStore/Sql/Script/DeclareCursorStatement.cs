@@ -6,7 +6,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DeclareCursorStatement: SqlCursorStatement {
+	public sealed class DeclareCursorStatement: CursorStatement {
 		private static readonly Identifier globalIdentifier = new Identifier("GLOBAL");
 
 		private readonly List<string> cursorOptions;
@@ -28,7 +28,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("DECLARE ");
-			writer.Write(CursorName.Value);
+			CursorName.WriteNonGlobalInternal(writer);
 			writer.Write(" CURSOR");
 			if (CursorName.Global) {
 				writer.Write(" GLOBAL");
@@ -38,11 +38,8 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.Write(cursorOption);
 			}
 			writer.Write(" FOR ");
-			selectStatement.WriteTo(writer);
-			if (cursorUpdate != null) {
-				writer.Write(' ');
-				cursorUpdate.WriteTo(writer);
-			}
+			writer.WriteScript(selectStatement);
+			writer.WriteScript(cursorUpdate, " ", null);
 		}
 	}
 }

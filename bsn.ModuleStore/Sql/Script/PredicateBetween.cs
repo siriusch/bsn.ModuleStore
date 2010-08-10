@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 
-using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {

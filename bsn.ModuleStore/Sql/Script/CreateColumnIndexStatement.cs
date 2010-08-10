@@ -23,6 +23,30 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnNames = columnNames.ToList();
 		}
 
+		public Clustered Clustered {
+			get {
+				return clustered;
+			}
+		}
+
+		public List<ColumnName> ColumnNames {
+			get {
+				return columnNames;
+			}
+		}
+
+		public List<IndexColumn> IndexColumns {
+			get {
+				return indexColumns;
+			}
+		}
+
+		public bool Unique {
+			get {
+				return unique;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("CREATE ");
 			if (unique) {
@@ -35,6 +59,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(TableName);
 			writer.Write(" (");
 			writer.WriteSequence(indexColumns, null, ", ", null);
+			writer.Write(") INCLUDE (");
+			writer.WriteSequence(columnNames, null, ", ", null);
+			writer.Write(')');
+			writer.WriteIndexOptions(IndexOptions);
 		}
 	}
 }

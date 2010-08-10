@@ -7,7 +7,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CreateFulltextIndexStatement: SqlCreateStatement {
+	public sealed class CreateFulltextIndexStatement: CreateStatement {
 		private readonly FulltextChangeTracking changeTracking;
 		private readonly List<FulltextColumn> columns;
 		private readonly IndexName indexName;
@@ -57,7 +57,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("CREATE FULLTEXT INDEX ON TABLE ");
 			writer.WriteScript(tableName);
-			if (columns.Count>0) {
+			if (columns.Count > 0) {
 				writer.Write(" (");
 				writer.WriteSequence(columns, null, ", ", null);
 				writer.Write(")");

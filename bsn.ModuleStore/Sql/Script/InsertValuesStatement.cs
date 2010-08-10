@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class InsertValuesStatement: InsertStatement {
@@ -14,7 +15,19 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.output = output;
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public List<ColumnName> ColumnNames {
+			get {
+				return columnNames;
+			}
+		}
+
+		public OutputClause Output {
+			get {
+				return output;
+			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
 			base.WriteTo(writer);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");

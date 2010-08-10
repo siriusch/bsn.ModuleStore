@@ -26,6 +26,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.operation = operation;
 		}
 
+		public string Operation {
+			get {
+				return operation;
+			}
+		}
+
 		public void WriteTo(TextWriter writer) {
 			writer.Write(operation);
 		}

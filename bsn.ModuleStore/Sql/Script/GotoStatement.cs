@@ -5,7 +5,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class GotoStatement: SqlStatement {
+	public sealed class GotoStatement: Statement {
 		private readonly LabelName labelName;
 
 		[Rule("<GotoStatement> ::= GOTO <LabelName>", ConstructorParameterMapping = new[] {1})]
@@ -16,9 +16,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.labelName = labelName;
 		}
 
+		public LabelName LabelName {
+			get {
+				return labelName;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("GOTO ");
-			labelName.WriteTo(writer);
+			writer.WriteScript(labelName);
 		}
 	}
 }

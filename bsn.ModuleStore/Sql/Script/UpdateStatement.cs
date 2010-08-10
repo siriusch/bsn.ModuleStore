@@ -6,7 +6,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class UpdateStatement: SqlStatement {
+	public class UpdateStatement: Statement {
 		private readonly List<CommonTableExpression> ctes;
 		private readonly DestinationRowset destinationRowset;
 		private readonly FromClause fromClause;
@@ -40,31 +40,31 @@ namespace bsn.ModuleStore.Sql.Script {
 				return destinationRowset;
 			}
 		}
-		
+
 		public FromClause FromClause {
 			get {
 				return fromClause;
 			}
 		}
-		
+
 		public OutputClause OutputClause {
 			get {
 				return outputClause;
 			}
 		}
-		
+
 		public TopExpression TopExpression {
 			get {
 				return topExpression;
 			}
 		}
-		
+
 		public List<UpdateItem> UpdateItems {
 			get {
 				return updateItems;
 			}
 		}
-		
+
 		public Predicate WhereClause {
 			get {
 				return whereClause;

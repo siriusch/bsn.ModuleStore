@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
@@ -21,8 +20,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlToken))]
 		[Rule("<ColumnNameList> ::= <ColumnName>", typeof(ColumnName))]
-		[Rule("<StatementList> ::= <StatementGroup>", typeof(SqlStatement))]
-		[Rule("<StatementList> ::= <StatementGroup> <Terminator>", typeof(SqlStatement), AllowTruncationForConstructor = true)]
+		[Rule("<StatementList> ::= <StatementGroup>", typeof(Statement))]
+		[Rule("<StatementList> ::= <StatementGroup> <Terminator>", typeof(Statement), AllowTruncationForConstructor = true)]
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn>", typeof(OpenxmlColumn))]
 		[Rule("<DeclareItemList> ::= <DeclareItem>", typeof(DeclareStatement))]
 		[Rule("<FulltextColumnList> ::= <FulltextColumn>", typeof(FulltextColumn))]
@@ -50,7 +49,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<JoinChain> ::= <Join> <JoinChain>", typeof(Join))]
 		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlToken))]
 		[Rule("<ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>", typeof(ColumnName), ConstructorParameterMapping = new[] {0, 2})]
-		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(SqlStatement), ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(Statement), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>", typeof(OpenxmlColumn), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<DeclareItemList> ::= <DeclareItem> ',' <DeclareItemList>", typeof(DeclareStatement), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<FulltextColumnList> ::= <FulltextColumn> ',' <FulltextColumnList>", typeof(FulltextColumn), ConstructorParameterMapping = new[] {0, 2})]

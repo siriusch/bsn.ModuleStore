@@ -1,16 +1,15 @@
 ﻿using System;
+using System.IO;
 
-using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ColumnNullableConstraint: ColumnConstraint {
-		private readonly bool nullable;
+	public sealed class ColumnNullableConstraint: ColumnConstraint {
+		[Rule("<ColumnConstraint> ::= NULL", AllowTruncationForConstructor = true)]
+		public ColumnNullableConstraint() {}
 
-		[Rule("<ColumnConstraint> ::= NULL")]
-		[Rule("<ColumnConstraint> ::= NOT NULL", AllowTruncationForConstructor = true)]
-		public ColumnNullableConstraint(IToken token) {
-			nullable = token.NameIs("NULL");
+		public override void WriteTo(TextWriter writer) {
+			writer.Write("NULL");
 		}
 	}
 }

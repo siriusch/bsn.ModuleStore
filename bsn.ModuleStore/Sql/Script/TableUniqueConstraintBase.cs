@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 using bsn.ModuleStore.Sql.Script.Tokens;
 
@@ -15,6 +16,37 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.indexColumns = indexColumns.ToList();
 		}
 
-#error implement from this file UP
+		public Clustered Clustered {
+			get {
+				return clustered;
+			}
+		}
+
+		public ConstraintIndex ConstraintIndex {
+			get {
+				return constraintIndex;
+			}
+		}
+
+		public List<IndexColumn> IndexColumns {
+			get {
+				return indexColumns;
+			}
+		}
+
+		protected abstract string UniqueKindName {
+			get;
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			base.WriteTo(writer);
+			writer.Write(UniqueKindName);
+			writer.Write(' ');
+			writer.WriteValue(clustered, null, " ");
+			writer.Write('(');
+			writer.WriteSequence(indexColumns, null, ", ", null);
+			writer.Write(')');
+			writer.WriteScript(constraintIndex, " ", null);
+		}
 	}
 }

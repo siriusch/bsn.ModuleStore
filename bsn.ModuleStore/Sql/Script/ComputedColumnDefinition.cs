@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ComputedColumnDefinition: ColumnDefinition, IScriptable {
+	public sealed class ComputedColumnDefinition: ColumnDefinition {
 		private readonly Expression expression;
 
 		[Rule("<ColumnDefinition> ::= AS <Expression>", ConstructorParameterMapping = new[] {1})]
@@ -15,7 +15,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expression = expression;
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public Expression Expression {
+			get {
+				return expression;
+			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
 			writer.Write("AS ");
 			writer.WriteScript(expression);
 		}

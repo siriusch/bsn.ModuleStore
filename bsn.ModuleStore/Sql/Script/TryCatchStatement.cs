@@ -5,12 +5,12 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class TryCatchStatement: SqlStatement {
-		private readonly List<SqlStatement> catchStatements;
-		private readonly List<SqlStatement> tryStatements;
+	public sealed class TryCatchStatement: Statement {
+		private readonly List<Statement> catchStatements;
+		private readonly List<Statement> tryStatements;
 
 		[Rule("<TryCatchStatement> ::= BEGIN_TRY <StatementList> END_TRY BEGIN_CATCH <StatementList> END_CATCH", ConstructorParameterMapping = new[] {1, 4})]
-		public TryCatchStatement(Sequence<SqlStatement> tryStatements, Sequence<SqlStatement> catchStatements) {
+		public TryCatchStatement(Sequence<Statement> tryStatements, Sequence<Statement> catchStatements) {
 			if (tryStatements == null) {
 				throw new ArgumentNullException("tryStatements");
 			}
@@ -21,13 +21,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.catchStatements = catchStatements.ToList();
 		}
 
-		public List<SqlStatement> CatchStatements {
+		public List<Statement> CatchStatements {
 			get {
 				return catchStatements;
 			}
 		}
 
-		public List<SqlStatement> TryStatements {
+		public List<Statement> TryStatements {
 			get {
 				return tryStatements;
 			}

@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ExecuteParameterTable: ExecuteParameter {
+	public sealed class ExecuteParameterTable: ExecuteParameter {
 		private readonly Qualified<TableName> tableName;
 
 		[Rule("<ExecuteParameter> ::= <TableNameQualified>")]

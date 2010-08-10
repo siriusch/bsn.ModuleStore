@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (global) {
 				writer.Write("GLOBAL ");
 			}
-			base.WriteTo(writer);
+			WriteNonGlobalInternal(writer);
 		}
 
 		internal CursorName AsGlobal() {
@@ -42,6 +42,10 @@ namespace bsn.ModuleStore.Sql.Script {
 				return this;
 			}
 			return new CursorName(Value, true);
+		}
+
+		internal void WriteNonGlobalInternal(TextWriter writer) {
+			base.WriteTo(writer);
 		}
 	}
 }

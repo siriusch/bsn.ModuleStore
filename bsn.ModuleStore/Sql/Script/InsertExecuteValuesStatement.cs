@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class InsertExecuteValuesStatement: InsertValuesStatement {
+	public sealed class InsertExecuteValuesStatement: InsertValuesStatement {
 		private readonly ExecuteStatement executeStatement;
 
 		[Rule("<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement>", ConstructorParameterMapping = new[] {0, 2, 4, 5, 6, 7})]
@@ -14,6 +14,12 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("executeStatement");
 			}
 			this.executeStatement = executeStatement;
+		}
+
+		public ExecuteStatement ExecuteStatement {
+			get {
+				return executeStatement;
+			}
 		}
 
 		public override void WriteTo(TextWriter writer) {

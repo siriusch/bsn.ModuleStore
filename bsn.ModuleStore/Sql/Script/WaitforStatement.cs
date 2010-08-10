@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class WaitforStatement: SqlStatement {
+	public class WaitforStatement: Statement {
 		private readonly Identifier identifier;
 		private readonly IScriptable stringValue;
 

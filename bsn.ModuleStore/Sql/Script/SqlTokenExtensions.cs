@@ -53,6 +53,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public static void WriteIndexOptions(this TextWriter writer, ICollection<IndexOption> indexOptions) {
+			if (indexOptions.Count > 0) {
+				writer.Write(" WITH (");
+				writer.WriteSequence(indexOptions, null, ", ", null);
+				writer.Write(')');
+			}
+		}
+
 		public static void WriteScript<T>(this TextWriter writer, T value) where T: SqlToken, IScriptable {
 			WriteScript(writer, value, null, null);
 		}
@@ -101,6 +109,28 @@ namespace bsn.ModuleStore.Sql.Script {
 					break;
 				case IndexFor.Property:
 					writer.Write("FOR PROPERTY");
+					break;
+				}
+				WriteString(writer, suffix);
+			}
+		}
+
+		public static void WriteValue(this TextWriter writer, ForXmlKind forXml, string prefix, string suffix) {
+			if (forXml != ForXmlKind.None) {
+				WriteString(writer, prefix);
+				writer.Write("FOR XML ");
+				switch (forXml) {
+				case ForXmlKind.Auto:
+					writer.Write("AUTO");
+					break;
+				case ForXmlKind.Path:
+					writer.Write("PATH");
+					break;
+				case ForXmlKind.Raw:
+					writer.Write("RAW");
+					break;
+				case ForXmlKind.Explicit:
+					writer.Write("EXPLICIT");
 					break;
 				}
 				WriteString(writer, suffix);

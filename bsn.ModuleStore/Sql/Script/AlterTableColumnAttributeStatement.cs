@@ -1,9 +1,10 @@
 using System;
+using System.IO;
 
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class AlterTableColumnAttributeStatement: AlterTableColumnStatement {
+	public abstract class AlterTableColumnAttributeStatement: AlterTableColumnStatement {
 		private readonly DdlOperation ddlOperation;
 
 		protected AlterTableColumnAttributeStatement(TableName tableName, ColumnName columnName, DdlOperationToken ddlOperationToken): base(tableName, columnName) {
@@ -13,8 +14,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			ddlOperation = ddlOperationToken.Operation;
 		}
 
-		public override void ApplyTo(CreateTableStatement createTable) {
-			throw new NotImplementedException();
+		public override void WriteTo(TextWriter writer) {
+			base.WriteTo(writer);
+			writer.Write(ddlOperation);
+			writer.Write(' ');
 		}
 	}
 }

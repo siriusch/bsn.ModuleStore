@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class InsertStatement: SqlStatement {
-		private readonly TopExpression topExpression;
-		private readonly DestinationRowset destinationRowset;
+	public abstract class InsertStatement: Statement {
 		private readonly List<CommonTableExpression> ctes;
+		private readonly DestinationRowset destinationRowset;
+		private readonly TopExpression topExpression;
 
 		protected InsertStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset) {
 			this.topExpression = topExpression;
@@ -15,9 +15,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.ctes = ctes.ToList();
 		}
 
-		public TopExpression TopExpression {
+		public List<CommonTableExpression> Ctes {
 			get {
-				return topExpression;
+				return ctes;
 			}
 		}
 
@@ -27,9 +27,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<CommonTableExpression> Ctes {
+		public TopExpression TopExpression {
 			get {
-				return ctes;
+				return topExpression;
 			}
 		}
 

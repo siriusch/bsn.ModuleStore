@@ -1,11 +1,10 @@
 using System;
-using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class SqlCursorStatement: SqlStatement {
+	public abstract class CursorStatement: Statement {
 		private readonly CursorName cursorName;
 
-		protected SqlCursorStatement(CursorName cursorName) {
+		protected CursorStatement(CursorName cursorName) {
 			if (cursorName == null) {
 				throw new ArgumentNullException("cursorName");
 			}
@@ -16,10 +15,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return cursorName;
 			}
-		}
-
-		public override void WriteTo(TextWriter writer) {
-			cursorName.WriteTo(writer);
 		}
 	}
 }

@@ -25,6 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				return initialization;
 			}
 		}
+
 		public Qualified<TypeName> TypeName {
 			get {
 				return typeName;
@@ -33,7 +34,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("DECLARE ");
-			writer.WriteScript(Variable);
+			writer.WriteScript(VariableName);
 			writer.Write(" ");
 			writer.WriteScript(typeName);
 			writer.WriteScript(initialization, "=", null);

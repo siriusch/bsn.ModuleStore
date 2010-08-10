@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ColumnExpressionItem: ColumnItem {
+	public sealed class ColumnExpressionItem: ColumnItem {
 		private readonly Qualified<ColumnName> columnWildcard;
 
 		[Rule("<ColumnItem> ::= <ColumnWildQualified>")]

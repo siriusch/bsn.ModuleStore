@@ -4,7 +4,7 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CreateFunctionScalarStatement: CreateFunctionStatement<StatementBlock> {
+	public sealed class CreateFunctionScalarStatement: CreateFunctionStatement<StatementBlock> {
 		private readonly TypeName returnTypeName;
 
 		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <OptionalFunctionOption> <OptionalAs> <StatementBlock>", ConstructorParameterMapping = new[] {2, 4, 6, 7, 9})]

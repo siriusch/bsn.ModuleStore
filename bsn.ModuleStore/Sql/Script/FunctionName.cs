@@ -5,7 +5,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("COALESCE")]
-	public class FunctionName: SqlQuotedName {
+	public sealed class FunctionName: SqlQuotedName {
 		private readonly bool systemFunction;
 
 		public FunctionName(string name): base(name) {}

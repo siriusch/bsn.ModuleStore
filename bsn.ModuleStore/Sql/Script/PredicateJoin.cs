@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class PredicateJoin: Join {
@@ -15,6 +16,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return predicate;
 			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			base.WriteTo(writer);
+			writer.Write(" ON ");
+			writer.WriteScript(predicate);
 		}
 	}
 }

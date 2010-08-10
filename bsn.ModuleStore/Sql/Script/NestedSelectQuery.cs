@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class NestedSelectQuery: Tuple {
+	public sealed class NestedSelectQuery: Tuple {
 		private readonly SelectQuery value;
 
 		[Rule("<Tuple> ::= '(' <SelectQuery> ')'", ConstructorParameterMapping = new[] {1})]
@@ -13,6 +14,19 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("value");
 			}
 			this.value = value;
+		}
+
+		public SelectQuery Value {
+			get {
+				return value;
+			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.WriteLine("(");
+			writer.WriteScript(value);
+			writer.WriteLine();
+			writer.Write(')');
 		}
 	}
 }

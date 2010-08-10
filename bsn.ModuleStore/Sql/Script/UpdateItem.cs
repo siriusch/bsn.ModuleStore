@@ -30,11 +30,13 @@ namespace bsn.ModuleStore.Sql.Script {
 				return columnName;
 			}
 		}
+
 		public Expression Expression {
 			get {
 				return expression;
 			}
 		}
+
 		public VariableName VariableName {
 			get {
 				return variableName;

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class AlterTableStatement: SqlStatement {
+	public abstract class AlterTableStatement: Statement {
 		private readonly TableName tableName;
 
 		protected AlterTableStatement(TableName tableName) {
@@ -13,15 +13,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableName = tableName;
 		}
 
-		public virtual void ApplyTo(CreateTableStatement createTable) {
-			throw new NotImplementedException();
-		}
-
 		public TableName TableName {
 			get {
 				return tableName;
 			}
 		}
+
+		public abstract void ApplyTo(CreateTableStatement createTable);
 
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("ALTER TABLE ");

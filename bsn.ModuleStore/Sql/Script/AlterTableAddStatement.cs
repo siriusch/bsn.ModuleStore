@@ -21,11 +21,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.definitions = definitions.ToList();
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void ApplyTo(CreateTableStatement createTable) {
 			throw new NotImplementedException();
 		}
 
-		public override void ApplyTo(CreateTableStatement createTable) {
+		public override void WriteTo(TextWriter writer) {
 			throw new NotImplementedException();
 		}
 	}

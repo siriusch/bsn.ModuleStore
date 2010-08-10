@@ -2,19 +2,19 @@
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class DeclareStatement: SqlStatement {
-		private readonly VariableName variable;
+	public abstract class DeclareStatement: Statement {
+		private readonly VariableName variableName;
 
-		protected DeclareStatement(VariableName variable): base() {
-			if (variable == null) {
-				throw new ArgumentNullException("variable");
+		protected DeclareStatement(VariableName variableName): base() {
+			if (variableName == null) {
+				throw new ArgumentNullException("variableName");
 			}
-			this.variable = variable;
+			this.variableName = variableName;
 		}
 
-		public VariableName Variable {
+		public VariableName VariableName {
 			get {
-				return variable;
+				return variableName;
 			}
 		}
 	}

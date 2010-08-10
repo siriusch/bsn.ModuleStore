@@ -22,16 +22,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.defaultValue = defaultValue;
 		}
 
-		public void WriteTo(TextWriter writer) {
-			writer.WriteScript(parameterName);
-			writer.Write(' ');
-			writer.WriteScript(parameterTypeName);
-			if (defaultValue != null) {
-				writer.Write(" = ");
-				writer.WriteScript(defaultValue);
-			}
-		}
-
 		public Literal DefaultValue {
 			get {
 				return defaultValue;
@@ -48,6 +38,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return parameterTypeName;
 			}
+		}
+
+		public void WriteTo(TextWriter writer) {
+			writer.WriteScript(parameterName);
+			writer.Write(' ');
+			writer.WriteScript(parameterTypeName);
+			writer.WriteScript(defaultValue, " = ", null);
 		}
 	}
 }

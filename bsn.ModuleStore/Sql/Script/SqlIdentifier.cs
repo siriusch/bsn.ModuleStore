@@ -16,8 +16,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			return false;
 		}
 
-		private readonly string value;
 		private readonly string original;
+		private readonly string value;
 
 		protected SqlIdentifier(string id) {
 			if (id == null) {

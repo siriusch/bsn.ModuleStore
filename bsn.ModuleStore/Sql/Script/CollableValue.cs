@@ -20,12 +20,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.collation = collation;
 		}
 
-		public override void WriteTo(TextWriter writer) {
-			writer.WriteScript(valueExpression);
-			writer.Write(" COLLATE ");
-			writer.WriteScript(collation);
-		}
-
 		public CollationName Collation {
 			get {
 				return collation;
@@ -36,6 +30,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return valueExpression;
 			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.WriteScript(valueExpression);
+			writer.Write(" COLLATE ");
+			writer.WriteScript(collation);
 		}
 	}
 }

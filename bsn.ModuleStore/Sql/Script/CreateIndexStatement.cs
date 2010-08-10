@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateIndexStatement: SqlCreateStatement {
+	public abstract class CreateIndexStatement: CreateStatement {
 		private readonly IndexName indexName;
 		private readonly List<IndexOption> indexOptions;
 		private readonly TableName tableName;
@@ -40,11 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected void WriteOptions(TextWriter writer) {
-			if (indexOptions.Count > 0) {
-				writer.Write("WITH (");
-				writer.WriteSequence(indexOptions, null, ", ", null);
-				writer.Write(')');
-			}
+			writer.WriteIndexOptions(indexOptions);
 		}
 	}
 }

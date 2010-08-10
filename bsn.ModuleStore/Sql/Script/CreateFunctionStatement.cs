@@ -10,7 +10,7 @@ using bsn.ModuleStore.Sql.Script;
 [assembly: RuleTrim("<OrderClause> ::= ORDER BY <OrderList>", "<OrderList>", SemanticTokenType = typeof(SqlToken))]
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateFunctionStatement<TBody>: SqlCreateStatement where TBody: SqlStatement {
+	public abstract class CreateFunctionStatement<TBody>: CreateStatement where TBody: Statement {
 		private readonly TBody body;
 		private readonly FunctionName functionName;
 		private readonly FunctionOption option;

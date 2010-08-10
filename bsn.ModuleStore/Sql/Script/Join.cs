@@ -1,7 +1,8 @@
 ﻿using System;
+using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class Join: SqlToken {
+	public abstract class Join: SqlToken, IScriptable {
 		private readonly SourceRowset joinRowset;
 
 		protected Join(SourceRowset joinRowset): base() {
@@ -19,6 +20,11 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public abstract JoinKind Kind {
 			get;
+		}
+
+		public virtual void WriteTo(TextWriter writer) {
+			writer.Write("JOIN ");
+			writer.WriteScript(joinRowset);
 		}
 	}
 }

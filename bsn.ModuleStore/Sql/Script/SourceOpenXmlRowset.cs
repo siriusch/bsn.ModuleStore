@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
@@ -20,7 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(System.IO.TextWriter writer) {
+		public override void WriteTo(TextWriter writer) {
 			writer.WriteScript(openxml);
 			base.WriteTo(writer);
 		}

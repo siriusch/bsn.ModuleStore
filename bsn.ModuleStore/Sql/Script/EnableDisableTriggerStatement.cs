@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class EnableDisableTriggerStatement: SqlStatement {
+	public abstract class EnableDisableTriggerStatement: Statement {
 		private readonly TableName tableName;
 		private readonly List<TriggerName> triggerNames;
 

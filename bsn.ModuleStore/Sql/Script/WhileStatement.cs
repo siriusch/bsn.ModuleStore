@@ -4,12 +4,12 @@ using System.IO;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class WhileStatement: SqlStatement {
+	public sealed class WhileStatement: Statement {
 		private readonly Expression expression;
-		private readonly SqlStatement statement;
+		private readonly Statement statement;
 
 		[Rule("<WhileStatement> ::= WHILE <Expression> <StatementGroup>", ConstructorParameterMapping = new[] {1, 2})]
-		public WhileStatement(Expression expression, SqlStatement statement) {
+		public WhileStatement(Expression expression, Statement statement) {
 			if (expression == null) {
 				throw new ArgumentNullException("expression");
 			}
@@ -25,7 +25,8 @@ namespace bsn.ModuleStore.Sql.Script {
 				return expression;
 			}
 		}
-		public SqlStatement Statement {
+
+		public Statement Statement {
 			get {
 				return statement;
 			}

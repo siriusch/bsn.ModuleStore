@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CrossJoin: Join {
+	public sealed class CrossJoin: Join {
 		[Rule("<Join> ::= CROSS JOIN <SourceRowset>", ConstructorParameterMapping = new[] {2})]
 		public CrossJoin(SourceRowset joinRowset): base(joinRowset) {}
 
@@ -11,6 +12,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return JoinKind.Cross;
 			}
+		}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.Write("CROSS ");
+			base.WriteTo(writer);
 		}
 	}
 }
