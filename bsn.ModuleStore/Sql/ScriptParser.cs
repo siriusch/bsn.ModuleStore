@@ -1,13 +1,12 @@
 ﻿// (C) 2010 Arsène von Wyss / bsn
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Xml;
-using System.Xml.Linq;
 
 using bsn.GoldParser.Grammar;
-using bsn.GoldParser.Xml;
+using bsn.GoldParser.Parser;
+using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public static class ScriptParser {
@@ -620,12 +619,47 @@ namespace bsn.ModuleStore.Sql {
 		                                                                                                              		"PREPARE"
 		                                                                                                              };
 
-		internal static CompiledGrammar LoadGrammar() {
-			return CompiledGrammar.Load(typeof(ScriptParser), "ModuleStoreSQL.cgt");
+		private static readonly object sync = new object();
+
+		private static CompiledGrammar compiledGrammar;
+		private static SemanticTypeActions<SqlToken> semanticActions;
+
+		internal static CompiledGrammar GetGrammar() {
+			lock (sync) {
+				if (compiledGrammar == null) {
+					compiledGrammar = CompiledGrammar.Load(typeof(ScriptParser), "ModuleStoreSQL.cgt");
+				}
+				return compiledGrammar;
+			}
+		}
+
+		internal static SemanticTypeActions<SqlToken> GetSemanticActions() {
+			lock (sync) {
+				if (semanticActions == null) {
+					semanticActions = new SemanticTypeActions<SqlToken>(GetGrammar());
+					semanticActions.Initialize();
+				}
+				return semanticActions;
+			}
 		}
 
 		public static bool IsReservedWord(string name) {
 			return reservedWords.Contains(name);
+		}
+
+		public static IEnumerable<Statement> Parse(string sql) {
+			using (StringReader reader = new StringReader(sql)) {
+				return Parse(reader);
+			}
+		}
+
+		public static IEnumerable<Statement> Parse(TextReader sql) {
+			SemanticProcessor<SqlToken> processor = new SemanticProcessor<SqlToken>(sql, GetSemanticActions());
+			ParseMessage parseMessage = processor.ParseAll();
+			if (parseMessage != ParseMessage.Accept) {
+				throw new ArgumentException(string.Format("The supplied SQL could not be parsed: {0} at {1}", parseMessage, ((IToken)processor.CurrentToken).Position));
+			}
+			return (IEnumerable<Statement>)processor.CurrentToken;
 		}
 	}
 }

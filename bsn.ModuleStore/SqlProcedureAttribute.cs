@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace bsn.ModuleStore {
-	class SqlProcedureAttribute {
-	}
+	internal class SqlProcedureAttribute {}
 }

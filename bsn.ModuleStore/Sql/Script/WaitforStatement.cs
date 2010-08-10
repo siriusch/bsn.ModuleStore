@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly IScriptable stringValue;
 
 		[Rule("<WaitforStatement> ::= WAITFOR Id <StringLiteral>", ConstructorParameterMapping = new[] {1, 2})]
-		[Rule("<WaitforStatement> ::= WAITFOR Id <VariableName>", ConstructorParameterMapping=new[] { 1, 2 })]
+		[Rule("<WaitforStatement> ::= WAITFOR Id <VariableName>", ConstructorParameterMapping = new[] {1, 2})]
 		public WaitforStatement(Identifier identifier, IScriptable stringValue) {
 			if (identifier == null) {
 				throw new ArgumentNullException("identifier");

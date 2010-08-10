@@ -13,12 +13,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly VariableName variableName;
 
 		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <StringLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6})]
-		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <VariableName> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping=new[] { 2, 4, 6 })]
-		public OpenxmlFunction(VariableName variableName, IScriptable stringValue, Optional<OpenxmlSchema> schema) : this(variableName, stringValue, null, schema) {
-		}
+		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <VariableName> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6})]
+		public OpenxmlFunction(VariableName variableName, IScriptable stringValue, Optional<OpenxmlSchema> schema): this(variableName, stringValue, null, schema) {}
 
-		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <StringLiteral> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping=new[] { 2, 4, 6, 8 })]
-		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <VariableName> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping=new[] { 2, 4, 6, 8 })]
+		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <StringLiteral> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6, 8})]
+		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <VariableName> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6, 8})]
 		public OpenxmlFunction(VariableName variableName, IScriptable stringValue, IntegerLiteral flags, Optional<OpenxmlSchema> schema) {
 			if (variableName == null) {
 				throw new ArgumentNullException("variableName");

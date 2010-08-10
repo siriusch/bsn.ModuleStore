@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace bsn.ModuleStore {
-	public class ModuleAttribute {
-	}
+	public class ModuleAttribute {}
 }

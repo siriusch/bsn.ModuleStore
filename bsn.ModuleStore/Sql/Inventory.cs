@@ -19,15 +19,15 @@ namespace bsn.ModuleStore.Sql {
 			objects = (Dictionary<string, SqlToken>)info.GetValue("objects", typeof(Dictionary<string, SqlToken>));
 		}
 
-		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context) {
-			GetObjectData(info, context);
-		}
-
 		protected virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
 			if (info == null) {
 				throw new ArgumentNullException("info");
 			}
 			info.AddValue("objects", objects);
+		}
+
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context) {
+			GetObjectData(info, context);
 		}
 	}
 }

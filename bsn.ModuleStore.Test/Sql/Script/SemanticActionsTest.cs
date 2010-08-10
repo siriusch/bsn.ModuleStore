@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[TestFixtureSetUp]
 		public void SetUp() {
-			grammar = ScriptParser.LoadGrammar();
+			grammar = ScriptParser.GetGrammar();
 		}
 
 		[Test]
