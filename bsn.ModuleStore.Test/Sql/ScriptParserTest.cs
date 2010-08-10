@@ -92,7 +92,8 @@ from
 ) t
 where
   (@returnEmptyStrings = 0 and len(pieces) > 0)
-  or (@returnEmptyStrings = 1);
+  or (@returnEmptyStrings = 1)
+option (maxrecursion 0);
 
 
 return;
