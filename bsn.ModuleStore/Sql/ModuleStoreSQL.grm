@@ -272,6 +272,7 @@ CAST_ = CAST{Whitespace}*'('
 _RETURNS = ')'{Whitespace}*RETURNS
 LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|(''{String Ch}+'')+)
 OUTPUT = OUT(PUT)?
+OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 ! =============================================================================
 ! Common Terminals (Names, Literals, ...)
@@ -426,6 +427,7 @@ OUTPUT = OUT(PUT)?
                  | <PrintStatement>
                  | <ReturnStatement>
                  | <SetStatement>
+                 | <SelectVariableStatement>
                  | <TryCatchStatement>
                  | <WaitforStatement>
                  | <WhileStatement>
@@ -530,7 +532,12 @@ OUTPUT = OUT(PUT)?
 <SetStatement> ::= <SetVariableStatement>
                  | <SetOptionStatement>
 
-<SetVariableStatement> ::= SET <VariableName> '=' <Expression>
+<SetVariableStatement> ::= SET <VariableAssignment>
+
+<VariableAssignment> ::= <VariableName> '=' <Expression>
+
+<VariableAssignmentList> ::= <VariableAssignment> ',' <VariableAssignmentList>
+                           | <VariableAssignment>
 
 <SetOptionStatement> ::= SET Id <SetValueList>
                        | SET IDENTITY_INSERT <TableName> <Toggle>
@@ -868,14 +875,17 @@ OUTPUT = OUT(PUT)?
                  | OUTPUT <ColumnItemList> INTO <DestinationRowset> <ColumnNameGroup>
                  |
 
+<CTEOption> ::= OPTION_MAXRECURSION IntegerLiteral ')'
+              |
+
 ! =============================================================================
 ! INSERT Statement
 ! =============================================================================
 
-<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')'
-                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery>
-                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement>
-                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> DEFAULT VALUES
+<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')' <CTEOption>
+                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery> <CTEOption>
+                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement> <CTEOption>
+                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> DEFAULT VALUES <CTEOption>
 
 <OptionalInto> ::= INTO
                  |
@@ -884,7 +894,7 @@ OUTPUT = OUT(PUT)?
 ! UPDATE Statement
 ! =============================================================================
 
-<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause>
+<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <CTEOption>
 
 <UpdateItemList> ::= <UpdateItem> ',' <UpdateItemList>
                    | <UpdateItem>
@@ -902,7 +912,7 @@ OUTPUT = OUT(PUT)?
 ! DELETE Statement
 ! =============================================================================
 
-<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause>
+<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <CTEOption>
 
 <OptionalFrom> ::= FROM
                  |
@@ -911,7 +921,9 @@ OUTPUT = OUT(PUT)?
 ! SELECT Statement
 ! =============================================================================
 
-<SelectStatement> ::= <CTEGroup> <SelectQuery> <ForClause>
+<SelectVariableStatement> ::= SELECT <VariableAssignmentList>
+
+<SelectStatement> ::= <CTEGroup> <SelectQuery> <ForClause> <CTEOption>
 
 <SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
                 | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>
@@ -924,6 +936,7 @@ OUTPUT = OUT(PUT)?
 
 <ColumnItem> ::= <ColumnWildQualified>
                | <Expression> <OptionalAlias>
+               | <AliasName> '=' <Expression>
 
 <Restriction> ::= ALL
                 | DISTINCT
@@ -1002,7 +1015,7 @@ OUTPUT = OUT(PUT)?
 
 <XmlDirective> ::= Id <OptionalElementName>
                  | Id Id
-           
+
 ! ============================================================================= 
 ! Pedicates and Expressions
 ! =============================================================================
