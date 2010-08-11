@@ -16,9 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal(">=")]
 	[Terminal("<")]
 	[Terminal("<=")]
-	[Terminal("OR")]
-	[Terminal("AND")]
-	public sealed class OperationToken: SqlToken, IScriptable {
+	public class OperationToken: SqlToken, IScriptable {
 		private readonly string operation;
 
 		public OperationToken(string operation) {
@@ -32,8 +30,20 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public virtual void WriteTo(TextWriter writer) {
 			writer.Write(operation);
+		}
+	}
+
+	[Terminal("OR")]
+	[Terminal("AND")]
+	public sealed class OperationNameToken: OperationToken {
+		public OperationNameToken(string operation): base(operation) {}
+
+		public override void WriteTo(TextWriter writer) {
+			writer.Write(' ');
+			base.WriteTo(writer);
+			writer.Write(' ');
 		}
 	}
 }

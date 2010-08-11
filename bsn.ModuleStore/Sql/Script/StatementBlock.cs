@@ -27,7 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(TextWriter writer) {
 			writer.WriteLine("BEGIN");
-			writer.WriteSequence(statements, "\t", ";", Environment.NewLine);
+			writer.WriteSequence(statements, "\t", null, ";"+Environment.NewLine);
 			writer.Write("END");
 		}
 	}

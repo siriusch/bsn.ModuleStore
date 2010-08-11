@@ -55,7 +55,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override void WriteToInternal(TextWriter writer) {
 			writer.WriteScript(fromClause, Environment.NewLine, null);
-			writer.WriteScript(whereClause, Environment.NewLine, null);
+			writer.WriteScript(whereClause, Environment.NewLine+"WHERE ", null);
 			if (groupByClause.Count > 0) {
 				writer.WriteLine();
 				writer.Write("GROUP BY ");

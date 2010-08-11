@@ -7,17 +7,17 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DeclareVariableStatement: Statement {
-		private readonly List<DeclareStatement> declarations;
+		private readonly List<DeclareItem> declarations;
 
 		[Rule("<DeclareStatement> ::= DECLARE <DeclareItemList>", ConstructorParameterMapping = new[] {1})]
-		public DeclareVariableStatement(Sequence<DeclareStatement> declarations) {
+		public DeclareVariableStatement(Sequence<DeclareItem> declarations) {
 			if (declarations == null) {
 				throw new ArgumentNullException("declarations");
 			}
 			this.declarations = declarations.ToList();
 		}
 
-		public List<DeclareStatement> Declarations {
+		public List<DeclareItem> Declarations {
 			get {
 				return declarations;
 			}

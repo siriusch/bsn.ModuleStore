@@ -30,7 +30,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(TextWriter writer) {
 			writer.WriteLine();
 			writer.WriteSequence(whenItems, null, null, Environment.NewLine);
-			writer.WriteScript(elseExpression, null, Environment.NewLine);
+			writer.WriteScript(elseExpression, "ELSE ", Environment.NewLine);
 			writer.Write("END");
 		}
 	}

@@ -61,6 +61,7 @@
     <Compile Include="Sql\Script\ColumnDefaultParensConstraint.cs" />
     <Compile Include="Sql\Script\ColumnNotNullableConstraint.cs" />
     <Compile Include="Sql\Script\CrossJoin.cs" />
+    <Compile Include="Sql\Script\DeclareItem.cs" />
     <Compile Include="Sql\Script\DmlOperation.cs" />
     <Compile Include="Sql\Script\ForeignKeyActionKind.cs" />
     <Compile Include="Sql\Script\ForeignKeyCascadeAction.cs" />
@@ -224,7 +225,7 @@
     <Compile Include="Sql\Script\CreateViewStatement.cs" />
     <Compile Include="Sql\Script\CreateXmlIndexStatement.cs" />
     <Compile Include="Sql\Script\CreateXmlSchemaCollectionStatement.cs" />
-    <Compile Include="Sql\Script\CursorVariableDeclaration.cs" />
+    <Compile Include="Sql\Script\DeclareCursorItem.cs" />
     <Compile Include="Sql\Script\Tokens\DdlOperationToken.cs" />
     <Compile Include="Sql\Script\DeclareTableStatement.cs" />
     <Compile Include="Sql\Script\DeclareVariableStatement.cs" />
@@ -287,7 +288,7 @@
     <Compile Include="Sql\Script\NestedSelectQuery.cs" />
     <Compile Include="Sql\Script\Tuple.cs" />
     <Compile Include="Sql\Script\TypedColumnDefinition.cs" />
-    <Compile Include="Sql\Script\TypedVariableDeclaration.cs" />
+    <Compile Include="Sql\Script\DeclareVariableItem.cs" />
     <Compile Include="Sql\Script\UnionAllClause.cs" />
     <Compile Include="Sql\Script\UnionClause.cs" />
     <Compile Include="Sql\Script\Tokens\UniqueToken.cs" />
