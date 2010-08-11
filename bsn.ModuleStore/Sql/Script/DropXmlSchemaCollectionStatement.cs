@@ -22,7 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DROP XML SCHEMA COLLECTION ");
-			writer.WriteScript(xmlSchemaCollectionName);
+			writer.WriteScript(xmlSchemaCollectionName, WhitespacePadding.None);
 		}
 	}
 }

@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(valueExpression);
+			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			writer.Write(" IS");
 			base.WriteTo(writer);
 			writer.Write(" NULL");

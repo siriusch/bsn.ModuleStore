@@ -31,9 +31,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CAST(");
-			writer.WriteScript(expression);
+			writer.WriteScript(expression, WhitespacePadding.None);
 			writer.Write(" AS ");
-			writer.WriteScript(typeName);
+			writer.WriteScript(typeName, WhitespacePadding.None);
 			writer.Write(")");
 		}
 	}

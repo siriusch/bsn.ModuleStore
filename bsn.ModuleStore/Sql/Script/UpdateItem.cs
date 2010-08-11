@@ -44,12 +44,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			writer.WriteScript(variableName, null, "=");
-			writer.WriteScript(columnName, null, "=");
+			writer.WriteScript(variableName, WhitespacePadding.None, null, "=");
+			writer.WriteScript(columnName, WhitespacePadding.None, null, "=");
 			if (expression == null) {
 				writer.Write("DEFAULT");
 			} else {
-				writer.WriteScript(expression);
+				writer.WriteScript(expression, WhitespacePadding.None);
 			}
 		}
 	}

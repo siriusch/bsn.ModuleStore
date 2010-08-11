@@ -54,11 +54,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			if (IsQualified) {
-				writer.WriteScript(Qualification);
-				writer.Write(".");
-			}
-			writer.WriteScript(Name);
+			writer.WriteScript(Qualification, WhitespacePadding.None, null, ".");
+			writer.WriteScript(Name, WhitespacePadding.None);
 		}
 	}
 }

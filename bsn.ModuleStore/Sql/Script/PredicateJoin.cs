@@ -20,7 +20,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write(" ON ");
-			writer.WriteScript(predicate);
+			writer.WriteScript(predicate, WhitespacePadding.None);
 		}
 	}
 }

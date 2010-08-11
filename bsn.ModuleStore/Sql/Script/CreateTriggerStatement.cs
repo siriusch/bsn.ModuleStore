@@ -69,18 +69,21 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE TRIGGER ");
-			writer.WriteScript(triggerName);
+			writer.WriteScript(triggerName, WhitespacePadding.None);
 			writer.Write(" ON ");
-			writer.WriteScript(tableName);
-			writer.WriteValue(type, " ", " ");
+			writer.WriteScript(tableName, WhitespacePadding.SpaceAfter);
+			writer.WriteEnum(type, WhitespacePadding.SpaceAfter);
 			string prefix = null;
 			foreach (DmlOperation operation in triggerOperations) {
-				writer.WriteValue(operation, prefix, null);
+				writer.Write(prefix);
+				writer.WriteEnum(operation, WhitespacePadding.None);
 				prefix = ", ";
 			}
-			writer.WriteNotForReplication(notForReplication, " ", null);
-			writer.WriteLine(" AS");
-			writer.WriteScript(statement);
+			writer.WriteNotForReplication(notForReplication, WhitespacePadding.SpaceBefore);
+			writer.Write(" AS");
+			writer.IncreaseIndent();
+			writer.WriteScript(statement, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
 		}
 	}
 }

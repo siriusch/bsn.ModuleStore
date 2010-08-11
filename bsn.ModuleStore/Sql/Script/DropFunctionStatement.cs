@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DROP FUNCTION ");
-			writer.WriteScript(functionName);
+			writer.WriteScript(functionName, WhitespacePadding.None);
 		}
 	}
 }

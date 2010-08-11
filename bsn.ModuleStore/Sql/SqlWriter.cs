@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -9,7 +10,7 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql {
 	public class SqlWriter {
 		private readonly TextWriter writer;
-		private string indentation;
+		private string indentation = "    ";
 		private int indentationLevel;
 		private SchemaName schemaName;
 
@@ -25,108 +26,132 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public void Write(string data) {
-			writer.Write(data);
+			if (!string.IsNullOrEmpty(data)) {
+				writer.Write(data);
+			}
+		}
+
+		public void IncreaseIndent() {
+			indentationLevel++;
+		}
+
+		public void DecreaseIndent() {
+			indentationLevel--;
+			Debug.Assert(indentationLevel >= 0);
 		}
 
 		public void WriteCommonTableExpressions(ICollection<CommonTableExpression> expressions) {
 			if (expressions.Count > 0) {
 				Write("WITH ");
-				WriteSequence(expressions, null, ",", Environment.NewLine);
+				WriteSequence(expressions, WhitespacePadding.NewlineAfter, ",");
 			}
 		}
 
-		public void WriteDuplicateRestriction(bool? distinct, string prefix, string suffix) {
+		private void PaddingBefore(WhitespacePadding padding) {
+			switch (padding) {
+			case WhitespacePadding.NewlineBefore:
+				WriteLine();
+				break;
+			case WhitespacePadding.SpaceBefore:
+				Write(' ');
+				break;
+			}
+		}
+
+		private void PaddingAfter(WhitespacePadding padding) {
+			switch (padding) {
+			case WhitespacePadding.NewlineAfter:
+				WriteLine();
+				break;
+			case WhitespacePadding.SpaceAfter:
+				Write(' ');
+				break;
+			}
+		}
+
+		public void WriteDuplicateRestriction(bool? distinct, WhitespacePadding padding) {
 			if (distinct.HasValue) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				Write(distinct.Value ? "DISTINCT" : "ALL");
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
 		public void WriteIndexOptions(ICollection<IndexOption> indexOptions) {
 			if (indexOptions.Count > 0) {
 				Write(" WITH (");
-				WriteSequence(indexOptions, null, ", ", null);
+				WriteSequence(indexOptions, WhitespacePadding.None, ", ");
 				Write(')');
 			}
 		}
 
 		public void WriteLine(string text) {
-			Write(text);
+			if (!string.IsNullOrEmpty(text)) {
+				Write(text);
+			}
 			Write(Environment.NewLine);
+			for (int i = 0; i < indentationLevel; i++) {
+				Write(indentation);
+			}
 		}
 
 		public void WriteLine() {
 			WriteLine(string.Empty);
 		}
 
-		public void WriteNotForReplication(bool notForReplication, string prefix, string suffix) {
+		public void WriteNotForReplication(bool notForReplication, WhitespacePadding padding) {
 			if (notForReplication) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				Write("NOT FOR REPLICATION");
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WritePercent(bool percent, string prefix, string suffix) {
-			if (percent) {
-				WriteString(prefix);
-				Write("PERCENTN");
-				WriteString(suffix);
-			}
+		public void WriteScript<T>(T value, WhitespacePadding padding) where T: SqlToken, IScriptable {
+			WriteScript(value, padding, null, null);
 		}
 
-		public void WritePrimary(bool primary, string prefix, string suffix) {
-			if (primary) {
-				WriteString(prefix);
-				Write("PRIMARY");
-				WriteString(suffix);
-			}
-		}
-
-		public void WriteScript<T>(T value) where T: SqlToken, IScriptable {
-			WriteScript(value, null, null);
-		}
-
-		public void WriteScript<T>(T value, string prefix, string suffix) where T: SqlToken, IScriptable {
+		public void WriteScript<T>(T value, WhitespacePadding padding, string prefix, string suffix) where T: SqlToken, IScriptable {
 			if (value != null) {
 				IOptional optional = value as IOptional;
 				if ((optional == null) || (optional.HasValue)) {
-					WriteString(prefix);
+					PaddingBefore(padding);
+					Write(prefix);
 					value.WriteTo(this);
-					WriteString(suffix);
+					Write(suffix);
+					PaddingAfter(padding);
 				}
 			}
 		}
 
-		public void WriteSequence<T>(IEnumerable<T> sequence, string itemPrefix, string itemSeparator, string itemSuffix) where T: SqlToken, IScriptable {
+		public void WriteSequence<T>(IEnumerable<T> sequence, WhitespacePadding itemPadding, string itemSeparator) where T: SqlToken, IScriptable {
 			if (sequence != null) {
 				IEnumerator<T> enumerator = sequence.GetEnumerator();
 				if (enumerator.MoveNext()) {
-					WriteString(itemPrefix);
-					WriteScript(enumerator.Current);
+					PaddingBefore(itemPadding);
+					WriteScript(enumerator.Current, WhitespacePadding.None);
 					while (enumerator.MoveNext()) {
-						WriteString(itemSeparator);
-						WriteString(itemSuffix);
-						WriteString(itemPrefix);
-						WriteScript(enumerator.Current);
+						Write(itemSeparator);
+						PaddingAfter(itemPadding);
+						PaddingBefore(itemPadding);
+						WriteScript(enumerator.Current, WhitespacePadding.None);
 					}
-					WriteString(itemSuffix);
+					PaddingAfter(itemPadding);
 				}
 			}
 		}
 
-		public void WriteToggle(bool? toggle, string prefix, string suffix) {
+		public void WriteToggle(bool? toggle, WhitespacePadding padding) {
 			if (toggle.HasValue) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				Write(toggle.Value ? "ON" : "OFF");
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(Clustered clustered, string prefix, string suffix) {
+		public void WriteEnum(Clustered clustered, WhitespacePadding padding) {
 			if (clustered != Clustered.Unspecified) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				switch (clustered) {
 				case Clustered.Clustered:
 					Write("CLUSTERED");
@@ -135,13 +160,13 @@ namespace bsn.ModuleStore.Sql {
 					Write("NONCLUSTERED");
 					break;
 				}
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(IndexFor indexFor, string prefix, string suffix) {
+		public void WriteEnum(IndexFor indexFor, WhitespacePadding padding) {
 			if (indexFor != IndexFor.None) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				switch (indexFor) {
 				case IndexFor.Value:
 					Write("FOR VALUE");
@@ -153,13 +178,13 @@ namespace bsn.ModuleStore.Sql {
 					Write("FOR PROPERTY");
 					break;
 				}
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(ForXmlKind forXml, string prefix, string suffix) {
+		public void WriteEnum(ForXmlKind forXml, WhitespacePadding padding) {
 			if (forXml != ForXmlKind.None) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				Write("FOR XML ");
 				switch (forXml) {
 				case ForXmlKind.Auto:
@@ -175,13 +200,13 @@ namespace bsn.ModuleStore.Sql {
 					Write("EXPLICIT");
 					break;
 				}
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(SortOrder order, string prefix, string suffix) {
+		public void WriteEnum(SortOrder order, WhitespacePadding padding) {
 			if (order != SortOrder.Unspecified) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				switch (order) {
 				case SortOrder.Ascending:
 					Write("ASC");
@@ -190,26 +215,26 @@ namespace bsn.ModuleStore.Sql {
 					Write("DESC");
 					break;
 				}
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(FulltextChangeTracking changeTracking, string prefix, string suffix) {
+		public void WriteEnum(FulltextChangeTracking changeTracking, WhitespacePadding padding) {
 			if (changeTracking != FulltextChangeTracking.Unspecified) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				Write("WITH CHANGE TRACKING ");
 				if (changeTracking == FulltextChangeTracking.OffNoPopulation) {
 					Write("OFF, NO POPULATION");
 				} else {
 					Write(changeTracking.ToString().ToUpperInvariant());
 				}
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(TableCheck tableCheck, string prefix, string suffix) {
+		public void WriteEnum(TableCheck tableCheck,WhitespacePadding padding) {
 			if (tableCheck != TableCheck.Unspecified) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				switch (tableCheck) {
 				case TableCheck.Check:
 					Write("CHECK");
@@ -218,13 +243,13 @@ namespace bsn.ModuleStore.Sql {
 					Write("NOCHECK");
 					break;
 				}
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(FunctionOption functionOption, string prefix, string suffix) {
+		public void WriteEnum(FunctionOption functionOption, WhitespacePadding padding) {
 			if (functionOption != FunctionOption.None) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				Write("WITH ");
 				switch (functionOption) {
 				case FunctionOption.CalledOnNullInput:
@@ -234,13 +259,13 @@ namespace bsn.ModuleStore.Sql {
 					Write("RETURNS NULL ON NULL INPUT");
 					break;
 				}
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(TriggerType triggerType, string prefix, string suffix) {
+		public void WriteEnum(TriggerType triggerType, WhitespacePadding padding) {
 			if (triggerType != TriggerType.None) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				switch (triggerType) {
 				case TriggerType.After:
 					Write("AFTER");
@@ -252,61 +277,23 @@ namespace bsn.ModuleStore.Sql {
 					Write("FOR");
 					break;
 				}
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(DmlOperation operation, string prefix, string suffix) {
+		public void WriteEnum(DmlOperation operation, WhitespacePadding padding) {
 			if (operation != DmlOperation.None) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				Write(operation.ToString().ToUpperInvariant());
-				WriteString(suffix);
+				PaddingAfter(padding);
 			}
 		}
 
-		public void WriteValue(DdlOperation operation, string prefix, string suffix) {
+		public void WriteEnum(DdlOperation operation, WhitespacePadding padding) {
 			if (operation != DdlOperation.None) {
-				WriteString(prefix);
+				PaddingBefore(padding);
 				Write(operation.ToString().ToUpperInvariant());
-				WriteString(suffix);
-			}
-		}
-
-		public void WriteWithCheckOption(bool withCheckOption, string prefix, string suffix) {
-			if (withCheckOption) {
-				WriteString(prefix);
-				Write("WITH CHECK OPTION");
-				WriteString(suffix);
-			}
-		}
-
-		public void WriteWithRecompile(bool withCheckOption, string prefix, string suffix) {
-			if (withCheckOption) {
-				WriteString(prefix);
-				Write("WITH RECOMPILE");
-				WriteString(suffix);
-			}
-		}
-
-		public void WriteWithTies(bool withTies, string prefix, string suffix) {
-			if (withTies) {
-				WriteString(prefix);
-				Write("WITH TIES");
-				WriteString(suffix);
-			}
-		}
-
-		public void WriteWithViewMetadata(bool withViewMetadata, string prefix, string suffix) {
-			if (withViewMetadata) {
-				WriteString(prefix);
-				Write("WITH VIEW_METADATA");
-				WriteString(suffix);
-			}
-		}
-
-		private void WriteString(string value) {
-			if (!string.IsNullOrEmpty(value)) {
-				Write(value);
+				PaddingAfter(padding);
 			}
 		}
 	}

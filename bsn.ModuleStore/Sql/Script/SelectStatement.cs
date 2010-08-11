@@ -50,9 +50,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteCommonTableExpressions(ctes);
-			writer.WriteScript(selectQuery);
-			writer.WriteScript(forClause, " ", null);
-			writer.WriteScript(queryHint, " ", null);
+			writer.WriteScript(selectQuery, WhitespacePadding.None);
+			writer.WriteScript(forClause, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

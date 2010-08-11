@@ -35,9 +35,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("CHECK ");
-			writer.WriteNotForReplication(notForReplication, null, " ");
+			writer.WriteNotForReplication(notForReplication, WhitespacePadding.SpaceAfter);
 			writer.Write('(');
-			writer.WriteScript(expression);
+			writer.WriteScript(expression, WhitespacePadding.None);
 			writer.Write(')');
 		}
 	}

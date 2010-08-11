@@ -27,9 +27,15 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			writer.WriteSequence(whenItems, WhitespacePadding.NewlineBefore, null);
+			if (elseExpression != null) {
+				writer.WriteLine();
+				writer.Write("ELSE ");
+				writer.IncreaseIndent();
+				writer.WriteScript(elseExpression, WhitespacePadding.None);
+				writer.DecreaseIndent();
+			}
 			writer.WriteLine();
-			writer.WriteSequence(whenItems, null, null, Environment.NewLine);
-			writer.WriteScript(elseExpression, "ELSE ", Environment.NewLine);
 			writer.Write("END");
 		}
 	}

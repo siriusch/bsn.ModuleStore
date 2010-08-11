@@ -12,9 +12,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("TABLE");
-			writer.WriteValue(Option, " ", null);
-			writer.WriteLine(" AS RETURN (");
-			writer.WriteScript(Body);
+			writer.WriteEnum(Option, WhitespacePadding.SpaceBefore);
+			writer.WriteLine();
+			writer.Write("AS RETURN (");
+			writer.IncreaseIndent();
+			writer.WriteScript(Body, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');
 		}

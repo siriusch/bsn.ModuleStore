@@ -33,8 +33,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				if (All) {
 					writer.Write("ALL ");
 				}
-				writer.WriteLine();
-				writer.WriteScript(selectQuery);
+				writer.WriteScript(selectQuery, WhitespacePadding.NewlineBefore);
 			}
 		}
 	}

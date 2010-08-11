@@ -50,10 +50,14 @@ namespace bsn.ModuleStore.Sql.Script {
 		public void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("TOP (");
-				writer.WriteScript(expression);
+				writer.WriteScript(expression, WhitespacePadding.None);
 				writer.Write(')');
-				writer.WritePercent(percent, " ", null);
-				writer.WriteWithTies(withTies, " ", null);
+				if (percent) {
+					writer.Write(" PERCENT");
+				}
+				if (withTies) {
+					writer.Write(" WITH TIES");
+				}
 			}
 		}
 	}

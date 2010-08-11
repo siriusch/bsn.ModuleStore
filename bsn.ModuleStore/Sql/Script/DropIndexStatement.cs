@@ -41,9 +41,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DROP INDEX ");
-			writer.WriteScript(indexName);
+			writer.WriteScript(indexName, WhitespacePadding.None);
 			writer.Write(" ON ");
-			writer.WriteScript(tableName);
+			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.WriteIndexOptions(indexOptions);
 		}
 	}

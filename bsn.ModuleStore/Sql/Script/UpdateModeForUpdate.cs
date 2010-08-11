@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("FOR UPDATE");
 			if (columns.Count > 0) {
 				writer.Write(" OF ");
-				writer.WriteSequence(columns, null, ", ", null);
+				writer.WriteSequence(columns, WhitespacePadding.None, ", ");
 			}
 		}
 	}

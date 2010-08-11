@@ -37,12 +37,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(valueExpression);
+			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			base.WriteTo(writer);
 			writer.Write(" BETWEEN ");
-			writer.WriteScript(lowerBound);
+			writer.WriteScript(lowerBound, WhitespacePadding.None);
 			writer.Write(" AND ");
-			writer.WriteScript(upperBound);
+			writer.WriteScript(upperBound, WhitespacePadding.None);
 		}
 	}
 }

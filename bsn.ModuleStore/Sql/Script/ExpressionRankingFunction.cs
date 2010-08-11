@@ -27,9 +27,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(functionCall);
+			writer.WriteScript(functionCall, WhitespacePadding.None);
 			writer.Write(" OVER (");
-			writer.WriteScript(rankingArguments);
+			writer.WriteScript(rankingArguments, WhitespacePadding.None);
 			writer.Write(')');
 		}
 	}

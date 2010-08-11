@@ -20,7 +20,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected override void WriteToInternal(SqlWriter writer) {
-			writer.WriteSequence(columns, null, ", ", null);
+			writer.WriteSequence(columns, WhitespacePadding.None, ", ");
 		}
 	}
 }

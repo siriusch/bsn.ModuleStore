@@ -52,10 +52,12 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("EXEC ");
-			writer.WriteScript(resultVariableName, null, "=");
-			writer.WriteScript(procedureName);
-			writer.WriteSequence(parameters, " ", null, null);
-			writer.WriteWithRecompile(recompile, " ", null);
+			writer.WriteScript(resultVariableName, WhitespacePadding.None, null, "=");
+			writer.WriteScript(procedureName, WhitespacePadding.None);
+			writer.WriteSequence(parameters, WhitespacePadding.SpaceBefore, null);
+			if (recompile) {
+				writer.Write(" WITH RECOMPILE");
+			}
 		}
 	}
 }

@@ -22,8 +22,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteLine("(");
-			writer.WriteScript(value);
+			writer.Write("(");
+			writer.IncreaseIndent();
+			writer.WriteScript(value, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');
 		}

@@ -44,9 +44,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteCommonTableExpressions(ctes);
 			writer.Write("INSERT ");
-			writer.WriteScript(topExpression, null, " ");
+			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
 			writer.Write("INTO ");
-			writer.WriteScript(destinationRowset);
+			writer.WriteScript(destinationRowset, WhitespacePadding.None);
 		}
 	}
 }

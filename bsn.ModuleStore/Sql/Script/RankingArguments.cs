@@ -35,14 +35,14 @@ namespace bsn.ModuleStore.Sql.Script {
 		public void WriteTo(SqlWriter writer) {
 			if (partitions.Count > 0) {
 				writer.Write("PARTITION BY ");
-				writer.WriteSequence(partitions, null, ", ", null);
+				writer.WriteSequence(partitions, WhitespacePadding.None, ", ");
 				if (orders.Count > 0) {
 					writer.Write(' ');
 				}
 			}
 			if (orders.Count > 0) {
 				writer.Write("ORDER BY ");
-				writer.WriteSequence(orders, null, ", ", null);
+				writer.WriteSequence(orders, WhitespacePadding.None, ", ");
 			}
 		}
 	}

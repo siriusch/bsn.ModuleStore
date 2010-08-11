@@ -41,9 +41,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			writer.WriteScript(columnName);
-			writer.WriteScript(columnType, " ", null);
-			writer.WriteScript(columnPattern, " ", null);
+			writer.WriteScript(columnName, WhitespacePadding.None);
+			writer.WriteScript(columnType, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(columnPattern, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

@@ -69,14 +69,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			writer.WriteScript(parameterName);
-			writer.Write(' ');
-			writer.WriteScript(parameterTypeName);
+			writer.WriteScript(parameterName, WhitespacePadding.None);
+			writer.WriteScript(parameterTypeName, WhitespacePadding.SpaceBefore);
 			if (varying) {
 				writer.Write(" VARYING");
 			}
-			writer.WriteScript(defaultValue, " = ", null);
-			if (varying) {
+			writer.WriteScript(defaultValue, WhitespacePadding.None, "=", null);
+			if (output) {
 				writer.Write(" OUTPUT");
 			}
 			if (readOnly) {

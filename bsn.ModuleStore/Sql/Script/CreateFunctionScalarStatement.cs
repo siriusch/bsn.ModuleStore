@@ -23,10 +23,13 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.WriteScript(returnTypeName);
-			writer.WriteValue(Option, " ", null);
-			writer.Write(" AS ");
-			writer.WriteScript(Body);
+			writer.WriteScript(returnTypeName, WhitespacePadding.None);
+			writer.WriteEnum(Option, WhitespacePadding.SpaceBefore);
+			writer.WriteLine();
+			writer.Write("AS");
+			writer.IncreaseIndent();
+			writer.WriteScript(Body, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
 		}
 	}
 }

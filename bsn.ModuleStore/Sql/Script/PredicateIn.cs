@@ -32,10 +32,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(valueExpression);
+			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			base.WriteTo(writer);
 			writer.Write(" IN ");
-			writer.WriteScript(tuple);
+			writer.WriteScript(tuple, WhitespacePadding.None);
 		}
 	}
 }

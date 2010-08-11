@@ -12,7 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			using (StringWriter stringWriter = new StringWriter()) {
 				SqlWriter statementWriter = new SqlWriter(stringWriter);
 				statementWriter.Write(identifier.Value);
-				statementWriter.WriteSequence(expressions, " ", string.Empty, string.Empty);
+				statementWriter.WriteSequence(expressions, WhitespacePadding.SpaceBefore, null);
 				statementText = stringWriter.ToString();
 			}
 		}

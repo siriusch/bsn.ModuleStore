@@ -37,15 +37,17 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE ");
-			writer.WritePrimary(primary, null, " ");
+			if (primary) {
+				writer.Write("PRIMARY ");
+			}
 			writer.Write("XML INDEX ");
-			writer.WriteScript(IndexName);
+			writer.WriteScript(IndexName, WhitespacePadding.None);
 			writer.Write(" ON ");
-			writer.WriteScript(TableName);
+			writer.WriteScript(TableName, WhitespacePadding.None);
 			writer.Write(" (");
-			writer.WriteScript(columnName);
+			writer.WriteScript(columnName, WhitespacePadding.None);
 			writer.Write(") ");
-			writer.WriteScript(indexUsing);
+			writer.WriteScript(indexUsing, WhitespacePadding.None);
 			writer.WriteIndexOptions(IndexOptions);
 		}
 	}

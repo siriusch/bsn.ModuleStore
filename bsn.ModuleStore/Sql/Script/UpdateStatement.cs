@@ -73,13 +73,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteCommonTableExpressions(ctes);
 			writer.Write("UPDATE ");
-			writer.WriteScript(topExpression, null, " ");
-			writer.WriteScript(destinationRowset);
+			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
+			writer.WriteScript(destinationRowset, WhitespacePadding.None);
 			writer.Write(" SET ");
-			writer.WriteSequence(updateItems, null, ", ", null);
-			writer.WriteScript(outputClause, " ", null);
-			writer.WriteScript(fromClause, " ", null);
-			writer.WriteScript(whereClause, " ", null);
+			writer.WriteSequence(updateItems, WhitespacePadding.None, ", ");
+			writer.WriteScript(outputClause, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(fromClause, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

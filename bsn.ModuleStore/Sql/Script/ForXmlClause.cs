@@ -58,11 +58,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteValue(kind, null, null);
-			writer.WriteScript(elementName, " ", null);
+			writer.WriteEnum(kind, WhitespacePadding.None);
+			writer.WriteScript(elementName, WhitespacePadding.SpaceBefore);
 			if (directives.Count > 0) {
 				writer.Write(' ');
-				writer.WriteSequence(directives, null, ", ", null);
+				writer.WriteSequence(directives, WhitespacePadding.None, ", ");
 			}
 		}
 	}

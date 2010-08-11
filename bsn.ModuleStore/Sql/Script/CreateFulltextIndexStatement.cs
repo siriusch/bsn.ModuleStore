@@ -51,15 +51,15 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE FULLTEXT INDEX ON TABLE ");
-			writer.WriteScript(tableName);
+			writer.WriteScript(tableName, WhitespacePadding.None);
 			if (columns.Count > 0) {
 				writer.Write(" (");
-				writer.WriteSequence(columns, null, ", ", null);
+				writer.WriteSequence(columns, WhitespacePadding.None, ", ");
 				writer.Write(")");
 			}
 			writer.Write(" KEY INDEX ");
-			writer.WriteScript(indexName);
-			writer.WriteValue(changeTracking, " ", null);
+			writer.WriteScript(indexName, WhitespacePadding.None);
+			writer.WriteEnum(changeTracking, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

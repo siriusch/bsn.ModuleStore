@@ -51,13 +51,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		public void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("OUTPUT ");
-				writer.WriteSequence(columnItems, null, ", ", null);
+				writer.WriteSequence(columnItems, WhitespacePadding.None, ", ");
 				if (destinationName != null) {
 					writer.Write(" INTO ");
-					writer.WriteScript(destinationName);
+					writer.WriteScript(destinationName, WhitespacePadding.None);
 					if (destinationColumnNames.Count > 0) {
 						writer.Write(" (");
-						writer.WriteSequence(destinationColumnNames, null, ", ", null);
+						writer.WriteSequence(destinationColumnNames, WhitespacePadding.None, ", ");
 						writer.Write(")");
 					}
 				}

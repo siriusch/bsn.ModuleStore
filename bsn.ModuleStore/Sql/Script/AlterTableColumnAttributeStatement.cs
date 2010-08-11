@@ -15,7 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.WriteValue(ddlOperation, null, null);
+			writer.WriteEnum(ddlOperation, WhitespacePadding.None);
 			writer.Write(' ');
 		}
 	}

@@ -30,10 +30,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			base.WriteTo(writer);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");
-				writer.WriteSequence(columnNames, null, ", ", null);
+				writer.WriteSequence(columnNames, WhitespacePadding.None, ", ");
 				writer.Write(')');
 			}
-			writer.WriteScript(output, " ", null);
+			writer.WriteScript(output, WhitespacePadding.SpaceBefore);
 			writer.WriteLine();
 		}
 	}

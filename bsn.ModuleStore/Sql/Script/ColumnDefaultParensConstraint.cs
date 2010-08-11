@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DEFAULT (");
-			writer.WriteScript(DefaultValue);
+			writer.WriteScript(DefaultValue, WhitespacePadding.None);
 			writer.Write(')');
 		}
 	}

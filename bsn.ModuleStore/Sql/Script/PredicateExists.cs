@@ -22,7 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("EXISTS (");
-			writer.WriteScript(selectQuery);
+			writer.WriteScript(selectQuery, WhitespacePadding.None);
 			writer.Write(')');
 		}
 	}

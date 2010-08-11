@@ -39,14 +39,16 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			writer.WriteScript(aliasName);
+			writer.WriteScript(aliasName, WhitespacePadding.None);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");
-				writer.WriteSequence(columnNames, null, ", ", null);
+				writer.WriteSequence(columnNames, WhitespacePadding.None, ", ");
 				writer.Write(')');
 			}
-			writer.WriteLine(" AS (");
-			writer.WriteScript(selectQuery);
+			writer.Write(" AS (");
+			writer.IncreaseIndent();
+			writer.WriteScript(selectQuery, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');
 		}

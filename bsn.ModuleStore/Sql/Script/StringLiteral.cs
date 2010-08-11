@@ -63,7 +63,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write('\'');
 			writer.Write(Value.Replace("'", "''"));
 			writer.Write('\'');
-			writer.WriteScript(collation, " ", null);
+			writer.WriteScript(collation, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

@@ -25,7 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CASE ");
-			writer.WriteScript(inputExpression);
+			writer.WriteScript(inputExpression, WhitespacePadding.None);
 			base.WriteTo(writer);
 		}
 	}

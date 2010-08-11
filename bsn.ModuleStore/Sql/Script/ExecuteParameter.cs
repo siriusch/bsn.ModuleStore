@@ -49,8 +49,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(ParameterName, null, "=");
-			writer.WriteScript(value);
+			writer.WriteScript(ParameterName, WhitespacePadding.None, null, "=");
+			writer.WriteScript(value, WhitespacePadding.None);
 			if (Output) {
 				writer.Write(" OUTPUT");
 			}

@@ -33,9 +33,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			writer.WriteScript(variableName);
+			writer.WriteScript(variableName, WhitespacePadding.None);
 			writer.Write('=');
-			writer.WriteScript(expression);
+			writer.WriteScript(expression, WhitespacePadding.None);
 		}
 	}
 }

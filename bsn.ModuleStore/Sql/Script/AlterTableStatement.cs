@@ -22,8 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("ALTER TABLE ");
-			writer.WriteScript(tableName);
-			writer.Write(' ');
+			writer.WriteScript(tableName, WhitespacePadding.SpaceAfter);
 		}
 	}
 }

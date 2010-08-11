@@ -51,15 +51,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (unique) {
 				writer.Write("UNIQUE ");
 			}
-			writer.WriteValue(clustered, null, " ");
+			writer.WriteEnum(clustered, WhitespacePadding.SpaceAfter);
 			writer.Write("INDEX ");
-			writer.WriteScript(IndexName);
+			writer.WriteScript(IndexName, WhitespacePadding.None);
 			writer.Write(" ON ");
-			writer.WriteScript(TableName);
+			writer.WriteScript(TableName, WhitespacePadding.None);
 			writer.Write(" (");
-			writer.WriteSequence(indexColumns, null, ", ", null);
+			writer.WriteSequence(indexColumns, WhitespacePadding.None, ", ");
 			writer.Write(") INCLUDE (");
-			writer.WriteSequence(columnNames, null, ", ", null);
+			writer.WriteSequence(columnNames, WhitespacePadding.None, ", ");
 			writer.Write(')');
 			writer.WriteIndexOptions(IndexOptions);
 		}

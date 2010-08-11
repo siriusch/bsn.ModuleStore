@@ -33,13 +33,19 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.WriteScript(resultVariableName);
-			writer.WriteLine(" TABLE (");
-			writer.WriteSequence(tableDefinitions, "\t", ";", Environment.NewLine);
+			writer.WriteScript(resultVariableName, WhitespacePadding.None);
+			writer.Write(" TABLE (");
+			writer.IncreaseIndent();
+			writer.WriteSequence(tableDefinitions, WhitespacePadding.NewlineBefore, ";");
+			writer.DecreaseIndent();
+			writer.WriteLine();
 			writer.Write(')');
-			writer.WriteValue(Option, " ", null);
-			writer.WriteLine(" AS");
-			writer.WriteScript(Body);
+			writer.WriteEnum(Option, WhitespacePadding.SpaceBefore);
+			writer.WriteLine();
+			writer.Write("AS");
+			writer.IncreaseIndent();
+			writer.WriteScript(Body, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
 		}
 	}
 }

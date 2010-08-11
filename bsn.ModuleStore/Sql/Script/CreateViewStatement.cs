@@ -58,16 +58,20 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE VIEW ");
-			writer.WriteScript(viewName);
+			writer.WriteScript(viewName, WhitespacePadding.None);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");
-				writer.WriteSequence(columnNames, null, ", ", null);
+				writer.WriteSequence(columnNames, WhitespacePadding.None, ", ");
 				writer.Write(')');
 			}
-			writer.WriteWithViewMetadata(withViewMetadata, " ", null);
+			if (withViewMetadata) {
+				writer.Write(" WITH VIEW_METADATA");
+			}
 			writer.WriteLine(" AS");
-			writer.WriteScript(selectStatement);
-			writer.WriteWithCheckOption(withCheckOption, " ", null);
+			writer.WriteScript(selectStatement, WhitespacePadding.None);
+			if (withCheckOption) {
+				writer.Write(" WITH CHECK OPTION");
+			}
 		}
 	}
 }

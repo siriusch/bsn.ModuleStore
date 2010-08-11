@@ -23,8 +23,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.WriteScript(executeStatement, null, null);
-			writer.WriteScript(QueryHint, " ", null);
+			writer.WriteScript(executeStatement, WhitespacePadding.None);
+			writer.WriteScript(QueryHint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

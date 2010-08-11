@@ -38,10 +38,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			writer.WriteScript(parameterName);
-			writer.Write(' ');
-			writer.WriteScript(parameterTypeName);
-			writer.WriteScript(defaultValue, " = ", null);
+			writer.WriteScript(parameterName, WhitespacePadding.SpaceAfter);
+			writer.WriteScript(parameterTypeName, WhitespacePadding.None);
+			writer.WriteScript(defaultValue, WhitespacePadding.None, "=", null);
 		}
 	}
 }

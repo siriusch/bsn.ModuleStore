@@ -71,13 +71,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteCommonTableExpressions(ctes);
 			writer.Write("DELETE");
-			writer.WriteScript(topExpression, " ", null);
+			writer.WriteScript(topExpression, WhitespacePadding.SpaceBefore);
 			writer.Write(" FROM ");
-			writer.WriteScript(destinationRowset);
-			writer.WriteScript(outputClause, " ", null);
-			writer.WriteScript(fromClause, " ", null);
-			writer.WriteScript(whereClause, " WHERE ", null);
-			writer.WriteScript(queryHint, " ", null);
+			writer.WriteScript(destinationRowset, WhitespacePadding.None);
+			writer.WriteScript(outputClause, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(fromClause, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore, "WHERE ", null);
+			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

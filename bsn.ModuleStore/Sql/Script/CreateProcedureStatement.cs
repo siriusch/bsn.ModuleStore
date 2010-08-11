@@ -58,16 +58,21 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE PROCEDURE ");
-			writer.WriteScript(procedureName);
-			writer.WriteSequence(parameters, " ", ",", null);
+			writer.WriteScript(procedureName, WhitespacePadding.None);
+			writer.IncreaseIndent();
+			writer.WriteSequence(parameters, WhitespacePadding.NewlineBefore, ",");
 			if (recompile) {
-				writer.Write(" WITH RECOMPILE");
+				writer.WriteLine("WITH RECOMPILE");
 			}
 			if (forReplication) {
-				writer.Write(" FOR REPLICATION");
+				writer.WriteLine("FOR REPLICATION");
 			}
-			writer.WriteLine(" AS");
-			writer.WriteScript(body);
+			writer.DecreaseIndent();
+			writer.WriteLine();
+			writer.Write("AS");
+			writer.IncreaseIndent();
+			writer.WriteScript(body, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
 		}
 	}
 }

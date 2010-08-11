@@ -35,9 +35,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (seed != null) {
 				Debug.Assert(increment != null);
 				writer.Write(" (");
-				writer.WriteScript(seed);
+				writer.WriteScript(seed, WhitespacePadding.None);
 				writer.Write(", ");
-				writer.WriteScript(increment);
+				writer.WriteScript(increment, WhitespacePadding.None);
 				writer.Write(')');
 			}
 		}

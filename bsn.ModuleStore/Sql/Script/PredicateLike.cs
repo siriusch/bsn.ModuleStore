@@ -43,14 +43,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(valueExpression);
+			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			base.WriteTo(writer);
 			writer.Write(" LIKE ");
-			writer.WriteScript(text);
-			if (escape != null) {
-				writer.Write(" ESCAPE ");
-				writer.WriteScript(escape);
-			}
+			writer.WriteScript(text, WhitespacePadding.None);
+			writer.WriteScript(escape, WhitespacePadding.None, "ESCAPE ", null);
 		}
 	}
 }

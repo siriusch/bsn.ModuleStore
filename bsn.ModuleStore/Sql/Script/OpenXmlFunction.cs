@@ -55,7 +55,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public void WriteTo(SqlWriter writer) {
 			writer.Write("OPENXML (");
-			writer.WriteScript(variableName);
+			writer.WriteScript(variableName, WhitespacePadding.None);
 			writer.Write(", ");
 			stringValue.WriteTo(writer);
 			if (flags != 0) {
@@ -63,7 +63,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.Write(flags.ToString(NumberFormatInfo.InvariantInfo));
 			}
 			writer.Write(')');
-			writer.WriteScript(schema, " ", null);
+			writer.WriteScript(schema, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

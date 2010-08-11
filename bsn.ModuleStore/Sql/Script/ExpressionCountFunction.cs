@@ -37,8 +37,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("COUNT(");
-			writer.WriteDuplicateRestriction(restriction, null, " ");
-			writer.WriteScript(columnName);
+			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
+			writer.WriteScript(columnName, WhitespacePadding.None);
 			writer.Write(')');
 		}
 	}

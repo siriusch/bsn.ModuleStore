@@ -37,9 +37,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(columnName);
-			writer.Write(' ');
-			writer.WriteScript(columnDefinition);
+			writer.WriteScript(columnName, WhitespacePadding.SpaceAfter);
+			writer.WriteScript(columnDefinition, WhitespacePadding.None);
 		}
 	}
 }

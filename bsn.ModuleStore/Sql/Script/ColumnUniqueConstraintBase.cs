@@ -32,8 +32,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write(UniqueKindName);
-			writer.WriteValue(clustered, " ", null);
-			writer.WriteScript(constraintIndex, " ", null);
+			writer.WriteEnum(clustered, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(constraintIndex, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

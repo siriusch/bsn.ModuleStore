@@ -42,11 +42,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			base.WriteTo(writer);
 			writer.Write(UniqueKindName);
 			writer.Write(' ');
-			writer.WriteValue(clustered, null, " ");
+			writer.WriteEnum(clustered, WhitespacePadding.SpaceAfter);
 			writer.Write('(');
-			writer.WriteSequence(indexColumns, null, ", ", null);
+			writer.WriteSequence(indexColumns, WhitespacePadding.None, ", ");
 			writer.Write(')');
-			writer.WriteScript(constraintIndex, " ", null);
+			writer.WriteScript(constraintIndex, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

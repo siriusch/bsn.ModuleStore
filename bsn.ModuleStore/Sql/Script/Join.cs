@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public virtual void WriteTo(SqlWriter writer) {
 			writer.Write("JOIN ");
-			writer.WriteScript(joinRowset);
+			writer.WriteScript(joinRowset, WhitespacePadding.None);
 		}
 	}
 }

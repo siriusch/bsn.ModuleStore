@@ -29,8 +29,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			writer.WriteScript(columnName);
-			writer.WriteValue(order, " ", null);
+			writer.WriteScript(columnName, WhitespacePadding.None);
+			writer.WriteEnum(order, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

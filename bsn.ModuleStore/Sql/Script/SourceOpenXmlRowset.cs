@@ -21,7 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(openxml);
+			writer.WriteScript(openxml, WhitespacePadding.None);
 			base.WriteTo(writer);
 		}
 	}

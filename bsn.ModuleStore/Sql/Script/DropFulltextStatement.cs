@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DROP FULLTEXT INDEX ON ");
-			writer.WriteScript(tableName);
+			writer.WriteScript(tableName, WhitespacePadding.None);
 		}
 	}
 }

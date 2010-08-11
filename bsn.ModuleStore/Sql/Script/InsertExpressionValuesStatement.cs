@@ -23,9 +23,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("VALUES (");
-			writer.WriteSequence(expressions, null, ", ", null);
+			writer.WriteSequence(expressions, WhitespacePadding.None, ", ");
 			writer.Write(')');
-			writer.WriteScript(QueryHint, " ", null);
+			writer.WriteScript(QueryHint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

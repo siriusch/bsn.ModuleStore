@@ -18,7 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public virtual void WriteTo(SqlWriter writer) {
-			writer.WriteScript(key);
+			writer.WriteScript(key, WhitespacePadding.None);
 			writer.Write("=");
 		}
 	}

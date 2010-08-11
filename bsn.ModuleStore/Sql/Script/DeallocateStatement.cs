@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DEALLOCATE ");
-			writer.WriteScript(CursorName);
+			writer.WriteScript(CursorName, WhitespacePadding.None);
 		}
 	}
 }

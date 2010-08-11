@@ -29,9 +29,13 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public void WriteTo(SqlWriter writer) {
 			writer.Write("WHEN ");
-			writer.WriteScript(condition);
+			writer.IncreaseIndent();
+			writer.WriteScript(condition, WhitespacePadding.None);
+			writer.DecreaseIndent();
 			writer.Write(" THEN ");
-			writer.WriteScript(valueExpression);
+			writer.IncreaseIndent();
+			writer.WriteScript(valueExpression, WhitespacePadding.None);
+			writer.DecreaseIndent();
 		}
 	}
 }

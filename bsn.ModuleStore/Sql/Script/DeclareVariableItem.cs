@@ -33,8 +33,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.WriteScript(typeName);
-			writer.WriteScript(initialization, "=", null);
+			writer.WriteScript(typeName, WhitespacePadding.None);
+			writer.WriteScript(initialization, WhitespacePadding.None, "=", null);
 		}
 	}
 }

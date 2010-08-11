@@ -71,12 +71,12 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public void WriteTo(SqlWriter writer) {
 			writer.Write("SELECT ");
-			writer.WriteDuplicateRestriction(restriction, null, " ");
-			writer.WriteScript(top, null, " ");
-			writer.WriteSequence(columnItems, null, ", ", null);
-			writer.WriteScript(intoClause, " INTO ", null);
+			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
+			writer.WriteScript(top, WhitespacePadding.SpaceAfter);
+			writer.WriteSequence(columnItems, WhitespacePadding.None, ", ");
+			writer.WriteScript(intoClause, WhitespacePadding.NewlineBefore, "INTO ", null);
 			WriteToInternal(writer);
-			writer.WriteScript(unionClause, Environment.NewLine, null);
+			writer.WriteScript(unionClause, WhitespacePadding.NewlineBefore);
 		}
 	}
 }

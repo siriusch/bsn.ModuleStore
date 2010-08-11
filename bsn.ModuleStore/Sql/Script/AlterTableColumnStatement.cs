@@ -21,8 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("ALTER COLUMN ");
-			writer.WriteScript(columnName);
-			writer.Write(' ');
+			writer.WriteScript(columnName, WhitespacePadding.SpaceAfter);
 		}
 	}
 }

@@ -75,18 +75,18 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected override void WriteToInternal(SqlWriter writer) {
-			writer.WriteScript(fromClause, Environment.NewLine, null);
-			writer.WriteScript(whereClause, Environment.NewLine+"WHERE ", null);
+			writer.WriteScript(fromClause, WhitespacePadding.NewlineBefore);
+			writer.WriteScript(whereClause, WhitespacePadding.NewlineBefore, "WHERE ", null);
 			if (groupByClause.Count > 0) {
 				writer.WriteLine();
 				writer.Write("GROUP BY ");
-				writer.WriteSequence(groupByClause, null, ", ", null);
+				writer.WriteSequence(groupByClause, WhitespacePadding.None, ", ");
 			}
-			writer.WriteScript(havingClause, Environment.NewLine, null);
+			writer.WriteScript(havingClause, WhitespacePadding.NewlineBefore);
 			if (orderList.Count > 0) {
 				writer.WriteLine();
 				writer.Write("ORDER BY ");
-				writer.WriteSequence(orderList, null, ", ", null);
+				writer.WriteSequence(orderList, WhitespacePadding.None, ", ");
 			}
 		}
 	}

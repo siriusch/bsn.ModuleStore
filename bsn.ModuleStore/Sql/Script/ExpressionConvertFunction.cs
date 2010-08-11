@@ -41,10 +41,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CONVERT(");
-			writer.WriteScript(typeName);
+			writer.WriteScript(typeName, WhitespacePadding.None);
 			writer.Write(", ");
-			writer.WriteScript(valueExpression);
-			writer.WriteScript(style, ", ", null);
+			writer.WriteScript(valueExpression, WhitespacePadding.None);
+			writer.WriteScript(style, WhitespacePadding.None, ", ", null);
 			writer.Write(')');
 		}
 	}

@@ -38,8 +38,8 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.Write(cursorOption);
 			}
 			writer.Write(" FOR ");
-			writer.WriteScript(selectStatement);
-			writer.WriteScript(cursorUpdate, " ", null);
+			writer.WriteScript(selectStatement, WhitespacePadding.None);
+			writer.WriteScript(cursorUpdate, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

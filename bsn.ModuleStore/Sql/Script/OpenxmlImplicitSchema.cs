@@ -21,7 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected override void WriteToInternal(SqlWriter writer) {
-			writer.WriteScript(tableName);
+			writer.WriteScript(tableName, WhitespacePadding.None);
 		}
 	}
 }

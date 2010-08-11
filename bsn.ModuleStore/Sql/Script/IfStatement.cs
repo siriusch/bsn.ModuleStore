@@ -43,10 +43,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("IF ");
-			writer.WriteScript(condition);
+			writer.WriteScript(condition, WhitespacePadding.None);
 			writer.Write(" THEN ");
-			writer.WriteScript(thenStatement);
-			writer.WriteScript(elseStatement, " ELSE ", null);
+			writer.WriteScript(thenStatement, WhitespacePadding.None);
+			writer.WriteScript(elseStatement, WhitespacePadding.None, " ELSE ", null);
 		}
 	}
 }

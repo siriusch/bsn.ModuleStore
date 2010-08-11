@@ -16,7 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public virtual void WriteTo(SqlWriter writer) {
-			writer.WriteScript(aliasName, " AS ", null);
+			writer.WriteScript(aliasName, WhitespacePadding.SpaceBefore, "AS ", null);
 		}
 	}
 }

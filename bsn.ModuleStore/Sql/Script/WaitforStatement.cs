@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("WAIT FOR ");
-			writer.WriteScript(identifier, null, " ");
+			writer.WriteScript(identifier, WhitespacePadding.SpaceAfter);
 			stringValue.WriteTo(writer);
 		}
 	}

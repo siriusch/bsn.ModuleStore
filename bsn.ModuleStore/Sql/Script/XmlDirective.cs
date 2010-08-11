@@ -26,9 +26,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			writer.WriteScript(key);
-			writer.WriteScript(value, " ", null);
-			writer.WriteScript(elementName, " ", null);
+			writer.WriteScript(key, WhitespacePadding.None);
+			writer.WriteScript(value, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(elementName, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

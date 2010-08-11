@@ -31,8 +31,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public void WriteTo(SqlWriter writer) {
-			writer.WriteScript(expression);
-			writer.WriteValue(oderType, " ", null);
+			writer.WriteScript(expression, WhitespacePadding.None);
+			writer.WriteEnum(oderType, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

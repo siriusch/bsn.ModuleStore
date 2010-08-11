@@ -11,7 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write(" DEFAULT VALUES");
-			writer.WriteScript(QueryHint, " ", null);
+			writer.WriteScript(QueryHint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

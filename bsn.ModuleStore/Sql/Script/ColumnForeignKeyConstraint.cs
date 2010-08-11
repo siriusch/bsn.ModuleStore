@@ -45,9 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("REFERENCES ");
-			writer.WriteScript(tableName);
-			writer.WriteScript(refColumnName, " ", null);
-			writer.WriteSequence(keyActions, " ", null, null);
+			writer.WriteScript(tableName, WhitespacePadding.None);
+			writer.WriteScript(refColumnName, WhitespacePadding.SpaceBefore);
+			writer.WriteSequence(keyActions, WhitespacePadding.SpaceBefore, null);
 		}
 	}
 }

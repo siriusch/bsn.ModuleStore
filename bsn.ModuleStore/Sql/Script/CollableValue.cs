@@ -30,9 +30,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(valueExpression);
+			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			writer.Write(" COLLATE ");
-			writer.WriteScript(collation);
+			writer.WriteScript(collation, WhitespacePadding.None);
 		}
 	}
 }

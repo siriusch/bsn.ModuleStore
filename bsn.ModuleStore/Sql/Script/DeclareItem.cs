@@ -18,8 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public virtual void WriteTo(SqlWriter writer) {
-			writer.WriteScript(variableName);
-			writer.Write(' ');
+			writer.WriteScript(variableName, WhitespacePadding.SpaceAfter);
 		}
 	}
 }

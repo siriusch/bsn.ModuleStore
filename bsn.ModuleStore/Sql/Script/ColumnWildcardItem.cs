@@ -21,7 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(columnWildcard);
+			writer.WriteScript(columnWildcard, WhitespacePadding.None);
 		}
 	}
 }

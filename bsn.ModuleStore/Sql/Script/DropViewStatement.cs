@@ -22,7 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DROP VIEW ");
-			writer.WriteScript(viewName);
+			writer.WriteScript(viewName, WhitespacePadding.None);
 		}
 	}
 }

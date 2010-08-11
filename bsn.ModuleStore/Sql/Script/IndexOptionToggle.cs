@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.WriteToggle(value, null, null);
+			writer.WriteToggle(value, WhitespacePadding.None);
 		}
 	}
 }

@@ -37,10 +37,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (All) {
 				writer.Write("ALL");
 			} else {
-				writer.WriteSequence(triggerNames, null, ", ", null);
+				writer.WriteSequence(triggerNames, WhitespacePadding.None, ", ");
 			}
 			writer.Write(" ON ");
-			writer.WriteScript(tableName);
+			writer.WriteScript(tableName, WhitespacePadding.None);
 		}
 	}
 }

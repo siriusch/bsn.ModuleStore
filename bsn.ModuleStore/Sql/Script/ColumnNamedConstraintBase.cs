@@ -16,7 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(constraintName, "CONSTRAINT ", " ");
+			writer.WriteScript(constraintName, WhitespacePadding.SpaceAfter, "CONSTRAINT ", null);
 		}
 	}
 }

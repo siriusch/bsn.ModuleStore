@@ -32,10 +32,13 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DECLARE ");
-			writer.WriteScript(variableName);
-			writer.WriteLine(" TABLE (");
-			writer.WriteSequence(tableDefinitions, "\t", ",", Environment.NewLine);
-			writer.WriteLine(")");
+			writer.WriteScript(variableName, WhitespacePadding.None);
+			writer.Write(" TABLE (");
+			writer.IncreaseIndent();
+			writer.WriteSequence(tableDefinitions, WhitespacePadding.NewlineBefore, ",");
+			writer.DecreaseIndent();
+			writer.WriteLine();
+			writer.Write(')');
 		}
 	}
 }

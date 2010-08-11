@@ -32,8 +32,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("SET IDENTITY INSERT ");
-			writer.WriteScript(tableName);
-			writer.WriteToggle(enabled, " ", null);
+			writer.WriteScript(tableName, WhitespacePadding.None);
+			writer.WriteToggle(enabled, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

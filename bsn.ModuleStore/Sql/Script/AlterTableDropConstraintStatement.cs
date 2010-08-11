@@ -28,7 +28,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("DROP CONSTRAINT ");
-			writer.WriteScript(constraintName);
+			writer.WriteScript(constraintName, WhitespacePadding.None);
 		}
 	}
 }

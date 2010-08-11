@@ -53,10 +53,14 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE FUNCTION ");
-			writer.WriteScript(functionName);
+			writer.WriteScript(functionName, WhitespacePadding.None);
 			writer.Write(" (");
-			writer.WriteSequence(parameters, null, ", ", null);
-			writer.Write(") RETURNS ");
+			writer.IncreaseIndent();
+			writer.WriteSequence(parameters, WhitespacePadding.NewlineBefore, ", ");
+			writer.DecreaseIndent();
+			writer.WriteLine();
+			writer.WriteLine(")");
+			writer.Write("RETURNS ");
 		}
 	}
 }

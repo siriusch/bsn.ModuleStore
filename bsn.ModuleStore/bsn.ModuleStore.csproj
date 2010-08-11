@@ -367,6 +367,7 @@
     <Compile Include="Sql\Script\XmlDirective.cs" />
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
     <Compile Include="Sql\SqlWriter.cs" />
+    <Compile Include="Sql\WhitespacePadding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

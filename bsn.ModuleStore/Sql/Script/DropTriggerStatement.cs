@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DROP TRIGGER ");
-			writer.WriteScript(triggerName);
+			writer.WriteScript(triggerName, WhitespacePadding.None);
 		}
 	}
 }
