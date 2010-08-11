@@ -40,9 +40,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteSequence(tableDefinitions, "\t", ";", Environment.NewLine);
 			writer.Write(')');
 			writer.WriteValue(Option, " ", null);
-			writer.WriteLine(" AS (");
+			writer.WriteLine(" AS");
 			writer.WriteScript(Body);
-			writer.Write(")");
 		}
 	}
 }
