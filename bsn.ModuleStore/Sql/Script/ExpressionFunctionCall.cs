@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -15,9 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<FunctionCall> ::= <FunctionName> '(' <ExpressionList> ')'", ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<ExpressionFunction> ::= COALESCE '(' <ExpressionList> ')'", ConstructorParameterMapping = new[] {0, 2})]
 		public ExpressionFunctionCall(FunctionName functionName, Sequence<Expression> arguments) {
-			if (functionName == null) {
-				throw new ArgumentNullException("functionName");
-			}
+			Debug.Assert(functionName != null);
 			this.functionName = functionName;
 			this.arguments = arguments.ToList();
 		}

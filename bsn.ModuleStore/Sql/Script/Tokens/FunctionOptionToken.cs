@@ -1,8 +1,6 @@
-using System;
-
 using bsn.GoldParser.Semantic;
 
-namespace bsn.ModuleStore.Sql.Script {
+namespace bsn.ModuleStore.Sql.Script.Tokens {
 	public class FunctionOptionToken: SqlToken {
 		[Rule("<OptionalFunctionOption> ::=")]
 		public FunctionOptionToken() {}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<ExpressionParens> ::= '(' <Expression> ')'", ConstructorParameterMapping = new[] {1})]
 		public ExpressionParens(Expression expression) {
-			if (expression == null) {
-				throw new ArgumentNullException("expression");
-			}
+			Debug.Assert(expression != null);
 			ExpressionParens parens = expression as ExpressionParens;
 			this.expression = (parens != null) ? parens.expression : expression;
 		}

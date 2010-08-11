@@ -1,8 +1,6 @@
-﻿using System;
+﻿using bsn.GoldParser.Semantic;
 
-using bsn.GoldParser.Semantic;
-
-namespace bsn.ModuleStore.Sql.Script {
+namespace bsn.ModuleStore.Sql.Script.Tokens {
 	public sealed class FunctionOptionReturnsNullOnNullInputToken: FunctionOptionToken {
 		[Rule("<OptionalFunctionOption> ::= WITH RETURNS_NULL_ON_NULL_INPUT", AllowTruncationForConstructor = true)]
 		public FunctionOptionReturnsNullOnNullInputToken() {}

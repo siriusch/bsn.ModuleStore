@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -13,12 +14,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DropIndexStatement> ::= DROP INDEX <IndexName> ON <TableName> <IndexOptionGroup>", ConstructorParameterMapping = new[] {2, 4, 5})]
 		public DropIndexStatement(IndexName indexName, TableName tableName, Optional<Sequence<IndexOption>> indexOptions) {
-			if (indexName == null) {
-				throw new ArgumentNullException("indexName");
-			}
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
+			Debug.Assert(indexName != null);
+			Debug.Assert(tableName != null);
 			this.indexName = indexName;
 			this.tableName = tableName;
 			this.indexOptions = indexOptions.ToList();

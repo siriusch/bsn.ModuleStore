@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -10,12 +11,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<WhileStatement> ::= WHILE <Expression> <StatementGroup>", ConstructorParameterMapping = new[] {1, 2})]
 		public WhileStatement(Expression expression, Statement statement) {
-			if (expression == null) {
-				throw new ArgumentNullException("expression");
-			}
-			if (statement == null) {
-				throw new ArgumentNullException("statement");
-			}
+			Debug.Assert(expression != null);
+			Debug.Assert(statement != null);
 			this.expression = expression;
 			this.statement = statement;
 		}

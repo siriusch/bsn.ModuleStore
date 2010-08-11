@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -11,9 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public PredicateNull(Expression valueExpression): this(valueExpression, false) {}
 
 		protected PredicateNull(Expression valueExpression, bool not): base(not) {
-			if (valueExpression == null) {
-				throw new ArgumentNullException("valueExpression");
-			}
+			Debug.Assert(valueExpression != null);
 			this.valueExpression = valueExpression;
 		}
 

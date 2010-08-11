@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -7,12 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly string value;
 
 		protected SqlName(string name) {
-			if (name == null) {
-				throw new ArgumentNullException("name");
-			}
-			if (string.IsNullOrEmpty("name")) {
-				throw new ArgumentException("The name cannot be empty", "name");
-			}
+			Debug.Assert(!string.IsNullOrEmpty(name));
 			value = name;
 		}
 

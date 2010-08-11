@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -23,9 +24,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TableNameQualified> ::= <SchemaName> '.' <TableName>", typeof(TableName), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<TypeNameQualified> ::= <SchemaName> '.' <TypeName>", typeof(TypeName), ConstructorParameterMapping = new[] {0, 2})]
 		public Qualified(SqlName qualification, T name) {
-			if (name == null) {
-				throw new ArgumentNullException("name");
-			}
+			Debug.Assert(name != null);
 			this.qualification = qualification;
 			this.name = name;
 		}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -17,9 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<UpdateStatement> ::= <CTEGroup> UPDATE <OptionalTop> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>", ConstructorParameterMapping = new[] {0, 2, 3, 5, 6, 7, 8})]
 		public UpdateStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Sequence<UpdateItem> updateItems, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause) {
-			if (destinationRowset == null) {
-				throw new ArgumentNullException("destinationRowset");
-			}
+			Debug.Assert(destinationRowset != null);
 			this.ctes = ctes.ToList();
 			this.topExpression = topExpression;
 			this.destinationRowset = destinationRowset;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<IndexOption> ::= Id '=' <IntegerLiteral>", ConstructorParameterMapping = new[] {0, 2})]
 		public IndexOptionNumeric(Identifier key, IntegerLiteral value): base(key) {
-			if (value == null) {
-				throw new ArgumentNullException("value");
-			}
+			Debug.Assert(value != null);
 			this.value = value;
 		}
 

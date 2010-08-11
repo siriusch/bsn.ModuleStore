@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<SourceRowset> ::= '(' <SelectQuery> ')' <OptionalAlias>", ConstructorParameterMapping = new[] {1, 3})]
 		public SourceNestedSelectRowset(SelectQuery select, Optional<AliasName> aliasName): base(aliasName) {
-			if (select == null) {
-				throw new ArgumentNullException("select");
-			}
+			Debug.Assert(select != null);
 			this.@select = select;
 		}
 

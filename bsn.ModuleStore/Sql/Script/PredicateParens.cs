@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<PredicateParens> ::= '(' <Predicate> ')'", ConstructorParameterMapping = new[] {1})]
 		public PredicateParens(Predicate predicate) {
-			if (predicate == null) {
-				throw new ArgumentNullException("predicate");
-			}
+			Debug.Assert(predicate != null);
 			PredicateParens parens = predicate as PredicateParens;
 			this.predicate = parens != null ? parens.predicate : predicate;
 		}

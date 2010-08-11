@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -20,9 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly string value;
 
 		protected SqlIdentifier(string id) {
-			if (id == null) {
-				throw new ArgumentNullException("id");
-			}
+			Debug.Assert(id != null);
 			original = id;
 			if (!TryDequote(id, out value)) {
 				throw new ArgumentException("Malformed identifier", "id");

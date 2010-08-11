@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -16,13 +17,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<TableDefinition> ::= <ColumnName> <ColumnDefinition>")]
 		public TableColumnDefinition(ColumnName columnName, ColumnDefinition columnDefinition) {
-			if (columnName == null) {
-				throw new ArgumentNullException("columnName");
-			}
+			Debug.Assert(columnName != null);
+			Debug.Assert(columnDefinition != null);
 			AssertIsNotWildcard(columnName);
-			if (columnDefinition == null) {
-				throw new ArgumentNullException("columnDefinition");
-			}
 			this.columnName = columnName;
 			this.columnDefinition = columnDefinition;
 		}

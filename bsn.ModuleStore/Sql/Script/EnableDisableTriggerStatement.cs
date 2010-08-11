@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -8,9 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<TriggerName> triggerNames;
 
 		protected EnableDisableTriggerStatement(Sequence<TriggerName> triggerNames, TableName tableName) {
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
+			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 			this.triggerNames = triggerNames.ToList();
 		}

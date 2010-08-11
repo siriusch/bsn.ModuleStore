@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<IndexOption> ::= Id '=' <Toggle>", ConstructorParameterMapping = new[] {0, 2})]
 		public IndexOptionToggle(Identifier key, ToggleToken value): base(key) {
-			if (value == null) {
-				throw new ArgumentNullException("value");
-			}
+			Debug.Assert(value != null);
 			this.value = value.On;
 		}
 

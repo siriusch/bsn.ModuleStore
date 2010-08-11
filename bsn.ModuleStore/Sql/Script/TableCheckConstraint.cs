@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -14,9 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<TableConstraint> ::= CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Expression> ')'", ConstructorParameterMapping = new[] {1, 3, 5})]
 		public TableCheckConstraint(ConstraintName constraintName, Optional<ForReplicationToken> notForReplication, Expression expression): base(constraintName) {
-			if (expression == null) {
-				throw new ArgumentNullException("expression");
-			}
+			Debug.Assert(expression != null);
 			this.notForReplication = notForReplication.HasValue();
 			this.expression = expression;
 		}

@@ -16,12 +16,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<ProcedureParameter> ::= <ParameterName> <TypeNameQualified> <OptionalVarying> <OptionalDefault> <OptionalOutput> <OptionalReadonly>")]
 		public ProcedureParameter(ParameterName parameterName, Qualified<TypeName> parameterTypeName, Optional<VaryingToken> varying, Optional<Literal> defaultValue, Optional<OutputToken> output, Optional<Identifier> readonlyIdentifier) {
-			if (parameterName == null) {
-				throw new ArgumentNullException("parameterName");
-			}
-			if (parameterTypeName == null) {
-				throw new ArgumentNullException("parameterTypeName");
-			}
+			Debug.Assert(parameterName != null);
+			Debug.Assert(parameterTypeName != null);
 			this.parameterName = parameterName;
 			this.parameterTypeName = parameterTypeName;
 			this.varying = varying.HasValue();

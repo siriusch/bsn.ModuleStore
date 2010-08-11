@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Tuple> ::= '(' <SelectQuery> ')'", ConstructorParameterMapping = new[] {1})]
 		[Rule("<ExpressionParens> ::= '(' <SelectQuery> ')'", ConstructorParameterMapping = new[] {1})]
 		public NestedSelectQuery(SelectQuery value): base() {
-			if (value == null) {
-				throw new ArgumentNullException("value");
-			}
+			Debug.Assert(value != null);
 			this.value = value;
 		}
 

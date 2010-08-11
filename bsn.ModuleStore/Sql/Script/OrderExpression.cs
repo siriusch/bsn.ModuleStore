@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -12,9 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<Order> ::= <Expression> <OrderType>")]
 		public OrderExpression(Expression expression, OrderTypeToken oderType) {
-			if (expression == null) {
-				throw new ArgumentNullException("expression");
-			}
+			Debug.Assert(expression != null);
 			this.expression = expression;
 			this.oderType = oderType.Order;
 		}

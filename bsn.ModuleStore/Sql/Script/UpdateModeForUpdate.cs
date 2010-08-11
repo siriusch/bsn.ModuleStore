@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -13,9 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<CursorUpdate> ::= FOR_UPDATE OF <ColumnNameList>", ConstructorParameterMapping = new[] {2})]
 		public UpdateModeForUpdate(Sequence<ColumnName> columns): base() {
-			if (columns == null) {
-				throw new ArgumentNullException("columns");
-			}
+			Debug.Assert(columns != null);
 			this.columns.AddRange(columns);
 		}
 

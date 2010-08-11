@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -17,9 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		private ExpressionCountFunction(bool? restriction, Qualified<ColumnName> columnName) {
-			if (columnName == null) {
-				throw new ArgumentNullException("columnName");
-			}
+			Debug.Assert(columnName != null);
 			this.restriction = restriction;
 			this.columnName = columnName;
 		}

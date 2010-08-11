@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DropTableStatement> ::= DROP TABLE <TableName>", ConstructorParameterMapping = new[] {2})]
 		public DropTableStatement(TableName tableName) {
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
+			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 		}
 

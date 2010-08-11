@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -20,9 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		private XmlDirective(Identifier key) {
-			if (key == null) {
-				throw new ArgumentNullException("key");
-			}
+			Debug.Assert(key != null);
 			this.key = key;
 		}
 

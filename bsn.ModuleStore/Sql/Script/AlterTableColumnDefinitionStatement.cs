@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <ColumnDefinition>", ConstructorParameterMapping = new[] {2, 5, 6})]
 		public AlterTableColumnDefinitionStatement(TableName tableName, ColumnName columnName, ColumnDefinition definition): base(tableName, columnName) {
-			if (definition == null) {
-				throw new ArgumentNullException("definition");
-			}
+			Debug.Assert(definition != null);
 			this.definition = definition;
 		}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -6,9 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly VariableName variableName;
 
 		protected DeclareItem(VariableName variableName): base() {
-			if (variableName == null) {
-				throw new ArgumentNullException("variableName");
-			}
+			Debug.Assert(variableName != null);
 			this.variableName = variableName;
 		}
 

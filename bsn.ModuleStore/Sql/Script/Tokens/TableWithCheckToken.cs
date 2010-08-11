@@ -1,8 +1,6 @@
-﻿using System;
+﻿using bsn.GoldParser.Semantic;
 
-using bsn.GoldParser.Semantic;
-
-namespace bsn.ModuleStore.Sql.Script {
+namespace bsn.ModuleStore.Sql.Script.Tokens {
 	public class TableWithCheckToken: TableCheckToken {
 		[Rule("<TableCheck> ::= WITH CHECK", AllowTruncationForConstructor = true)]
 		public TableWithCheckToken() {}

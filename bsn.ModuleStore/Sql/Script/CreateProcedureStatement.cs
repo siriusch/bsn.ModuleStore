@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -16,12 +17,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<CreateProcedureStatement> ::= CREATE PROCEDURE <ProcedureName> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> AS <StatementBlock>", ConstructorParameterMapping = new[] {2, 3, 4, 5, 7})]
 		public CreateProcedureStatement(ProcedureName procedureName, Optional<Sequence<ProcedureParameter>> parameters, Optional<WithRecompileToken> recompile, Optional<ForReplicationToken> forReplication, StatementBlock body) {
-			if (procedureName == null) {
-				throw new ArgumentNullException("procedureName");
-			}
-			if (body == null) {
-				throw new ArgumentNullException("body");
-			}
+			Debug.Assert(procedureName != null);
+			Debug.Assert(body != null);
 			this.procedureName = procedureName;
 			this.parameters = parameters.ToList();
 			this.recompile = recompile.HasValue();

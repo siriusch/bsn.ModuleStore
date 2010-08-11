@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -11,12 +12,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<WaitforStatement> ::= WAITFOR Id <StringLiteral>", ConstructorParameterMapping = new[] {1, 2})]
 		[Rule("<WaitforStatement> ::= WAITFOR Id <VariableName>", ConstructorParameterMapping = new[] {1, 2})]
 		public WaitforStatement(Identifier identifier, IScriptable stringValue) {
-			if (identifier == null) {
-				throw new ArgumentNullException("identifier");
-			}
-			if (stringValue == null) {
-				throw new ArgumentNullException("stringValue");
-			}
+			Debug.Assert(identifier != null);
+			Debug.Assert(stringValue != null);
 			this.identifier = identifier;
 			this.stringValue = stringValue;
 		}

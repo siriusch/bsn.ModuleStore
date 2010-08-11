@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -15,12 +16,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExpressionFunction> ::= CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'", ConstructorParameterMapping=new[] { 2, 4, 6 })]
 		public ExpressionConvertFunction(TypeName typeName, Expression valueExpression, IntegerLiteral style)
 				: base() {
-			if (typeName == null) {
-				throw new ArgumentNullException("typeName");
-			}
-			if (valueExpression == null) {
-				throw new ArgumentNullException("valueExpression");
-			}
+			Debug.Assert(typeName != null);
+			Debug.Assert(valueExpression != null);
 			this.typeName = typeName;
 			this.valueExpression = valueExpression;
 			this.style = style;

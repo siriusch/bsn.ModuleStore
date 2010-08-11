@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableName> DROP COLUMN <ColumnName>", ConstructorParameterMapping = new[] {2, 5})]
 		public AlterTableDropColumnStatement(TableName tableName, ColumnName columnName): base(tableName) {
-			if (columnName == null) {
-				throw new ArgumentNullException("columnName");
-			}
+			Debug.Assert(columnName != null);
 			this.columnName = columnName;
 		}
 

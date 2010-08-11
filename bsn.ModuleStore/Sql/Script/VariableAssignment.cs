@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,12 +14,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<VariableAssignment> ::= <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
 		public VariableAssignment(VariableName variableName, Expression expression) {
-			if (variableName == null) {
-				throw new ArgumentNullException("variableName");
-			}
-			if (expression == null) {
-				throw new ArgumentNullException("expression");
-			}
+			Debug.Assert(variableName != null);
+			Debug.Assert(expression != null);
 			this.variableName = variableName;
 			this.expression = expression;
 		}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -13,9 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<ColumnItem> ::= <AliasName> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
 		public ColumnExpressionItem(AliasName aliasName, Expression expression) {
-			if (expression == null) {
-				throw new ArgumentNullException("expression");
-			}
+			Debug.Assert(expression != null);
 			this.expression = expression;
 			this.aliasName = aliasName;
 		}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -11,9 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForeignKeyAction> ::= ON DELETE NO_ACTION", ConstructorParameterMapping = new[] {1})]
 		[Rule("<ForeignKeyAction> ::= ON UPDATE NO_ACTION", ConstructorParameterMapping = new[] {1})]
 		public ForeignKeyAction(DmlOperationToken operation): base() {
-			if (operation == null) {
-				throw new ArgumentNullException("operation");
-			}
+			Debug.Assert(operation != null);
 			this.operation = operation.Operation;
 		}
 

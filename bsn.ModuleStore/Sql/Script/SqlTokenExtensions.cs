@@ -165,6 +165,21 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public static void WriteValue(this TextWriter writer, TableCheck tableCheck, string prefix, string suffix) {
+			if (tableCheck != TableCheck.Unspecified) {
+				WriteString(writer, prefix);
+				switch (tableCheck) {
+				case TableCheck.Check:
+					writer.Write("CHECK");
+					break;
+				case TableCheck.Nocheck:
+					writer.Write("NOCHECK");
+					break;
+				}
+				WriteString(writer, suffix);
+			}
+		}
+
 		public static void WriteValue(this TextWriter writer, FunctionOption functionOption, string prefix, string suffix) {
 			if (functionOption != FunctionOption.None) {
 				WriteString(writer, prefix);

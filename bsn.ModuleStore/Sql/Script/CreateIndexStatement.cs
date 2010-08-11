@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -10,12 +11,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly TableName tableName;
 
 		protected CreateIndexStatement(IndexName indexName, TableName tableName, Optional<Sequence<IndexOption>> indexOptions) {
-			if (indexName == null) {
-				throw new ArgumentNullException("indexName");
-			}
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
+			Debug.Assert(indexName != null);
+			Debug.Assert(tableName != null);
 			this.indexName = indexName;
 			this.tableName = tableName;
 			this.indexOptions = indexOptions.ToList();

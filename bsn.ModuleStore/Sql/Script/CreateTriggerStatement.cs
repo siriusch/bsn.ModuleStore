@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -17,21 +18,11 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<CreateTriggerStatement> ::= CREATE TRIGGER <TriggerName> ON <TableName> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <StatementGroup>", ConstructorParameterMapping = new[] {2, 4, 5, 6, 7, 9})]
 		public CreateTriggerStatement(TriggerName triggerName, TableName tableName, TriggerTypeToken triggerType, Sequence<DmlOperationToken> triggerOperations, Optional<ForReplicationToken> notForReplication, Statement statement) {
-			if (triggerName == null) {
-				throw new ArgumentNullException("triggerName");
-			}
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
-			if (triggerType == null) {
-				throw new ArgumentNullException("triggerType");
-			}
-			if (triggerOperations == null) {
-				throw new ArgumentNullException("triggerOperations");
-			}
-			if (statement == null) {
-				throw new ArgumentNullException("statement");
-			}
+			Debug.Assert(triggerName != null);
+			Debug.Assert(triggerOperations != null);
+			Debug.Assert(triggerType != null);
+			Debug.Assert(tableName != null);
+			Debug.Assert(statement != null);
 			this.triggerName = triggerName;
 			this.tableName = tableName;
 			this.statement = statement;

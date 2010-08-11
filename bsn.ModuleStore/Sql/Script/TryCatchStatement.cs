@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -11,12 +12,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<TryCatchStatement> ::= BEGIN_TRY <StatementList> END_TRY BEGIN_CATCH <StatementList> END_CATCH", ConstructorParameterMapping = new[] {1, 4})]
 		public TryCatchStatement(Sequence<Statement> tryStatements, Sequence<Statement> catchStatements) {
-			if (tryStatements == null) {
-				throw new ArgumentNullException("tryStatements");
-			}
-			if (catchStatements == null) {
-				throw new ArgumentNullException("catchStatements");
-			}
 			this.tryStatements = tryStatements.ToList();
 			this.catchStatements = catchStatements.ToList();
 		}

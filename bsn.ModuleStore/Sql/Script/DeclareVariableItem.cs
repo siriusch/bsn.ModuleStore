@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -13,9 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DeclareItem> ::= <VariableName> <OptionalAs> <TypeNameQualified> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2, 4})]
 		public DeclareVariableItem(VariableName variable, Qualified<TypeName> typeName, Expression initialization): base(variable) {
-			if (typeName == null) {
-				throw new ArgumentNullException("typeName");
-			}
+			Debug.Assert(typeName != null);
 			this.typeName = typeName;
 			this.initialization = initialization;
 		}

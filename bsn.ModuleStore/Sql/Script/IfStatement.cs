@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -15,12 +16,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<IfStatement> ::= IF <Predicate> THEN <StatementBlock> ELSE <StatementGroup>", ConstructorParameterMapping = new[] {1, 3, 5})]
 		public IfStatement(Predicate condition, Statement thenStatement, Statement elseStatement) {
-			if (condition == null) {
-				throw new ArgumentNullException("condition");
-			}
-			if (thenStatement == null) {
-				throw new ArgumentNullException("thenStatement");
-			}
+			Debug.Assert(condition != null);
+			Debug.Assert(thenStatement != null);
 			this.condition = condition;
 			this.thenStatement = thenStatement;
 			this.elseStatement = elseStatement;

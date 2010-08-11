@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -26,9 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForClause> ::= FOR_XML_RAW <OptionalElementName> <XmlDirectiveList>")]
 		[Rule("<ForClause> ::= FOR_XML_PATH <OptionalElementName> <XmlDirectiveList>")]
 		public ForXmlClause(ForXmlToken xmlToken, Optional<StringLiteral> elementName, Sequence<XmlDirective> directives) {
-			if (xmlToken == null) {
-				throw new ArgumentNullException("xmlToken");
-			}
+			Debug.Assert(xmlToken != null);
 			this.directives = directives.ToList();
 			kind = xmlToken.Kind;
 			this.elementName = elementName;

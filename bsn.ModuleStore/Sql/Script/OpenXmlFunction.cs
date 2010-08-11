@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -19,15 +20,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <StringLiteral> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6, 8})]
 		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <VariableName> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6, 8})]
 		public OpenxmlFunction(VariableName variableName, IScriptable stringValue, IntegerLiteral flags, Optional<OpenxmlSchema> schema) {
-			if (variableName == null) {
-				throw new ArgumentNullException("variableName");
-			}
-			if (stringValue == null) {
-				throw new ArgumentNullException("stringValue");
-			}
-			if (schema == null) {
-				throw new ArgumentNullException("schema");
-			}
+			Debug.Assert(variableName != null);
+			Debug.Assert(stringValue != null);
+			Debug.Assert(schema != null);
 			this.variableName = variableName;
 			this.stringValue = stringValue;
 			this.flags = (int)flags.Value;

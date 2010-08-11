@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -8,9 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly OutputClause output;
 
 		protected InsertValuesStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Optional<Sequence<ColumnName>> columnNames, OutputClause output, QueryHint queryHint): base(ctes, topExpression, destinationRowset, queryHint) {
-			if (output == null) {
-				throw new ArgumentNullException("output");
-			}
+			Debug.Assert(output != null);
 			this.columnNames = columnNames.ToList();
 			this.output = output;
 		}

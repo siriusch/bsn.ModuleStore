@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DropProcedureStatement> ::= DROP PROCEDURE <ProcedureName>", ConstructorParameterMapping = new[] {2})]
 		public DropProcedureStatement(ProcedureName procedureName) {
-			if (procedureName == null) {
-				throw new ArgumentNullException("procedureName");
-			}
+			Debug.Assert(procedureName != null);
 			this.procedureName = procedureName;
 		}
 

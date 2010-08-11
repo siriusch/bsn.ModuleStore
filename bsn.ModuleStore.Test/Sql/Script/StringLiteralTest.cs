@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[TestFixture]
 	public class StringLiteralTest: AssertionHelper {
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[ExpectedException(typeof(NullReferenceException))]
 		public void ParseIsUnicodeNull() {
 			StringLiteral.ParseIsUnicode(null);
 		}
@@ -30,7 +30,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[ExpectedException(typeof(NullReferenceException))]
 		public void ParseValueNull() {
 			StringLiteral.ParseIsUnicode(null);
 		}

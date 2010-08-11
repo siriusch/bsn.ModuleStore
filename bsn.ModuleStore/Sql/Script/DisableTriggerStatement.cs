@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -10,9 +11,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DisableTriggerStatement> ::= DISABLE_TRIGGER <TriggerNameList> ON <TableName>", ConstructorParameterMapping = new[] {1, 3})]
 		public DisableTriggerStatement(Sequence<TriggerName> triggerNames, TableName tableName): base(triggerNames, tableName) {
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
 		}
 
 		public override void WriteTo(TextWriter writer) {

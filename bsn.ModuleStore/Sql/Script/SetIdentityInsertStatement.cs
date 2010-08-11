@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -10,14 +11,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly TableName tableName;
 
 		[Rule("<SetOptionStatement> ::= SET IDENTITY_INSERT <TableName> <Toggle>", ConstructorParameterMapping = new[] {2, 3})]
-		public SetIdentityInsertStatement(TableName tableNameName, ToggleToken toggle) {
-			if (tableNameName == null) {
-				throw new ArgumentNullException("tableNameName");
-			}
-			if (toggle == null) {
-				throw new ArgumentNullException("toggle");
-			}
-			tableName = tableNameName;
+		public SetIdentityInsertStatement(TableName tableName, ToggleToken toggle) {
+			Debug.Assert(tableName != null);
+			Debug.Assert(toggle != null);
+			this.tableName = tableName;
 			enabled = toggle.On;
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -11,9 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<FromClause> ::= FROM <SourceRowset> <JoinChain>", ConstructorParameterMapping = new[] {1, 2})]
 		public FromClause(SourceRowset sourceRowset, Sequence<Join> join) {
-			if (sourceRowset == null) {
-				throw new ArgumentNullException("sourceRowset");
-			}
+			Debug.Assert(sourceRowset != null);
 			this.sourceRowset = sourceRowset;
 			this.join = join.ToList();
 		}

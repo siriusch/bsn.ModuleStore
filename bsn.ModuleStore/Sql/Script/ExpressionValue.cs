@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -12,9 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Value> ::= <VariableName>", typeof(VariableName))]
 		[Rule("<Value> ::= <ColumnNameQualified>", typeof(Qualified<ColumnName>))]
 		public ExpressionValue(T valueSource) {
-			if (valueSource == null) {
-				throw new ArgumentNullException("valueSource");
-			}
+			Debug.Assert(valueSource != null);
 			this.valueSource = valueSource;
 		}
 

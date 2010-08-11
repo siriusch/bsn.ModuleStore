@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateFunctionScalarStatement: CreateFunctionStatement<StatementBlock> {
@@ -9,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <OptionalFunctionOption> <OptionalAs> <StatementBlock>", ConstructorParameterMapping = new[] {2, 4, 6, 7, 9})]
 		public CreateFunctionScalarStatement(FunctionName functionName, Optional<Sequence<FunctionParameter>> parameters, TypeName returnTypeName, FunctionOptionToken options, StatementBlock body): base(functionName, parameters, options, body) {
-			if (returnTypeName == null) {
-				throw new ArgumentNullException("returnTypeName");
-			}
+			Debug.Assert(returnTypeName != null);
 			this.returnTypeName = returnTypeName;
 		}
 

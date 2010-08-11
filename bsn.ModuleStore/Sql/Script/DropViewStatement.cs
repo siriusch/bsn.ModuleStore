@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DropViewStatement> ::= DROP VIEW <ViewName>", ConstructorParameterMapping = new[] {2})]
 		public DropViewStatement(ViewName viewName) {
-			if (viewName == null) {
-				throw new ArgumentNullException("viewName");
-			}
+			Debug.Assert(viewName != null);
 			this.viewName = viewName;
 		}
 

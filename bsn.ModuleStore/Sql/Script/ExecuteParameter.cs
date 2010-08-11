@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -23,9 +24,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExecuteParameter> ::= <ParameterName> '=' <SystemVariableName> <OptionalOutput>", typeof(VariableName), ConstructorParameterMapping = new[] {0, 2, 3})]
 		[Rule("<ExecuteParameter> ::= <ParameterName> '=' <Literal> <OptionalOutput>", typeof(Literal), ConstructorParameterMapping = new[] {0, 2, 3})]
 		public ExecuteParameter(ParameterName parameterName, T value, Optional<OutputToken> output): base() {
-			if (value == null) {
-				throw new ArgumentNullException("value");
-			}
+			Debug.Assert(value != null);
 			this.parameterName = parameterName;
 			this.value = value;
 			this.output = output.HasValue();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -11,9 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DeclareStatement> ::= DECLARE <DeclareItemList>", ConstructorParameterMapping = new[] {1})]
 		public DeclareVariableStatement(Sequence<DeclareItem> declarations) {
-			if (declarations == null) {
-				throw new ArgumentNullException("declarations");
-			}
+			Debug.Assert(declarations != null);
 			this.declarations = declarations.ToList();
 		}
 

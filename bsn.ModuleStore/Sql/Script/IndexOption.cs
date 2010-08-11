@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -6,9 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Identifier key;
 
 		protected IndexOption(Identifier key) {
-			if (key == null) {
-				throw new ArgumentNullException("key");
-			}
+			Debug.Assert(key != null);
 			this.key = key;
 		}
 

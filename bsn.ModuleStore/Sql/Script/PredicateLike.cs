@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -16,12 +17,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		public PredicateLike(Expression valueExpression, StringLiteral text, StringLiteral escape): this(valueExpression, false, text, escape) {}
 
 		protected PredicateLike(Expression valueExpression, bool not, StringLiteral text, StringLiteral escape): base(not) {
-			if (valueExpression == null) {
-				throw new ArgumentNullException("valueExpression");
-			}
-			if (text == null) {
-				throw new ArgumentNullException("text");
-			}
+			Debug.Assert(valueExpression != null);
+			Debug.Assert(text != null);
 			this.valueExpression = valueExpression;
 			this.text = text;
 			this.escape = escape;

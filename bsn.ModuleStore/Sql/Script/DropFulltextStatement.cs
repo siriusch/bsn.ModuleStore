@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableName>", ConstructorParameterMapping = new[] {3})]
 		public DropFulltextStatement(TableName tableName) {
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
+			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 		}
 

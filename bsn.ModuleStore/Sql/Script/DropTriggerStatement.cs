@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DropTriggerStatement> ::= DROP TRIGGER <TriggerName>", ConstructorParameterMapping = new[] {2})]
 		public DropTriggerStatement(TriggerName triggerName) {
-			if (triggerName == null) {
-				throw new ArgumentNullException("triggerName");
-			}
+			Debug.Assert(triggerName != null);
 			this.triggerName = triggerName;
 		}
 

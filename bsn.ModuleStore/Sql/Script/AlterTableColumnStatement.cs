@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -6,9 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly ColumnName columnName;
 
 		protected AlterTableColumnStatement(TableName tableName, ColumnName columnName): base(tableName) {
-			if (columnName == null) {
-				throw new ArgumentNullException("columnName");
-			}
+			Debug.Assert(columnName != null);
 			TableColumnDefinition.AssertIsNotWildcard(columnName);
 			this.columnName = columnName;
 		}

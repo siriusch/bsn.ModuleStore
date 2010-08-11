@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -18,9 +19,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DeclareStatement> ::= DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement> <CursorUpdate>", ConstructorParameterMapping = new[] {1, 3, 5, 6})]
 		public DeclareCursorStatement(CursorName cursorName, Sequence<Identifier> cursorOptions, SelectStatement selectStatement, UpdateMode cursorUpdate): base(cursorOptions.Contains(globalIdentifier) ? cursorName.AsGlobal() : cursorName) {
-			if (selectStatement == null) {
-				throw new ArgumentNullException("selectStatement");
-			}
+			Debug.Assert(selectStatement != null);
+			Debug.Assert(cursorOptions != null);
 			this.selectStatement = selectStatement;
 			this.cursorUpdate = cursorUpdate;
 			this.cursorOptions = cursorOptions.Where(identifier => !identifier.Equals(globalIdentifier)).Select(identifier => identifier.Value).ToList();

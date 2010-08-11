@@ -1,13 +1,12 @@
 using System;
+using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CursorStatement: Statement {
 		private readonly CursorName cursorName;
 
 		protected CursorStatement(CursorName cursorName) {
-			if (cursorName == null) {
-				throw new ArgumentNullException("cursorName");
-			}
+			Debug.Assert(cursorName != null);
 			this.cursorName = cursorName;
 		}
 

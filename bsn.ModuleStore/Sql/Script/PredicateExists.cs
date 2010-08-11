@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<PredicateExists> ::= EXISTS '(' <SelectQuery> ')'", ConstructorParameterMapping = new[] {2})]
 		public PredicateExists(SelectQuery selectQuery) {
-			if (selectQuery == null) {
-				throw new ArgumentNullException("selectQuery");
-			}
+			Debug.Assert(selectQuery != null);
 			this.selectQuery = selectQuery;
 		}
 

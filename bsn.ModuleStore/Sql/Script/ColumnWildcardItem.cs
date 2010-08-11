@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<ColumnItem> ::= <ColumnWildQualified>")]
 		public ColumnWildcardItem(Qualified<ColumnName> columnWildcard) {
-			if (columnWildcard == null) {
-				throw new ArgumentNullException("columnWildcard");
-			}
+			Debug.Assert(columnWildcard != null);
 			this.columnWildcard = columnWildcard;
 		}
 

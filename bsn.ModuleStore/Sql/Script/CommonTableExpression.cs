@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -12,12 +13,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<CTE> ::= <AliasName> <ColumnNameGroup> AS '(' <SelectQuery> ')'", ConstructorParameterMapping=new[] { 0, 1, 4 })]
 		public CommonTableExpression(AliasName aliasName, Optional<Sequence<ColumnName>> columnNames, SelectQuery selectQuery) {
-			if (aliasName == null) {
-				throw new ArgumentNullException("aliasName");
-			}
-			if (selectQuery == null) {
-				throw new ArgumentNullException("selectQuery");
-			}
+			Debug.Assert(aliasName != null);
+			Debug.Assert(selectQuery != null);
 			this.aliasName = aliasName;
 			this.columnNames = columnNames.ToList();
 			this.selectQuery = selectQuery;

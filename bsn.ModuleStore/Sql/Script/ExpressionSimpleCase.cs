@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -12,9 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> ELSE <Expression> END", ConstructorParameterMapping = new[] {1, 2, 4})]
 		public ExpressionSimpleCase(Expression inputExpression, Sequence<CaseWhen<Expression>> whenItems, Expression elseExpression): base(whenItems, elseExpression) {
-			if (inputExpression == null) {
-				throw new ArgumentNullException("inputExpression");
-			}
+			Debug.Assert(inputExpression != null);
 			this.inputExpression = inputExpression;
 		}
 

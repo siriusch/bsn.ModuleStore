@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TypeName> ::= Id '(' Id ')'", ConstructorParameterMapping = new[] {0, 2})]
 		public TypeNameNamedExtension(SqlIdentifier identifier, SqlIdentifier extension)
 				: base(identifier) {
-			if (extension == null) {
-				throw new ArgumentNullException("extension");
-			}
+			Debug.Assert(extension != null);
 			this.extension = extension;
 		}
 

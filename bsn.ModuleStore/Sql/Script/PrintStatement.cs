@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<PrintStatement> ::= PRINT <Expression>", ConstructorParameterMapping = new[] {1})]
 		public PrintStatement(Expression expression) {
-			if (expression == null) {
-				throw new ArgumentNullException("expression");
-			}
+			Debug.Assert(expression != null);
 			this.expression = expression;
 		}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DropXmlSchemaCollectionStatement> ::= DROP XML_SCHEMA_COLLECTION <XmlSchemaCollectionName>", ConstructorParameterMapping = new[] {2})]
 		public DropXmlSchemaCollectionStatement(XmlSchemaCollectionName xmlSchemaCollectionName) {
-			if (xmlSchemaCollectionName == null) {
-				throw new ArgumentNullException("xmlSchemaCollectionName");
-			}
+			Debug.Assert(xmlSchemaCollectionName != null);
 			this.xmlSchemaCollectionName = xmlSchemaCollectionName;
 		}
 

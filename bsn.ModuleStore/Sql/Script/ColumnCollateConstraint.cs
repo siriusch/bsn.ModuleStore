@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<ColumnConstraint> ::= COLLATE <CollationName>", ConstructorParameterMapping = new[] {1})]
 		public ColumnCollateConstraint(CollationName collation) {
-			if (collation == null) {
-				throw new ArgumentNullException("collation");
-			}
+			Debug.Assert(collation != null);
 			this.collation = collation;
 		}
 

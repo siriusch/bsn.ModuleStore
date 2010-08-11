@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -11,9 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ColumnConstraint> ::= DEFAULT <StringLiteral>", ConstructorParameterMapping = new[] {1})]
 		[Rule("<ColumnConstraint> ::= DEFAULT <NullLiteral>", ConstructorParameterMapping = new[] {1})]
 		public ColumnDefaultConstraint(Expression defaultValue) {
-			if (defaultValue == null) {
-				throw new ArgumentNullException("defaultValue");
-			}
+			Debug.Assert(defaultValue != null);
 			this.defaultValue = defaultValue;
 		}
 

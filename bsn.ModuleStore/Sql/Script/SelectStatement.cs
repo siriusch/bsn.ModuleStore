@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -16,9 +17,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<SelectStatement> ::= WITH <CTEList> <SelectQuery> <ForClause> <QueryHint>", ConstructorParameterMapping = new[] {1, 2, 3, 4})]
 		public SelectStatement(Sequence<CommonTableExpression> ctes, SelectQuery selectQuery, ForClause forClause, QueryHint queryHint) {
-			if (selectQuery == null) {
-				throw new ArgumentNullException("selectQuery");
-			}
+			Debug.Assert(selectQuery != null);
 			this.ctes = ctes.ToList();
 			this.selectQuery = selectQuery;
 			this.forClause = forClause;

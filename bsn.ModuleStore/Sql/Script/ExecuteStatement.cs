@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -15,9 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<ExecuteStatement> ::= EXECUTE <VariableName> '=' <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>", ConstructorParameterMapping = new[] {1, 3, 4, 5})]
 		public ExecuteStatement(VariableName resultVariableName, Qualified<ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, Optional<WithRecompileToken> recompile) {
-			if (procedureName == null) {
-				throw new ArgumentNullException("procedureName");
-			}
+			Debug.Assert(procedureName != null);
 			this.resultVariableName = resultVariableName;
 			this.procedureName = procedureName;
 			this.parameters = parameters.ToList();

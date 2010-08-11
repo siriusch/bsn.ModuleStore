@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -6,9 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Predicate predicate;
 
 		protected PredicateJoin(SourceRowset joinRowset, Predicate predicate): base(joinRowset) {
-			if (predicate == null) {
-				throw new ArgumentNullException("predicate");
-			}
+			Debug.Assert(predicate != null);
 			this.predicate = predicate;
 		}
 

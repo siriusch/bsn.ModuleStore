@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -7,9 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly TableName tableName;
 
 		protected AlterTableStatement(TableName tableName) {
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
+			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 		}
 

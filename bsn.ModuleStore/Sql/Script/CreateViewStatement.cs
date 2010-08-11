@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -16,12 +17,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<CreateViewStatement> ::= CREATE VIEW <ViewName> <ColumnNameGroup> <ViewOptionalAttribute> AS <SelectStatement> <ViewOptionalCheckOption>", ConstructorParameterMapping = new[] {2, 3, 4, 6, 7})]
 		public CreateViewStatement(ViewName viewName, Optional<Sequence<ColumnName>> columnNames, Optional<WithViewMetadataToken> withViewMetadata, SelectStatement selectStatement, Optional<WithCheckOptionToken> withCheckOption) {
-			if (viewName == null) {
-				throw new ArgumentNullException("viewName");
-			}
-			if (selectStatement == null) {
-				throw new ArgumentNullException("selectStatement");
-			}
+			Debug.Assert(viewName != null);
+			Debug.Assert(selectStatement != null);
 			this.viewName = viewName;
 			this.columnNames = columnNames.ToList();
 			this.withViewMetadata = withViewMetadata.HasValue();

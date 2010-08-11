@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -12,9 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> TABLE <TableDefinitionGroup>", ConstructorParameterMapping = new[] {1, 4})]
 		public DeclareTableStatement(VariableName variableName, Sequence<TableDefinition> tableDefinitions): base() {
-			if (variableName == null) {
-				throw new ArgumentNullException("variableName");
-			}
+			Debug.Assert(variableName != null);
 			this.variableName = variableName;
 			this.tableDefinitions = tableDefinitions.ToList();
 		}

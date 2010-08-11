@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class AlterTableAddStatement: AlterTableStatement {
@@ -11,12 +13,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableName> <TableCheck> ADD <TableDefinitionList>", ConstructorParameterMapping = new[] {2, 3, 5})]
 		public AlterTableAddStatement(TableName tableName, TableCheckToken check, Sequence<TableDefinition> definitions): base(tableName) {
-			if (check == null) {
-				throw new ArgumentNullException("check");
-			}
-			if (definitions == null) {
-				throw new ArgumentNullException("definitions");
-			}
+			Debug.Assert(check != null);
+			Debug.Assert(definitions != null);
 			this.check = check.TableCheck;
 			this.definitions = definitions.ToList();
 		}
@@ -26,7 +24,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(TextWriter writer) {
-			throw new NotImplementedException();
+			base.WriteTo(writer);
+			writer.WriteValue(check, null, " ");
+			writer.Write("ADD ");
+			writer.WriteSequence(definitions, null, ", ", null);
 		}
 	}
 }

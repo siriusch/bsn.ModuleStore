@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<GotoStatement> ::= GOTO <LabelName>", ConstructorParameterMapping = new[] {1})]
 		public GotoStatement(LabelName labelName) {
-			if (labelName == null) {
-				throw new ArgumentNullException("labelName");
-			}
+			Debug.Assert(labelName != null);
 			this.labelName = labelName;
 		}
 

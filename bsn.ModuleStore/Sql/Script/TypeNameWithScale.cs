@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 
@@ -11,9 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TypeName> ::= Id '(' <IntegerLiteral> ',' <IntegerLiteral> ')'", ConstructorParameterMapping = new[] {0, 2, 4})]
 		public TypeNameWithScale(SqlIdentifier identifier, IntegerLiteral precision, IntegerLiteral scale)
 				: base(identifier, precision) {
-			if (scale == null) {
-				throw new ArgumentNullException("scale");
-			}
+			Debug.Assert(scale != null);
 			this.scale = scale.Value;
 		}
 

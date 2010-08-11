@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -6,9 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly SourceRowset joinRowset;
 
 		protected Join(SourceRowset joinRowset): base() {
-			if (joinRowset == null) {
-				throw new ArgumentNullException("joinRowset");
-			}
+			Debug.Assert(joinRowset != null);
 			this.joinRowset = joinRowset;
 		}
 

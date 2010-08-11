@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<DestinationRowset> ::= <VariableName>")]
 		[Rule("<DestinationRowset> ::= <TableName>")]
 		public DestinationRowset(SqlName name) {
-			if (name == null) {
-				throw new ArgumentNullException("name");
-			}
+			Debug.Assert(name != null);
 			this.name = name;
 		}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 
@@ -11,9 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TypeName> ::= Id '(' <IntegerLiteral> ')'", ConstructorParameterMapping = new[] {0, 2})]
 		public TypeNameWithPrecision(SqlIdentifier identifier, IntegerLiteral precision)
 				: base(identifier) {
-			if (precision == null) {
-				throw new ArgumentNullException("precision");
-			}
+			Debug.Assert(precision != null);
 			this.precision = precision.Value;
 		}
 

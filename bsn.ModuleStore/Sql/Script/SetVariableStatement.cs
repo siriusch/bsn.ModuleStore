@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<SetVariableStatement> ::= SET <VariableAssignment>", ConstructorParameterMapping = new[] {1})]
 		public SetVariableStatement(VariableAssignment variableAssignment) {
-			if (variableAssignment == null) {
-				throw new ArgumentNullException("variableAssignment");
-			}
+			Debug.Assert(variableAssignment != null);
 			this.variableAssignment = variableAssignment;
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -8,9 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<CaseWhen<T>> whenItems;
 
 		protected ExpressionCase(Sequence<CaseWhen<T>> whenItems, Expression elseExpression) {
-			if (whenItems == null) {
-				throw new ArgumentNullException("whenItems");
-			}
+			Debug.Assert(whenItems != null);
 			this.whenItems = whenItems.ToList();
 			this.elseExpression = elseExpression;
 		}

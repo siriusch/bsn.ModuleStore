@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -10,9 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<DropFunctionStatement> ::= DROP FUNCTION <FunctionName>", ConstructorParameterMapping = new[] {2})]
 		public DropFunctionStatement(FunctionName functionName) {
-			if (functionName == null) {
-				throw new ArgumentNullException("functionName");
-			}
+			Debug.Assert(functionName != null);
 			this.functionName = functionName;
 		}
 

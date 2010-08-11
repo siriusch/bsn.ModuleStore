@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -9,9 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<SourceRowset> ::= <FunctionCall> <OptionalAlias>")]
 		public SourceFunctionRowset(ExpressionFunctionCall function, Optional<AliasName> aliasName): base(aliasName) {
-			if (function == null) {
-				throw new ArgumentNullException("function");
-			}
+			Debug.Assert(function != null);
 			this.function = function;
 		}
 

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.ModuleStore.Sql.Script.Tokens;
@@ -8,9 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly DdlOperation ddlOperation;
 
 		protected AlterTableColumnAttributeStatement(TableName tableName, ColumnName columnName, DdlOperationToken ddlOperationToken): base(tableName, columnName) {
-			if (ddlOperationToken == null) {
-				throw new ArgumentNullException("ddlOperationToken");
-			}
+			Debug.Assert(ddlOperationToken != null);
 			ddlOperation = ddlOperationToken.Operation;
 		}
 

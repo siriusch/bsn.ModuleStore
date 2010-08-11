@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
@@ -17,9 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>", ConstructorParameterMapping = new[] {1, 3, 4, 5})]
 		[Rule("<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> FOREIGN KEY REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>", ConstructorParameterMapping = new[] {1, 5, 6, 7})]
 		public ColumnForeignKeyConstraint(ConstraintName constraintName, TableName tableName, Optional<ColumnName> refColumnName, Sequence<ForeignKeyAction> keyActions): base(constraintName) {
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
+			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 			this.refColumnName = refColumnName;
 			this.keyActions = keyActions.ToList();
