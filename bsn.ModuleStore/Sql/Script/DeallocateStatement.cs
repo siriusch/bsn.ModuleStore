@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<DeallocateStatement> ::= DEALLOCATE <GlobalOrLocalCursor>", ConstructorParameterMapping = new[] {1})]
 		public DeallocateStatement(CursorName cursorName): base(cursorName) {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DEALLOCATE ");
 			writer.WriteScript(CursorName);
 		}

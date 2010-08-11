@@ -30,7 +30,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			if (global) {
 				writer.Write("GLOBAL ");
 			}
@@ -44,7 +44,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			return new CursorName(Value, true);
 		}
 
-		internal void WriteNonGlobalInternal(TextWriter writer) {
+		internal void WriteNonGlobalInternal(SqlWriter writer) {
 			base.WriteTo(writer);
 		}
 	}

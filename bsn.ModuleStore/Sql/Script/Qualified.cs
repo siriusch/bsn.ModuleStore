@@ -31,10 +31,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public string FullName {
 			get {
-				using (StringWriter writer = new StringWriter()) {
-					WriteTo(writer);
-					return writer.ToString();
-				}
+				return ToString();
 			}
 		}
 
@@ -56,7 +53,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			if (IsQualified) {
 				writer.WriteScript(Qualification);
 				writer.Write(".");

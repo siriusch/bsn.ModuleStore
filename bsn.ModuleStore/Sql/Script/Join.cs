@@ -21,7 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
-		public virtual void WriteTo(TextWriter writer) {
+		public virtual void WriteTo(SqlWriter writer) {
 			writer.Write("JOIN ");
 			writer.WriteScript(joinRowset);
 		}

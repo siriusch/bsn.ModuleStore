@@ -40,12 +40,14 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private string GenerateSql(IEnumerable<Statement> statements) {
-			StringWriter sqlGen = new StringWriter();
-			foreach (Statement statement in statements) {
-				statement.WriteTo(sqlGen);
-				sqlGen.WriteLine(";");
+			using (StringWriter stringWriter = new StringWriter()) {
+				SqlWriter sqlGen = new SqlWriter(stringWriter);
+				foreach (Statement statement in statements) {
+					statement.WriteTo(sqlGen);
+					sqlGen.WriteLine(";");
+				}
+				return stringWriter.ToString();
 			}
-			return sqlGen.ToString();
 		}
 
 		[Test]

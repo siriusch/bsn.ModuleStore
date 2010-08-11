@@ -7,7 +7,7 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class ExecuteParameter: SqlToken, IScriptable {
-		public abstract void WriteTo(TextWriter writer);
+		public abstract void WriteTo(SqlWriter writer);
 	}
 
 	public sealed class ExecuteParameter<T>: ExecuteParameter where T: SqlToken, IScriptable {
@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(ParameterName, null, "=");
 			writer.WriteScript(value);
 			if (Output) {

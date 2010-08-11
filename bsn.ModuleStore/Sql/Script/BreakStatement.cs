@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<BreakStatement> ::= BREAK", AllowTruncationForConstructor = true)]
 		public BreakStatement() {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("BREAK");
 		}
 	}

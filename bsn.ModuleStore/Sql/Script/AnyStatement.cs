@@ -9,14 +9,15 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<AnyStatement> ::= Id <ExpressionList>")]
 		public AnyStatement(Identifier identifier, Sequence<Expression> expressions) {
-			using (StringWriter statementWriter = CreateWriter()) {
+			using (StringWriter stringWriter = new StringWriter()) {
+				SqlWriter statementWriter = new SqlWriter(stringWriter);
 				statementWriter.Write(identifier.Value);
 				statementWriter.WriteSequence(expressions, " ", string.Empty, string.Empty);
-				statementText = statementWriter.ToString();
+				statementText = stringWriter.ToString();
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteLine(statementText);
 		}
 	}

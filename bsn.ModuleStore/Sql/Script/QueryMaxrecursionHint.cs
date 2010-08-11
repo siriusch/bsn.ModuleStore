@@ -12,7 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.maxRecursion = maxRecursion.Value;
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("OPTION (MAXRECURSION ");
 			writer.Write(maxRecursion.ToString(NumberFormatInfo.InvariantInfo));
 			writer.Write(')');

@@ -21,7 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.WriteScript(selectQuery);
 			writer.WriteScript(QueryHint, " ", null);

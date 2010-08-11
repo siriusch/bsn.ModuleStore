@@ -68,7 +68,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.WriteScript(parameterName);
 			writer.Write(' ');
 			writer.WriteScript(parameterTypeName);

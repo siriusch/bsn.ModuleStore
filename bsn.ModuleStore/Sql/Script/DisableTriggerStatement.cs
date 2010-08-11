@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public DisableTriggerStatement(Sequence<TriggerName> triggerNames, TableName tableName): base(triggerNames, tableName) {
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DISABLE");
 			base.WriteTo(writer);
 		}

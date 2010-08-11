@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ColumnConstraint> ::= ROWGUIDCOL", AllowTruncationForConstructor = true)]
 		public ColumnRowguidcolConstraint() {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("ROWGUIDCOL");
 		}
 	}

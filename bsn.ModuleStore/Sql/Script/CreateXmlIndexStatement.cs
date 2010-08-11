@@ -35,7 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE ");
 			writer.WritePrimary(primary, null, " ");
 			writer.Write("XML INDEX ");
@@ -46,7 +46,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(columnName);
 			writer.Write(") ");
 			writer.WriteScript(indexUsing);
-			WriteOptions(writer);
+			writer.WriteIndexOptions(IndexOptions);
 		}
 	}
 }

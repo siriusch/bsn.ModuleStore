@@ -13,9 +13,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			ddlOperation = ddlOperationToken.Operation;
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write(ddlOperation);
+			writer.WriteValue(ddlOperation, null, null);
 			writer.Write(' ');
 		}
 	}

@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteCommonTableExpressions(ctes);
 			writer.WriteScript(selectQuery);
 			writer.WriteScript(forClause, " ", null);

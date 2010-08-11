@@ -74,7 +74,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override void WriteToInternal(TextWriter writer) {
+		protected override void WriteToInternal(SqlWriter writer) {
 			writer.WriteScript(fromClause, Environment.NewLine, null);
 			writer.WriteScript(whereClause, Environment.NewLine+"WHERE ", null);
 			if (groupByClause.Count > 0) {

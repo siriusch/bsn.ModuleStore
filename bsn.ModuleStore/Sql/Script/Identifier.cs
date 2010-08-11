@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class Identifier: SqlIdentifier, IScriptable {
 		public Identifier(string id): base(id) {}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.Write(Original);
 		}
 	}

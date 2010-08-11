@@ -12,7 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<EnableTriggerStatement> ::= ENABLE_TRIGGER <TriggerNameList> ON <TableName>", ConstructorParameterMapping = new[] {1, 3})]
 		public EnableTriggerStatement(Sequence<TriggerName> triggerNames, TableName tableName): base(triggerNames, tableName) {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("ENABLE");
 			base.WriteTo(writer);
 		}

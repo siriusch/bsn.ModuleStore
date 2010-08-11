@@ -26,7 +26,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.cursorOptions = cursorOptions.Where(identifier => !identifier.Equals(globalIdentifier)).Select(identifier => identifier.Value).ToList();
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("DECLARE ");
 			CursorName.WriteNonGlobalInternal(writer);
 			writer.Write(" CURSOR");

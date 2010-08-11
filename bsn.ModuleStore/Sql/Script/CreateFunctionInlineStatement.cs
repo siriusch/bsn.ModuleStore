@@ -9,12 +9,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>", ConstructorParameterMapping = new[] {2, 4, 7, 10})]
 		public CreateFunctionInlineStatement(FunctionName functionName, Optional<Sequence<FunctionParameter>> parameters, FunctionOptionToken options, SelectStatement body): base(functionName, parameters, options, body) {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("TABLE");
 			writer.WriteValue(Option, " ", null);
 			writer.WriteLine(" AS RETURN (");
-			writer.WriteLine(Body);
+			writer.WriteScript(Body);
+			writer.WriteLine();
 			writer.Write(')');
 		}
 	}

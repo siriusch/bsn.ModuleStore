@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<DeclareItem> ::= <VariableName> CURSOR", ConstructorParameterMapping = new[] {0})]
 		public DeclareCursorItem(VariableName variable): base(variable) {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("CURSOR");
 		}

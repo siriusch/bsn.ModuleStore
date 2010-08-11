@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.WriteScript(variableName);
 			writer.Write('=');
 			writer.WriteScript(expression);

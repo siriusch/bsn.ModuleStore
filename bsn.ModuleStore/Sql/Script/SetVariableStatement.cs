@@ -20,7 +20,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("SET ");
 			writer.WriteScript(variableAssignment);
 		}

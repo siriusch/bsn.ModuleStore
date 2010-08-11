@@ -20,6 +20,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public virtual void WriteTo(TextWriter writer) {}
+		public virtual void WriteTo(SqlWriter writer) {}
 	}
 }

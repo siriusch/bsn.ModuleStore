@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			throw new NotImplementedException();
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("NOT FOR REPLICATION");
 		}

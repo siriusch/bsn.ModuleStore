@@ -56,7 +56,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE PROCEDURE ");
 			writer.WriteScript(procedureName);
 			writer.WriteSequence(parameters, " ", ",", null);

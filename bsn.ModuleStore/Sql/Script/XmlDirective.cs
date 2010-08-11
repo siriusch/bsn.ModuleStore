@@ -25,7 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.key = key;
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.WriteScript(key);
 			writer.WriteScript(value, " ", null);
 			writer.WriteScript(elementName, " ", null);

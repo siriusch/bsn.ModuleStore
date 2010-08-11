@@ -67,7 +67,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE TRIGGER ");
 			writer.WriteScript(triggerName);
 			writer.Write(" ON ");

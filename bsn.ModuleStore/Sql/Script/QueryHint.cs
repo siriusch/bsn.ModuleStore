@@ -11,7 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<QueryHint> ::=")]
 		public QueryHint() {}
 
-		public virtual void WriteTo(TextWriter writer) {}
+		public virtual void WriteTo(SqlWriter writer) {}
 
 		public virtual bool HasValue {
 			get {

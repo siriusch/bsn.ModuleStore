@@ -30,7 +30,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public virtual void WriteTo(TextWriter writer) {
+		public virtual void WriteTo(SqlWriter writer) {
 			writer.Write(operation);
 		}
 	}
@@ -40,7 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class OperationNameToken: OperationToken {
 		public OperationNameToken(string operation): base(operation) {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write(' ');
 			base.WriteTo(writer);
 			writer.Write(' ');

@@ -53,7 +53,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.Write("OPENXML (");
 			writer.WriteScript(variableName);
 			writer.Write(", ");

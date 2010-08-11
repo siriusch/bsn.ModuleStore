@@ -29,7 +29,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write(UniqueKindName);
 			writer.WriteValue(clustered, " ", null);

@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ContinueStatement> ::= CONTINUE", AllowTruncationForConstructor = true)]
 		public ContinueStatement() {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CONTINUE");
 		}
 	}

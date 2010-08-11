@@ -90,7 +90,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.text = text.ToUpperInvariant();
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.Write(text);
 		}
 	}

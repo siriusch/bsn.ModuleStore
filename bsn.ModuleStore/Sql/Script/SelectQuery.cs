@@ -67,9 +67,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected virtual void WriteToInternal(TextWriter writer) {}
+		protected virtual void WriteToInternal(SqlWriter writer) {}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.Write("SELECT ");
 			writer.WriteDuplicateRestriction(restriction, null, " ");
 			writer.WriteScript(top, null, " ");

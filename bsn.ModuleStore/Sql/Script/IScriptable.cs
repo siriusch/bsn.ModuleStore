@@ -4,6 +4,6 @@ using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public interface IScriptable {
-		void WriteTo(TextWriter writer);
+		void WriteTo(SqlWriter writer);
 	}
 }

@@ -26,7 +26,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteLine();
 			writer.WriteSequence(whenItems, null, null, Environment.NewLine);
 			writer.WriteScript(elseExpression, "ELSE ", Environment.NewLine);

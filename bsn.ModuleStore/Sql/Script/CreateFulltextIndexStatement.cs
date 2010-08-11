@@ -49,7 +49,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE FULLTEXT INDEX ON TABLE ");
 			writer.WriteScript(tableName);
 			if (columns.Count > 0) {

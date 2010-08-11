@@ -22,7 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override void WriteArguments(TextWriter writer) {
+		protected override void WriteArguments(SqlWriter writer) {
 			base.WriteArguments(writer);
 			writer.Write(", ");
 			writer.Write(scale.ToString(NumberFormatInfo.InvariantInfo));

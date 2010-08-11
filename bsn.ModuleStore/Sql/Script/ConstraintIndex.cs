@@ -7,6 +7,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
-		public abstract void WriteTo(TextWriter writer);
+		public abstract void WriteTo(SqlWriter writer);
 	}
 }

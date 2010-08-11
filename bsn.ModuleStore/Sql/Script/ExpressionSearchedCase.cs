@@ -11,7 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExpressionCase> ::= CASE <CaseWhenPredicateList> ELSE <Expression> END", ConstructorParameterMapping = new[] {1, 3})]
 		public ExpressionSearchedCase(Sequence<CaseWhen<Predicate>> whenItems, Expression elseExpression): base(whenItems, elseExpression) {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CASE");
 			base.WriteTo(writer);
 		}

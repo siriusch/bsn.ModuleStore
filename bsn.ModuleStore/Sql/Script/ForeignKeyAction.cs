@@ -28,7 +28,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.Write("ON ");
 			writer.WriteValue(operation, null, null);
 			writer.Write(' ');

@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			if (partitions.Count > 0) {
 				writer.Write("PARTITION BY ");
 				writer.WriteSequence(partitions, null, ", ", null);

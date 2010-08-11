@@ -27,7 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("UNION ");
 				if (All) {

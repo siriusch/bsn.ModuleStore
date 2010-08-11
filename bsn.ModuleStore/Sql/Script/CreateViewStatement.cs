@@ -56,7 +56,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE VIEW ");
 			writer.WriteScript(viewName);
 			if (columnNames.Count > 0) {

@@ -40,7 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName);
 			writer.WriteScript(columnType, " ", null);
 			writer.WriteScript(columnPattern, " ", null);

@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ColumnConstraint> ::= NOT NULL", AllowTruncationForConstructor = true)]
 		public ColumnNotNullableConstraint() {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("NOT NULL");
 		}
 	}

@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CloseStatement> ::= CLOSE <GlobalOrLocalCursor>", ConstructorParameterMapping = new[] {1})]
 		public CloseStatement(CursorName cursorName): base(cursorName) {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CLOSE ");
 			writer.WriteScript(CursorName);
 		}

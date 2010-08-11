@@ -57,7 +57,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteValue(kind, null, null);
 			writer.WriteScript(elementName, " ", null);
 			if (directives.Count > 0) {

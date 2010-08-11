@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName);
 			writer.WriteScript(typeColumn, " TYPE COLUMN ", null);
 			writer.WriteScript(language, " ", null);

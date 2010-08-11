@@ -38,7 +38,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(TextWriter writer) {
+		public void WriteTo(SqlWriter writer) {
 			writer.WriteScript(aliasName);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");

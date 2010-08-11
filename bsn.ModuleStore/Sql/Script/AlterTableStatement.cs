@@ -20,7 +20,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public abstract void ApplyTo(CreateTableStatement createTable);
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("ALTER TABLE ");
 			writer.WriteScript(tableName);
 			writer.Write(' ');

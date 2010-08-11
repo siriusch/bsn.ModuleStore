@@ -9,13 +9,14 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<SetOptionStatement> ::= SET Id <SetValueList>", ConstructorParameterMapping = new[] {1, 2})]
 		public SetOptionStatement(Identifier identifier, Sequence<SqlToken> valueList) {
-			using (StringWriter writer = CreateWriter()) {
+			using (StringWriter stringWriter = new StringWriter()) {
+				SqlWriter writer = new SqlWriter(stringWriter);
 				writer.WriteScript(identifier);
 				foreach (IScriptable token in valueList) {
 					writer.Write(' ');
 					token.WriteTo(writer);
 				}
-				option = writer.ToString();
+				option = stringWriter.ToString();
 			}
 		}
 
@@ -25,7 +26,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("SET ");
 			writer.Write(option);
 		}

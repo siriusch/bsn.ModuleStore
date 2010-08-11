@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected SqlQuotedName(string name): base(rxUnquote.Match(name).Groups["name"].Value) {}
 
-		public override void WriteTo(TextWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			if (Value.LastIndexOfAny(brackets) < 0) {
 				writer.Write('[');
 				writer.Write(Value);

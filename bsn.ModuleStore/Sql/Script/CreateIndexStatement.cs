@@ -35,9 +35,5 @@ namespace bsn.ModuleStore.Sql.Script {
 				return tableName;
 			}
 		}
-
-		protected void WriteOptions(TextWriter writer) {
-			writer.WriteIndexOptions(indexOptions);
-		}
 	}
 }
