@@ -12,12 +12,30 @@ using NUnit.Framework;
 namespace bsn.ModuleStore.Sql {
 	[TestFixture]
 	public class ScriptParserTest: AssertionHelper {
+		[TestFixtureSetUp]
+		public void Initialize() {
+			ScriptParser.GetSemanticActions();
+		}
+
 		public List<Statement> ParseWithRoundtrip(string sql, int expectedStatementCount) {
-			List<Statement> statements = ScriptParser.Parse(sql).ToList();
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+			IEnumerable<Statement> parsedStatements = ScriptParser.Parse(sql);
+			sw.Stop();
+			long parseTime = sw.ElapsedMilliseconds;
+			List<Statement> statements = parsedStatements.ToList();
 			Expect(statements.Count, EqualTo(expectedStatementCount));
+			sw.Reset();
+			sw.Start();
 			string sqlGen = GenerateSql(statements);
-			Trace.Write(Environment.NewLine+sqlGen, "Generated SQL");
-			Expect(sqlGen, EqualTo(GenerateSql(ScriptParser.Parse(sqlGen))));
+			sw.Stop();
+			Trace.Write(Environment.NewLine+sqlGen, string.Format("Generated SQL (parse: {0}ms | gen: {1}ms)", parseTime, sw.ElapsedMilliseconds));
+			sw.Reset();
+			sw.Start();
+			string sqlGenRoundtrip = GenerateSql(ScriptParser.Parse(sqlGen));
+			sw.Stop();
+			Trace.Write(string.Format("{0}ms", sw.ElapsedMilliseconds), "Roundtrip");
+			Expect(sqlGen, EqualTo(sqlGenRoundtrip));
 			return statements;
 		}
 

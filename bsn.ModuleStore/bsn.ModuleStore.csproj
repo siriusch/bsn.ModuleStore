@@ -289,6 +289,10 @@
     <Compile Include="Sql\Script\Tuple.cs" />
     <Compile Include="Sql\Script\TypedColumnDefinition.cs" />
     <Compile Include="Sql\Script\DeclareVariableItem.cs" />
+    <Compile Include="Sql\Script\TypeNameExtended.cs" />
+    <Compile Include="Sql\Script\TypeNameNamedExtension.cs" />
+    <Compile Include="Sql\Script\TypeNameWithPrecision.cs" />
+    <Compile Include="Sql\Script\TypeNameWithScale.cs" />
     <Compile Include="Sql\Script\UnionAllClause.cs" />
     <Compile Include="Sql\Script\UnionClause.cs" />
     <Compile Include="Sql\Script\Tokens\UniqueToken.cs" />
@@ -361,6 +365,7 @@
     <Compile Include="Sql\Script\Tokens\WithViewMetadataToken.cs" />
     <Compile Include="Sql\Script\XmlDirective.cs" />
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
+    <Compile Include="Sql\SqlWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
