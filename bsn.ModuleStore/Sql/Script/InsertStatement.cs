@@ -7,11 +7,13 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class InsertStatement: Statement {
 		private readonly List<CommonTableExpression> ctes;
 		private readonly DestinationRowset destinationRowset;
+		private readonly QueryHint queryHint;
 		private readonly TopExpression topExpression;
 
-		protected InsertStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset) {
+		protected InsertStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, QueryHint queryHint) {
 			this.topExpression = topExpression;
 			this.destinationRowset = destinationRowset;
+			this.queryHint = queryHint;
 			this.ctes = ctes.ToList();
 		}
 
@@ -30,6 +32,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public TopExpression TopExpression {
 			get {
 				return topExpression;
+			}
+		}
+
+		public QueryHint QueryHint {
+			get {
+				return queryHint;
 			}
 		}
 

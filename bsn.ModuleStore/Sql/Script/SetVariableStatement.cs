@@ -5,38 +5,25 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SetVariableStatement: Statement {
-		private readonly Expression expression;
-		private readonly VariableName variable;
+		private readonly VariableAssignment variableAssignment;
 
-		[Rule("<SetVariableStatement> ::= SET <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {1, 3})]
-		public SetVariableStatement(VariableName variable, Expression expression) {
-			if (variable == null) {
-				throw new ArgumentNullException("variable");
+		[Rule("<SetVariableStatement> ::= SET <VariableAssignment>", ConstructorParameterMapping = new[] {1})]
+		public SetVariableStatement(VariableAssignment variableAssignment) {
+			if (variableAssignment == null) {
+				throw new ArgumentNullException("variableAssignment");
 			}
-			if (expression == null) {
-				throw new ArgumentNullException("expression");
-			}
-			this.variable = variable;
-			this.expression = expression;
+			this.variableAssignment = variableAssignment;
 		}
 
-		public Expression Expression {
+		public VariableAssignment VariableAssignment {
 			get {
-				return expression;
-			}
-		}
-
-		public VariableName Variable {
-			get {
-				return variable;
+				return variableAssignment;
 			}
 		}
 
 		public override void WriteTo(TextWriter writer) {
 			writer.Write("SET ");
-			writer.WriteScript(variable);
-			writer.Write("=");
-			writer.WriteScript(expression);
+			writer.WriteScript(variableAssignment);
 		}
 	}
 }

@@ -5,24 +5,36 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ColumnExpressionItem: ColumnItem {
-		private readonly Qualified<ColumnName> columnWildcard;
+		private readonly AliasName aliasName;
+		private readonly Expression expression;
 
-		[Rule("<ColumnItem> ::= <ColumnWildQualified>")]
-		public ColumnExpressionItem(Qualified<ColumnName> columnWildcard) {
-			if (columnWildcard == null) {
-				throw new ArgumentNullException("columnWildcard");
+		[Rule("<ColumnItem> ::= <Expression> <OptionalAlias>")]
+		public ColumnExpressionItem(Expression expression, Optional<AliasName> aliasName): this(aliasName, expression) {}
+
+		[Rule("<ColumnItem> ::= <AliasName> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
+		public ColumnExpressionItem(AliasName aliasName, Expression expression) {
+			if (expression == null) {
+				throw new ArgumentNullException("expression");
 			}
-			this.columnWildcard = columnWildcard;
+			this.expression = expression;
+			this.aliasName = aliasName;
 		}
 
-		public Qualified<ColumnName> ColumnWildcard {
+		public AliasName AliasName {
 			get {
-				return columnWildcard;
+				return aliasName;
+			}
+		}
+
+		public Expression Expression {
+			get {
+				return expression;
 			}
 		}
 
 		public override void WriteTo(TextWriter writer) {
-			writer.WriteScript(columnWildcard);
+			writer.WriteScript(expression);
+			writer.WriteScript(aliasName, " AS ", null);
 		}
 	}
 }

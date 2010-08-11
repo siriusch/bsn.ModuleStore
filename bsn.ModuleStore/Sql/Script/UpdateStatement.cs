@@ -15,7 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<UpdateItem> updateItems;
 		private readonly Predicate whereClause;
 
-		[Rule("<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause>", ConstructorParameterMapping = new[] {0, 2, 3, 5, 6, 7, 8})]
+		[Rule("<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>", ConstructorParameterMapping = new[] {0, 2, 3, 5, 6, 7, 8})]
 		public UpdateStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Sequence<UpdateItem> updateItems, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause) {
 			if (destinationRowset == null) {
 				throw new ArgumentNullException("destinationRowset");

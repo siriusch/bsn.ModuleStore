@@ -80,8 +80,11 @@
     <Compile Include="Sql\Script\PredicateNotIn.cs" />
     <Compile Include="Sql\Script\PredicateNotLike.cs" />
     <Compile Include="Sql\Script\PredicateNotNull.cs" />
+    <Compile Include="Sql\Script\QueryHint.cs" />
+    <Compile Include="Sql\Script\QueryMaxrecursionHint.cs" />
     <Compile Include="Sql\Script\RightOuterJoin.cs" />
     <Compile Include="Sql\Script\SelectFor.cs" />
+    <Compile Include="Sql\Script\SelectVariableStatement.cs" />
     <Compile Include="Sql\Script\TableCheck.cs" />
     <Compile Include="Sql\Script\Tokens\AddToken.cs" />
     <Compile Include="Sql\Script\AliasName.cs" />
@@ -345,6 +348,7 @@
     <Compile Include="Sql\Script\UpdateModeReadOnly.cs" />
     <Compile Include="Sql\Script\UpdateStatement.cs" />
     <Compile Include="Sql\Script\DeclareStatement.cs" />
+    <Compile Include="Sql\Script\VariableAssignment.cs" />
     <Compile Include="Sql\Script\VariableName.cs" />
     <Compile Include="Sql\Script\Tokens\VaryingToken.cs" />
     <Compile Include="Sql\Script\ViewName.cs" />

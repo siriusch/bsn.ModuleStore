@@ -8,9 +8,9 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class InsertExpressionValuesStatement: InsertValuesStatement {
 		private readonly List<Expression> expressions;
 
-		[Rule("<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')'", ConstructorParameterMapping = new[] {0, 2, 4, 5, 6, 9})]
-		public InsertExpressionValuesStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Optional<Sequence<ColumnName>> columnNames, OutputClause output, Sequence<Expression> expressions)
-				: base(ctes, topExpression, destinationRowset, columnNames, output) {
+		[Rule("<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')' <QueryHint>", ConstructorParameterMapping = new[] {0, 2, 4, 5, 6, 9, 11})]
+		public InsertExpressionValuesStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Optional<Sequence<ColumnName>> columnNames, OutputClause output, Sequence<Expression> expressions, QueryHint queryHint)
+				: base(ctes, topExpression, destinationRowset, columnNames, output, queryHint) {
 			this.expressions = expressions.ToList();
 		}
 
@@ -25,6 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("VALUES (");
 			writer.WriteSequence(expressions, null, ", ", null);
 			writer.Write(')');
+			writer.WriteScript(QueryHint, " ", null);
 		}
 	}
 }

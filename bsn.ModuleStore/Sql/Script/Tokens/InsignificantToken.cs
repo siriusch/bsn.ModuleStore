@@ -80,6 +80,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 	[Terminal("OF")]
 	[Terminal("OPEN")]
 	[Terminal("OPENXML")]
+	[Terminal("OPTION_MAXRECURSION")]
 	[Terminal("ORDER")]
 	[Terminal("OUTER")]
 	[Terminal("OVER")]

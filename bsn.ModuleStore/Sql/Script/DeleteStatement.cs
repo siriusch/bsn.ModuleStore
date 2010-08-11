@@ -13,15 +13,17 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly OutputClause outputClause;
 		private readonly TopExpression topExpression;
 		private readonly Predicate whereClause;
+		private readonly QueryHint queryHint;
 
-		[Rule("<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause>", ConstructorParameterMapping = new[] {0, 2, 4, 5, 6, 7})]
-		public DeleteStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause) {
+		[Rule("<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>", ConstructorParameterMapping=new[] { 0, 2, 4, 5, 6, 7, 8 })]
+		public DeleteStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause, QueryHint queryHint) {
 			this.ctes = ctes.ToList();
 			this.topExpression = topExpression;
 			this.destinationRowset = destinationRowset;
 			this.outputClause = outputClause;
 			this.fromClause = fromClause;
 			this.whereClause = whereClause;
+			this.queryHint = queryHint;
 		}
 
 		public List<CommonTableExpression> Ctes {
@@ -60,6 +62,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public QueryHint QueryHint {
+			get {
+				return queryHint;
+			}
+		}
+
 		public override void WriteTo(TextWriter writer) {
 			writer.WriteCommonTableExpressions(ctes);
 			writer.Write("DELETE");
@@ -69,6 +77,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(outputClause, " ", null);
 			writer.WriteScript(fromClause, " ", null);
 			writer.WriteScript(whereClause, " WHERE ", null);
+			writer.WriteScript(queryHint, " ", null);
 		}
 	}
 }
