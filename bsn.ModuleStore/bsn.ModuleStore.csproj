@@ -63,6 +63,7 @@
     <Compile Include="Sql\Script\CrossJoin.cs" />
     <Compile Include="Sql\Script\DeclareItem.cs" />
     <Compile Include="Sql\Script\DmlOperation.cs" />
+    <Compile Include="Sql\Script\ExpressionConvertFunction.cs" />
     <Compile Include="Sql\Script\ForeignKeyActionKind.cs" />
     <Compile Include="Sql\Script\ForeignKeyCascadeAction.cs" />
     <Compile Include="Sql\Script\ForeignKeySetDefaultAction.cs" />

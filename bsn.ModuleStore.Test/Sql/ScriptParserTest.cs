@@ -59,7 +59,19 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
-		public void Parse() {
+		public void ParseSimpleCTESelect() {
+			ParseWithRoundtrip(@"with MyCTE(x)
+as
+(
+select x = convert(varchar(8000),'hello')
+union all
+select x + 'a' from MyCTE where len(x) < 100
+)
+select x from MyCTE", 1);
+		}
+
+		[Test]
+		public void ParseCreateComplexTableFunction() {
 			ParseWithRoundtrip(@"CREATE FUNCTION SPLIT
 (
   @s nvarchar(max),

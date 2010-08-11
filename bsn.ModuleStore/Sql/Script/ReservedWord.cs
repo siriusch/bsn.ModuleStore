@@ -13,7 +13,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("COMPUTE")]
 	[Terminal("CONTAINS")]
 	[Terminal("CONTAINSTABLE")]
-	[Terminal("CONVERT")]
 	[Terminal("CURRENT")]
 	[Terminal("CURRENT_DATE")]
 	[Terminal("CURRENT_TIME")]

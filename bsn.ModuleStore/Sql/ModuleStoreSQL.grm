@@ -860,7 +860,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 <CTEList> ::= <CTE> ',' <CTEList>
             | <CTE>
 
-<CTE> ::= <AliasName> AS '(' <SelectQuery> ')'
+<CTE> ::= <AliasName> <ColumnNameGroup> AS '(' <SelectQuery> ')'
 
 <Top> ::= TOP '(' <Expression> ')' <OptionalPercent> <OptionalWithTies>
         |
@@ -1088,6 +1088,8 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 <ExpressionFunction> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'
                        | CAST_ <Expression> AS <TypeName> ')'
                        | COALESCE '(' <ExpressionList> ')'
+                       | CONVERT '(' <TypeName> ',' <Expression> ')'
+                       | CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'
                        | <FunctionCall>
                        | <FunctionCall> OVER '(' <RankingArguments> ')'
                        | <ExpressionCase>
