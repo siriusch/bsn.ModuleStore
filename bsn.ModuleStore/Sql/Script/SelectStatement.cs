@@ -11,8 +11,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly QueryHint queryHint;
 		private readonly SelectQuery selectQuery;
 
-		[Rule("<SelectStatement> ::= <CTEGroup> <SelectQuery> <ForClause> <QueryHint>")]
-		public SelectStatement(Optional<Sequence<CommonTableExpression>> ctes, SelectQuery selectQuery, ForClause forClause, QueryHint queryHint) {
+		[Rule("<SelectStatement> ::= <SelectQuery> <ForClause> <QueryHint>")]
+		public SelectStatement(SelectQuery selectQuery, ForClause forClause, QueryHint queryHint): this(null, selectQuery, forClause, queryHint) {}
+
+		[Rule("<SelectStatement> ::= WITH <CTEList> <SelectQuery> <ForClause> <QueryHint>", ConstructorParameterMapping = new[] {1, 2, 3, 4})]
+		public SelectStatement(Sequence<CommonTableExpression> ctes, SelectQuery selectQuery, ForClause forClause, QueryHint queryHint) {
 			if (selectQuery == null) {
 				throw new ArgumentNullException("selectQuery");
 			}

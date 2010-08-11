@@ -3,14 +3,11 @@
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script.Tokens {
-	public class DuplicateRestrictionToken: SqlToken {
-		[Rule("<Restriction> ::=")]
+	public abstract class DuplicateRestrictionToken: SqlToken {
 		public DuplicateRestrictionToken(): base() {}
 
-		public virtual bool? Distinct {
-			get {
-				return null;
-			}
+		public abstract bool Distinct {
+			get;
 		}
 	}
 }

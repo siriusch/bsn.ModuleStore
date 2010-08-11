@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool percent;
 		private readonly bool withTies;
 
-		[Rule("<Top> ::=")]
+		[Rule("<OptionalTop> ::=")]
 		public TopExpression(): this(null, null, null) {}
 
 		[Rule("<TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>", ConstructorParameterMapping = new[] {1, 2})]

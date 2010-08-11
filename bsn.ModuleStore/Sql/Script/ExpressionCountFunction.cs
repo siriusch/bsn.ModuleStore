@@ -10,14 +10,17 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool? restriction;
 
 		[Rule("<ExpressionFunction> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'", ConstructorParameterMapping = new[] {1, 2})]
-		public ExpressionCountFunction(DuplicateRestrictionToken restriction, Qualified<ColumnName> columnName) {
-			if (restriction == null) {
-				throw new ArgumentNullException("restriction");
-			}
+		public ExpressionCountFunction(DuplicateRestrictionToken restriction, Qualified<ColumnName> columnName): this(restriction.Distinct, columnName) {}
+
+		[Rule("<ExpressionFunction> ::= COUNT_ <ColumnWildNameQualified> ')'", ConstructorParameterMapping=new[] { 1 })]
+		public ExpressionCountFunction(Qualified<ColumnName> columnName) : this(default(bool?), columnName) {
+		}
+
+		private ExpressionCountFunction(bool? restriction, Qualified<ColumnName> columnName) {
 			if (columnName == null) {
 				throw new ArgumentNullException("columnName");
 			}
-			this.restriction = restriction.Distinct;
+			this.restriction = restriction;
 			this.columnName = columnName;
 		}
 

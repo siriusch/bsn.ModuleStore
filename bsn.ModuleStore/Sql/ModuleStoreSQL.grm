@@ -863,7 +863,9 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 <CTE> ::= <AliasName> <ColumnNameGroup> AS '(' <SelectQuery> ')'
 
 <Top> ::= TOP '(' <Expression> ')' <OptionalPercent> <OptionalWithTies>
-        |
+
+<OptionalTop> ::= <Top>
+                |
 
 <OptionalPercent> ::= PERCENT
                     |
@@ -882,10 +884,10 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 ! INSERT Statement
 ! =============================================================================
 
-<InsertStatement> ::= <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')' <QueryHint>
-                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery> <QueryHint>
-                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement> <QueryHint>
-                    | <CTEGroup> INSERT <Top> <OptionalInto> <DestinationRowset> DEFAULT VALUES <QueryHint>
+<InsertStatement> ::= <CTEGroup> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')' <QueryHint>
+                    | <CTEGroup> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery> <QueryHint>
+                    | <CTEGroup> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement> <QueryHint>
+                    | <CTEGroup> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> DEFAULT VALUES <QueryHint>
 
 <OptionalInto> ::= INTO
                  |
@@ -894,7 +896,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 ! UPDATE Statement
 ! =============================================================================
 
-<UpdateStatement> ::= <CTEGroup> UPDATE <Top> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>
+<UpdateStatement> ::= <CTEGroup> UPDATE <OptionalTop> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>
 
 <UpdateItemList> ::= <UpdateItem> ',' <UpdateItemList>
                    | <UpdateItem>
@@ -912,7 +914,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 ! DELETE Statement
 ! =============================================================================
 
-<DeleteStatement> ::= <CTEGroup> DELETE <Top> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>
+<DeleteStatement> ::= <CTEGroup> DELETE <OptionalTop> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>
 
 <OptionalFrom> ::= FROM
                  |
@@ -923,10 +925,17 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 <SelectVariableStatement> ::= SELECT <VariableAssignmentList>
 
-<SelectStatement> ::= <CTEGroup> <SelectQuery> <ForClause> <QueryHint>
+<SelectStatement> ::= WITH <CTEList> <SelectQuery> <ForClause> <QueryHint>
+                    | <SelectQuery> <ForClause> <QueryHint>
 
 <SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
                 | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <ColumnItemList> <IntoClause> <UnionClause>
 
 <TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>
               | <Top>
@@ -940,7 +949,6 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 <Restriction> ::= ALL
                 | DISTINCT
-                |
 
 <IntoClause> ::= INTO <DestinationRowset>
                |
@@ -1085,7 +1093,8 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
                      | '+' <ExpressionFunction> ! the "unary plus" also belongs somewhere here
                      | <ExpressionFunction>
 
-<ExpressionFunction> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'
+<ExpressionFunction> ::= COUNT_ <ColumnWildNameQualified> ')'
+                       | COUNT_ <Restriction> <ColumnWildNameQualified> ')'
                        | CAST_ <Expression> AS <TypeName> ')'
                        | COALESCE '(' <ExpressionList> ')'
                        | CONVERT '(' <TypeName> ',' <Expression> ')'
