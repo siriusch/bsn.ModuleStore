@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class OutputClause: SqlToken, IScriptable, IOptional {
+	public sealed class OutputClause: SqlScriptableToken, IOptional {
 		private readonly List<ColumnItem> columnItems;
 		private readonly List<ColumnName> destinationColumnNames;
 		private readonly DestinationRowset destinationName;
@@ -42,13 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool HasValue {
-			get {
-				return columnItems.Count > 0;
-			}
-		}
-
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("OUTPUT ");
 				writer.WriteSequence(columnItems, WhitespacePadding.None, ", ");
@@ -61,6 +54,12 @@ namespace bsn.ModuleStore.Sql.Script {
 						writer.Write(")");
 					}
 				}
+			}
+		}
+
+		public bool HasValue {
+			get {
+				return columnItems.Count > 0;
 			}
 		}
 	}

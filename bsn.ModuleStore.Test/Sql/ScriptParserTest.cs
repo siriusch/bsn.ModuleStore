@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -61,20 +60,9 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
-		public void ParseSimpleCTESelect() {
-			ParseWithRoundtrip(@"with MyCTE(x)
-as
-(
-select x = convert(varchar(8000),'hello')
-union all
-select x + 'a' from MyCTE where len(x) < 100
-)
-select x from MyCTE", 1);
-		}
-
-		[Test]
 		public void ParseCreateComplexTableFunction() {
-			ParseWithRoundtrip(@"CREATE FUNCTION SPLIT
+			ParseWithRoundtrip(
+					@"CREATE FUNCTION SPLIT
 (
   @s nvarchar(max),
   @trimPieces bit,
@@ -130,7 +118,20 @@ option (maxrecursion 0);
 
 return;
 
-end", 1);
+end",
+					1);
+		}
+
+		[Test]
+		public void ParseSimpleCTESelect() {
+			ParseWithRoundtrip(@"with MyCTE(x)
+as
+(
+select x = convert(varchar(8000),'hello')
+union all
+select x + 'a' from MyCTE where len(x) < 100
+)
+select x from MyCTE", 1);
 		}
 	}
 }

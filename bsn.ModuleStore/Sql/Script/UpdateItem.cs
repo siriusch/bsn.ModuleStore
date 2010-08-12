@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class UpdateItem: SqlToken, IScriptable {
+	public sealed class UpdateItem: SqlScriptableToken {
 		private readonly Qualified<ColumnName> columnName;
 		private readonly Expression expression;
 		private readonly VariableName variableName;
@@ -43,7 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(variableName, WhitespacePadding.None, null, "=");
 			writer.WriteScript(columnName, WhitespacePadding.None, null, "=");
 			if (expression == null) {

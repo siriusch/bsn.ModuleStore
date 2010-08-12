@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ExpressionValue<T>: Expression where T: SqlToken, IScriptable {
+	public sealed class ExpressionValue<T>: Expression where T: SqlScriptableToken {
 		private readonly T valueSource;
 
 		[Rule("<Value> ::= <SystemVariableName>", typeof(VariableName))]

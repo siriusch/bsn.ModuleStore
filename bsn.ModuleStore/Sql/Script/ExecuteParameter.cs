@@ -1,16 +1,13 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class ExecuteParameter: SqlToken, IScriptable {
-		public abstract void WriteTo(SqlWriter writer);
-	}
+	public abstract class ExecuteParameter: SqlScriptableToken {}
 
-	public sealed class ExecuteParameter<T>: ExecuteParameter where T: SqlToken, IScriptable {
+	public sealed class ExecuteParameter<T>: ExecuteParameter where T: SqlScriptableToken {
 		private readonly bool output;
 		private readonly ParameterName parameterName;
 		private readonly T value;

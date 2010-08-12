@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CaseWhen<T>: SqlToken, IScriptable where T: SqlComputable {
+	public sealed class CaseWhen<T>: SqlScriptableToken where T: SqlComputable {
 		private readonly T condition;
 		private readonly Expression valueExpression;
 
@@ -27,7 +26,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("WHEN ");
 			writer.IncreaseIndent();
 			writer.WriteScript(condition, WhitespacePadding.None);

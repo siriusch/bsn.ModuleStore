@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DestinationRowset: SqlToken, IScriptable {
+	public sealed class DestinationRowset: SqlScriptableToken {
 		private readonly SqlName name;
 
 		[Rule("<DestinationRowset> ::= <VariableName>")]
@@ -21,7 +20,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(name, WhitespacePadding.None);
 		}
 	}

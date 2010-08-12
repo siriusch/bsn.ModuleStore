@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
@@ -17,10 +16,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			Debug.Assert(definitions != null);
 			this.check = check.TableCheck;
 			this.definitions = definitions.ToList();
-		}
-
-		public override void ApplyTo(CreateTableStatement createTable) {
-			throw new NotImplementedException();
 		}
 
 		public override void WriteTo(SqlWriter writer) {

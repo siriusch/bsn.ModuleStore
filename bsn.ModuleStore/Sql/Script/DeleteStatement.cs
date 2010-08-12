@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
@@ -11,11 +10,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly DestinationRowset destinationRowset;
 		private readonly FromClause fromClause;
 		private readonly OutputClause outputClause;
+		private readonly QueryHint queryHint;
 		private readonly TopExpression topExpression;
 		private readonly Predicate whereClause;
-		private readonly QueryHint queryHint;
 
-		[Rule("<DeleteStatement> ::= <CTEGroup> DELETE <OptionalTop> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>", ConstructorParameterMapping=new[] { 0, 2, 4, 5, 6, 7, 8 })]
+		[Rule("<DeleteStatement> ::= <CTEGroup> DELETE <OptionalTop> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>", ConstructorParameterMapping = new[] {0, 2, 4, 5, 6, 7, 8})]
 		public DeleteStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause, QueryHint queryHint) {
 			this.ctes = ctes.ToList();
 			this.topExpression = topExpression;
@@ -50,6 +49,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public QueryHint QueryHint {
+			get {
+				return queryHint;
+			}
+		}
+
 		public TopExpression TopExpression {
 			get {
 				return topExpression;
@@ -59,12 +64,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		public Predicate WhereClause {
 			get {
 				return whereClause;
-			}
-		}
-
-		public QueryHint QueryHint {
-			get {
-				return queryHint;
 			}
 		}
 

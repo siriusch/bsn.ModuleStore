@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class RankingArguments: SqlToken, IScriptable {
+	public sealed class RankingArguments: SqlScriptableToken {
 		private readonly List<OrderExpression> orders;
 		private readonly List<Expression> partitions;
 
@@ -32,7 +31,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			if (partitions.Count > 0) {
 				writer.Write("PARTITION BY ");
 				writer.WriteSequence(partitions, WhitespacePadding.None, ", ");

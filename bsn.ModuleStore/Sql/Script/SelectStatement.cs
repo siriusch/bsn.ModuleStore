@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
@@ -36,15 +35,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public SelectQuery SelectQuery {
-			get {
-				return selectQuery;
-			}
-		}
-
 		public QueryHint QueryHint {
 			get {
 				return queryHint;
+			}
+		}
+
+		public SelectQuery SelectQuery {
+			get {
+				return selectQuery;
 			}
 		}
 

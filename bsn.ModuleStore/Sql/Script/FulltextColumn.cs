@@ -1,11 +1,10 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class FulltextColumn: SqlToken, IScriptable {
+	public sealed class FulltextColumn: SqlScriptableToken {
 		private readonly ColumnName columnName;
 		private readonly LanguageLcid language;
 		private readonly Qualified<TypeName> typeColumn;
@@ -36,7 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName, WhitespacePadding.None);
 			writer.WriteScript(typeColumn, WhitespacePadding.SpaceBefore, "TYPE COLUMN ", null);
 			writer.WriteScript(language, WhitespacePadding.SpaceBefore);

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class IndexUsing: SqlToken, IScriptable, IOptional {
+	public sealed class IndexUsing: SqlScriptableToken, IOptional {
 		private readonly IndexFor indexFor;
 		private readonly IndexName indexName;
 
@@ -32,17 +31,17 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool HasValue {
-			get {
-				return indexName != null;
-			}
-		}
-
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("USING XML INDEX ");
 				writer.WriteScript(indexName, WhitespacePadding.None);
 				writer.WriteEnum(indexFor, WhitespacePadding.SpaceBefore);
+			}
+		}
+
+		public bool HasValue {
+			get {
+				return indexName != null;
 			}
 		}
 	}

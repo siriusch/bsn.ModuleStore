@@ -26,10 +26,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void ApplyTo(CreateTableStatement createTable) {
-			throw new NotImplementedException();
-		}
-
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.WriteEnum(tableCheck, WhitespacePadding.SpaceAfter);

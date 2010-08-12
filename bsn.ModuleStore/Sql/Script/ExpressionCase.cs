@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class ExpressionCase<T>: Expression where T: SqlComputable {

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class FromClause: SqlToken, IScriptable {
+	public sealed class FromClause: SqlScriptableToken {
 		private readonly List<Join> join;
 		private readonly SourceRowset sourceRowset;
 
@@ -29,7 +28,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("FROM ");
 			writer.WriteScript(sourceRowset, WhitespacePadding.None);
 		}

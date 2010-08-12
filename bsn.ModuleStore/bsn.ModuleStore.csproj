@@ -82,6 +82,7 @@
     <Compile Include="Sql\Script\IOptional.cs" />
     <Compile Include="Sql\Script\IScriptable.cs" />
     <Compile Include="Sql\Script\LeftOuterJoin.cs" />
+    <Compile Include="Sql\Script\OperationNameToken.cs" />
     <Compile Include="Sql\Script\PredicateJoin.cs" />
     <Compile Include="Sql\Script\PredicateNotBetween.cs" />
     <Compile Include="Sql\Script\PredicateNotIn.cs" />
@@ -342,7 +343,7 @@
     <Compile Include="Sql\Script\Tokens\NotToken.cs" />
     <Compile Include="Sql\Script\OperationToken.cs" />
     <Compile Include="Sql\Script\ReservedWord.cs" />
-    <Compile Include="Sql\Script\SqlToken.cs" />
+    <Compile Include="Sql\Script\SqlScriptableToken.cs" />
     <Compile Include="Sql\Script\Statement.cs" />
     <Compile Include="Sql\Script\StatementBlock.cs" />
     <Compile Include="Sql\Script\StringLiteral.cs" />

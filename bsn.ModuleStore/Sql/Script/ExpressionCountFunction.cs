@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
@@ -13,9 +12,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExpressionFunction> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'", ConstructorParameterMapping = new[] {1, 2})]
 		public ExpressionCountFunction(DuplicateRestrictionToken restriction, Qualified<ColumnName> columnName): this(restriction.Distinct, columnName) {}
 
-		[Rule("<ExpressionFunction> ::= COUNT_ <ColumnWildNameQualified> ')'", ConstructorParameterMapping=new[] { 1 })]
-		public ExpressionCountFunction(Qualified<ColumnName> columnName) : this(default(bool?), columnName) {
-		}
+		[Rule("<ExpressionFunction> ::= COUNT_ <ColumnWildNameQualified> ')'", ConstructorParameterMapping = new[] {1})]
+		public ExpressionCountFunction(Qualified<ColumnName> columnName): this(default(bool?), columnName) {}
 
 		private ExpressionCountFunction(bool? restriction, Qualified<ColumnName> columnName) {
 			Debug.Assert(columnName != null);

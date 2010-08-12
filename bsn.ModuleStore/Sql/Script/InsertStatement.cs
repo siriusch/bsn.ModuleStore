@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -29,15 +28,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TopExpression TopExpression {
-			get {
-				return topExpression;
-			}
-		}
-
 		public QueryHint QueryHint {
 			get {
 				return queryHint;
+			}
+		}
+
+		public TopExpression TopExpression {
+			get {
+				return topExpression;
 			}
 		}
 

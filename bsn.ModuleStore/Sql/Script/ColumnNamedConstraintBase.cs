@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class ColumnNamedConstraintBase: ColumnConstraint {

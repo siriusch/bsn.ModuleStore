@@ -1,11 +1,10 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class FunctionParameter: SqlToken, IScriptable {
+	public sealed class FunctionParameter: SqlScriptableToken {
 		private readonly Literal defaultValue;
 		private readonly ParameterName parameterName;
 		private readonly Qualified<TypeName> parameterTypeName;
@@ -37,7 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(parameterName, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(parameterTypeName, WhitespacePadding.None);
 			writer.WriteScript(defaultValue, WhitespacePadding.None, "=", null);

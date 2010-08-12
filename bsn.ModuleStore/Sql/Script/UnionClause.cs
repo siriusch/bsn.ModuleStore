@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class UnionClause: SqlToken, IScriptable, IOptional {
+	public class UnionClause: SqlScriptableToken, IOptional {
 		private readonly SelectQuery selectQuery;
 
 		[Rule("<UnionClause> ::=")]
@@ -21,19 +20,19 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool HasValue {
-			get {
-				return selectQuery != null;
-			}
-		}
-
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("UNION ");
 				if (All) {
 					writer.Write("ALL ");
 				}
 				writer.WriteScript(selectQuery, WhitespacePadding.NewlineBefore);
+			}
+		}
+
+		public bool HasValue {
+			get {
+				return selectQuery != null;
 			}
 		}
 	}

@@ -1,4 +1,6 @@
-﻿namespace bsn.ModuleStore.Sql {
+﻿using System;
+
+namespace bsn.ModuleStore.Sql {
 	public enum WhitespacePadding {
 		None,
 		NewlineBefore,

@@ -1,12 +1,11 @@
 using System;
-using System.IO;
 using System.Text.RegularExpressions;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("LANGUAGE_LCID")]
-	public sealed class LanguageLcid: SqlToken, IScriptable {
+	public sealed class LanguageLcid: SqlScriptableToken {
 		private static readonly Regex rxParse = new Regex(@"^LANGUAGE\s+(?<value>0x(?<hex>[0-9a-f]+)|(?<int>[0-9]+)|'(?<str>([^']+|'')*)')$", RegexOptions.CultureInvariant|RegexOptions.ExplicitCapture|RegexOptions.IgnoreCase|RegexOptions.Singleline);
 
 		private readonly string value;
@@ -25,7 +24,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("LANGUAGE ");
 			writer.Write(value);
 		}

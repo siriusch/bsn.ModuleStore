@@ -1,8 +1,7 @@
 ﻿using System;
-using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class SourceRowset: SqlToken, IScriptable {
+	public abstract class SourceRowset: SqlScriptableToken {
 		private readonly AliasName aliasName;
 
 		protected SourceRowset(AliasName aliasName) {
@@ -15,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public virtual void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(aliasName, WhitespacePadding.SpaceBefore, "AS ", null);
 		}
 	}

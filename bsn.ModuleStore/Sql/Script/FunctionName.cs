@@ -1,11 +1,11 @@
 using System;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("COALESCE")]
 	[Terminal("CONVERT")]
+	[Terminal("NULLIF")]
 	public sealed class FunctionName: SqlName {
 		private readonly bool systemFunction;
 

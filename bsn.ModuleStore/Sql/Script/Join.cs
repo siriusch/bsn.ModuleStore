@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class Join: SqlToken, IScriptable {
+	public abstract class Join: SqlScriptableToken {
 		private readonly SourceRowset joinRowset;
 
 		protected Join(SourceRowset joinRowset): base() {
@@ -21,7 +20,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
-		public virtual void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("JOIN ");
 			writer.WriteScript(joinRowset, WhitespacePadding.None);
 		}

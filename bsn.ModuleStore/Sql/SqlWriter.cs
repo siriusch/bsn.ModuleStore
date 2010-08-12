@@ -21,6 +21,15 @@ namespace bsn.ModuleStore.Sql {
 			this.writer = writer;
 		}
 
+		public void DecreaseIndent() {
+			indentationLevel--;
+			Debug.Assert(indentationLevel >= 0);
+		}
+
+		public void IncreaseIndent() {
+			indentationLevel++;
+		}
+
 		public void Write(char data) {
 			writer.Write(data);
 		}
@@ -31,15 +40,6 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void IncreaseIndent() {
-			indentationLevel++;
-		}
-
-		public void DecreaseIndent() {
-			indentationLevel--;
-			Debug.Assert(indentationLevel >= 0);
-		}
-
 		public void WriteCommonTableExpressions(ICollection<CommonTableExpression> expressions) {
 			if (expressions.Count > 0) {
 				Write("WITH ");
@@ -47,104 +47,10 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		private void PaddingBefore(WhitespacePadding padding) {
-			switch (padding) {
-			case WhitespacePadding.NewlineBefore:
-				WriteLine();
-				break;
-			case WhitespacePadding.SpaceBefore:
-				Write(' ');
-				break;
-			}
-		}
-
-		private void PaddingAfter(WhitespacePadding padding) {
-			switch (padding) {
-			case WhitespacePadding.NewlineAfter:
-				WriteLine();
-				break;
-			case WhitespacePadding.SpaceAfter:
-				Write(' ');
-				break;
-			}
-		}
-
 		public void WriteDuplicateRestriction(bool? distinct, WhitespacePadding padding) {
 			if (distinct.HasValue) {
 				PaddingBefore(padding);
 				Write(distinct.Value ? "DISTINCT" : "ALL");
-				PaddingAfter(padding);
-			}
-		}
-
-		public void WriteIndexOptions(ICollection<IndexOption> indexOptions) {
-			if (indexOptions.Count > 0) {
-				Write(" WITH (");
-				WriteSequence(indexOptions, WhitespacePadding.None, ", ");
-				Write(')');
-			}
-		}
-
-		public void WriteLine(string text) {
-			if (!string.IsNullOrEmpty(text)) {
-				Write(text);
-			}
-			Write(Environment.NewLine);
-			for (int i = 0; i < indentationLevel; i++) {
-				Write(indentation);
-			}
-		}
-
-		public void WriteLine() {
-			WriteLine(string.Empty);
-		}
-
-		public void WriteNotForReplication(bool notForReplication, WhitespacePadding padding) {
-			if (notForReplication) {
-				PaddingBefore(padding);
-				Write("NOT FOR REPLICATION");
-				PaddingAfter(padding);
-			}
-		}
-
-		public void WriteScript<T>(T value, WhitespacePadding padding) where T: SqlToken, IScriptable {
-			WriteScript(value, padding, null, null);
-		}
-
-		public void WriteScript<T>(T value, WhitespacePadding padding, string prefix, string suffix) where T: SqlToken, IScriptable {
-			if (value != null) {
-				IOptional optional = value as IOptional;
-				if ((optional == null) || (optional.HasValue)) {
-					PaddingBefore(padding);
-					Write(prefix);
-					value.WriteTo(this);
-					Write(suffix);
-					PaddingAfter(padding);
-				}
-			}
-		}
-
-		public void WriteSequence<T>(IEnumerable<T> sequence, WhitespacePadding itemPadding, string itemSeparator) where T: SqlToken, IScriptable {
-			if (sequence != null) {
-				IEnumerator<T> enumerator = sequence.GetEnumerator();
-				if (enumerator.MoveNext()) {
-					PaddingBefore(itemPadding);
-					WriteScript(enumerator.Current, WhitespacePadding.None);
-					while (enumerator.MoveNext()) {
-						Write(itemSeparator);
-						PaddingAfter(itemPadding);
-						PaddingBefore(itemPadding);
-						WriteScript(enumerator.Current, WhitespacePadding.None);
-					}
-					PaddingAfter(itemPadding);
-				}
-			}
-		}
-
-		public void WriteToggle(bool? toggle, WhitespacePadding padding) {
-			if (toggle.HasValue) {
-				PaddingBefore(padding);
-				Write(toggle.Value ? "ON" : "OFF");
 				PaddingAfter(padding);
 			}
 		}
@@ -232,7 +138,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void WriteEnum(TableCheck tableCheck,WhitespacePadding padding) {
+		public void WriteEnum(TableCheck tableCheck, WhitespacePadding padding) {
 			if (tableCheck != TableCheck.Unspecified) {
 				PaddingBefore(padding);
 				switch (tableCheck) {
@@ -294,6 +200,100 @@ namespace bsn.ModuleStore.Sql {
 				PaddingBefore(padding);
 				Write(operation.ToString().ToUpperInvariant());
 				PaddingAfter(padding);
+			}
+		}
+
+		public void WriteIndexOptions(ICollection<IndexOption> indexOptions) {
+			if (indexOptions.Count > 0) {
+				Write(" WITH (");
+				WriteSequence(indexOptions, WhitespacePadding.None, ", ");
+				Write(')');
+			}
+		}
+
+		public void WriteLine(string text) {
+			if (!string.IsNullOrEmpty(text)) {
+				Write(text);
+			}
+			Write(Environment.NewLine);
+			for (int i = 0; i < indentationLevel; i++) {
+				Write(indentation);
+			}
+		}
+
+		public void WriteLine() {
+			WriteLine(string.Empty);
+		}
+
+		public void WriteNotForReplication(bool notForReplication, WhitespacePadding padding) {
+			if (notForReplication) {
+				PaddingBefore(padding);
+				Write("NOT FOR REPLICATION");
+				PaddingAfter(padding);
+			}
+		}
+
+		public void WriteScript<T>(T value, WhitespacePadding padding) where T: SqlScriptableToken {
+			WriteScript(value, padding, null, null);
+		}
+
+		public void WriteScript<T>(T value, WhitespacePadding padding, string prefix, string suffix) where T: SqlScriptableToken {
+			if (value != null) {
+				IOptional optional = value as IOptional;
+				if ((optional == null) || (optional.HasValue)) {
+					PaddingBefore(padding);
+					Write(prefix);
+					value.WriteTo(this);
+					Write(suffix);
+					PaddingAfter(padding);
+				}
+			}
+		}
+
+		public void WriteSequence<T>(IEnumerable<T> sequence, WhitespacePadding itemPadding, string itemSeparator) where T: SqlScriptableToken {
+			if (sequence != null) {
+				IEnumerator<T> enumerator = sequence.GetEnumerator();
+				if (enumerator.MoveNext()) {
+					PaddingBefore(itemPadding);
+					WriteScript(enumerator.Current, WhitespacePadding.None);
+					while (enumerator.MoveNext()) {
+						Write(itemSeparator);
+						PaddingAfter(itemPadding);
+						PaddingBefore(itemPadding);
+						WriteScript(enumerator.Current, WhitespacePadding.None);
+					}
+					PaddingAfter(itemPadding);
+				}
+			}
+		}
+
+		public void WriteToggle(bool? toggle, WhitespacePadding padding) {
+			if (toggle.HasValue) {
+				PaddingBefore(padding);
+				Write(toggle.Value ? "ON" : "OFF");
+				PaddingAfter(padding);
+			}
+		}
+
+		private void PaddingAfter(WhitespacePadding padding) {
+			switch (padding) {
+			case WhitespacePadding.NewlineAfter:
+				WriteLine();
+				break;
+			case WhitespacePadding.SpaceAfter:
+				Write(' ');
+				break;
+			}
+		}
+
+		private void PaddingBefore(WhitespacePadding padding) {
+			switch (padding) {
+			case WhitespacePadding.NewlineBefore:
+				WriteLine();
+				break;
+			case WhitespacePadding.SpaceBefore:
+				Write(' ');
+				break;
 			}
 		}
 	}

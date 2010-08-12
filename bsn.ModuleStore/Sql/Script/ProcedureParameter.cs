@@ -1,12 +1,11 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ProcedureParameter: SqlToken, IScriptable {
+	public sealed class ProcedureParameter: SqlScriptableToken {
 		private readonly Literal defaultValue;
 		private readonly bool output;
 		private readonly ParameterName parameterName;
@@ -68,7 +67,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(parameterName, WhitespacePadding.None);
 			writer.WriteScript(parameterTypeName, WhitespacePadding.SpaceBefore);
 			if (varying) {

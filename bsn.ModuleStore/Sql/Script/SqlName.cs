@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class SqlName: SqlToken, IScriptable {
+	public abstract class SqlName: SqlScriptableToken {
 		private readonly string value;
 
 		protected SqlName(string name) {
@@ -18,7 +17,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public virtual void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write(value);
 		}
 	}

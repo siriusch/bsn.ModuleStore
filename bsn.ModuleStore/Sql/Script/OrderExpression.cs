@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class OrderExpression: SqlToken, IScriptable {
+	public sealed class OrderExpression: SqlScriptableToken {
 		private readonly Expression expression;
 		private readonly SortOrder oderType;
 
@@ -30,7 +29,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(expression, WhitespacePadding.None);
 			writer.WriteEnum(oderType, WhitespacePadding.SpaceBefore);
 		}

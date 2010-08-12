@@ -1,14 +1,13 @@
 using System;
-using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class OpenxmlSchema: SqlToken, IScriptable {
-		protected abstract void WriteToInternal(SqlWriter writer);
-
-		public void WriteTo(SqlWriter writer) {
+	public abstract class OpenxmlSchema: SqlScriptableToken {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("WITH (");
 			WriteToInternal(writer);
 			writer.Write(')');
 		}
+
+		protected abstract void WriteToInternal(SqlWriter writer);
 	}
 }

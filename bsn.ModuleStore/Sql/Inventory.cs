@@ -8,7 +8,7 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql {
 	[Serializable]
 	public class Inventory: ISerializable {
-		private readonly Dictionary<string, SqlToken> objects = new Dictionary<string, SqlToken>();
+		private readonly Dictionary<string, SqlScriptableToken> objects = new Dictionary<string, SqlScriptableToken>();
 
 		public Inventory() {}
 
@@ -16,7 +16,7 @@ namespace bsn.ModuleStore.Sql {
 			if (info == null) {
 				throw new ArgumentNullException("info");
 			}
-			objects = (Dictionary<string, SqlToken>)info.GetValue("objects", typeof(Dictionary<string, SqlToken>));
+			objects = (Dictionary<string, SqlScriptableToken>)info.GetValue("objects", typeof(Dictionary<string, SqlScriptableToken>));
 		}
 
 		protected virtual void GetObjectData(SerializationInfo info, StreamingContext context) {

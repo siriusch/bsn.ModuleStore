@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -17,8 +16,6 @@ namespace bsn.ModuleStore.Sql.Script {
 				return tableName;
 			}
 		}
-
-		public abstract void ApplyTo(CreateTableStatement createTable);
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("ALTER TABLE ");

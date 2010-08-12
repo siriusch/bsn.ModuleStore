@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
@@ -19,10 +18,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return constraintName;
 			}
-		}
-
-		public override void ApplyTo(CreateTableStatement createTable) {
-			throw new NotImplementedException();
 		}
 
 		public override void WriteTo(SqlWriter writer) {

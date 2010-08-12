@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ForClause: SqlToken, IScriptable, IOptional {
+	public class ForClause: SqlScriptableToken, IOptional {
 		[Rule("<ForClause> ::=")]
 		public ForClause() {}
 
@@ -14,12 +13,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override void WriteTo(SqlWriter writer) {}
+
 		public bool HasValue {
 			get {
 				return SelectFor != SelectFor.None;
 			}
 		}
-
-		public virtual void WriteTo(SqlWriter writer) {}
 	}
 }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class Qualified<T>: SqlToken, IScriptable where T: SqlName {
+	public sealed class Qualified<T>: SqlScriptableToken where T: SqlName {
 		private readonly T name;
 		private readonly SqlName qualification;
 
@@ -53,7 +52,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(Qualification, WhitespacePadding.None, null, ".");
 			writer.WriteScript(Name, WhitespacePadding.None);
 		}

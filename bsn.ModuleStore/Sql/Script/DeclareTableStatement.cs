@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DeclareTableStatement: DeclareStatement {
-		private readonly VariableName variableName;
 		private readonly List<TableDefinition> tableDefinitions;
+		private readonly VariableName variableName;
 
 		[Rule("<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> TABLE <TableDefinitionGroup>", ConstructorParameterMapping = new[] {1, 4})]
 		public DeclareTableStatement(VariableName variableName, Sequence<TableDefinition> tableDefinitions): base() {
@@ -18,15 +17,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableDefinitions = tableDefinitions.ToList();
 		}
 
-		public VariableName VariableName {
-			get {
-				return variableName;
-			}
-		}
-
 		public List<TableDefinition> TableDefinitions {
 			get {
 				return tableDefinitions;
+			}
+		}
+
+		public VariableName VariableName {
+			get {
+				return variableName;
 			}
 		}
 

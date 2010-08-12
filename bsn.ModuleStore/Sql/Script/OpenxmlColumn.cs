@@ -1,11 +1,10 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class OpenxmlColumn: SqlToken, IScriptable {
+	public sealed class OpenxmlColumn: SqlScriptableToken {
 		private readonly ColumnName columnName;
 		private readonly StringLiteral columnPattern;
 		private readonly TypeName columnType;
@@ -40,7 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName, WhitespacePadding.None);
 			writer.WriteScript(columnType, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(columnPattern, WhitespacePadding.SpaceBefore);

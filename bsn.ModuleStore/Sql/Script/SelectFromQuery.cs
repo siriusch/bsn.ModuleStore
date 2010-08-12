@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
@@ -17,26 +16,20 @@ namespace bsn.ModuleStore.Sql.Script {
 		public SelectFromQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, FromClause fromClause, Optional<Predicate> whereClause, Optional<Sequence<Expression>> groupByClause, Optional<Predicate> havingClause,
 		                       Optional<Sequence<OrderExpression>> orderList, UnionClause unionClause): this(restriction.Distinct, top, columnItems, intoClause, fromClause, whereClause, groupByClause, havingClause, orderList, unionClause) {}
 
-		[Rule("<SelectQuery> ::= SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>", ConstructorParameterMapping=new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 })]
+		[Rule("<SelectQuery> ::= SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>", ConstructorParameterMapping = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9})]
 		public SelectFromQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, FromClause fromClause, Optional<Predicate> whereClause, Optional<Sequence<Expression>> groupByClause, Optional<Predicate> havingClause,
-													 Optional<Sequence<OrderExpression>> orderList, UnionClause unionClause)
-			: this(restriction.Distinct, null, columnItems, intoClause, fromClause, whereClause, groupByClause, havingClause, orderList, unionClause) {
-		}
+		                       Optional<Sequence<OrderExpression>> orderList, UnionClause unionClause): this(restriction.Distinct, null, columnItems, intoClause, fromClause, whereClause, groupByClause, havingClause, orderList, unionClause) {}
 
-		[Rule("<SelectQuery> ::= SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>", ConstructorParameterMapping=new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 })]
-		public SelectFromQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, FromClause fromClause, Optional<Predicate> whereClause, Optional<Sequence<Expression>> groupByClause, Optional<Predicate> havingClause,
-													 Optional<Sequence<OrderExpression>> orderList, UnionClause unionClause)
-			: this(default(bool?), top, columnItems, intoClause, fromClause, whereClause, groupByClause, havingClause, orderList, unionClause) {
-		}
+		[Rule("<SelectQuery> ::= SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>", ConstructorParameterMapping = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9})]
+		public SelectFromQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, FromClause fromClause, Optional<Predicate> whereClause, Optional<Sequence<Expression>> groupByClause, Optional<Predicate> havingClause, Optional<Sequence<OrderExpression>> orderList,
+		                       UnionClause unionClause): this(default(bool?), top, columnItems, intoClause, fromClause, whereClause, groupByClause, havingClause, orderList, unionClause) {}
 
-		[Rule("<SelectQuery> ::= SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>", ConstructorParameterMapping=new[] { 1, 2, 3, 4, 5, 6, 7, 8 })]
-		public SelectFromQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, FromClause fromClause, Optional<Predicate> whereClause, Optional<Sequence<Expression>> groupByClause, Optional<Predicate> havingClause,
-													 Optional<Sequence<OrderExpression>> orderList, UnionClause unionClause)
-			: this(default(bool?), null, columnItems, intoClause, fromClause, whereClause, groupByClause, havingClause, orderList, unionClause) {
-		}
+		[Rule("<SelectQuery> ::= SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>", ConstructorParameterMapping = new[] {1, 2, 3, 4, 5, 6, 7, 8})]
+		public SelectFromQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, FromClause fromClause, Optional<Predicate> whereClause, Optional<Sequence<Expression>> groupByClause, Optional<Predicate> havingClause, Optional<Sequence<OrderExpression>> orderList,
+		                       UnionClause unionClause): this(default(bool?), null, columnItems, intoClause, fromClause, whereClause, groupByClause, havingClause, orderList, unionClause) {}
 
 		private SelectFromQuery(bool? restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, FromClause fromClause, Optional<Predicate> whereClause, Optional<Sequence<Expression>> groupByClause, Optional<Predicate> havingClause,
-		                       Optional<Sequence<OrderExpression>> orderList, UnionClause unionClause): base(restriction, top, columnItems, intoClause, unionClause) {
+		                        Optional<Sequence<OrderExpression>> orderList, UnionClause unionClause): base(restriction, top, columnItems, intoClause, unionClause) {
 			this.fromClause = fromClause;
 			this.whereClause = whereClause;
 			this.groupByClause = groupByClause.ToList();

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 
@@ -43,7 +42,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("LOAD")]
 	[Terminal("MERGE")]
 	[Terminal("NATIONAL")]
-	[Terminal("NULLIF")]
 	[Terminal("OFFSETS")]
 	[Terminal("OPENDATASOURCE")]
 	[Terminal("OPENQUERY")]
@@ -83,14 +81,14 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("USE")]
 	[Terminal("USER")]
 	[Terminal("WRITETEXT")]
-	public sealed class ReservedWord: SqlToken, IScriptable {
+	public sealed class ReservedWord: SqlScriptableToken {
 		private readonly string text;
 
 		public ReservedWord(string text) {
 			this.text = text.ToUpperInvariant();
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write(text);
 		}
 	}

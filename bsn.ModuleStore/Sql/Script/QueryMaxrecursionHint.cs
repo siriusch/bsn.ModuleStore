@@ -1,5 +1,5 @@
-﻿using System.Globalization;
-using System.IO;
+﻿using System;
+using System.Globalization;
 
 using bsn.GoldParser.Semantic;
 
@@ -12,16 +12,16 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.maxRecursion = maxRecursion.Value;
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			writer.Write("OPTION (MAXRECURSION ");
-			writer.Write(maxRecursion.ToString(NumberFormatInfo.InvariantInfo));
-			writer.Write(')');
-		}
-
 		public override bool HasValue {
 			get {
 				return true;
 			}
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			writer.Write("OPTION (MAXRECURSION ");
+			writer.Write(maxRecursion.ToString(NumberFormatInfo.InvariantInfo));
+			writer.Write(')');
 		}
 	}
 }

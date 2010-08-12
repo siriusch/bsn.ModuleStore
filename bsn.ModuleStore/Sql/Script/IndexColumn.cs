@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Data.SqlClient;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class IndexColumn: SqlToken, IScriptable {
+	public sealed class IndexColumn: SqlScriptableToken {
 		private readonly ColumnName columnName;
 		private readonly SortOrder order;
 
@@ -28,7 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName, WhitespacePadding.None);
 			writer.WriteEnum(order, WhitespacePadding.SpaceBefore);
 		}

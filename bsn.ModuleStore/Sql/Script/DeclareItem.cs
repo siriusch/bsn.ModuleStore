@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class DeclareItem: SqlToken, IScriptable {
+	public abstract class DeclareItem: SqlScriptableToken {
 		private readonly VariableName variableName;
 
 		protected DeclareItem(VariableName variableName): base() {
@@ -17,7 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public virtual void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(variableName, WhitespacePadding.SpaceAfter);
 		}
 	}

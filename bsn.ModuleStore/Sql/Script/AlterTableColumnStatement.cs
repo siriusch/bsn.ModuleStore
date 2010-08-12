@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class AlterTableColumnStatement: AlterTableStatement {

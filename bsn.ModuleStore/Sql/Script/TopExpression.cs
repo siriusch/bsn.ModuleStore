@@ -1,11 +1,10 @@
 ﻿using System;
-using System.IO;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class TopExpression: SqlToken, IScriptable, IOptional {
+	public sealed class TopExpression: SqlScriptableToken, IOptional {
 		private readonly Expression expression;
 		private readonly bool percent;
 		private readonly bool withTies;
@@ -41,13 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool HasValue {
-			get {
-				return expression != null;
-			}
-		}
-
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("TOP (");
 				writer.WriteScript(expression, WhitespacePadding.None);
@@ -58,6 +51,12 @@ namespace bsn.ModuleStore.Sql.Script {
 				if (withTies) {
 					writer.Write(" WITH TIES");
 				}
+			}
+		}
+
+		public bool HasValue {
+			get {
+				return expression != null;
 			}
 		}
 	}

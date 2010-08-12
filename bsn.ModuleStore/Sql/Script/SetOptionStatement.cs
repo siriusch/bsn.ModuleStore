@@ -8,11 +8,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly string option;
 
 		[Rule("<SetOptionStatement> ::= SET Id <SetValueList>", ConstructorParameterMapping = new[] {1, 2})]
-		public SetOptionStatement(Identifier identifier, Sequence<SqlToken> valueList) {
+		public SetOptionStatement(Identifier identifier, Sequence<SqlScriptableToken> valueList) {
 			using (StringWriter stringWriter = new StringWriter()) {
 				SqlWriter writer = new SqlWriter(stringWriter);
 				writer.WriteScript(identifier, WhitespacePadding.None);
-				foreach (IScriptable token in valueList) {
+				foreach (SqlScriptableToken token in valueList) {
 					writer.Write(' ');
 					token.WriteTo(writer);
 				}

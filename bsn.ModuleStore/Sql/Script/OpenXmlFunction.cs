@@ -1,25 +1,24 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class OpenxmlFunction: SqlToken, IScriptable {
+	public sealed class OpenxmlFunction: SqlScriptableToken {
 		private readonly int flags;
 		private readonly OpenxmlSchema schema;
-		private readonly IScriptable stringValue;
+		private readonly SqlScriptableToken stringValue;
 		private readonly VariableName variableName;
 
 		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <StringLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6})]
 		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <VariableName> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6})]
-		public OpenxmlFunction(VariableName variableName, IScriptable stringValue, Optional<OpenxmlSchema> schema): this(variableName, stringValue, null, schema) {}
+		public OpenxmlFunction(VariableName variableName, SqlScriptableToken stringValue, Optional<OpenxmlSchema> schema): this(variableName, stringValue, null, schema) {}
 
 		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <StringLiteral> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6, 8})]
 		[Rule("<Openxml> ::= OPENXML '(' <VariableName> ',' <VariableName> ',' <IntegerLiteral> ')' <OptionalOpenxmlSchema>", ConstructorParameterMapping = new[] {2, 4, 6, 8})]
-		public OpenxmlFunction(VariableName variableName, IScriptable stringValue, IntegerLiteral flags, Optional<OpenxmlSchema> schema) {
+		public OpenxmlFunction(VariableName variableName, SqlScriptableToken stringValue, IntegerLiteral flags, Optional<OpenxmlSchema> schema) {
 			Debug.Assert(variableName != null);
 			Debug.Assert(stringValue != null);
 			Debug.Assert(schema != null);
@@ -41,7 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public IScriptable StringValue {
+		public SqlScriptableToken StringValue {
 			get {
 				return stringValue;
 			}
@@ -53,7 +52,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public void WriteTo(SqlWriter writer) {
+		public override void WriteTo(SqlWriter writer) {
 			writer.Write("OPENXML (");
 			writer.WriteScript(variableName, WhitespacePadding.None);
 			writer.Write(", ");

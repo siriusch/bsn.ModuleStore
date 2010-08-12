@@ -18,7 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<JoinChain> ::=", typeof(Join))]
 		public Sequence(): this(null, null) {}
 
-		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlToken))]
+		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlScriptableToken))]
 		[Rule("<ColumnNameList> ::= <ColumnName>", typeof(ColumnName))]
 		[Rule("<StatementList> ::= <StatementGroup>", typeof(Statement))]
 		[Rule("<StatementList> ::= <StatementGroup> <Terminator>", typeof(Statement), AllowTruncationForConstructor = true)]
@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForeignKeyActionList> ::= <ForeignKeyAction> <ForeignKeyActionList>", typeof(ForeignKeyAction))]
 		[Rule("<ColumnConstraintList> ::= <ColumnConstraint> <ColumnConstraintList>", typeof(ColumnConstraint))]
 		[Rule("<JoinChain> ::= <Join> <JoinChain>", typeof(Join))]
-		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlToken))]
+		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlScriptableToken))]
 		[Rule("<ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>", typeof(ColumnName), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<StatementList> ::= <StatementGroup> <Terminator> <StatementList>", typeof(Statement), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<OpenxmlColumnList> ::= <OpenxmlColumn> ',' <OpenxmlColumnList>", typeof(OpenxmlColumn), ConstructorParameterMapping = new[] {0, 2})]

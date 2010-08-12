@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class SqlIdentifier: SqlToken {
+	public abstract class SqlIdentifier: SqlScriptableToken {
 		private static readonly Regex rxDequote = new Regex(@"(?<=^\[)[^\]]+(?=\]$)|(?<=^"")[^""]+(?=""$)|^[^""\[\]\s]+$");
 
 		internal static bool TryDequote(string id, out string value) {
@@ -38,6 +38,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return original;
 			}
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			writer.Write(original);
 		}
 	}
 }
