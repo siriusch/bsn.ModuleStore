@@ -44,9 +44,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write(' ');
 			writer.WriteEnum(clustered, WhitespacePadding.SpaceAfter);
 			writer.Write('(');
-			writer.WriteSequence(indexColumns, WhitespacePadding.None, ", ");
+			writer.IncreaseIndent();
+			writer.WriteSequence(indexColumns, WhitespacePadding.NewlineBefore, ", ");
+			writer.DecreaseIndent();
+			writer.WriteLine();
 			writer.Write(')');
-			writer.WriteScript(constraintIndex, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(constraintIndex, WhitespacePadding.None);
 		}
 	}
 }

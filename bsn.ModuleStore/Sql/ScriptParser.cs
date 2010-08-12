@@ -633,7 +633,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		internal static SemanticTypeActions<SqlToken> GetSemanticActions() {
+		public static SemanticTypeActions<SqlToken> GetSemanticActions() {
 			lock (sync) {
 				if (semanticActions == null) {
 					semanticActions = new SemanticTypeActions<SqlToken>(GetGrammar());

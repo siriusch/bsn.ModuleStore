@@ -674,6 +674,10 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
                         | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD NOT FOR_REPLICATION
                         | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP NOT FOR_REPLICATION
                         | ALTER TABLE <TableName> <TableCheck> ADD <TableDefinitionList>
+                        | ALTER TABLE <TableName> <TableCheck> NOCHECK CONSTRAINT <ConstraintName>
+                        | ALTER TABLE <TableName> <TableCheck> NOCHECK CONSTRAINT ALL
+                        | ALTER TABLE <TableName> <TableCheck> CHECK CONSTRAINT <ConstraintName>
+                        | ALTER TABLE <TableName> <TableCheck> CHECK CONSTRAINT ALL
                         | ALTER TABLE <TableName> DROP <ConstraintName>
                         | ALTER TABLE <TableName> DROP CONSTRAINT <ConstraintName>
                         | ALTER TABLE <TableName> DROP COLUMN <ColumnName>
@@ -708,6 +712,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 ! We don't support the ON option, filegroup is managed by module manager
 
 <CreateIndexStatement> ::= CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' INCLUDE_ <ColumnNameList> ')' <IndexOptionGroup>
+                         | CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' <IndexOptionGroup>
                          | CREATE <IndexPrimary> XML_INDEX <IndexName> ON <TableName> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
 
 <IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>
@@ -821,10 +826,6 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
                          | 
 
 <ColumnConstraint> ::= <NamedColumnConstraint>
-                     | DEFAULT '(' <FunctionCall> ')'
-                     | DEFAULT <NumberLiteral>
-                     | DEFAULT <StringLiteral>
-                     | DEFAULT <NullLiteral>
                      | COLLATE <CollationName>
                      | IDENTITY 
                      | IDENTITY '(' IntegerLiteral ',' IntegerLiteral ')'
@@ -837,15 +838,23 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
                           | CONSTRAINT <ConstraintName> FOREIGN KEY REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | CONSTRAINT <ConstraintName> REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Expression> ')'
+                          | CONSTRAINT <ConstraintName> DEFAULT <ConstraintDefaultValue>
                           | PRIMARY KEY <ConstraintCluster> <ConstraintIndex>
                           | UNIQUE <ConstraintCluster> <ConstraintIndex>
                           | FOREIGN KEY REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | CHECK <OptionalNotForReplication> '(' <Expression> ')'
+                          | DEFAULT <ConstraintDefaultValue>
 
 <ConstraintCluster> ::= CLUSTERED
                       | NONCLUSTERED
                       |
+
+<ConstraintDefaultValue> ::= '(' <ConstraintDefaultValue> ')'
+                           | <FunctionCall>
+                           | <NumberLiteral>
+                           | <StringLiteral>
+                           | <NullLiteral>
 
 <ConstraintIndex> ::= WITH_FILLFACTOR '=' <IntegerLiteral>
                     | <IndexOptionGroup>

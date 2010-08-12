@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script;
 
-[assembly: RuleTrim("<TableDefinitionGroup> ::= '(' <TableDefinitionList> ')'", "<TableDefinitionList>")]
+[assembly: RuleTrim("<TableDefinitionGroup> ::= '(' <TableDefinitionList> ')'", "<TableDefinitionList>", SemanticTokenType=typeof(SqlToken))]
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateTableStatement: CreateStatement {

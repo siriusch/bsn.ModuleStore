@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.Smo, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.SmoEnum, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -58,7 +61,9 @@
     <Compile Include="Sql\InventoryDatabaseReader.cs" />
     <Compile Include="Sql\InventoryScriptReader.cs" />
     <Compile Include="Sql\ScriptParser.cs" />
-    <Compile Include="Sql\Script\ColumnDefaultParensConstraint.cs" />
+    <Compile Include="Sql\Script\AlterTableCheckConstraintStatement.cs" />
+    <Compile Include="Sql\Script\AlterTableCheckConstraintStatementBase.cs" />
+    <Compile Include="Sql\Script\AlterTableNocheckConstraintStatement.cs" />
     <Compile Include="Sql\Script\ColumnNotNullableConstraint.cs" />
     <Compile Include="Sql\Script\CrossJoin.cs" />
     <Compile Include="Sql\Script\DeclareItem.cs" />

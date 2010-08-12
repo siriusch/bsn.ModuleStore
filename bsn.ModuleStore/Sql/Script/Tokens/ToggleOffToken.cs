@@ -10,5 +10,9 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 				return false;
 			}
 		}
+
+		public override void WriteTo(SqlWriter writer) {
+			writer.Write("OFF");
+		}
 	}
 }

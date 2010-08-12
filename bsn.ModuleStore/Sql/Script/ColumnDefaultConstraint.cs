@@ -3,15 +3,20 @@ using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script;
+
+[assembly: RuleTrim("<ConstraintDefaultValue> ::= '(' <ConstraintDefaultValue> ')'", "<ConstraintDefaultValue>", SemanticTokenType = typeof(SqlToken))]
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ColumnDefaultConstraint: ColumnConstraint {
+	public sealed class ColumnDefaultConstraint: ColumnNamedConstraintBase {
 		private readonly Expression defaultValue;
 
-		[Rule("<ColumnConstraint> ::= DEFAULT <NumberLiteral>", ConstructorParameterMapping = new[] {1})]
-		[Rule("<ColumnConstraint> ::= DEFAULT <StringLiteral>", ConstructorParameterMapping = new[] {1})]
-		[Rule("<ColumnConstraint> ::= DEFAULT <NullLiteral>", ConstructorParameterMapping = new[] {1})]
-		public ColumnDefaultConstraint(Expression defaultValue) {
+		[Rule("<NamedColumnConstraint> ::= DEFAULT <ConstraintDefaultValue>", ConstructorParameterMapping=new[] { 1 })]
+		public ColumnDefaultConstraint(Expression defaultValue) : this(null, defaultValue) {}
+
+		[Rule("<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> DEFAULT <ConstraintDefaultValue>", ConstructorParameterMapping=new[] { 1, 3 })]
+		public ColumnDefaultConstraint(ConstraintName constraintName, Expression defaultValue)
+			: base(constraintName) {
 			Debug.Assert(defaultValue != null);
 			this.defaultValue = defaultValue;
 		}
@@ -23,8 +28,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("DEFAULT ");
+			base.WriteTo(writer);
+			writer.Write("DEFAULT (");
 			writer.WriteScript(defaultValue, WhitespacePadding.None);
+			writer.Write(')');
 		}
 	}
 }
