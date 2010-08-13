@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class AlterTableColumnAttributeStatement: AlterTableColumnStatement {
 		private readonly DdlOperation ddlOperation;
 
-		protected AlterTableColumnAttributeStatement(TableName tableName, ColumnName columnName, DdlOperationToken ddlOperationToken): base(tableName, columnName) {
+		protected AlterTableColumnAttributeStatement(Qualified<SchemaName, TableName> tableName, ColumnName columnName, DdlOperationToken ddlOperationToken): base(tableName, columnName) {
 			Debug.Assert(ddlOperationToken != null);
 			ddlOperation = ddlOperationToken.Operation;
 		}

@@ -13,11 +13,11 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateFunctionStatement<TBody>: CreateStatement where TBody: Statement {
 		private readonly TBody body;
-		private readonly FunctionName functionName;
+		private readonly Qualified<SchemaName, FunctionName> functionName;
 		private readonly FunctionOption option;
 		private readonly List<FunctionParameter> parameters;
 
-		protected CreateFunctionStatement(FunctionName functionName, Sequence<FunctionParameter> parameters, FunctionOptionToken option, TBody body) {
+		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<FunctionParameter> parameters, FunctionOptionToken option, TBody body) {
 			Debug.Assert(functionName != null);
 			Debug.Assert(body != null);
 			this.functionName = functionName;
@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public FunctionName FunctionName {
+		public Qualified<SchemaName, FunctionName> FunctionName {
 			get {
 				return functionName;
 			}

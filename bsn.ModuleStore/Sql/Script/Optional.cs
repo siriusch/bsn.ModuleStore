@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		private readonly T value;
 
-		[Rule("<FulltextColumnType> ::=", typeof(Qualified<TypeName>))]
+		[Rule("<FulltextColumnType> ::=", typeof(Qualified<SchemaName, TypeName>))]
 		[Rule("<FulltextColumnGroup> ::=", typeof(Sequence<FulltextColumn>))]
 		[Rule("<OptionalLanguage> ::=", typeof(LanguageLcid))]
 		[Rule("<OptionalDefault> ::=", typeof(Literal))]
@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalFromClause> ::=", typeof(FromClause))]
 		public Optional(): this(null) {}
 
-		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<TypeName>), ConstructorParameterMapping = new[] {1})]
+		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<SchemaName, TypeName>), ConstructorParameterMapping=new[] { 1 })]
 		[Rule("<FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'", typeof(Sequence<FulltextColumn>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalLanguage> ::= LANGUAGE_LCID", typeof(LanguageLcid))]
 		[Rule("<OptionalDefault> ::= '=' <Literal>", typeof(Literal), ConstructorParameterMapping = new[] {1})]

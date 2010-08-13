@@ -7,10 +7,10 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateXmlSchemaCollectionStatement: CreateStatement {
 		private readonly Expression expression;
-		private readonly XmlSchemaCollectionName xmlSchemaCollectionName;
+		private readonly Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName;
 
-		[Rule("<CreateXmlSchemaCollectionStatement> ::= CREATE XML_SCHEMA_COLLECTION <XmlSchemaCollectionName> AS <Expression>", ConstructorParameterMapping = new[] {2, 4})]
-		public CreateXmlSchemaCollectionStatement(XmlSchemaCollectionName xmlSchemaCollectionName, Expression expression) {
+		[Rule("<CreateXmlSchemaCollectionStatement> ::= CREATE XML_SCHEMA_COLLECTION <XmlSchemaCollectionNameQualified> AS <Expression>", ConstructorParameterMapping = new[] {2, 4})]
+		public CreateXmlSchemaCollectionStatement(Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName, Expression expression) {
 			Debug.Assert(xmlSchemaCollectionName != null);
 			Debug.Assert(expression != null);
 			this.xmlSchemaCollectionName = xmlSchemaCollectionName;
@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public XmlSchemaCollectionName XmlSchemaCollectionName {
+		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName {
 			get {
 				return xmlSchemaCollectionName;
 			}

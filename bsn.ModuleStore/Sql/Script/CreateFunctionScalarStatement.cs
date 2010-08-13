@@ -8,8 +8,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateFunctionScalarStatement: CreateFunctionStatement<StatementBlock> {
 		private readonly TypeName returnTypeName;
 
-		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <OptionalFunctionOption> <OptionalAs> <StatementBlock>", ConstructorParameterMapping = new[] {2, 4, 6, 7, 9})]
-		public CreateFunctionScalarStatement(FunctionName functionName, Optional<Sequence<FunctionParameter>> parameters, TypeName returnTypeName, FunctionOptionToken options, StatementBlock body): base(functionName, parameters, options, body) {
+		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <OptionalFunctionOption> <OptionalAs> <StatementBlock>", ConstructorParameterMapping = new[] {2, 4, 6, 7, 9})]
+		public CreateFunctionScalarStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, TypeName returnTypeName, FunctionOptionToken options, StatementBlock body): base(functionName, parameters, options, body) {
 			Debug.Assert(returnTypeName != null);
 			this.returnTypeName = returnTypeName;
 		}

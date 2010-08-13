@@ -7,9 +7,9 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateIndexStatement: CreateStatement {
 		private readonly IndexName indexName;
 		private readonly List<IndexOption> indexOptions;
-		private readonly TableName tableName;
+		private readonly Qualified<SchemaName, TableName> tableName;
 
-		protected CreateIndexStatement(IndexName indexName, TableName tableName, Optional<Sequence<IndexOption>> indexOptions) {
+		protected CreateIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, Optional<Sequence<IndexOption>> indexOptions) {
 			Debug.Assert(indexName != null);
 			Debug.Assert(tableName != null);
 			this.indexName = indexName;
@@ -29,7 +29,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TableName TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}

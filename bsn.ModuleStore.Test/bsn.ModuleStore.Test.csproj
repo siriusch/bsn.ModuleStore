@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sql\InventoryPopulatorTest.cs" />
+    <Compile Include="Sql\DatabaseInventoryTest.cs" />
     <Compile Include="Sql\ScriptParserTest.cs" />
     <Compile Include="Sql\Script\SemanticActionsTest.cs" />
     <Compile Include="Sql\Script\SqlIdentifierTest.cs" />

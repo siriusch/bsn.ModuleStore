@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly ConstraintName constraintName;
 		private readonly TableCheck tableCheck;
 
-		protected AlterTableCheckConstraintStatementBase(TableName tableName, TableCheckToken tableCheck, ConstraintName constraintName): base(tableName) {
+		protected AlterTableCheckConstraintStatementBase(Qualified<SchemaName, TableName> tableName, TableCheckToken tableCheck, ConstraintName constraintName): base(tableName) {
 			Debug.Assert(constraintName != null);
 			this.tableCheck = tableCheck.TableCheck;
 			this.constraintName = constraintName;

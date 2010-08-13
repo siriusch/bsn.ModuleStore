@@ -58,8 +58,8 @@
     <Compile Include="SqlSetupScriptAttribute.cs" />
     <Compile Include="SqlUpdateScriptAttribute.cs" />
     <Compile Include="Sql\Inventory.cs" />
-    <Compile Include="Sql\InventoryDatabaseReader.cs" />
-    <Compile Include="Sql\InventoryScriptReader.cs" />
+    <Compile Include="Sql\DatabaseInventory.cs" />
+    <Compile Include="Sql\ScriptInventory.cs" />
     <Compile Include="Sql\ScriptParser.cs" />
     <Compile Include="Sql\Script\AlterTableCheckConstraintStatement.cs" />
     <Compile Include="Sql\Script\AlterTableCheckConstraintStatementBase.cs" />
@@ -291,6 +291,10 @@
     <Compile Include="Sql\Script\Tokens\TriggerTypeToken.cs" />
     <Compile Include="Sql\Script\Tokens\UpdateToken.cs" />
     <Compile Include="Sql\Script\TopExpression.cs" />
+    <Compile Include="Sql\Script\TriggerAllServerTarget.cs" />
+    <Compile Include="Sql\Script\TriggerDatabaseTarget.cs" />
+    <Compile Include="Sql\Script\TriggerTableTarget.cs" />
+    <Compile Include="Sql\Script\TriggerTarget.cs" />
     <Compile Include="Sql\Script\TriggerType.cs" />
     <Compile Include="Sql\Script\NestedSelectQuery.cs" />
     <Compile Include="Sql\Script\Tuple.cs" />

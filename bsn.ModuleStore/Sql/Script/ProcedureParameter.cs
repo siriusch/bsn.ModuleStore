@@ -9,12 +9,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Literal defaultValue;
 		private readonly bool output;
 		private readonly ParameterName parameterName;
-		private readonly Qualified<TypeName> parameterTypeName;
+		private readonly Qualified<SchemaName, TypeName> parameterTypeName;
 		private readonly bool readOnly;
 		private readonly bool varying;
 
 		[Rule("<ProcedureParameter> ::= <ParameterName> <TypeNameQualified> <OptionalVarying> <OptionalDefault> <OptionalOutput> <OptionalReadonly>")]
-		public ProcedureParameter(ParameterName parameterName, Qualified<TypeName> parameterTypeName, Optional<VaryingToken> varying, Optional<Literal> defaultValue, Optional<OutputToken> output, Optional<Identifier> readonlyIdentifier) {
+		public ProcedureParameter(ParameterName parameterName, Qualified<SchemaName, TypeName> parameterTypeName, Optional<VaryingToken> varying, Optional<Literal> defaultValue, Optional<OutputToken> output, Optional<Identifier> readonlyIdentifier) {
 			Debug.Assert(parameterName != null);
 			Debug.Assert(parameterTypeName != null);
 			this.parameterName = parameterName;
@@ -49,7 +49,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Qualified<TypeName> ParameterTypeName {
+		public Qualified<SchemaName, TypeName> ParameterTypeName {
 			get {
 				return parameterTypeName;
 			}

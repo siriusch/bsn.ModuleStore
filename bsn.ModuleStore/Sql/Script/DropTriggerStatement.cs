@@ -6,15 +6,15 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropTriggerStatement: DropStatement {
-		private readonly TriggerName triggerName;
+		private readonly Qualified<SchemaName, TriggerName> triggerName;
 
-		[Rule("<DropTriggerStatement> ::= DROP TRIGGER <TriggerName>", ConstructorParameterMapping = new[] {2})]
-		public DropTriggerStatement(TriggerName triggerName) {
+		[Rule("<DropTriggerStatement> ::= DROP TRIGGER <TriggerNameQualified>", ConstructorParameterMapping = new[] {2})]
+		public DropTriggerStatement(Qualified<SchemaName, TriggerName> triggerName) {
 			Debug.Assert(triggerName != null);
 			this.triggerName = triggerName;
 		}
 
-		public TriggerName TriggerName {
+		public Qualified<SchemaName, TriggerName> TriggerName {
 			get {
 				return triggerName;
 			}

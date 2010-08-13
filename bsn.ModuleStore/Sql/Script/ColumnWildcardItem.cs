@@ -5,15 +5,15 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ColumnWildcardItem: ColumnItem {
-		private readonly Qualified<ColumnName> columnWildcard;
+		private readonly Qualified<SqlName, ColumnName> columnWildcard;
 
 		[Rule("<ColumnItem> ::= <ColumnWildQualified>")]
-		public ColumnWildcardItem(Qualified<ColumnName> columnWildcard) {
+		public ColumnWildcardItem(Qualified<SqlName, ColumnName> columnWildcard) {
 			Debug.Assert(columnWildcard != null);
 			this.columnWildcard = columnWildcard;
 		}
 
-		public Qualified<ColumnName> ColumnWildcard {
+		public Qualified<SqlName, ColumnName> ColumnWildcard {
 			get {
 				return columnWildcard;
 			}

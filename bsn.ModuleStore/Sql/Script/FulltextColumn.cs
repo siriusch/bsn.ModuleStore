@@ -7,10 +7,10 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class FulltextColumn: SqlScriptableToken {
 		private readonly ColumnName columnName;
 		private readonly LanguageLcid language;
-		private readonly Qualified<TypeName> typeColumn;
+		private readonly Qualified<SchemaName, TypeName> typeColumn;
 
 		[Rule("<FulltextColumn> ::= <ColumnName> <FulltextColumnType> <OptionalLanguage>")]
-		public FulltextColumn(ColumnName columnName, Optional<Qualified<TypeName>> typeColumn, Optional<LanguageLcid> language) {
+		public FulltextColumn(ColumnName columnName, Optional<Qualified<SchemaName, TypeName>> typeColumn, Optional<LanguageLcid> language) {
 			Debug.Assert(columnName != null);
 			this.columnName = columnName;
 			this.typeColumn = typeColumn;
@@ -29,7 +29,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Qualified<TypeName> TypeColumn {
+		public Qualified<SchemaName, TypeName> TypeColumn {
 			get {
 				return typeColumn;
 			}

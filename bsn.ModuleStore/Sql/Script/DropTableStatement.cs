@@ -6,15 +6,15 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropTableStatement: DropStatement {
-		private readonly TableName tableName;
+		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<DropTableStatement> ::= DROP TABLE <TableName>", ConstructorParameterMapping = new[] {2})]
-		public DropTableStatement(TableName tableName) {
+		[Rule("<DropTableStatement> ::= DROP TABLE <TableNameQualified>", ConstructorParameterMapping = new[] {2})]
+		public DropTableStatement(Qualified<SchemaName, TableName> tableName) {
 			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 		}
 
-		public TableName TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}

@@ -15,6 +15,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 	[Terminal(",")]
 	[Terminal(";")]
 	[Terminal("_RETURNS")]
+	[Terminal("ALL_SERVER")]
 	[Terminal("AS")]
 	[Terminal("BEGIN")]
 	[Terminal("BEGIN_CATCH")]

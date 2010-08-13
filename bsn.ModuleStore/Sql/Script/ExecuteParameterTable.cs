@@ -5,15 +5,15 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExecuteParameterTable: ExecuteParameter {
-		private readonly Qualified<TableName> tableName;
+		private readonly Qualified<SchemaName, TableName> tableName;
 
 		[Rule("<ExecuteParameter> ::= <TableNameQualified>")]
-		public ExecuteParameterTable(Qualified<TableName> tableName) {
+		public ExecuteParameterTable(Qualified<SchemaName, TableName> tableName) {
 			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 		}
 
-		public Qualified<TableName> TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}

@@ -5,15 +5,15 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropXmlSchemaCollectionStatement: DropStatement {
-		private readonly XmlSchemaCollectionName xmlSchemaCollectionName;
+		private readonly Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName;
 
-		[Rule("<DropXmlSchemaCollectionStatement> ::= DROP XML_SCHEMA_COLLECTION <XmlSchemaCollectionName>", ConstructorParameterMapping = new[] {2})]
-		public DropXmlSchemaCollectionStatement(XmlSchemaCollectionName xmlSchemaCollectionName) {
+		[Rule("<DropXmlSchemaCollectionStatement> ::= DROP XML_SCHEMA_COLLECTION <XmlSchemaCollectionNameQualified>", ConstructorParameterMapping = new[] {2})]
+		public DropXmlSchemaCollectionStatement(Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName) {
 			Debug.Assert(xmlSchemaCollectionName != null);
 			this.xmlSchemaCollectionName = xmlSchemaCollectionName;
 		}
 
-		public XmlSchemaCollectionName XmlSchemaCollectionName {
+		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName {
 			get {
 				return xmlSchemaCollectionName;
 			}

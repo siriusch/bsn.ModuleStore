@@ -4,12 +4,12 @@ using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class EnableDisableTriggerStatement: Statement {
-		private readonly TableName tableName;
-		private readonly List<TriggerName> triggerNames;
+		private readonly TriggerTarget target;
+		private readonly List<Qualified<SchemaName, TriggerName>> triggerNames;
 
-		protected EnableDisableTriggerStatement(Sequence<TriggerName> triggerNames, TableName tableName) {
-			Debug.Assert(tableName != null);
-			this.tableName = tableName;
+		protected EnableDisableTriggerStatement(Sequence<Qualified<SchemaName, TriggerName>> triggerNames, TriggerTarget target) {
+			Debug.Assert(target != null);
+			this.target = target;
 			this.triggerNames = triggerNames.ToList();
 		}
 
@@ -19,13 +19,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TableName TableName {
+		public TriggerTarget Target {
 			get {
-				return tableName;
+				return target;
 			}
 		}
 
-		public List<TriggerName> TriggerNames {
+		public List<Qualified<SchemaName, TriggerName>> TriggerNames {
 			get {
 				return triggerNames;
 			}
@@ -39,7 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.WriteSequence(triggerNames, WhitespacePadding.None, ", ");
 			}
 			writer.Write(" ON ");
-			writer.WriteScript(tableName, WhitespacePadding.None);
+			writer.WriteScript(target, WhitespacePadding.None);
 		}
 	}
 }

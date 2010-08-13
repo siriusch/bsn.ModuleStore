@@ -5,8 +5,8 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateFunctionInlineStatement: CreateFunctionStatement<SelectStatement> {
-		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>", ConstructorParameterMapping = new[] {2, 4, 7, 10})]
-		public CreateFunctionInlineStatement(FunctionName functionName, Optional<Sequence<FunctionParameter>> parameters, FunctionOptionToken options, SelectStatement body): base(functionName, parameters, options, body) {}
+		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>", ConstructorParameterMapping = new[] {2, 4, 7, 10})]
+		public CreateFunctionInlineStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, FunctionOptionToken options, SelectStatement body): base(functionName, parameters, options, body) {}
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

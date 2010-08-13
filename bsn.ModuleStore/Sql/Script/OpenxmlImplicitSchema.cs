@@ -5,15 +5,15 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class OpenxmlImplicitSchema: OpenxmlSchema {
-		private readonly Qualified<TableName> tableName;
+		private readonly Qualified<SchemaName, TableName> tableName;
 
 		[Rule("<OpenxmlImplicitSchema> ::= WITH '(' <TableNameQualified> ')'", ConstructorParameterMapping = new[] {2})]
-		public OpenxmlImplicitSchema(Qualified<TableName> tableName) {
+		public OpenxmlImplicitSchema(Qualified<SchemaName, TableName> tableName) {
 			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 		}
 
-		public Qualified<TableName> TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}

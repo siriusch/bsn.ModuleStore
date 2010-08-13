@@ -6,15 +6,15 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropFunctionStatement: DropStatement {
-		private readonly FunctionName functionName;
+		private readonly Qualified<SchemaName, FunctionName> functionName;
 
-		[Rule("<DropFunctionStatement> ::= DROP FUNCTION <FunctionName>", ConstructorParameterMapping = new[] {2})]
-		public DropFunctionStatement(FunctionName functionName) {
+		[Rule("<DropFunctionStatement> ::= DROP FUNCTION <FunctionNameQualified>", ConstructorParameterMapping = new[] {2})]
+		public DropFunctionStatement(Qualified<SchemaName, FunctionName> functionName) {
 			Debug.Assert(functionName != null);
 			this.functionName = functionName;
 		}
 
-		public FunctionName FunctionName {
+		public Qualified<SchemaName, FunctionName> FunctionName {
 			get {
 				return functionName;
 			}

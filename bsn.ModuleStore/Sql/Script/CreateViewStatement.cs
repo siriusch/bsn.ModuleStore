@@ -10,12 +10,12 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateViewStatement: CreateStatement {
 		private readonly List<ColumnName> columnNames;
 		private readonly SelectStatement selectStatement;
-		private readonly ViewName viewName;
+		private readonly Qualified<SchemaName, ViewName> viewName;
 		private readonly bool withCheckOption;
 		private readonly bool withViewMetadata;
 
-		[Rule("<CreateViewStatement> ::= CREATE VIEW <ViewName> <ColumnNameGroup> <ViewOptionalAttribute> AS <SelectStatement> <ViewOptionalCheckOption>", ConstructorParameterMapping = new[] {2, 3, 4, 6, 7})]
-		public CreateViewStatement(ViewName viewName, Optional<Sequence<ColumnName>> columnNames, Optional<WithViewMetadataToken> withViewMetadata, SelectStatement selectStatement, Optional<WithCheckOptionToken> withCheckOption) {
+		[Rule("<CreateViewStatement> ::= CREATE VIEW <ViewNameQualified> <ColumnNameGroup> <ViewOptionalAttribute> AS <SelectStatement> <ViewOptionalCheckOption>", ConstructorParameterMapping = new[] {2, 3, 4, 6, 7})]
+		public CreateViewStatement(Qualified<SchemaName, ViewName> viewName, Optional<Sequence<ColumnName>> columnNames, Optional<WithViewMetadataToken> withViewMetadata, SelectStatement selectStatement, Optional<WithCheckOptionToken> withCheckOption) {
 			Debug.Assert(viewName != null);
 			Debug.Assert(selectStatement != null);
 			this.viewName = viewName;
@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public ViewName ViewName {
+		public Qualified<SchemaName, ViewName> ViewName {
 			get {
 				return viewName;
 			}

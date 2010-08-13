@@ -10,8 +10,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly VariableName resultVariableName;
 		private readonly List<TableDefinition> tableDefinitions;
 
-		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <StatementBlock>", ConstructorParameterMapping = new[] {2, 4, 6, 8, 9, 11})]
-		public CreateFunctionTableStatement(FunctionName functionName, Optional<Sequence<FunctionParameter>> parameters, VariableName resultVariableName, Sequence<TableDefinition> tableDefinitions, FunctionOptionToken options, StatementBlock body): base(functionName, parameters, options, body) {
+		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <StatementBlock>", ConstructorParameterMapping = new[] {2, 4, 6, 8, 9, 11})]
+		public CreateFunctionTableStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, VariableName resultVariableName, Sequence<TableDefinition> tableDefinitions, FunctionOptionToken options, StatementBlock body): base(functionName, parameters, options, body) {
 			Debug.Assert(resultVariableName != null);
 			Debug.Assert(tableDefinitions != null);
 			this.resultVariableName = resultVariableName;

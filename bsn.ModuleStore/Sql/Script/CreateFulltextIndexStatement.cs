@@ -11,10 +11,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly FulltextChangeTracking changeTracking;
 		private readonly List<FulltextColumn> columns;
 		private readonly IndexName indexName;
-		private readonly TableName tableName;
+		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>", ConstructorParameterMapping = new[] {4, 5, 8, 9})]
-		public CreateFulltextIndexStatement(TableName tableName, Optional<Sequence<FulltextColumn>> columns, IndexName indexName, FulltextChangeTrackingToken changeTracking) {
+		[Rule("<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableNameQualified> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>", ConstructorParameterMapping = new[] {4, 5, 8, 9})]
+		public CreateFulltextIndexStatement(Qualified<SchemaName, TableName> tableName, Optional<Sequence<FulltextColumn>> columns, IndexName indexName, FulltextChangeTrackingToken changeTracking) {
 			Debug.Assert(tableName != null);
 			Debug.Assert(indexName != null);
 			Debug.Assert(changeTracking != null);
@@ -42,7 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TableName TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}

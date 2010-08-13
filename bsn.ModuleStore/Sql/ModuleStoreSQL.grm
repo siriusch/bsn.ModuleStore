@@ -273,6 +273,7 @@ _RETURNS = ')'{Whitespace}*RETURNS
 LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|(''{String Ch}+'')+)
 OUTPUT = OUT(PUT)?
 OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
+ALL_SERVER = ALL{Whitespace}+SERVER
 
 ! =============================================================================
 ! Common Terminals (Names, Literals, ...)
@@ -307,6 +308,9 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 <FunctionName> ::= Id
                  | SystemFuncId
 
+<FunctionNameQualified> ::= <FunctionName>
+                          | <SchemaName> '.' <FunctionName>
+
 <IndexName> ::= Id
 
 <LabelName> ::= Id
@@ -326,6 +330,9 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 <TriggerName> ::= Id
 
+<TriggerNameQualified> ::= <TriggerName>
+                         | <SchemaName> '.' <TriggerName>
+
 <TypeName> ::= Id
              | Id '(' Id ')' ! e.g. VARCHAR(MAX)
              | Id '(' <IntegerLiteral> ')' ! e.g. VARCHAR(20)
@@ -342,7 +349,13 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 <ViewName> ::= Id
 
+<ViewNameQualified> ::= <ViewName>
+                      | <SchemaName> '.' <ViewName>
+
 <XmlSchemaCollectionName> ::= Id
+
+<XmlSchemaCollectionNameQualified> ::= <XmlSchemaCollectionName>
+                                     | <SchemaName> '.' <XmlSchemaCollectionName>
 
 <OptionalAs> ::= AS
                |
@@ -559,7 +572,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 ! We don't allow to specify the catalog name, since the catalog is automatically assigned (module name)
 
-<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableName> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
+<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableNameQualified> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
 
 <FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'
                         |
@@ -580,7 +593,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
                            | WITH_CHANGE_TRACKING OFF ',' NO_POPULATION
                            |
 
-<DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableName>
+<DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableNameQualified>
 
 ! =============================================================================
 ! CREATE/DROP FUNCTION
@@ -588,9 +601,9 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 ! We don't allow to specify the schema name, it is implicit (module name)
 
-<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
-                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>
-                            | CREATE FUNCTION <FunctionName> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
+<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS <TypeName> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
+                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>
+                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
 
 <OptionalFunctionParameterList> ::= <FunctionParameterList>
                                   |
@@ -608,13 +621,13 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
                            | WITH CALLED_ON_NULL_INPUT
                            |
 
-<DropFunctionStatement> ::= DROP FUNCTION <FunctionName>
+<DropFunctionStatement> ::= DROP FUNCTION <FunctionNameQualified>
 
 ! =============================================================================
 ! CREATE/DROP PROCEDURE and EXECUTE
 ! =============================================================================
 
-<CreateProcedureStatement> ::= CREATE PROCEDURE <ProcedureName> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> AS <StatementBlock>
+<CreateProcedureStatement> ::= CREATE PROCEDURE <ProcedureNameQualified> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> AS <StatementBlock>
 
 <ProcedureParameterGroup> ::= <ProcedureParameterList>
                             |
@@ -639,7 +652,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 <ProcedureFor> ::= FOR_REPLICATION
                  |
 
-<DropProcedureStatement> ::= DROP PROCEDURE <ProcedureName>
+<DropProcedureStatement> ::= DROP PROCEDURE <ProcedureNameQualified>
 
 <ExecuteStatement> ::= EXECUTE <VariableName> '=' <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>
                      | EXECUTE <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>
@@ -664,35 +677,35 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 ! We don't support the ON option, filegroup is managed by module manager
 
-<CreateTableStatement> ::= CREATE TABLE <TableName> <TableDefinitionGroup>
+<CreateTableStatement> ::= CREATE TABLE <TableNameQualified> <TableDefinitionGroup>
 
-<AlterTableStatement> ::= ALTER TABLE <TableName> ALTER COLUMN <ColumnName> <ColumnDefinition>
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD ROWGUIDCOL
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP ROWGUIDCOL
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD_PERSISTED
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP_PERSISTED
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> ADD NOT FOR_REPLICATION
-                        | ALTER TABLE <TableName> ALTER COLUMN <ColumnName> DROP NOT FOR_REPLICATION
-                        | ALTER TABLE <TableName> <TableCheck> ADD <TableDefinitionList>
-                        | ALTER TABLE <TableName> <TableCheck> NOCHECK CONSTRAINT <ConstraintName>
-                        | ALTER TABLE <TableName> <TableCheck> NOCHECK CONSTRAINT ALL
-                        | ALTER TABLE <TableName> <TableCheck> CHECK CONSTRAINT <ConstraintName>
-                        | ALTER TABLE <TableName> <TableCheck> CHECK CONSTRAINT ALL
-                        | ALTER TABLE <TableName> DROP <ConstraintName>
-                        | ALTER TABLE <TableName> DROP CONSTRAINT <ConstraintName>
-                        | ALTER TABLE <TableName> DROP COLUMN <ColumnName>
+<AlterTableStatement> ::= ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> <ColumnDefinition>
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD ROWGUIDCOL
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP ROWGUIDCOL
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD_PERSISTED
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP_PERSISTED
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD NOT FOR_REPLICATION
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP NOT FOR_REPLICATION
+                        | ALTER TABLE <TableNameQualified> <TableCheck> ADD <TableDefinitionList>
+                        | ALTER TABLE <TableNameQualified> <TableCheck> NOCHECK CONSTRAINT <ConstraintName>
+                        | ALTER TABLE <TableNameQualified> <TableCheck> NOCHECK CONSTRAINT ALL
+                        | ALTER TABLE <TableNameQualified> <TableCheck> CHECK CONSTRAINT <ConstraintName>
+                        | ALTER TABLE <TableNameQualified> <TableCheck> CHECK CONSTRAINT ALL
+                        | ALTER TABLE <TableNameQualified> DROP <ConstraintName>
+                        | ALTER TABLE <TableNameQualified> DROP CONSTRAINT <ConstraintName>
+                        | ALTER TABLE <TableNameQualified> DROP COLUMN <ColumnName>
 
 <TableCheck> ::= WITH CHECK
                | WITH NOCHECK
                |
 
-<DropTableStatement> ::= DROP TABLE <TableName>
+<DropTableStatement> ::= DROP TABLE <TableNameQualified>
 
 ! =============================================================================
 ! CREATE/DROP VIEW
 ! =============================================================================
 
-<CreateViewStatement> ::= CREATE VIEW <ViewName> <ColumnNameGroup> <ViewOptionalAttribute> AS <SelectStatement> <ViewOptionalCheckOption>
+<CreateViewStatement> ::= CREATE VIEW <ViewNameQualified> <ColumnNameGroup> <ViewOptionalAttribute> AS <SelectStatement> <ViewOptionalCheckOption>
 
 <ColumnNameGroup> ::= '(' <ColumnNameList> ')'
                     |
@@ -703,7 +716,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 <ViewOptionalCheckOption> ::= WITH_CHECK_OPTION
                             |
 
-<DropViewStatement> ::= DROP VIEW <ViewName>
+<DropViewStatement> ::= DROP VIEW <ViewNameQualified>
 
 ! =============================================================================
 ! CREATE/DROP INDEX
@@ -711,9 +724,9 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 ! We don't support the ON option, filegroup is managed by module manager
 
-<CreateIndexStatement> ::= CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' INCLUDE_ <ColumnNameList> ')' <IndexOptionGroup>
-                         | CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableName> '(' <IndexColumnList> ')' <IndexOptionGroup>
-                         | CREATE <IndexPrimary> XML_INDEX <IndexName> ON <TableName> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
+<CreateIndexStatement> ::= CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' INCLUDE_ <ColumnNameList> ')' <IndexOptionGroup>
+                         | CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' <IndexOptionGroup>
+                         | CREATE <IndexPrimary> XML_INDEX <IndexName> ON <TableNameQualified> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
 
 <IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>
                     | <IndexColumn>
@@ -740,7 +753,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
                | USING_XML_INDEX <IndexName> FOR_PROPERTY
                |
 
-<DropIndexStatement> ::= DROP INDEX <IndexName> ON <TableName> <IndexOptionGroup>
+<DropIndexStatement> ::= DROP INDEX <IndexName> ON <TableNameQualified> <IndexOptionGroup>
 
 ! =============================================================================
 ! CREATE/DROP TRIGGER
@@ -748,7 +761,7 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 
 ! Only DML triggers are supported
 
-<CreateTriggerStatement> ::= CREATE TRIGGER <TriggerName> ON <TableName> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <StatementGroup>
+<CreateTriggerStatement> ::= CREATE TRIGGER <TriggerNameQualified> ON <TableNameQualified> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <StatementGroup>
 
 <TriggerType> ::= FOR
                 | INSTEAD_OF
@@ -764,24 +777,28 @@ OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
 <OptionalNotForReplication> ::= NOT FOR_REPLICATION
                               |
 
-<EnableTriggerStatement> ::= ENABLE_TRIGGER ALL ON <TableName>
-                           | ENABLE_TRIGGER <TriggerNameList> ON <TableName>
+<TriggerTarget> ::= <TableNameQualified>
+                  | DATABASE
+                  | ALL_SERVER
 
-<DisableTriggerStatement> ::= DISABLE_TRIGGER ALL ON <TableName>
-                            | DISABLE_TRIGGER <TriggerNameList> ON <TableName>
+<EnableTriggerStatement> ::= ENABLE_TRIGGER ALL ON <TriggerTarget>
+                           | ENABLE_TRIGGER <TriggerNameQualifiedList> ON <TriggerTarget>
 
-<TriggerNameList> ::= <TriggerName> ',' <TriggerNameList>
-                    | <TriggerName>
+<DisableTriggerStatement> ::= DISABLE_TRIGGER ALL ON <TriggerTarget>
+                            | DISABLE_TRIGGER <TriggerNameQualifiedList> ON <TriggerTarget>
 
-<DropTriggerStatement> ::= DROP TRIGGER <TriggerName>
+<TriggerNameQualifiedList> ::= <TriggerNameQualified> ',' <TriggerNameQualifiedList>
+                             | <TriggerNameQualified>
+
+<DropTriggerStatement> ::= DROP TRIGGER <TriggerNameQualified>
 
 ! =============================================================================
 ! CREATE/DROP XML SCHEMA COLLECTION
 ! =============================================================================
 
-<CreateXmlSchemaCollectionStatement> ::= CREATE XML_SCHEMA_COLLECTION <XmlSchemaCollectionName> AS <Expression>
+<CreateXmlSchemaCollectionStatement> ::= CREATE XML_SCHEMA_COLLECTION <XmlSchemaCollectionNameQualified> AS <Expression>
 
-<DropXmlSchemaCollectionStatement> ::= DROP XML_SCHEMA_COLLECTION <XmlSchemaCollectionName>
+<DropXmlSchemaCollectionStatement> ::= DROP XML_SCHEMA_COLLECTION <XmlSchemaCollectionNameQualified>
 
 ! =============================================================================
 ! Table/Column Type Definitions

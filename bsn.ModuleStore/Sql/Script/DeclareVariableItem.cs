@@ -6,13 +6,15 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DeclareVariableItem: DeclareItem {
 		private readonly Expression initialization;
-		private readonly Qualified<TypeName> typeName;
+		private readonly Qualified<SchemaName, TypeName> typeName;
 
 		[Rule("<DeclareItem> ::= <VariableName> <OptionalAs> <TypeNameQualified>", ConstructorParameterMapping = new[] {0, 2})]
-		public DeclareVariableItem(VariableName variable, Qualified<TypeName> typeName): this(variable, typeName, null) {}
+		public DeclareVariableItem(VariableName variable, Qualified<SchemaName, TypeName> typeName) : this(variable, typeName, null) {
+		}
 
 		[Rule("<DeclareItem> ::= <VariableName> <OptionalAs> <TypeNameQualified> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2, 4})]
-		public DeclareVariableItem(VariableName variable, Qualified<TypeName> typeName, Expression initialization): base(variable) {
+		public DeclareVariableItem(VariableName variable, Qualified<SchemaName, TypeName> typeName, Expression initialization)
+			: base(variable) {
 			Debug.Assert(typeName != null);
 			this.typeName = typeName;
 			this.initialization = initialization;
@@ -24,7 +26,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Qualified<TypeName> TypeName {
+		public Qualified<SchemaName, TypeName> TypeName {
 			get {
 				return typeName;
 			}

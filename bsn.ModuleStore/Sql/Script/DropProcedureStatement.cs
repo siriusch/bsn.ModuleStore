@@ -6,15 +6,15 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropProcedureStatement: DropStatement {
-		private readonly ProcedureName procedureName;
+		private readonly Qualified<SchemaName, ProcedureName> procedureName;
 
-		[Rule("<DropProcedureStatement> ::= DROP PROCEDURE <ProcedureName>", ConstructorParameterMapping = new[] {2})]
-		public DropProcedureStatement(ProcedureName procedureName) {
+		[Rule("<DropProcedureStatement> ::= DROP PROCEDURE <ProcedureNameQualified>", ConstructorParameterMapping = new[] {2})]
+		public DropProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName) {
 			Debug.Assert(procedureName != null);
 			this.procedureName = procedureName;
 		}
 
-		public ProcedureName ProcedureName {
+		public Qualified<SchemaName, ProcedureName> ProcedureName {
 			get {
 				return procedureName;
 			}

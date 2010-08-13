@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<Value> ::= <SystemVariableName>", typeof(VariableName))]
 		[Rule("<Value> ::= <VariableName>", typeof(VariableName))]
-		[Rule("<Value> ::= <ColumnNameQualified>", typeof(Qualified<ColumnName>))]
+		[Rule("<Value> ::= <ColumnNameQualified>", typeof(Qualified<SqlName, ColumnName>))]
 		public ExpressionValue(T valueSource) {
 			Debug.Assert(valueSource != null);
 			this.valueSource = valueSource;

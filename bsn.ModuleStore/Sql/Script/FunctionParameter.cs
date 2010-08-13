@@ -7,10 +7,10 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class FunctionParameter: SqlScriptableToken {
 		private readonly Literal defaultValue;
 		private readonly ParameterName parameterName;
-		private readonly Qualified<TypeName> parameterTypeName;
+		private readonly Qualified<SchemaName, TypeName> parameterTypeName;
 
 		[Rule("<FunctionParameter> ::= <ParameterName> <OptionalAs> <TypeNameQualified> <OptionalDefault>", ConstructorParameterMapping = new[] {0, 2, 3})]
-		public FunctionParameter(ParameterName parameterName, Qualified<TypeName> parameterTypeName, Optional<Literal> defaultValue) {
+		public FunctionParameter(ParameterName parameterName, Qualified<SchemaName, TypeName> parameterTypeName, Optional<Literal> defaultValue) {
 			Debug.Assert(parameterName != null);
 			Debug.Assert(parameterTypeName != null);
 			this.parameterName = parameterName;
@@ -30,7 +30,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Qualified<TypeName> ParameterTypeName {
+		public Qualified<SchemaName, TypeName> ParameterTypeName {
 			get {
 				return parameterTypeName;
 			}

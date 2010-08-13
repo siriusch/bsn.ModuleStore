@@ -9,10 +9,10 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropIndexStatement: DropStatement {
 		private readonly IndexName indexName;
 		private readonly List<IndexOption> indexOptions;
-		private readonly TableName tableName;
+		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<DropIndexStatement> ::= DROP INDEX <IndexName> ON <TableName> <IndexOptionGroup>", ConstructorParameterMapping = new[] {2, 4, 5})]
-		public DropIndexStatement(IndexName indexName, TableName tableName, Optional<Sequence<IndexOption>> indexOptions) {
+		[Rule("<DropIndexStatement> ::= DROP INDEX <IndexName> ON <TableNameQualified> <IndexOptionGroup>", ConstructorParameterMapping = new[] {2, 4, 5})]
+		public DropIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, Optional<Sequence<IndexOption>> indexOptions) {
 			Debug.Assert(indexName != null);
 			Debug.Assert(tableName != null);
 			this.indexName = indexName;
@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TableName TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}

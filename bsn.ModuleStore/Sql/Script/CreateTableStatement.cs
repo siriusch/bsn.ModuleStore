@@ -10,10 +10,10 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateTableStatement: CreateStatement {
 		private readonly List<TableDefinition> definitions;
-		private readonly TableName tableName;
+		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<CreateTableStatement> ::= CREATE TABLE <TableName> <TableDefinitionGroup>", ConstructorParameterMapping = new[] {2, 3})]
-		public CreateTableStatement(TableName tableName, Sequence<TableDefinition> definitions) {
+		[Rule("<CreateTableStatement> ::= CREATE TABLE <TableNameQualified> <TableDefinitionGroup>", ConstructorParameterMapping = new[] {2, 3})]
+		public CreateTableStatement(Qualified<SchemaName, TableName> tableName, Sequence<TableDefinition> definitions) {
 			this.tableName = tableName;
 			this.definitions = definitions.ToList();
 		}
@@ -24,7 +24,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TableName TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}

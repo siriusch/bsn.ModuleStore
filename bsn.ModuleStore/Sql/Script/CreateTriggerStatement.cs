@@ -10,13 +10,13 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateTriggerStatement: CreateStatement {
 		private readonly bool notForReplication;
 		private readonly Statement statement;
-		private readonly TableName tableName;
-		private readonly TriggerName triggerName;
+		private readonly Qualified<SchemaName, TableName> tableName;
+		private readonly Qualified<SchemaName, TriggerName> triggerName;
 		private readonly List<DmlOperation> triggerOperations;
 		private readonly TriggerType type;
 
-		[Rule("<CreateTriggerStatement> ::= CREATE TRIGGER <TriggerName> ON <TableName> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <StatementGroup>", ConstructorParameterMapping = new[] {2, 4, 5, 6, 7, 9})]
-		public CreateTriggerStatement(TriggerName triggerName, TableName tableName, TriggerTypeToken triggerType, Sequence<DmlOperationToken> triggerOperations, Optional<ForReplicationToken> notForReplication, Statement statement) {
+		[Rule("<CreateTriggerStatement> ::= CREATE TRIGGER <TriggerNameQualified> ON <TableNameQualified> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <StatementGroup>", ConstructorParameterMapping = new[] {2, 4, 5, 6, 7, 9})]
+		public CreateTriggerStatement(Qualified<SchemaName, TriggerName> triggerName, Qualified<SchemaName, TableName> tableName, TriggerTypeToken triggerType, Sequence<DmlOperationToken> triggerOperations, Optional<ForReplicationToken> notForReplication, Statement statement) {
 			Debug.Assert(triggerName != null);
 			Debug.Assert(triggerOperations != null);
 			Debug.Assert(triggerType != null);
@@ -42,13 +42,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TableName TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}
 		}
 
-		public TriggerName TriggerName {
+		public Qualified<SchemaName, TriggerName> TriggerName {
 			get {
 				return triggerName;
 			}

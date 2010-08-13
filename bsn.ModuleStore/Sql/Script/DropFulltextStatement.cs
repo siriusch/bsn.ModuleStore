@@ -6,15 +6,15 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropFulltextStatement: DropStatement {
-		private readonly TableName tableName;
+		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableName>", ConstructorParameterMapping = new[] {3})]
-		public DropFulltextStatement(TableName tableName) {
+		[Rule("<DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableNameQualified>", ConstructorParameterMapping = new[] {3})]
+		public DropFulltextStatement(Qualified<SchemaName, TableName> tableName) {
 			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 		}
 
-		public TableName TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}
