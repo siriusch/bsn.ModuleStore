@@ -41,7 +41,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<UpdateItemList> ::= <UpdateItem>", typeof(UpdateItem))]
 		[Rule("<CaseWhenExpressionList> ::= <CaseWhenExpression>", typeof(CaseWhen<Expression>))]
 		[Rule("<CaseWhenPredicateList> ::= <CaseWhenPredicate>", typeof(CaseWhen<Predicate>))]
-		[Rule("<VariableAssignmentList> ::= <VariableAssignment>", typeof(VariableAssignment))]
 		public Sequence(T item): this(item, null) {}
 
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
@@ -61,7 +60,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>", typeof(IndexColumn), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<IndexOptionList> ::= <IndexOption> ',' <IndexOptionList>", typeof(IndexOption), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<TriggerOperationList> ::= <TriggerOperation> ',' <TriggerOperationList>", typeof(DmlOperationToken), ConstructorParameterMapping = new[] {0, 2})]
-		[Rule("<TriggerNameQualifiedList> ::= <TriggerNameQualified> ',' <TriggerNameQualifiedList>", typeof(Qualified<SchemaName, TriggerName>), ConstructorParameterMapping=new[] { 0, 2 })]
+		[Rule("<TriggerNameQualifiedList> ::= <TriggerNameQualified> ',' <TriggerNameQualifiedList>", typeof(Qualified<SchemaName, TriggerName>), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<CTEList> ::= <CTE> ',' <CTEList>", typeof(CommonTableExpression), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<ColumnItemList> ::= <ColumnItem> ',' <ColumnItemList>", typeof(ColumnItem), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<OrderList> ::= <Order> ',' <OrderList>", typeof(OrderExpression), ConstructorParameterMapping = new[] {0, 2})]
@@ -70,7 +69,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<UpdateItemList> ::= <UpdateItem> ',' <UpdateItemList>", typeof(UpdateItem), ConstructorParameterMapping = new[] {0, 2})]
 		[Rule("<CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>", typeof(CaseWhen<Expression>))]
 		[Rule("<CaseWhenPredicateList> ::= <CaseWhenPredicate> <CaseWhenPredicateList>", typeof(CaseWhen<Predicate>))]
-		[Rule("<VariableAssignmentList> ::= <VariableAssignment> ',' <VariableAssignmentList>", typeof(VariableAssignment), ConstructorParameterMapping = new[] {0, 2})]
 		public Sequence(T item, Sequence<T> next) {
 			if (next != null) {
 				if (next.Item != null) {

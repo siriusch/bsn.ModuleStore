@@ -440,7 +440,6 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                  | <PrintStatement>
                  | <ReturnStatement>
                  | <SetStatement>
-                 | <SelectVariableStatement>
                  | <TryCatchStatement>
                  | <WaitforStatement>
                  | <WhileStatement>
@@ -456,9 +455,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <GotoStatement> ::= GOTO <LabelName>
 
 ! To avoid the hanging ELSE problem/ambiguity, we just require a block - even if this is more restrictive than T-SQL
-<IfStatement> ::= IF <Predicate> THEN <StatementBlock> ELSE <StatementGroup>
-                | IF <Predicate> THEN <StatementGroup>
-                | IF <Predicate> <Statement>
+<IfStatement> ::= IF <Predicate> <StatementBlock> ELSE <StatementGroup>
+                | IF <Predicate> <StatementGroup>
 
 <ReturnStatement> ::= RETURN
                     | RETURN <Expression>
@@ -480,8 +478,10 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> TABLE <TableDefinitionGroup>
                      | DECLARE <DeclareItemList>
-                     | DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement>
-                     | DECLARE <CursorName> CURSOR <CursorOptionList> FOR <SelectStatement> <CursorUpdate>
+                     | DECLARE <CursorName> <CursorDefinition>
+
+<CursorDefinition> ::= CURSOR <CursorOptionList> FOR <SelectStatement>
+                     | CURSOR <CursorOptionList> FOR <SelectStatement> <CursorUpdate>
 
 <DeclareItem> ::= <VariableName> CURSOR
                 | <VariableName> <OptionalAs> <TypeNameQualified>
@@ -545,12 +545,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <SetStatement> ::= <SetVariableStatement>
                  | <SetOptionStatement>
 
-<SetVariableStatement> ::= SET <VariableAssignment>
-
-<VariableAssignment> ::= <VariableName> '=' <Expression>
-
-<VariableAssignmentList> ::= <VariableAssignment> ',' <VariableAssignmentList>
-                           | <VariableAssignment>
+<SetVariableStatement> ::= SET <VariableName> '=' <Expression>
+                         | SET <VariableName> '=' <CursorDefinition>
 
 <SetOptionStatement> ::= SET Id <SetValueList>
                        | SET IDENTITY_INSERT <TableName> <Toggle>
@@ -949,8 +945,6 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! SELECT Statement
 ! =============================================================================
 
-<SelectVariableStatement> ::= SELECT <VariableAssignmentList>
-
 <SelectStatement> ::= WITH <CTEList> <SelectQuery> <ForClause> <QueryHint>
                     | <SelectQuery> <ForClause> <QueryHint>
 
@@ -972,6 +966,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <ColumnItem> ::= <ColumnWildQualified>
                | <Expression> <OptionalAlias>
                | <AliasName> '=' <Expression>
+               | <VariableName> '=' <Expression>
 
 <Restriction> ::= ALL
                 | DISTINCT
@@ -999,6 +994,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                  | '(' <SelectQuery> ')' <OptionalAlias>
                  | <Openxml> <OptionalAlias>
                  | <FunctionCall> <OptionalAlias>
+                 | <SchemaName> '.' <FunctionCall> <OptionalAlias>
 
 <OptionalAlias> ::= <OptionalAs> <AliasName>
                   |
@@ -1115,31 +1111,18 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                    | <ExpressionMult> '%' <ExpressionNegate> 
                    | <ExpressionNegate>
 
-<ExpressionNegate> ::= '-' <ExpressionFunction>
-                     | '+' <ExpressionFunction> ! the "unary plus" also belongs somewhere here
-                     | <ExpressionFunction>
+<ExpressionNegate> ::= '-' <ExpressionCase>
+                     | '+' <ExpressionCase> ! the "unary plus" also belongs somewhere here
+                     | <ExpressionCase>
 
-<ExpressionFunction> ::= COUNT_ <ColumnWildNameQualified> ')'
-                       | COUNT_ <Restriction> <ColumnWildNameQualified> ')'
-                       | CAST_ <Expression> AS <TypeName> ')'
-                       | COALESCE '(' <ExpressionList> ')'
-                       | CONVERT '(' <TypeName> ',' <Expression> ')'
-                       | CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'
-                       | <FunctionCall>
-                       | <FunctionCall> OVER '(' <RankingArguments> ')'
-                       | <ExpressionCase>
-             
 <RankingArguments> ::= PARTITION_BY <ExpressionList> <OptionalOrderClause>
                      | <OrderClause>
-
-<FunctionCall> ::= <FunctionName> '(' ')'
-                 | <FunctionName> '(' <ExpressionList> ')'
 
 <ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> ELSE <Expression> END
                    | CASE <Expression> <CaseWhenExpressionList> END
                    | CASE <CaseWhenPredicateList> ELSE <Expression> END
                    | CASE <CaseWhenPredicateList> END
-                   | <CollatedValue>
+                   | <ExpressionCountFunction>
 
 <CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>
                            | <CaseWhenExpression>
@@ -1151,13 +1134,28 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                            
 <CaseWhenPredicate> ::= WHEN <Predicate> THEN <Expression>
 
+<ExpressionCountFunction> ::= COUNT_ <ColumnWildNameQualified> ')'
+                            | COUNT_ <Restriction> <ColumnWildNameQualified> ')'
+                            | <CollatedValue>
+             
 <CollatedValue> ::= <Value> COLLATE <CollationName>
                   | <Value>
                   | <Literal>
      
+<FunctionCall> ::= <FunctionName> '(' ')'
+                 | <FunctionName> '(' <ExpressionList> ')'
+
 <Value> ::= <SystemVariableName>
           | <ColumnNameQualified>
           | <VariableName> ! CLR UDT property, field and methods are not yet implemented
+          | CAST_ <Expression> AS <TypeName> ')'
+          | COALESCE '(' <ExpressionList> ')'
+          | NULLIF '(' <Expression> ',' <Expression> ')'
+          | CONVERT '(' <TypeName> ',' <Expression> ')'
+          | CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'
+          | <FunctionCall>
+          | <TableName> '.' <FunctionCall> ! should be <SchemaName> '.' <FunctionCall> - but that gives a reduce-reduce error
+          | <FunctionCall> OVER '(' <RankingArguments> ')'
           | <ExpressionParens>
 
 <ExpressionParens> ::= '(' <SelectQuery> ')'

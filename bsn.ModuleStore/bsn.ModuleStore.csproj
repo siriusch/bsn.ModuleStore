@@ -65,10 +65,13 @@
     <Compile Include="Sql\Script\AlterTableCheckConstraintStatementBase.cs" />
     <Compile Include="Sql\Script\AlterTableNocheckConstraintStatement.cs" />
     <Compile Include="Sql\Script\ColumnNotNullableConstraint.cs" />
+    <Compile Include="Sql\Script\ColumnVariableItem.cs" />
     <Compile Include="Sql\Script\CrossJoin.cs" />
+    <Compile Include="Sql\Script\CursorDefinition.cs" />
     <Compile Include="Sql\Script\DeclareItem.cs" />
     <Compile Include="Sql\Script\DmlOperation.cs" />
     <Compile Include="Sql\Script\ExpressionConvertFunction.cs" />
+    <Compile Include="Sql\Script\ExpressionNullifFunction.cs" />
     <Compile Include="Sql\Script\ForeignKeyActionKind.cs" />
     <Compile Include="Sql\Script\ForeignKeyCascadeAction.cs" />
     <Compile Include="Sql\Script\ForeignKeySetDefaultAction.cs" />
@@ -92,7 +95,9 @@
     <Compile Include="Sql\Script\QueryMaxrecursionHint.cs" />
     <Compile Include="Sql\Script\RightOuterJoin.cs" />
     <Compile Include="Sql\Script\SelectFor.cs" />
-    <Compile Include="Sql\Script\SelectVariableStatement.cs" />
+    <Compile Include="Sql\Script\SetVariableCursorStatement.cs" />
+    <Compile Include="Sql\Script\SetVariableExpressionStatement.cs" />
+    <Compile Include="Sql\Script\SqlToken.cs" />
     <Compile Include="Sql\Script\TableCheck.cs" />
     <Compile Include="Sql\Script\Tokens\AddToken.cs" />
     <Compile Include="Sql\Script\AliasName.cs" />
@@ -364,7 +369,6 @@
     <Compile Include="Sql\Script\UpdateModeReadOnly.cs" />
     <Compile Include="Sql\Script\UpdateStatement.cs" />
     <Compile Include="Sql\Script\DeclareStatement.cs" />
-    <Compile Include="Sql\Script\VariableAssignment.cs" />
     <Compile Include="Sql\Script\VariableName.cs" />
     <Compile Include="Sql\Script\Tokens\VaryingToken.cs" />
     <Compile Include="Sql\Script\ViewName.cs" />

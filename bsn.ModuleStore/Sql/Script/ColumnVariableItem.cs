@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class VariableAssignment: SqlScriptableToken {
+	public sealed class ColumnVariableItem: ColumnItem {
 		private readonly Expression expression;
 		private readonly VariableName variableName;
 
-		[Rule("<VariableAssignment> ::= <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
-		public VariableAssignment(VariableName variableName, Expression expression) {
-			Debug.Assert(variableName != null);
+		[Rule("<ColumnItem> ::= <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
+		public ColumnVariableItem(VariableName variableName, Expression expression) {
 			Debug.Assert(expression != null);
+			Debug.Assert(variableName != null);
 			this.variableName = variableName;
 			this.expression = expression;
 		}

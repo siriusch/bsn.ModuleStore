@@ -9,11 +9,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Statement elseStatement;
 		private readonly Statement thenStatement;
 
-		[Rule("<IfStatement> ::= IF <Predicate> THEN <StatementGroup>", ConstructorParameterMapping = new[] {1, 3})]
-		[Rule("<IfStatement> ::= IF <Predicate> <Statement>", ConstructorParameterMapping = new[] {1, 2})]
+		[Rule("<IfStatement> ::= IF <Predicate> <StatementGroup>", ConstructorParameterMapping = new[] {1, 2})]
 		public IfStatement(Predicate condition, Statement thenStatement): this(condition, thenStatement, null) {}
 
-		[Rule("<IfStatement> ::= IF <Predicate> THEN <StatementBlock> ELSE <StatementGroup>", ConstructorParameterMapping = new[] {1, 3, 5})]
+		[Rule("<IfStatement> ::= IF <Predicate> <StatementBlock> ELSE <StatementGroup>", ConstructorParameterMapping = new[] {1, 2, 4})]
 		public IfStatement(Predicate condition, Statement thenStatement, Statement elseStatement) {
 			Debug.Assert(condition != null);
 			Debug.Assert(thenStatement != null);

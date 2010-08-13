@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalFromClause> ::=", typeof(FromClause))]
 		public Optional(): this(null) {}
 
-		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<SchemaName, TypeName>), ConstructorParameterMapping=new[] { 1 })]
+		[Rule("<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>", typeof(Qualified<SchemaName, TypeName>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'", typeof(Sequence<FulltextColumn>), ConstructorParameterMapping = new[] {1})]
 		[Rule("<OptionalLanguage> ::= LANGUAGE_LCID", typeof(LanguageLcid))]
 		[Rule("<OptionalDefault> ::= '=' <Literal>", typeof(Literal), ConstructorParameterMapping = new[] {1})]

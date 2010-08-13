@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly ExpressionFunctionCall functionCall;
 		private readonly RankingArguments rankingArguments;
 
-		[Rule("<ExpressionFunction> ::= <FunctionCall> OVER '(' <RankingArguments> ')'", ConstructorParameterMapping = new[] {0, 3})]
+		[Rule("<Value> ::= <FunctionCall> OVER '(' <RankingArguments> ')'", ConstructorParameterMapping = new[] {0, 3})]
 		public ExpressionRankingFunction(ExpressionFunctionCall functionCall, RankingArguments rankingArguments) {
 			this.functionCall = functionCall;
 			this.rankingArguments = rankingArguments;

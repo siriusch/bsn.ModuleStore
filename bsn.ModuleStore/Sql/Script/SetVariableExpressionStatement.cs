@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ExpressionNegate: Expression {
+	public sealed class SetVariableExpressionStatement: SetVariableStatement {
 		private readonly Expression expression;
 
-		[Rule("<ExpressionNegate> ::= '-' <ExpressionCase>", ConstructorParameterMapping = new[] {1})]
-		public ExpressionNegate(Expression expression) {
-			Debug.Assert(expression != null);
+		[Rule("<SetVariableStatement> ::= SET <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {1, 3})]
+		public SetVariableExpressionStatement(VariableName variableName, Expression expression): base(variableName) {
 			this.expression = expression;
 		}
 
@@ -20,7 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write('-');
+			base.WriteTo(writer);
 			writer.WriteScript(expression, WhitespacePadding.None);
 		}
 	}

@@ -9,15 +9,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly VariableName variableName;
 
 		[Rule("<UpdateItem> ::= <ColumnNameQualified> '=' DEFAULT", ConstructorParameterMapping = new[] {0})]
-		public UpdateItem(Qualified<SqlName, ColumnName> columnName) : this(null, columnName, null) {
-		}
+		public UpdateItem(Qualified<SqlName, ColumnName> columnName): this(null, columnName, null) {}
 
 		[Rule("<UpdateItem> ::= <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
 		public UpdateItem(VariableName variableName, Expression expression): this(variableName, null, expression) {}
 
 		[Rule("<UpdateItem> ::= <ColumnNameQualified> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
-		public UpdateItem(Qualified<SqlName, ColumnName> columnName, Expression expression) : this(null, columnName, expression) {
-		}
+		public UpdateItem(Qualified<SqlName, ColumnName> columnName, Expression expression): this(null, columnName, expression) {}
 
 		[Rule("<UpdateItem> ::= <VariableName> '=' <ColumnNameQualified> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2, 4})]
 		public UpdateItem(VariableName variableName, Qualified<SqlName, ColumnName> columnName, Expression expression) {

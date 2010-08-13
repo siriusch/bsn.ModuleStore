@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class FunctionName: SqlName {
 		private readonly bool systemFunction;
 
-		public FunctionName(string name): base(name) {}
+		public FunctionName(string name): base(name.ToUpperInvariant()) {}
 
 		[Rule("<FunctionName> ::= Id")]
 		[Rule("<FunctionName> ::= SystemFuncId")]

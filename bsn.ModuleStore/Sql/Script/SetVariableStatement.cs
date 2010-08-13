@@ -1,27 +1,25 @@
 using System;
 using System.Diagnostics;
 
-using bsn.GoldParser.Semantic;
-
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class SetVariableStatement: Statement {
-		private readonly VariableAssignment variableAssignment;
+	public abstract class SetVariableStatement: Statement {
+		private readonly VariableName variableName;
 
-		[Rule("<SetVariableStatement> ::= SET <VariableAssignment>", ConstructorParameterMapping = new[] {1})]
-		public SetVariableStatement(VariableAssignment variableAssignment) {
-			Debug.Assert(variableAssignment != null);
-			this.variableAssignment = variableAssignment;
+		public SetVariableStatement(VariableName variableName) {
+			this.variableName = variableName;
+			Debug.Assert(variableName != null);
 		}
 
-		public VariableAssignment VariableAssignment {
+		public VariableName VariableName {
 			get {
-				return variableAssignment;
+				return variableName;
 			}
 		}
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("SET ");
-			writer.WriteScript(variableAssignment, WhitespacePadding.None);
+			writer.WriteScript(variableName, WhitespacePadding.None);
+			writer.Write('=');
 		}
 	}
 }

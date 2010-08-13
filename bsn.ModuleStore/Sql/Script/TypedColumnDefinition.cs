@@ -10,8 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<ColumnConstraint> constraints;
 
 		[Rule("<ColumnDefinition> ::= <TypeNameQualified> <ColumnConstraintList>")]
-		public TypedColumnDefinition(Qualified<SchemaName, TypeName> columnType, Sequence<ColumnConstraint> constraints)
-			: base() {
+		public TypedColumnDefinition(Qualified<SchemaName, TypeName> columnType, Sequence<ColumnConstraint> constraints): base() {
 			Debug.Assert(columnType != null);
 			Debug.Assert(constraints != null);
 			this.columnType = columnType;
