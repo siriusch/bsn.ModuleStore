@@ -34,14 +34,14 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			if (partitions.Count > 0) {
 				writer.Write("PARTITION BY ");
-				writer.WriteSequence(partitions, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(partitions, WhitespacePadding.None, ", ");
 				if (orders.Count > 0) {
 					writer.Write(' ');
 				}
 			}
 			if (orders.Count > 0) {
 				writer.Write("ORDER BY ");
-				writer.WriteSequence(orders, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(orders, WhitespacePadding.None, ", ");
 			}
 		}
 	}

@@ -29,7 +29,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			base.WriteTo(writer);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");
-				writer.WriteSequence(columnNames, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, ", ");
 				writer.Write(')');
 			}
 			writer.WriteScript(output, WhitespacePadding.SpaceBefore);

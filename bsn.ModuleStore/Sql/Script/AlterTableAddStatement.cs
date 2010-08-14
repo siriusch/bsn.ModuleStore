@@ -22,7 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			base.WriteTo(writer);
 			writer.WriteEnum(check, WhitespacePadding.SpaceAfter);
 			writer.Write("ADD ");
-			writer.WriteSequence(definitions, WhitespacePadding.None, ", ");
+			writer.WriteScriptSequence(definitions, WhitespacePadding.None, ", ");
 		}
 	}
 }

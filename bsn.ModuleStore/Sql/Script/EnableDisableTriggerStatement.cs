@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (All) {
 				writer.Write("ALL");
 			} else {
-				writer.WriteSequence(triggerNames, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(triggerNames, WhitespacePadding.None, ", ");
 			}
 			writer.Write(" ON ");
 			writer.WriteScript(target, WhitespacePadding.None);

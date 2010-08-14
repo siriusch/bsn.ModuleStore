@@ -53,7 +53,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			if (columns.Count > 0) {
 				writer.Write(" (");
-				writer.WriteSequence(columns, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(columns, WhitespacePadding.None, ", ");
 				writer.Write(")");
 			}
 			writer.Write(" KEY INDEX ");

@@ -43,7 +43,7 @@ namespace bsn.ModuleStore.Sql {
 		public void WriteCommonTableExpressions(ICollection<CommonTableExpression> expressions) {
 			if (expressions.Count > 0) {
 				Write("WITH ");
-				WriteSequence(expressions, WhitespacePadding.NewlineAfter, ",");
+				WriteScriptSequence(expressions, WhitespacePadding.NewlineAfter, ",");
 			}
 		}
 
@@ -206,7 +206,7 @@ namespace bsn.ModuleStore.Sql {
 		public void WriteIndexOptions(ICollection<IndexOption> indexOptions) {
 			if (indexOptions.Count > 0) {
 				Write(" WITH (");
-				WriteSequence(indexOptions, WhitespacePadding.None, ", ");
+				WriteScriptSequence(indexOptions, WhitespacePadding.None, ", ");
 				Write(')');
 			}
 		}
@@ -250,7 +250,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void WriteSequence<T>(IEnumerable<T> sequence, WhitespacePadding itemPadding, string itemSeparator) where T: SqlScriptableToken {
+		public void WriteScriptSequence<T>(IEnumerable<T> sequence, WhitespacePadding itemPadding, string itemSeparator) where T: SqlScriptableToken {
 			if (sequence != null) {
 				IEnumerator<T> enumerator = sequence.GetEnumerator();
 				if (enumerator.MoveNext()) {

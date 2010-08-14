@@ -5,7 +5,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class PredicateJoin: Join {
 		private readonly Predicate predicate;
 
-		protected PredicateJoin(SourceRowset joinRowset, Predicate predicate): base(joinRowset) {
+		protected PredicateJoin(Source joinSource, Predicate predicate): base(joinSource) {
 			Debug.Assert(predicate != null);
 			this.predicate = predicate;
 		}

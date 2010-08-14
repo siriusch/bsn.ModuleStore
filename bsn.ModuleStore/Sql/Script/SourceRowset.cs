@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class SourceRowset: SqlScriptableToken {
+	public abstract class SourceRowset: Source {
 		private readonly AliasName aliasName;
 
 		protected SourceRowset(AliasName aliasName) {

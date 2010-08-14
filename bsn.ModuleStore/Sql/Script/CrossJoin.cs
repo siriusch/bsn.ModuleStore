@@ -4,8 +4,8 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CrossJoin: Join {
-		[Rule("<Join> ::= CROSS JOIN <SourceRowset>", ConstructorParameterMapping = new[] {2})]
-		public CrossJoin(SourceRowset joinRowset): base(joinRowset) {}
+		[Rule("<Join> ::= CROSS JOIN <Source>", ConstructorParameterMapping = new[] {2})]
+		public CrossJoin(Source joinSource): base(joinSource) {}
 
 		public override JoinKind Kind {
 			get {

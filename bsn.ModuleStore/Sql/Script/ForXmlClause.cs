@@ -61,7 +61,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(elementName, WhitespacePadding.SpaceBefore);
 			if (directives.Count > 0) {
 				writer.Write(' ');
-				writer.WriteSequence(directives, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(directives, WhitespacePadding.None, ", ");
 			}
 		}
 	}

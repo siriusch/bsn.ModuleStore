@@ -97,6 +97,8 @@
     <Compile Include="Sql\Script\SelectFor.cs" />
     <Compile Include="Sql\Script\SetVariableCursorStatement.cs" />
     <Compile Include="Sql\Script\SetVariableExpressionStatement.cs" />
+    <Compile Include="Sql\Script\Source.cs" />
+    <Compile Include="Sql\Script\SourceParens.cs" />
     <Compile Include="Sql\Script\SqlToken.cs" />
     <Compile Include="Sql\Script\TableCheck.cs" />
     <Compile Include="Sql\Script\Tokens\AddToken.cs" />

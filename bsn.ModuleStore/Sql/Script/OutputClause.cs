@@ -44,13 +44,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("OUTPUT ");
-				writer.WriteSequence(columnItems, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(columnItems, WhitespacePadding.None, ", ");
 				if (destinationName != null) {
 					writer.Write(" INTO ");
 					writer.WriteScript(destinationName, WhitespacePadding.None);
 					if (destinationColumnNames.Count > 0) {
 						writer.Write(" (");
-						writer.WriteSequence(destinationColumnNames, WhitespacePadding.None, ", ");
+						writer.WriteScriptSequence(destinationColumnNames, WhitespacePadding.None, ", ");
 						writer.Write(")");
 					}
 				}

@@ -44,7 +44,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteEnum(clustered, WhitespacePadding.SpaceAfter);
 			writer.Write('(');
 			writer.IncreaseIndent();
-			writer.WriteSequence(indexColumns, WhitespacePadding.NewlineBefore, ", ");
+			writer.WriteScriptSequence(indexColumns, WhitespacePadding.NewlineBefore, ", ");
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');

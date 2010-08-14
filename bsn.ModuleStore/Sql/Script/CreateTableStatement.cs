@@ -35,7 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.Write(" (");
 			writer.IncreaseIndent();
-			writer.WriteSequence(definitions, WhitespacePadding.NewlineBefore, ",");
+			writer.WriteScriptSequence(definitions, WhitespacePadding.NewlineBefore, ",");
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(")");

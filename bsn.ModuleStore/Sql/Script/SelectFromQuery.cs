@@ -73,13 +73,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (groupByClause.Count > 0) {
 				writer.WriteLine();
 				writer.Write("GROUP BY ");
-				writer.WriteSequence(groupByClause, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(groupByClause, WhitespacePadding.None, ", ");
 			}
 			writer.WriteScript(havingClause, WhitespacePadding.NewlineBefore);
 			if (orderList.Count > 0) {
 				writer.WriteLine();
 				writer.Write("ORDER BY ");
-				writer.WriteSequence(orderList, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(orderList, WhitespacePadding.None, ", ");
 			}
 		}
 	}

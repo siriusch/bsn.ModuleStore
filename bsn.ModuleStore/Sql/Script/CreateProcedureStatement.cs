@@ -59,7 +59,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("CREATE PROCEDURE ");
 			writer.WriteScript(procedureName, WhitespacePadding.None);
 			writer.IncreaseIndent();
-			writer.WriteSequence(parameters, WhitespacePadding.NewlineBefore, ",");
+			writer.WriteScriptSequence(parameters, WhitespacePadding.NewlineBefore, ",");
 			if (recompile) {
 				writer.WriteLine("WITH RECOMPILE");
 			}

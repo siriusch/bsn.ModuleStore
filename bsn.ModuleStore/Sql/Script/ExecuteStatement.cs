@@ -53,7 +53,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("EXEC ");
 			writer.WriteScript(resultVariableName, WhitespacePadding.None, null, "=");
 			writer.WriteScript(procedureName, WhitespacePadding.None);
-			writer.WriteSequence(parameters, WhitespacePadding.SpaceBefore, null);
+			writer.WriteScriptSequence(parameters, WhitespacePadding.SpaceBefore, null);
 			if (recompile) {
 				writer.Write(" WITH RECOMPILE");
 			}

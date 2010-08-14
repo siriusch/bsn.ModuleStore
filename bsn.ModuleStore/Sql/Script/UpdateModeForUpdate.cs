@@ -33,7 +33,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("FOR UPDATE");
 			if (columns.Count > 0) {
 				writer.Write(" OF ");
-				writer.WriteSequence(columns, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(columns, WhitespacePadding.None, ", ");
 			}
 		}
 	}

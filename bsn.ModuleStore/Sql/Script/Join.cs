@@ -3,16 +3,16 @@ using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class Join: SqlScriptableToken {
-		private readonly SourceRowset joinRowset;
+		private readonly Source joinSource;
 
-		protected Join(SourceRowset joinRowset): base() {
-			Debug.Assert(joinRowset != null);
-			this.joinRowset = joinRowset;
+		protected Join(Source joinSource): base() {
+			Debug.Assert(joinSource != null);
+			this.joinSource = joinSource;
 		}
 
-		public SourceRowset JoinRowset {
+		public Source JoinSource {
 			get {
-				return joinRowset;
+				return joinSource;
 			}
 		}
 
@@ -22,7 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("JOIN ");
-			writer.WriteScript(joinRowset, WhitespacePadding.None);
+			writer.WriteScript(joinSource, WhitespacePadding.None);
 		}
 	}
 }

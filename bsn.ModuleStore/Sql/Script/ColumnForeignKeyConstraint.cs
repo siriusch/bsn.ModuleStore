@@ -46,7 +46,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("REFERENCES ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.WriteScript(refColumnName, WhitespacePadding.SpaceBefore);
-			writer.WriteSequence(keyActions, WhitespacePadding.SpaceBefore, null);
+			writer.WriteScriptSequence(keyActions, WhitespacePadding.SpaceBefore, null);
 		}
 	}
 }

@@ -974,27 +974,30 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <IntoClause> ::= INTO <DestinationRowset>
                |
 
-<FromClause> ::= FROM <SourceRowset> <JoinChain>
+<FromClause> ::= FROM <Source> <JoinChain>
+
+<Source> ::= <SourceRowSet> 
+           | '(' <Source> <JoinChain> ')'
 
 <JoinChain> ::= <Join> <JoinChain>
               |
 
-<Join> ::= JOIN <SourceRowset> ON <Predicate>
-         | INNER JOIN <SourceRowset> ON <Predicate>
-         | LEFT JOIN <SourceRowset> ON <Predicate>
-         | LEFT OUTER JOIN <SourceRowset> ON <Predicate>
-         | RIGHT JOIN <SourceRowset> ON <Predicate>
-         | RIGHT OUTER JOIN <SourceRowset> ON <Predicate>
-         | FULL JOIN <SourceRowset> ON <Predicate>
-         | FULL OUTER JOIN <SourceRowset> ON <Predicate>
-         | CROSS JOIN <SourceRowset>
+<Join> ::= JOIN <Source> ON <Predicate>
+         | INNER JOIN <Source> ON <Predicate>
+         | LEFT JOIN <Source> ON <Predicate>
+         | LEFT OUTER JOIN <Source> ON <Predicate>
+         | RIGHT JOIN <Source> ON <Predicate>
+         | RIGHT OUTER JOIN <Source> ON <Predicate>
+         | FULL JOIN <Source> ON <Predicate>
+         | FULL OUTER JOIN <Source> ON <Predicate>
+         | CROSS JOIN <Source>
 
 <SourceRowset> ::= <VariableName> <OptionalAlias>
                  | <TableNameQualified> <OptionalAlias>
-                 | '(' <SelectQuery> ')' <OptionalAlias>
                  | <Openxml> <OptionalAlias>
                  | <FunctionCall> <OptionalAlias>
                  | <SchemaName> '.' <FunctionCall> <OptionalAlias>
+                 | '(' <SelectQuery> ')' <OptionalAlias>
 
 <OptionalAlias> ::= <OptionalAs> <AliasName>
                   |

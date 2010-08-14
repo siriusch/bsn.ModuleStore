@@ -27,7 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("BEGIN");
 			writer.IncreaseIndent();
-			writer.WriteSequence(statements, WhitespacePadding.NewlineBefore, ";");
+			writer.WriteScriptSequence(statements, WhitespacePadding.NewlineBefore, ";");
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write("END");

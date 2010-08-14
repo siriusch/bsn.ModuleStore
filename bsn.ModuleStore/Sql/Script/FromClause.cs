@@ -7,12 +7,12 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class FromClause: SqlScriptableToken {
 		private readonly List<Join> join;
-		private readonly SourceRowset sourceRowset;
+		private readonly Source source;
 
-		[Rule("<FromClause> ::= FROM <SourceRowset> <JoinChain>", ConstructorParameterMapping = new[] {1, 2})]
-		public FromClause(SourceRowset sourceRowset, Sequence<Join> join) {
-			Debug.Assert(sourceRowset != null);
-			this.sourceRowset = sourceRowset;
+		[Rule("<FromClause> ::= FROM <Source> <JoinChain>", ConstructorParameterMapping = new[] {1, 2})]
+		public FromClause(Source source, Sequence<Join> join) {
+			Debug.Assert(source != null);
+			this.source = source;
 			this.join = join.ToList();
 		}
 
@@ -22,15 +22,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public SourceRowset SourceRowset {
+		public Source Source {
 			get {
-				return sourceRowset;
+				return source;
 			}
 		}
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("FROM ");
-			writer.WriteScript(sourceRowset, WhitespacePadding.None);
+			writer.WriteScript(source, WhitespacePadding.None);
 		}
 	}
 }

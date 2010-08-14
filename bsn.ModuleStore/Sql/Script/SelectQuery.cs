@@ -66,7 +66,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("SELECT ");
 			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(top, WhitespacePadding.SpaceAfter);
-			writer.WriteSequence(columnItems, WhitespacePadding.None, ", ");
+			writer.WriteScriptSequence(columnItems, WhitespacePadding.None, ", ");
 			writer.WriteScript(intoClause, WhitespacePadding.NewlineBefore, "INTO ", null);
 			WriteToInternal(writer);
 			writer.WriteScript(unionClause, WhitespacePadding.NewlineBefore);

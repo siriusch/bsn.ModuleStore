@@ -62,14 +62,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(TableName, WhitespacePadding.None);
 			writer.Write(" (");
 			writer.IncreaseIndent();
-			writer.WriteSequence(indexColumns, WhitespacePadding.NewlineBefore, ", ");
+			writer.WriteScriptSequence(indexColumns, WhitespacePadding.NewlineBefore, ", ");
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');
 			if (includeColumnNames.Count > 0) {
 				writer.Write(" INCLUDE (");
 				writer.IncreaseIndent();
-				writer.WriteSequence(includeColumnNames, WhitespacePadding.NewlineBefore, ", ");
+				writer.WriteScriptSequence(includeColumnNames, WhitespacePadding.NewlineBefore, ", ");
 				writer.DecreaseIndent();
 				writer.WriteLine();
 				writer.Write(')');

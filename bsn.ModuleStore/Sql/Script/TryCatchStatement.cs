@@ -29,13 +29,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("BEGIN TRY");
 			writer.IncreaseIndent();
-			writer.WriteSequence(tryStatements, WhitespacePadding.NewlineBefore, ";");
+			writer.WriteScriptSequence(tryStatements, WhitespacePadding.NewlineBefore, ";");
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.WriteLine("END TRY");
 			writer.Write("BEGIN CATCH");
 			writer.IncreaseIndent();
-			writer.WriteSequence(catchStatements, WhitespacePadding.NewlineBefore, ";");
+			writer.WriteScriptSequence(catchStatements, WhitespacePadding.NewlineBefore, ";");
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write("END TRY");

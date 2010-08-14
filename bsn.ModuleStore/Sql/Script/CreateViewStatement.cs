@@ -60,7 +60,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(viewName, WhitespacePadding.None);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");
-				writer.WriteSequence(columnNames, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, ", ");
 				writer.Write(')');
 			}
 			if (withViewMetadata) {
