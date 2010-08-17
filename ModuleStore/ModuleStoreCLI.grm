@@ -1,0 +1,58 @@
+﻿"Name"         = 'ModuleStore Command Line Interface'
+"Version"      = '0.1'
+"About"        = 'ModuleStore commands'
+"Author"       = 'Arsène von Wyss'
+
+"Character Mapping" = 'Unicode'
+
+"Start Symbol" = <CommandLine>
+
+! =============================================================================
+! Comments
+! =============================================================================
+
+Comment Start = '/*'
+Comment End   = '*/'
+Comment Line  = '#'
+
+! =============================================================================
+! Terminals
+! =============================================================================
+
+{Any Ch} = {All Valid} - {Control Codes}
+{String Ch} = {Any Ch} - ["]
+{Identifier Ch} = {Alphanumeric} + [.:/\_'-']
+{Identifier Start} = {Identifier Ch} - {Number} - [/\]
+
+String = ('"'{String Ch}*'"')+
+Integer = {Number}+
+Option = '/'{Alphanumeric}+
+Identifier = {Identifier Start}{Identifier Ch}*
+
+<CommandLine> ::= <Command> <OptionList>
+                | <Command>
+                |
+
+<OptionList> ::= <Option> <OptionList>
+               | <Option>
+
+<Option> ::= Option
+           | Option String
+           | Option Integer
+
+<Name> ::= String
+         | Identifier
+
+<NetworkName> ::= <Name>
+
+<Command> ::= SERVER <NetworkName>
+            | SHOW DATABASES
+            | DATABASE <Name>
+            | SHOW SCHEMAS
+            | INFO
+            | SCRIPT SCHEMA <Name> TO <Name>
+            | COMPARE SCHEMA <Name> TO <Name>
+            | SETUP
+            | CREATE <Name> TO SCHEMA <Name>
+            | HELP
+
