@@ -19,6 +19,12 @@ namespace bsn.ModuleStore.Sql {
 			IQualifiedName<SchemaName> schemaBoundName = result as IQualifiedName<SchemaName>;
 			if (schemaBoundName != null) {
 				schemaBoundNames.Add(schemaBoundName);
+			} else {
+				// we have a special case here because in order to avoid ambiguities in the grammar we get a <TableName> '.' <FunctionName>
+				ExpressionFunctionCall functionCall = result as ExpressionFunctionCall;
+				if (functionCall != null) {
+					schemaBoundNames.Add(functionCall.FunctionName);
+				}
 			}
 			return result;
 		}

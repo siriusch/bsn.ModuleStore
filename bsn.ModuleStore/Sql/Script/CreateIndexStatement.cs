@@ -17,6 +17,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.indexOptions = indexOptions.ToList();
 		}
 
+		public override string ObjectName {
+			get {
+				return indexName.Value;
+			}
+		}
+
 		public IndexName IndexName {
 			get {
 				return indexName;

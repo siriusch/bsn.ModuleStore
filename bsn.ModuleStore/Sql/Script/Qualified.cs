@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
+using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -34,6 +35,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			Debug.Assert(name != null);
 			this.qualification = qualification;
 			this.name = name;
+		}
+
+		internal void SetPosition(LineInfo position) {
+			Initialize(((IToken)name).Symbol, position);
 		}
 
 		public string FullName {

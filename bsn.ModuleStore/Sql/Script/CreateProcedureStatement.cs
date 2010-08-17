@@ -25,6 +25,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.body = body;
 		}
 
+		public override string ObjectName {
+			get {
+				return procedureName.Name.Value;
+			}
+		}
+
 		public StatementBlock Body {
 			get {
 				return body;

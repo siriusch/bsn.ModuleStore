@@ -17,5 +17,13 @@ namespace bsn.ModuleStore.Sql.Script {
 				return StringComparer.Ordinal.Equals("*", Value);
 			}
 		}
+
+		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
+			if (IsWildcard) {
+				writer.Write(Value);
+			} else {
+				base.WriteToInternal(writer, isPartOfQualifiedName);
+			}
+		}
 	}
 }

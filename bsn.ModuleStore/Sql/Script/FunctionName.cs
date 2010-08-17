@@ -6,7 +6,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("COALESCE")]
 	[Terminal("CONVERT")]
 	[Terminal("NULLIF")]
-	public sealed class FunctionName: SqlName {
+	public sealed class FunctionName: SqlQuotedName {
 		private readonly bool systemFunction;
 
 		public FunctionName(string name): base(name.ToUpperInvariant()) {}
@@ -30,10 +30,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
-			if ((!isPartOfQualifiedName) && IsBuiltinFunction) {
-				writer.Write(Value);
-			} else {
+			if (isPartOfQualifiedName || (!IsBuiltinFunction)) {
 				base.WriteToInternal(writer, true);
+			} else {
+				writer.Write(Value);
 			}
 		}
 	}

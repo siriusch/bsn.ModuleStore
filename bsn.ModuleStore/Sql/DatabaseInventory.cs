@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -13,7 +14,13 @@ namespace bsn.ModuleStore.Sql {
 	public class DatabaseInventory: Inventory {
 		private static readonly ICollection<Type> supportedTypes = new[] {typeof(Index), typeof(FullTextIndex), typeof(UserDefinedFunction), typeof(StoredProcedure), typeof(Table), typeof(Trigger), typeof(View), typeof(XmlSchemaCollection)};
 
-		private readonly List<IQualifiedName<SchemaName>> schemaBoundNames = new List<IQualifiedName<SchemaName>>();
+		public static Exception CreateException(string message, SqlScriptableToken token) {
+			StringWriter writer = new StringWriter();
+			writer.WriteLine(message);
+			token.WriteTo(new SqlWriter(writer));
+			return new InvalidOperationException(writer.ToString());
+		}
+
 		private readonly string connectionString;
 		private readonly string schemaName;
 		private bool schemaExists;
@@ -39,7 +46,6 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public override void Populate() {
-			schemaBoundNames.Clear();
 			base.Populate();
 			schemaExists = false;
 			using (SqlConnection connection = new SqlConnection(connectionString)) {
@@ -95,29 +101,47 @@ namespace bsn.ModuleStore.Sql {
 						NamedSmoObject smoObject = server.GetSmoObject(urn) as NamedSmoObject;
 						if (IsSupportedType(smoObject)) {
 							Debug.Assert(smoObject != null);
-							Console.WriteLine(string.Format("{0}: ?", smoObject.Name));
-							StringCollection script = ((Microsoft.SqlServer.Management.Smo.IScriptable)smoObject).Script(options);
+							StringCollection script = ((IScriptable)smoObject).Script(options);
+							CreateTableStatement createTable = null;
 							foreach (string statementScript in script) {
 								ICollection<IQualifiedName<SchemaName>> names;
+								List<CreateStatement> objects = new List<CreateStatement>();
 								foreach (Statement statement in ScriptParser.Parse(statementScript, out names)) {
-									Console.WriteLine("----------- {0} ------------", statement.GetType().Name);
-									Console.WriteLine(statement.ToString());
-								}
-								foreach (IQualifiedName<SchemaName> qualifiedName in schemaBoundNames) {
-									if (qualifiedName.IsQualified && qualifiedName.Qualification.Value.Equals(schemaName, StringComparison.OrdinalIgnoreCase)) {
-										schemaBoundNames.Add(qualifiedName);
+									if (!((statement is SetOptionStatement) || (statement is AlterTableCheckConstraintStatementBase))) {
+										AlterTableAddStatement addToTable = statement as AlterTableAddStatement;
+										if (addToTable != null) {
+											if ((createTable == null) || (!createTable.TableName.Name.Equals(addToTable.TableName.Name))) {
+												throw CreateException("Statement tries to modify another table:", statement);
+											}
+											createTable.Definitions.AddRange(addToTable.Definitions);
+										} else {
+											if (!(statement is CreateStatement)) {
+												throw CreateException("Cannot process statement:", statement);
+											}
+											if (statement is CreateTableStatement) {
+												createTable = (CreateTableStatement)statement;
+											}
+											objects.Add((CreateStatement)statement);
+										}
 									}
+								}
+								foreach (IQualifiedName<SchemaName> qualifiedName in names) {
+									if (qualifiedName.IsQualified && qualifiedName.Qualification.Value.Equals(schemaName, StringComparison.OrdinalIgnoreCase)) {
+										AddSchemaQualifiedName(qualifiedName);
+									}
+								}
+								foreach (CreateStatement statement in objects) {
+									AddObject(statement);
 								}
 							}
 						}
 					}
-					Console.WriteLine("-----> {0} names found", schemaBoundNames.Count);
 				}
 			}
 		}
 
 		internal bool IsSupportedType(NamedSmoObject smoInstance) {
-			if (smoInstance is Microsoft.SqlServer.Management.Smo.IScriptable) {
+			if (smoInstance is IScriptable) {
 				Type type = smoInstance.GetType();
 				foreach (Type supportedType in supportedTypes) {
 					if (supportedType.IsAssignableFrom(type)) {

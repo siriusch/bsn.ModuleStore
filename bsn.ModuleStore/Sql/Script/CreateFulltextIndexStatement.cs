@@ -60,5 +60,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(indexName, WhitespacePadding.None);
 			writer.WriteEnum(changeTracking, WhitespacePadding.SpaceBefore);
 		}
+
+		public override string ObjectName {
+			get {
+				return indexName.Value;
+			}
+		}
 	}
 }

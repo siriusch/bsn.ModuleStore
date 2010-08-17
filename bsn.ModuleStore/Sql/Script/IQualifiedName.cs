@@ -15,5 +15,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 			set;
 		}
+
+		byte[] GetHash();
+
+		void ResetHash();
 	}
 }

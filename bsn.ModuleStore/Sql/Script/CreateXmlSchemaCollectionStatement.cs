@@ -35,5 +35,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write(" AS ");
 			writer.WriteScript(expression, WhitespacePadding.None);
 		}
+
+		public override string ObjectName {
+			get {
+				return xmlSchemaCollectionName.Name.Value;
+			}
+		}
 	}
 }

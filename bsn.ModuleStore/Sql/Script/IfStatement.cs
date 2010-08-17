@@ -41,8 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("IF ");
-			writer.WriteScript(condition, WhitespacePadding.None);
-			writer.Write(" THEN ");
+			writer.WriteScript(condition, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(thenStatement, WhitespacePadding.None);
 			writer.WriteScript(elseStatement, WhitespacePadding.None, " ELSE ", null);
 		}

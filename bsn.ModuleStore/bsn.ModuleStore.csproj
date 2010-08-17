@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataObject.cs" />
+    <Compile Include="HashWriter.cs" />
     <Compile Include="ModuleAttribute.cs" />
     <Compile Include="ModuleDependencyAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,7 +86,6 @@
     <Compile Include="Sql\Script\InnerJoin.cs" />
     <Compile Include="Sql\Script\IOptional.cs" />
     <Compile Include="Sql\Script\IQualifiedName.cs" />
-    <Compile Include="Sql\Script\IScriptable.cs" />
     <Compile Include="Sql\Script\LeftOuterJoin.cs" />
     <Compile Include="Sql\Script\OperationNameToken.cs" />
     <Compile Include="Sql\Script\PredicateJoin.cs" />

@@ -72,5 +72,11 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.Write(" WITH CHECK OPTION");
 			}
 		}
+
+		public override string ObjectName {
+			get {
+				return viewName.Name.Value;
+			}
+		}
 	}
 }

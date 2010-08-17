@@ -18,6 +18,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.definitions = definitions.ToList();
 		}
 
+		public List<TableDefinition> Definitions {
+			get {
+				return definitions;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.WriteEnum(check, WhitespacePadding.SpaceAfter);

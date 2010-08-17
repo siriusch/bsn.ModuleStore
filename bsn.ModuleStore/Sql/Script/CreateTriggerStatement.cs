@@ -36,6 +36,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override string ObjectName {
+			get {
+				return triggerName.Name.Value;
+			}
+		}
+
 		public Statement Statement {
 			get {
 				return statement;
