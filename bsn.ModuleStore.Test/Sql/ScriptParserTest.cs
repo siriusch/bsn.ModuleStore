@@ -19,7 +19,8 @@ namespace bsn.ModuleStore.Sql {
 		public List<Statement> ParseWithRoundtrip(string sql, int expectedStatementCount) {
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
-			IEnumerable<Statement> parsedStatements = ScriptParser.Parse(sql);
+			ICollection<IQualifiedName<SchemaName>> names;
+			IEnumerable<Statement> parsedStatements = ScriptParser.Parse(sql, out names);
 			sw.Stop();
 			long parseTime = sw.ElapsedMilliseconds;
 			List<Statement> statements = parsedStatements.ToList();
@@ -31,10 +32,12 @@ namespace bsn.ModuleStore.Sql {
 			Trace.Write(Environment.NewLine+sqlGen, string.Format("Generated SQL (parse: {0}ms | gen: {1}ms)", parseTime, sw.ElapsedMilliseconds));
 			sw.Reset();
 			sw.Start();
-			string sqlGenRoundtrip = GenerateSql(ScriptParser.Parse(sqlGen));
+			ICollection<IQualifiedName<SchemaName>> namesRoundtrip;
+			string sqlGenRoundtrip = GenerateSql(ScriptParser.Parse(sqlGen, out namesRoundtrip));
 			sw.Stop();
 			Trace.Write(string.Format("{0}ms", sw.ElapsedMilliseconds), "Roundtrip");
 			Expect(sqlGen, EqualTo(sqlGenRoundtrip));
+			Expect(names.Count, EqualTo(namesRoundtrip.Count));
 			return statements;
 		}
 

@@ -810,11 +810,11 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <TableConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
                     | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
-                    | CONSTRAINT <ConstraintName> FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableName> <ColumnNameGroup> <ForeignKeyActionList>
+                    | CONSTRAINT <ConstraintName> FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>
                     | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Expression> ')'
                     | PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
                     | UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
-                    | FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableName> <ColumnNameGroup> <ForeignKeyActionList>
+                    | FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>
                     | CHECK <OptionalNotForReplication> '(' <Expression> ')'
 
 <ForeignKeyActionList> ::= <ForeignKeyAction> <ForeignKeyActionList>
@@ -848,14 +848,14 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> <ConstraintIndex>
                           | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> <ConstraintIndex>
-                          | CONSTRAINT <ConstraintName> FOREIGN KEY REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
-                          | CONSTRAINT <ConstraintName> REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
+                          | CONSTRAINT <ConstraintName> FOREIGN KEY REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
+                          | CONSTRAINT <ConstraintName> REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Expression> ')'
                           | CONSTRAINT <ConstraintName> DEFAULT <ConstraintDefaultValue>
                           | PRIMARY KEY <ConstraintCluster> <ConstraintIndex>
                           | UNIQUE <ConstraintCluster> <ConstraintIndex>
-                          | FOREIGN KEY REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
-                          | REFERENCES <TableName> <OptionalForeignRefColumn> <ForeignKeyActionList>
+                          | FOREIGN KEY REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
+                          | REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | CHECK <OptionalNotForReplication> '(' <Expression> ')'
                           | DEFAULT <ConstraintDefaultValue>
 
@@ -976,7 +976,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <FromClause> ::= FROM <Source> <JoinChain>
 
-<Source> ::= <SourceRowSet> 
+<Source> ::= <SourceRowset> 
            | '(' <Source> <JoinChain> ')'
 
 <JoinChain> ::= <Join> <JoinChain>

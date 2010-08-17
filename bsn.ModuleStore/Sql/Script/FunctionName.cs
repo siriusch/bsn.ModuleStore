@@ -23,11 +23,17 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			if (systemFunction) {
+		public bool IsBuiltinFunction {
+			get {
+				return systemFunction || ScriptParser.IsBuiltInFunctionName(Value);
+			}
+		}
+
+		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
+			if ((!isPartOfQualifiedName) && IsBuiltinFunction) {
 				writer.Write(Value);
 			} else {
-				base.WriteTo(writer);
+				base.WriteToInternal(writer, true);
 			}
 		}
 	}

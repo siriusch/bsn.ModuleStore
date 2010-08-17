@@ -13,6 +13,7 @@ namespace bsn.ModuleStore.Sql {
 	public class DatabaseInventory: Inventory {
 		private static readonly ICollection<Type> supportedTypes = new[] {typeof(Index), typeof(FullTextIndex), typeof(UserDefinedFunction), typeof(StoredProcedure), typeof(Table), typeof(Trigger), typeof(View), typeof(XmlSchemaCollection)};
 
+		private readonly List<IQualifiedName<SchemaName>> schemaBoundNames = new List<IQualifiedName<SchemaName>>();
 		private readonly string connectionString;
 		private readonly string schemaName;
 		private bool schemaExists;
@@ -38,6 +39,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public override void Populate() {
+			schemaBoundNames.Clear();
 			base.Populate();
 			schemaExists = false;
 			using (SqlConnection connection = new SqlConnection(connectionString)) {
@@ -78,8 +80,8 @@ namespace bsn.ModuleStore.Sql {
 					options.NoTablePartitioningSchemes = true;
 					options.OptimizerData = false;
 					options.Permissions = false;
-					options.SchemaQualify = false;
-					options.SchemaQualifyForeignKeysReferences = false;
+					options.SchemaQualify = true;
+					options.SchemaQualifyForeignKeysReferences = true;
 					options.Bindings = false;
 					options.DriIncludeSystemNames = false;
 					options.ScriptDrops = false;
@@ -96,13 +98,20 @@ namespace bsn.ModuleStore.Sql {
 							Console.WriteLine(string.Format("{0}: ?", smoObject.Name));
 							StringCollection script = ((Microsoft.SqlServer.Management.Smo.IScriptable)smoObject).Script(options);
 							foreach (string statementScript in script) {
-								foreach (Statement statement in ScriptParser.Parse(statementScript)) {
-									Console.WriteLine("----------- {0} ----------------------------------", statement.GetType().Name);
+								ICollection<IQualifiedName<SchemaName>> names;
+								foreach (Statement statement in ScriptParser.Parse(statementScript, out names)) {
+									Console.WriteLine("----------- {0} ------------", statement.GetType().Name);
 									Console.WriteLine(statement.ToString());
+								}
+								foreach (IQualifiedName<SchemaName> qualifiedName in schemaBoundNames) {
+									if (qualifiedName.IsQualified && qualifiedName.Qualification.Value.Equals(schemaName, StringComparison.OrdinalIgnoreCase)) {
+										schemaBoundNames.Add(qualifiedName);
+									}
 								}
 							}
 						}
 					}
+					Console.WriteLine("-----> {0} names found", schemaBoundNames.Count);
 				}
 			}
 		}

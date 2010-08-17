@@ -4,7 +4,7 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class Qualified<TQ, TN>: SqlScriptableToken where TQ: SqlName where TN: SqlName {
+	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName where TN: SqlName {
 		private readonly TN name;
 		private TQ qualification;
 
@@ -48,6 +48,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		SqlName IQualifiedName<TQ>.Name {
+			get {
+				return Name;
+			}
+		}
+
 		public TN Name {
 			get {
 				return name;
@@ -64,8 +70,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(Qualification, WhitespacePadding.None, null, ".");
-			writer.WriteScript(Name, WhitespacePadding.None);
+			bool isQualified = qualification != null;
+			if (isQualified) {
+				qualification.WriteToInternal(writer, true);
+				writer.Write('.');
+			}
+			name.WriteToInternal(writer, isQualified);
 		}
 	}
 }

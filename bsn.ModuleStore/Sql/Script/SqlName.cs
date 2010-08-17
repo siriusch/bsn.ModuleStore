@@ -17,8 +17,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
+		protected internal virtual void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
 			writer.Write(value);
+		}
+
+		public sealed override void WriteTo(SqlWriter writer) {
+			WriteToInternal(writer, false);
 		}
 	}
 }

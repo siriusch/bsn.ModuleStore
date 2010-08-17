@@ -1,7 +1,12 @@
 ﻿// (C) 2010 Arsène von Wyss / bsn
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Xml;
+using System.Xml.XPath;
 
 using bsn.GoldParser.Grammar;
 using bsn.GoldParser.Parser;
@@ -10,6 +15,16 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public static class ScriptParser {
+		// XML document found at %ProgramFiles(x86)%\Microsoft SQL Server\90\Tools\binn\VSShell\Common7\IDE\SqlToolsData\1033\
+		private static readonly XPathDocument commonObjects = LoadCommonObjectsXml();
+
+		private static XPathDocument LoadCommonObjectsXml() {
+			using (Stream stream = typeof(ScriptParser).Assembly.GetManifestResourceStream(typeof(ScriptParser), "SqlCommonObjects.xml")) {
+				Debug.Assert(stream != null);
+				return new XPathDocument(stream);
+			}
+		}
+
 		// reserved word list: http://msdn.microsoft.com/en-us/library/aa238507(v=SQL.80).aspx
 		private static readonly HashSet<string> reservedWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
 		                                                                                                              		"ADD",
@@ -623,6 +638,7 @@ namespace bsn.ModuleStore.Sql {
 
 		private static CompiledGrammar compiledGrammar;
 		private static SemanticTypeActions<SqlToken> semanticActions;
+		private static HashSet<string> builtInFunctionNames;
 
 		internal static CompiledGrammar GetGrammar() {
 			lock (sync) {
@@ -647,18 +663,36 @@ namespace bsn.ModuleStore.Sql {
 			return reservedWords.Contains(name);
 		}
 
-		public static IEnumerable<Statement> Parse(string sql) {
+		public static bool IsBuiltInFunctionName(string functionName) {
+			if (builtInFunctionNames == null) {
+				// we don't care about race conditions here; in the worst case the set is created multiple times
+				HashSet<string> staging = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				XPathNavigator navigator = commonObjects.CreateNavigator();
+				Debug.Assert(navigator.NameTable != null);
+				XmlNamespaceManager resolver = new XmlNamespaceManager(navigator.NameTable);
+				resolver.AddNamespace("sco", "http://tempuri.org/SqlCommonObjects.xsd");
+				foreach (XPathNavigator nav in navigator.Select("/sco:SqlCommonObjects/sco:Category/sco:Objects/sco:Function[not((sco:NoBraces='true') or starts-with(sco:Name, '@'))]/sco:Name/text()", resolver)) {
+					staging.Add(nav.Value);
+				}
+				builtInFunctionNames = staging;
+			}
+			return builtInFunctionNames.Contains(functionName);
+		}
+
+		public static IEnumerable<Statement> Parse(string sql, out ICollection<IQualifiedName<SchemaName>> schemaBoundNames) {
 			using (StringReader reader = new StringReader(sql)) {
-				return Parse(reader);
+				return Parse(reader, out schemaBoundNames);
 			}
 		}
 
-		public static IEnumerable<Statement> Parse(TextReader sql) {
-			SemanticProcessor<SqlToken> processor = new SemanticProcessor<SqlToken>(sql, GetSemanticActions());
+		public static IEnumerable<Statement> Parse(TextReader sql, out ICollection<IQualifiedName<SchemaName>> schemaBoundNames) {
+			SemanticSqlProcessor processor = new SemanticSqlProcessor(sql, GetSemanticActions());
 			ParseMessage parseMessage = processor.ParseAll();
 			if (parseMessage != ParseMessage.Accept) {
+				schemaBoundNames = null;
 				throw new ArgumentException(string.Format("The supplied SQL could not be parsed: {0} at {1}", parseMessage, ((IToken)processor.CurrentToken).Position));
 			}
+			schemaBoundNames = processor.SchemaBoundNames;
 			return (IEnumerable<Statement>)processor.CurrentToken;
 		}
 	}

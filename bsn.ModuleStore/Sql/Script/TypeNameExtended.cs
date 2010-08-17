@@ -4,8 +4,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class TypeNameExtended: TypeName {
 		protected TypeNameExtended(SqlIdentifier identifier): base(identifier) {}
 
-		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
+		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
+			base.WriteToInternal(writer, isPartOfQualifiedName);
 			writer.Write('(');
 			WriteArguments(writer);
 			writer.Write(')');

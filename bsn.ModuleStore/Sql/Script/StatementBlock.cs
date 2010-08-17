@@ -29,7 +29,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.IncreaseIndent();
 			writer.WriteScriptSequence(statements, WhitespacePadding.NewlineBefore, ";");
 			writer.DecreaseIndent();
-			writer.WriteLine();
+			writer.WriteLine(";");
 			writer.Write("END");
 		}
 	}

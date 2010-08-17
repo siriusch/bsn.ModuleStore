@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class AlterTableStatement: Statement {
+	public abstract class AlterTableStatement: DdlStatement {
 		private readonly Qualified<SchemaName, TableName> tableName;
 
 		protected AlterTableStatement(Qualified<SchemaName, TableName> tableName) {

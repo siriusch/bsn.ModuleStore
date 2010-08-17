@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected SqlQuotedName(string name): base(rxUnquote.Match(name).Groups["name"].Value) {}
 
-		public override void WriteTo(SqlWriter writer) {
+		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
 			if (Value.LastIndexOfAny(brackets) < 0) {
 				writer.Write('[');
 				writer.Write(Value);

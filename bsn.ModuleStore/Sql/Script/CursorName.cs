@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
 
@@ -29,7 +30,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
+		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
+			Debug.Assert(!isPartOfQualifiedName);
 			if (global) {
 				writer.Write("GLOBAL ");
 			}
@@ -44,7 +46,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		internal void WriteNonGlobalInternal(SqlWriter writer) {
-			base.WriteTo(writer);
+			base.WriteToInternal(writer, false);
 		}
 	}
 }

@@ -68,6 +68,7 @@
     <Compile Include="Sql\Script\ColumnVariableItem.cs" />
     <Compile Include="Sql\Script\CrossJoin.cs" />
     <Compile Include="Sql\Script\CursorDefinition.cs" />
+    <Compile Include="Sql\Script\DdlStatement.cs" />
     <Compile Include="Sql\Script\DeclareItem.cs" />
     <Compile Include="Sql\Script\DmlOperation.cs" />
     <Compile Include="Sql\Script\ExpressionConvertFunction.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Sql\Script\IndexOptionToggle.cs" />
     <Compile Include="Sql\Script\InnerJoin.cs" />
     <Compile Include="Sql\Script\IOptional.cs" />
+    <Compile Include="Sql\Script\IQualifiedName.cs" />
     <Compile Include="Sql\Script\IScriptable.cs" />
     <Compile Include="Sql\Script\LeftOuterJoin.cs" />
     <Compile Include="Sql\Script\OperationNameToken.cs" />
@@ -382,6 +384,7 @@
     <Compile Include="Sql\Script\Tokens\WithViewMetadataToken.cs" />
     <Compile Include="Sql\Script\XmlDirective.cs" />
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
+    <Compile Include="Sql\SemanticSqlProcessor.cs" />
     <Compile Include="Sql\SqlWriter.cs" />
     <Compile Include="Sql\WhitespacePadding.cs" />
   </ItemGroup>
@@ -395,6 +398,9 @@
       <Project>{1A1A5AE9-7981-471C-9CC7-F7465E675A32}</Project>
       <Name>bsn.GoldParser</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\SqlCommonObjects.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Bootstrapper\" />
