@@ -1,12 +1,12 @@
 ﻿using System;
 
 using bsn.CommandLine;
-using bsn.CommandLine.Context;
+using bsn.ModuleStore.Console;
 
 namespace ModuleStore {
 	internal class Program {
 		private static void Main() {
-			Runner runner = new Runner(new CommandLineContext<RootContext>(new RootContext("modulestore"), Console.In, Console.Out));
+			Runner<ExecutionContext> runner = new Runner<ExecutionContext>(new ExecutionContext(Console.In, Console.Out));
 			runner.Run();
 		}
 	}

@@ -1,7 +1,9 @@
-﻿using bsn.CommandLine.Context;
+﻿using System;
+
+using bsn.CommandLine.Context;
 
 namespace bsn.ModuleStore.Console.Contexts {
-	public class ModuleStoreContext: RootContext {
+	public class ModuleStoreContext: RootContext<ExecutionContext> {
 		public ModuleStoreContext(): base("modulestore") {}
 	}
 }
