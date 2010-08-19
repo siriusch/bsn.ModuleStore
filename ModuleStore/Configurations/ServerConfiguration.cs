@@ -25,7 +25,7 @@ namespace bsn.ModuleStore.Console.Configurations {
 
 		public void ShowConfiguration(ExecutionContext executionContext, IDictionary<string, object> parameters) {
 			executionContext.Output.WriteLine("Server: {0}", executionContext.Server);
-			executionContext.Output.WriteLine("Database: {0}", executionContext.Database);
+			executionContext.Output.WriteLine("Database: {0} (exists: {1})", executionContext.Database, executionContext.DatabaseInstance != null);
 			executionContext.Output.WriteLine("Connected: {0}", executionContext.Connected);
 		}
 	}
