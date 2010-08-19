@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
+using bsn.CommandLine;
+using bsn.CommandLine.Context;
 
 namespace ModuleStore {
-	class Program {
-		static void Main() {
-			
+	internal class Program {
+		private static void Main() {
+			Runner runner = new Runner(new CommandLineContext<RootContext>(new RootContext("modulestore"), Console.In, Console.Out));
+			runner.Run();
 		}
 	}
 }

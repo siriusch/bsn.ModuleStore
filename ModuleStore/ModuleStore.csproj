@@ -54,8 +54,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ModuleStoreCLI.cgt" />
-    <None Include="ModuleStoreCLI.grm" />
+    <ProjectReference Include="..\..\CommandLine\bsn.CommandLine\bsn.CommandLine.csproj">
+      <Project>{0F603313-DA30-4402-AB10-D0A94F01FA69}</Project>
+      <Name>bsn.CommandLine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
