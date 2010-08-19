@@ -36,10 +36,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public void Dump(string schemaName, TextWriter writer) {
-			if (string.IsNullOrEmpty(schemaName)) {
-				throw new ArgumentNullException("schemaName");
-			}
-			SchemaName qualification = new SchemaName(schemaName); 
+			SchemaName qualification = string.IsNullOrEmpty(schemaName) ? null : new SchemaName(schemaName); 
 			SetSchemaName(qualification);
 			try {
 				SqlWriter sqlWriter = new SqlWriter(writer);

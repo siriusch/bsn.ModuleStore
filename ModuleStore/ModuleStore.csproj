@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Commands\ConnectCommand.cs" />
     <Compile Include="Commands\DisconnectCommand.cs" />
+    <Compile Include="Commands\DumpCommand.cs" />
     <Compile Include="Configurations\ServerConfiguration.cs" />
     <Compile Include="Contexts\ModuleStoreContext.cs" />
     <Compile Include="Contexts\DatabaseContext.cs" />
@@ -67,6 +68,13 @@
       <Project>{0F603313-DA30-4402-AB10-D0A94F01FA69}</Project>
       <Name>bsn.CommandLine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\bsn.ModuleStore\bsn.ModuleStore.csproj">
+      <Project>{085ABCD3-9471-40F7-AC15-5A1F5E369714}</Project>
+      <Name>bsn.ModuleStore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Collections\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -26,7 +26,9 @@ namespace bsn.ModuleStore.Console {
 					throw new ArgumentNullException();
 				}
 				databaseName = value;
-				if (server != null) {
+				if (string.IsNullOrEmpty(databaseName)) {
+					database = null;
+				} else if (server != null) {
 					database = server.Databases[value];
 				}
 			}
@@ -67,7 +69,7 @@ namespace bsn.ModuleStore.Console {
 
 		public bool Connected {
 			get {
-				return database != null;
+				return server != null;
 			}
 		}
 
@@ -81,7 +83,9 @@ namespace bsn.ModuleStore.Console {
 			if (server == null) {
 				server = new Server(serverName);
 				server.ConnectionContext.Connect();
-				database = server.Databases[databaseName];
+				if (!string.IsNullOrEmpty(databaseName)) {
+					database = server.Databases[databaseName];
+				}
 			}
 		}
 
