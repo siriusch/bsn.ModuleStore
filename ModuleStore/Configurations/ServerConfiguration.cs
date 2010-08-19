@@ -6,28 +6,36 @@ using System.Linq;
 using bsn.CommandLine.Context;
 
 namespace bsn.ModuleStore.Console.Configurations {
-	public class ServerConfiguration: ConfigurationBase<ExecutionContext>, IConfigurationRead<ExecutionContext>, IConfigurationWrite<ExecutionContext> {
+	internal class ServerConfiguration: ConfigurationBase<ExecutionContext>, IConfigurationRead<ExecutionContext>, IConfigurationWrite<ExecutionContext> {
 		public override string Name {
 			get {
-				throw new NotImplementedException();
+				return "server";
 			}
 		}
 
 		public override string Description {
 			get {
-				throw new NotImplementedException();
+				return "Manage the server and database names.";
 			}
 		}
 
-		public override void WriteCommandHelp(TextWriter writer) {
-			throw new NotImplementedException();
+		public IEnumerable<ITagItem> GetWriteParameters() {
+			yield return new Tag<string>("server", "Name of the SQL Server.").SetDefault(".");
+			yield return new Tag<string>("database", "Name of the database on the Server.");
 		}
 
-		public IEnumerable<Tag<string>> GetParameters() {
-			yield return new Tag<string>("server", "Name of the SQL Server.", false);
-			yield return new Tag<string>("database", "Name of the database on the Server.", false);
+		public void SetConfiguration(ExecutionContext executionContext, IDictionary<string, object> parameters) {
+			executionContext.Server = (string)parameters["server"];
+			executionContext.Database = (string)parameters["database"];
 		}
 
-		public void SetConfiguration(ExecutionContext executionContext, IDictionary<string, object> parameters) {}
+		public IEnumerable<ITagItem> GetReadParameters() {
+			yield break;
+		}
+
+		public void WriteConfiguration(ExecutionContext executionContext, IDictionary<string, object> parameters) {
+			executionContext.Output.WriteLine("Server: {0}", executionContext.Server);
+			executionContext.Output.WriteLine("Database: {0}", executionContext.Database);
+		}
 	}
 }
