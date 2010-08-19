@@ -51,6 +51,7 @@
     <Compile Include="Commands\DisconnectCommand.cs" />
     <Compile Include="Configurations\ServerConfiguration.cs" />
     <Compile Include="Contexts\ModuleStoreContext.cs" />
+    <Compile Include="Contexts\DatabaseContext.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

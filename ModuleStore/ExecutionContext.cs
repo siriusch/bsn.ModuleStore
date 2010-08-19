@@ -6,7 +6,8 @@ using bsn.CommandLine;
 using bsn.ModuleStore.Console.Contexts;
 
 namespace bsn.ModuleStore.Console {
-	public class ExecutionContext: CommandLineContext<ExecutionContext, ModuleStoreContext> {
+	internal class ExecutionContext: CommandLineContext<ExecutionContext, ModuleStoreContext> {
+		private bool connected;
 		public ExecutionContext(TextReader input, TextWriter output): base(new ModuleStoreContext(), input, output) {}
 
 		public string Database {
@@ -19,9 +20,23 @@ namespace bsn.ModuleStore.Console {
 			set;
 		}
 
-		public bool Connected {
+		public string Schema {
 			get;
 			set;
+		}
+
+		public bool Connected {
+			get {
+				return connected;
+			}
+		}
+
+		public void Connect() {
+			connected = true;
+		}
+
+		public void Disconnect() {
+			connected = false;
 		}
 	}
 }
