@@ -48,6 +48,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrapper\Database.cs" />
+    <Compile Include="Bootstrapper\DatabaseType.cs" />
     <Compile Include="DataObject.cs" />
     <Compile Include="HashWriter.cs" />
     <Compile Include="ModuleAttribute.cs" />
@@ -403,7 +405,7 @@
     <EmbeddedResource Include="Sql\SqlCommonObjects.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Bootstrapper\" />
+    <Folder Include="Scripts\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

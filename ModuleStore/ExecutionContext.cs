@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using bsn.CommandLine;
 using bsn.ModuleStore.Console.Contexts;
@@ -39,13 +40,15 @@ namespace bsn.ModuleStore.Console {
 				return serverName;
 			}
 			set {
-				if (Connected) {
-					throw new InvalidOperationException("Cannot change database server while connected");
+				if (value != serverName) {
+					if (Connected) {
+						throw new InvalidOperationException("Cannot change database server while connected");
+					}
+					if (string.IsNullOrEmpty(value)) {
+						throw new ArgumentNullException("value");
+					}
+					serverName = value;
 				}
-				if (string.IsNullOrEmpty(value)) {
-					throw new ArgumentNullException("value");
-				}
-				serverName = value;
 			}
 		}
 
@@ -95,6 +98,16 @@ namespace bsn.ModuleStore.Console {
 				server = null;
 				database = null;
 			}
+		}
+
+		public string GetConnectionString() {
+			StringBuilder connectionString = new StringBuilder();
+			connectionString.AppendFormat("Data Source={0};", Server);
+			if (!string.IsNullOrEmpty(Database)) {
+				connectionString.AppendFormat("Initial Catalog={0};", Database);
+			}
+			connectionString.Append("Integrated Security=SSPI;");
+			return connectionString.ToString();
 		}
 	}
 }

@@ -10,9 +10,9 @@ namespace bsn.ModuleStore.Console.Commands {
 	internal class ConnectCommand: CommandBase<ExecutionContext> {
 		public ConnectCommand(ContextBase<ExecutionContext> owner): base(owner) {}
 
-		public override IEnumerable<ITagItem> GetCommandTags() {
-			yield return new Tag<string>("server", "The server to connect to.", true);
-			yield return new Tag<string>("database", "The database on the server.", true);
+		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
+			yield return new Tag<ExecutionContext, string>("server", "The server to connect to.").SetOptional(context => context.Connected);
+			yield return new Tag<ExecutionContext, string>("database", "The database on the server.").SetOptional(context => context.DatabaseInstance != null);
 		}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {

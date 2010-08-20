@@ -8,7 +8,7 @@ using bsn.CommandLine.Context;
 namespace bsn.ModuleStore.Console {
 	[NamedItem("schema", "The currently active schema on the database.")]
 	internal class SchemaConfiguration: ConfigurationBase<ExecutionContext>, IConfigurationRead<ExecutionContext>, IConfigurationWrite<ExecutionContext> {
-		public IEnumerable<ITagItem> GetReadParameters() {
+		public IEnumerable<ITagItem<ExecutionContext>> GetReadParameters() {
 			yield break;
 		}
 
@@ -16,8 +16,8 @@ namespace bsn.ModuleStore.Console {
 			executionContext.Output.WriteLine("Schema: {0}", executionContext.Schema);
 		}
 
-		public IEnumerable<ITagItem> GetWriteParameters() {
-			yield return new Tag<string>("name", "Database schema name.", false).SetDefault("dbo");
+		public IEnumerable<ITagItem<ExecutionContext>> GetWriteParameters() {
+			yield return new Tag<ExecutionContext, string>("name", "Database schema name.").SetDefault(context => "dbo");
 		}
 
 		public void SetConfiguration(ExecutionContext executionContext, IDictionary<string, object> parameters) {
