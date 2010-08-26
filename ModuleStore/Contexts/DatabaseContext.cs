@@ -17,7 +17,6 @@ namespace bsn.ModuleStore.Console.Contexts {
 			get {
 				yield return new ConnectCommand(this);
 				yield return new DisconnectCommand(this);
-				yield return new DumpCommand(this);
 			}
 		}
 

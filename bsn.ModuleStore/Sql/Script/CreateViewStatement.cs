@@ -31,6 +31,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override sealed ObjectCategory ObjectCategory {
+			get {
+				return ObjectCategory.View;
+			}
+		}
+
+		public override string ObjectName {
+			get {
+				return viewName.Name.Value;
+			}
+		}
+
 		public SelectStatement SelectStatement {
 			get {
 				return selectStatement;
@@ -70,12 +82,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(selectStatement, WhitespacePadding.None);
 			if (withCheckOption) {
 				writer.Write(" WITH CHECK OPTION");
-			}
-		}
-
-		public override string ObjectName {
-			get {
-				return viewName.Name.Value;
 			}
 		}
 	}

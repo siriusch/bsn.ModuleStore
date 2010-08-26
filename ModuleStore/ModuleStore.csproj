@@ -50,11 +50,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\ConnectCommand.cs" />
+    <Compile Include="Commands\DifferenceCommand.cs" />
     <Compile Include="Commands\DisconnectCommand.cs" />
     <Compile Include="Commands\DumpCommand.cs" />
+    <Compile Include="Commands\ScriptCommand.cs" />
+    <Compile Include="Configurations\ScriptingConfiguration.cs" />
     <Compile Include="Configurations\ServerConfiguration.cs" />
     <Compile Include="Contexts\ModuleStoreContext.cs" />
     <Compile Include="Contexts\DatabaseContext.cs" />
+    <Compile Include="Entities\Source.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

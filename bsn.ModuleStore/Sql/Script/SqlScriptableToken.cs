@@ -6,11 +6,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class SqlScriptableToken: SqlToken, IEquatable<SqlScriptableToken> {
 		private byte[] hash;
 
-		public bool Equals(SqlScriptableToken other) {
-			if ((other != null) && (other.GetType() == GetType())) {
-				return HashWriter.HashEqual(GetHash(), other.GetHash());
-			}
-			return false;
+		public override bool Equals(object obj) {
+			return base.Equals(obj as SqlScriptableToken);
 		}
 
 		public byte[] GetHash() {
@@ -23,16 +20,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			return hash;
 		}
 
-		public void ResetHash() {
-			hash = null;
-		}
-
-		public override bool Equals(object obj) {
-			return base.Equals(obj as SqlScriptableToken);
-		}
-
 		public override int GetHashCode() {
 			return HashWriter.ToHashCode(GetHash());
+		}
+
+		public void ResetHash() {
+			hash = null;
 		}
 
 		public override sealed string ToString() {
@@ -43,5 +36,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public abstract void WriteTo(SqlWriter writer);
+
+		public bool Equals(SqlScriptableToken other) {
+			if ((other != null) && (other.GetType() == GetType())) {
+				return HashWriter.HashEqual(GetHash(), other.GetHash());
+			}
+			return false;
+		}
 	}
 }

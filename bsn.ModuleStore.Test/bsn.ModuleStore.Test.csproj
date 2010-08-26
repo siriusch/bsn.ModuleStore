@@ -55,7 +55,7 @@
     <Compile Include="Sql\Script\StringLiteralTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GoldParser\bsn.GoldParser\bsn.GoldParser.csproj">
+    <ProjectReference Include="..\..\GoldParser\bsn.GoldParser\bsn.GoldParser.csproj">
       <Project>{1A1A5AE9-7981-471C-9CC7-F7465E675A32}</Project>
       <Name>bsn.GoldParser</Name>
     </ProjectReference>

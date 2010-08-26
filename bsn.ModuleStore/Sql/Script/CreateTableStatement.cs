@@ -24,6 +24,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override sealed ObjectCategory ObjectCategory {
+			get {
+				return ObjectCategory.Table;
+			}
+		}
+
 		public override string ObjectName {
 			get {
 				return tableName.Name.Value;

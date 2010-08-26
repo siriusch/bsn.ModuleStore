@@ -42,6 +42,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override sealed ObjectCategory ObjectCategory {
+			get {
+				return ObjectCategory.Index;
+			}
+		}
+
+		public override string ObjectName {
+			get {
+				return indexName.Value;
+			}
+		}
+
 		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
@@ -59,12 +71,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write(" KEY INDEX ");
 			writer.WriteScript(indexName, WhitespacePadding.None);
 			writer.WriteEnum(changeTracking, WhitespacePadding.SpaceBefore);
-		}
-
-		public override string ObjectName {
-			get {
-				return indexName.Value;
-			}
 		}
 	}
 }

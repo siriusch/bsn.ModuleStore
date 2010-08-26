@@ -17,15 +17,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			systemFunction = identifier is SysFunctionIdentifier;
 		}
 
-		public bool IsSystemFunction {
-			get {
-				return systemFunction;
-			}
-		}
-
 		public bool IsBuiltinFunction {
 			get {
 				return systemFunction || ScriptParser.IsBuiltInFunctionName(Value);
+			}
+		}
+
+		public bool IsSystemFunction {
+			get {
+				return systemFunction;
 			}
 		}
 

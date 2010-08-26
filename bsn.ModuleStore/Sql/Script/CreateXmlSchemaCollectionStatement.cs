@@ -23,6 +23,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override sealed ObjectCategory ObjectCategory {
+			get {
+				return ObjectCategory.XmlSchema;
+			}
+		}
+
+		public override string ObjectName {
+			get {
+				return xmlSchemaCollectionName.Name.Value;
+			}
+		}
+
 		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName {
 			get {
 				return xmlSchemaCollectionName;
@@ -34,12 +46,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(xmlSchemaCollectionName, WhitespacePadding.None);
 			writer.Write(" AS ");
 			writer.WriteScript(expression, WhitespacePadding.None);
-		}
-
-		public override string ObjectName {
-			get {
-				return xmlSchemaCollectionName.Name.Value;
-			}
 		}
 	}
 }

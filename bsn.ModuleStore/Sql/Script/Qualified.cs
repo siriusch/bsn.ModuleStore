@@ -37,14 +37,29 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.name = name;
 		}
 
-		internal void SetPosition(LineInfo position) {
-			Initialize(((IToken)name).Symbol, position);
-		}
-
 		public string FullName {
 			get {
 				return ToString();
 			}
+		}
+
+		public TN Name {
+			get {
+				return name;
+			}
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			bool isQualified = qualification != null;
+			if (isQualified) {
+				qualification.WriteToInternal(writer, true);
+				writer.Write('.');
+			}
+			name.WriteToInternal(writer, isQualified);
+		}
+
+		internal void SetPosition(LineInfo position) {
+			Initialize(((IToken)name).Symbol, position);
 		}
 
 		public bool IsQualified {
@@ -59,12 +74,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TN Name {
-			get {
-				return name;
-			}
-		}
-
 		public TQ Qualification {
 			get {
 				return qualification;
@@ -72,15 +81,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			set {
 				qualification = value;
 			}
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			bool isQualified = qualification != null;
-			if (isQualified) {
-				qualification.WriteToInternal(writer, true);
-				writer.Write('.');
-			}
-			name.WriteToInternal(writer, isQualified);
 		}
 	}
 }

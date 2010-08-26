@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Xml;
 using System.Xml.XPath;
 
@@ -17,13 +16,6 @@ namespace bsn.ModuleStore.Sql {
 	public static class ScriptParser {
 		// XML document found at %ProgramFiles(x86)%\Microsoft SQL Server\90\Tools\binn\VSShell\Common7\IDE\SqlToolsData\1033\
 		private static readonly XPathDocument commonObjects = LoadCommonObjectsXml();
-
-		private static XPathDocument LoadCommonObjectsXml() {
-			using (Stream stream = typeof(ScriptParser).Assembly.GetManifestResourceStream(typeof(ScriptParser), "SqlCommonObjects.xml")) {
-				Debug.Assert(stream != null);
-				return new XPathDocument(stream);
-			}
-		}
 
 		// reserved word list: http://msdn.microsoft.com/en-us/library/aa238507(v=SQL.80).aspx
 		private static readonly HashSet<string> reservedWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
@@ -635,10 +627,17 @@ namespace bsn.ModuleStore.Sql {
 		                                                                                                              };
 
 		private static readonly object sync = new object();
+		private static HashSet<string> builtInFunctionNames;
 
 		private static CompiledGrammar compiledGrammar;
 		private static SemanticTypeActions<SqlToken> semanticActions;
-		private static HashSet<string> builtInFunctionNames;
+
+		private static XPathDocument LoadCommonObjectsXml() {
+			using (Stream stream = typeof(ScriptParser).Assembly.GetManifestResourceStream(typeof(ScriptParser), "SqlCommonObjects.xml")) {
+				Debug.Assert(stream != null);
+				return new XPathDocument(stream);
+			}
+		}
 
 		internal static CompiledGrammar GetGrammar() {
 			lock (sync) {

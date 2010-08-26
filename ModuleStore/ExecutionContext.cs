@@ -76,6 +76,17 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
+		public string ScriptPath {
+			get {
+				return Directory.GetCurrentDirectory();
+			}
+			set {
+				if (!string.IsNullOrEmpty(value)) {
+					Directory.SetCurrentDirectory(value);
+				}
+			}
+		}
+
 		public Database DatabaseInstance {
 			get {
 				return database;

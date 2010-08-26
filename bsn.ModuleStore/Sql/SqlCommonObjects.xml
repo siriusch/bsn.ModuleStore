@@ -1,12 +1,19 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <SqlCommonObjects xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://tempuri.org/SqlCommonObjects.xsd">
 	<Category>
-		<DisplayName>Configuration Functions</DisplayName>
-		<Description>These scalar functions return information about current configuration option settings</Description>
+		<DisplayName>
+			Configuration Functions
+		</DisplayName>
+		<Description>
+			These scalar functions return information about current configuration option settings
+		</Description>
 		<Objects>
 			<Function>
 				<Name>@@CONNECTIONS</Name>
-				<Description>Number of opened or attempted connections</Description>
+				<Description>
+					Number of opened or attempted connections
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -14,7 +21,9 @@
 			</Function>
 			<Function>
 				<Name>@@DATEFIRST</Name>
-				<Description>Current value of the SET DATEFIRST parameter</Description>
+				<Description>
+					Current value of the SET DATEFIRST parameter
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>tinyint</Type>
@@ -22,7 +31,9 @@
 			</Function>
 			<Function>
 				<Name>@@DBTS</Name>
-				<Description>Current value of the timestamp data type</Description>
+				<Description>
+					Current value of the timestamp data type
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>varbinary</Type>
@@ -30,7 +41,9 @@
 			</Function>
 			<Function>
 				<Name>@@LANGUAGE</Name>
-				<Description>Name of the language currently in use</Description>
+				<Description>
+					Name of the language currently in use
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>nvarchar</Type>
@@ -38,7 +51,9 @@
 			</Function>
 			<Function>
 				<Name>@@LANGID</Name>
-				<Description>ID of the language currently in use</Description>
+				<Description>
+					ID of the language currently in use
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>smallint</Type>
@@ -46,7 +61,9 @@
 			</Function>
 			<Function>
 				<Name>@@LOCK_TIMEOUT</Name>
-				<Description>Lock time-out setting for the current session</Description>
+				<Description>
+					Lock time-out setting for the current session
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -54,7 +71,9 @@
 			</Function>
 			<Function>
 				<Name>@@MAX_CONNECTIONS</Name>
-				<Description>Max number of simultaneous user connections</Description>
+				<Description>
+					Max number of simultaneous user connections
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -62,7 +81,9 @@
 			</Function>
 			<Function>
 				<Name>@@MAX_PRECISION</Name>
-				<Description>Precision level used by decimal and numeric data types</Description>
+				<Description>
+					Precision level used by decimal and numeric data types
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>tinyint</Type>
@@ -70,7 +91,9 @@
 			</Function>
 			<Function>
 				<Name>@@NESTLEVEL</Name>
-				<Description>Nesting level of the current store procedure execution</Description>
+				<Description>
+					Nesting level of the current store procedure execution
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -78,7 +101,9 @@
 			</Function>
 			<Function>
 				<Name>@@OPTIONS</Name>
-				<Description>Information about the current SET options</Description>
+				<Description>
+					Information about the current SET options
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -86,7 +111,9 @@
 			</Function>
 			<Function>
 				<Name>@@REMSERVER</Name>
-				<Description>Name of the remote SQL Server database server</Description>
+				<Description>
+					Name of the remote SQL Server database server
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>nvarchar(128)</Type>
@@ -94,7 +121,9 @@
 			</Function>
 			<Function>
 				<Name>@@SPID</Name>
-				<Description>ID of the current user process</Description>
+				<Description>
+					ID of the current user process
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>smallint</Type>
@@ -102,7 +131,9 @@
 			</Function>
 			<Function>
 				<Name>@@SERVERNAME</Name>
-				<Description>Name of the local server running SQL Server</Description>
+				<Description>
+					Name of the local server running SQL Server
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>nvarchar</Type>
@@ -110,7 +141,9 @@
 			</Function>
 			<Function>
 				<Name>@@SERVICENAME</Name>
-				<Description>Name of the registry key under which SQL Server is running</Description>
+				<Description>
+					Name of the registry key under which SQL Server is running
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>nvarchar</Type>
@@ -118,7 +151,9 @@
 			</Function>
 			<Function>
 				<Name>@@TEXTSIZE</Name>
-				<Description>Current value of the TEXTSIZE option</Description>
+				<Description>
+					Current value of the TEXTSIZE option
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -126,7 +161,9 @@
 			</Function>
 			<Function>
 				<Name>@@VERSION</Name>
-				<Description>Date, version and processor type for the current installation</Description>
+				<Description>
+					Date, version and processor type for the current installation
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>nvarchar</Type>
@@ -136,11 +173,15 @@
 	</Category>
 	<Category>
 		<DisplayName>Cursor Functions</DisplayName>
-		<Description>These scalar functions return information about cursors</Description>
+		<Description>
+			These scalar functions return information about cursors
+		</Description>
 		<Objects>
 			<Function>
 				<Name>@@CURSOR_ROWS</Name>
-				<Description>Number of qualifying rows in the last cursor opened</Description>
+				<Description>
+					Number of qualifying rows in the last cursor opened
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -148,7 +189,9 @@
 			</Function>
 			<Function>
 				<Name>@@FETCH_STATUS</Name>
-				<Description>Status of the last cursor FETCH statement issued against any cursor</Description>
+				<Description>
+					Status of the last cursor FETCH statement issued against any cursor
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -156,7 +199,9 @@
 			</Function>
 			<Function>
 				<Name>CURSOR_STATUS</Name>
-				<Description>A scalar function that shows whether or  not the procedure has returned a cursor and result set for a given parameter</Description>
+				<Description>
+					A scalar function that shows whether or  not the procedure has returned a cursor and result set for a given parameter
+				</Description>
 				<ReturnValue>
 					<Type>smallint</Type>
 				</ReturnValue>
@@ -176,12 +221,18 @@
 		</Objects>
 	</Category>
 	<Category>
-		<DisplayName>Date and Time Functions</DisplayName>
-		<Description>These scalar functions perform an operation on a date and time input value and return a string, numeric, or date and time value</Description>
+		<DisplayName>
+			Date and Time Functions
+		</DisplayName>
+		<Description>
+			These scalar functions perform an operation on a date and time input value and return a string, numeric, or date and time value
+		</Description>
 		<Objects>
 			<Function>
 				<Name>DATEADD</Name>
-				<Description>Returns a new datetime value based on adding an interval to the specified date</Description>
+				<Description>
+					Returns a new datetime value based on adding an interval to the specified date
+				</Description>
 				<ReturnValue>
 					<Type>datetime</Type>
 				</ReturnValue>
@@ -189,23 +240,31 @@
 					<Parameter>
 						<Name>datepart</Name>
 						<Type>Datepart</Type>
-						<Description>Specifies on which part of the date to return a new value</Description>
+						<Description>
+							Specifies on which part of the date to return a new value
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>number</Name>
 						<Type>int</Type>
-						<Description>Used to increment datepart</Description>
+						<Description>
+							Used to increment datepart
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>date</Name>
 						<Type>datetime</Type>
-						<Description>An expression that returns a datetime or smalldatetime value</Description>
+						<Description>
+							An expression that returns a datetime or smalldatetime value
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DATEDIFF</Name>
-				<Description>Returns the number of date and time boundaries crossed between two specified dates</Description>
+				<Description>
+					Returns the number of date and time boundaries crossed between two specified dates
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -213,23 +272,31 @@
 					<Parameter>
 						<Name>datepart</Name>
 						<Type>Datepart</Type>
-						<Description>Specifies on which part of the date to calculate the difference</Description>
+						<Description>
+							Specifies on which part of the date to calculate the difference
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>startdate</Name>
 						<Type>datetime</Type>
-						<Description>The beginning date for the calculation</Description>
+						<Description>
+							The beginning date for the calculation
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>enddate</Name>
 						<Type>datetime</Type>
-						<Description>The ending date for the calculation</Description>
+						<Description>
+							The ending date for the calculation
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DATENAME</Name>
-				<Description>Returns a character string representing the specified datepart of the specified date</Description>
+				<Description>
+					Returns a character string representing the specified datepart of the specified date
+				</Description>
 				<ReturnValue>
 					<Type>nvarchar</Type>
 				</ReturnValue>
@@ -237,18 +304,24 @@
 					<Parameter>
 						<Name>datepart</Name>
 						<Type>Datepart</Type>
-						<Description>Specifies the part of the date to return</Description>
+						<Description>
+							Specifies the part of the date to return
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>date</Name>
 						<Type>datetime</Type>
-						<Description>An expression that returns a datetime or smalldatetime value</Description>
+						<Description>
+							An expression that returns a datetime or smalldatetime value
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DATEPART</Name>
-				<Description>Returns an integer representing the specified datepart of the specified date</Description>
+				<Description>
+					Returns an integer representing the specified datepart of the specified date
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -256,18 +329,24 @@
 					<Parameter>
 						<Name>datepart</Name>
 						<Type>Datepart</Type>
-						<Description>Specifies the part of the date to return</Description>
+						<Description>
+							Specifies the part of the date to return
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>date</Name>
 						<Type>datetime</Type>
-						<Description>An expression that returns a datetime or smalldatetime value</Description>
+						<Description>
+							An expression that returns a datetime or smalldatetime value
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DAY</Name>
-				<Description>Returns an integer representing the day datepart of the specified date</Description>
+				<Description>
+					Returns an integer representing the day datepart of the specified date
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -275,34 +354,44 @@
 					<Parameter>
 						<Name>date</Name>
 						<Type>datetime</Type>
-						<Description>Expression of type datetime or smalldatetime</Description>
+						<Description>
+							Expression of type datetime or smalldatetime
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>GETDATE</Name>
-				<Description>Returns the current system date and time</Description>
+				<Description>
+					Returns the current system date and time
+				</Description>
 				<ReturnValue>
 					<Type>datetime</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>MONTH</Name>
-				<Description>Returns an integer that represents the month part of a specified date</Description>
+				<Description>
+					Returns an integer that represents the month part of a specified date
+				</Description>
 				<ReturnValue>
 					<Type>datetime</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>YEAR</Name>
-				<Description>Returns an integer that represents the year part of a specified date</Description>
+				<Description>
+					Returns an integer that represents the year part of a specified date
+				</Description>
 				<ReturnValue>
 					<Type>datetime</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>GETUTCDATE</Name>
-				<Description>Returns the datetime value representing the current UTC time</Description>
+				<Description>
+					Returns the datetime value representing the current UTC time
+				</Description>
 				<ReturnValue>
 					<Type>datetime</Type>
 				</ReturnValue>
@@ -310,12 +399,18 @@
 		</Objects>
 	</Category>
 	<Category>
-		<DisplayName>Mathematical Functions</DisplayName>
-		<Description>These scalar functions perform a calculation, usually based on input values provided as arguments, and return a numeric value</Description>
+		<DisplayName>
+			Mathematical Functions
+		</DisplayName>
+		<Description>
+			These scalar functions perform a calculation, usually based on input values provided as arguments, and return a numeric value
+		</Description>
 		<Objects>
 			<Function>
 				<Name>ABS</Name>
-				<Description>Returns the absolute, positive value of the given numeric expression</Description>
+				<Description>
+					Returns the absolute, positive value of the given numeric expression
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -323,13 +418,17 @@
 					<Parameter>
 						<Name>numeric_expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>ACOS</Name>
-				<Description>Returns the angle, in radians, whose cosine is the given float expression</Description>
+				<Description>
+					Returns the angle, in radians, whose cosine is the given float expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -337,13 +436,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>real</Type>
-						<Description>Expression of the type float or real, with a value from -1 through 1</Description>
+						<Description>
+							Expression of the type float or real, with a value from -1 through 1
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>ASIN</Name>
-				<Description>Returns the angle, in radians, whose sine is the given float expression</Description>
+				<Description>
+					Returns the angle, in radians, whose sine is the given float expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -351,13 +454,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>real</Type>
-						<Description>Expression of the type float, with a value from -1 through 1</Description>
+						<Description>
+							Expression of the type float, with a value from -1 through 1
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>ATAN</Name>
-				<Description>Returns the angle in radians whose tangent is the given float expression</Description>
+				<Description>
+					Returns the angle in radians whose tangent is the given float expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -365,13 +472,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of the type float</Description>
+						<Description>
+							Expression of the type float
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>ATN2</Name>
-				<Description>Returns the angle, in radians, whose tangent is between the two given float expressions</Description>
+				<Description>
+					Returns the angle, in radians, whose tangent is between the two given float expressions
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -379,18 +490,24 @@
 					<Parameter>
 						<Name>float_expression1</Name>
 						<Type>float</Type>
-						<Description>Expression of the float data type</Description>
+						<Description>
+							Expression of the float data type
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>float_expression2</Name>
 						<Type>float</Type>
-						<Description>Expression of the float data type</Description>
+						<Description>
+							Expression of the float data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>CEILING</Name>
-				<Description>Returns the smallest integer greater than, or equal to, the given numeric expression</Description>
+				<Description>
+					Returns the smallest integer greater than, or equal to, the given numeric expression
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -398,13 +515,17 @@
 					<Parameter>
 						<Name>numeric_expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>COS</Name>
-				<Description>Returns the trigonometric cosine of the given angle (in radians) in the given expression</Description>
+				<Description>
+					Returns the trigonometric cosine of the given angle (in radians) in the given expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -412,13 +533,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of type float</Description>
+						<Description>
+							Expression of type float
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>COT</Name>
-				<Description>Returns the trigonometric cotangent of the specified angle (in radians) in the given float expression</Description>
+				<Description>
+					Returns the trigonometric cotangent of the specified angle (in radians) in the given float expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -426,13 +551,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of type float</Description>
+						<Description>
+							Expression of type float
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DEGREES</Name>
-				<Description>Given an angle in radians, returns the corresponding angle in degrees</Description>
+				<Description>
+					Given an angle in radians, returns the corresponding angle in degrees
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -440,13 +569,17 @@
 					<Parameter>
 						<Name>numeric_expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>EXP</Name>
-				<Description>Returns the exponential value of the given float expression</Description>
+				<Description>
+					Returns the exponential value of the given float expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -454,13 +587,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of type float</Description>
+						<Description>
+							Expression of type float
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>FLOOR</Name>
-				<Description>Returns the largest integer less than or equal to the given numeric expression</Description>
+				<Description>
+					Returns the largest integer less than or equal to the given numeric expression
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -468,13 +605,17 @@
 					<Parameter>
 						<Name>numeric_expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>LOG</Name>
-				<Description>Returns the natural logarithm of the given float expression</Description>
+				<Description>
+					Returns the natural logarithm of the given float expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -482,13 +623,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of the float data type</Description>
+						<Description>
+							Expression of the float data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>LOG10</Name>
-				<Description>Returns the base-10 logarithm of the given float expression</Description>
+				<Description>
+					Returns the base-10 logarithm of the given float expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -496,20 +641,26 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of the float data type</Description>
+						<Description>
+							Expression of the float data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>PI</Name>
-				<Description>Returns the constant value of PI</Description>
+				<Description>
+					Returns the constant value of PI
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>POWER</Name>
-				<Description>Returns the value of the given expression to the specified power</Description>
+				<Description>
+					Returns the value of the given expression to the specified power
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -517,18 +668,24 @@
 					<Parameter>
 						<Name>numeric_expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>Y</Name>
 						<Type>numeric</Type>
-						<Description>The power to which to raise numeric_expression</Description>
+						<Description>
+							The power to which to raise numeric_expression
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>RADIANS</Name>
-				<Description>Returns radians when a numeric expression, in degrees, is entered</Description>
+				<Description>
+					Returns radians when a numeric expression, in degrees, is entered
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -536,13 +693,17 @@
 					<Parameter>
 						<Name>numeric_expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>RAND</Name>
-				<Description>Returns a random float value from 0 through 1</Description>
+				<Description>
+					Returns a random float value from 0 through 1
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -550,13 +711,17 @@
 					<Parameter>
 						<Name>seed</Name>
 						<Type>int</Type>
-						<Description>An integer expression (tinyint, smallint, or int) that gives the seed or start value</Description>
+						<Description>
+							An integer expression (tinyint, smallint, or int) that gives the seed or start value
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>ROUND</Name>
-				<Description>Returns a numeric expression, rounded to the specified length or precision</Description>
+				<Description>
+					Returns a numeric expression, rounded to the specified length or precision
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -564,23 +729,31 @@
 					<Parameter>
 						<Name>numeric_expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>length</Name>
 						<Type>int</Type>
-						<Description>The precision to which numeric_expression is to be rounded</Description>
+						<Description>
+							The precision to which numeric_expression is to be rounded
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>function</Name>
 						<Type>int</Type>
-						<Description>The type of operation to perform</Description>
+						<Description>
+							The type of operation to perform
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SIGN</Name>
-				<Description>Returns the positive (+1), zero (0), or negative (-1) sign of the given expression</Description>
+				<Description>
+					Returns the positive (+1), zero (0), or negative (-1) sign of the given expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -588,13 +761,17 @@
 					<Parameter>
 						<Name>numeric_expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SIN</Name>
-				<Description>Returns the trigonometric sine of the given angle (in radians) in an approximate numeric (float) expression</Description>
+				<Description>
+					Returns the trigonometric sine of the given angle (in radians) in an approximate numeric (float) expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -602,13 +779,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of type float</Description>
+						<Description>
+							Expression of type float
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SQUARE</Name>
-				<Description>Returns the square of the given expression</Description>
+				<Description>
+					Returns the square of the given expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -616,13 +797,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of type float</Description>
+						<Description>
+							Expression of type float
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SQRT</Name>
-				<Description>Returns the square root of the given expression</Description>
+				<Description>
+					Returns the square root of the given expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -630,13 +815,17 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of type float</Description>
+						<Description>
+							Expression of type float
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>TAN</Name>
-				<Description>Returns the tangent of the input expression</Description>
+				<Description>
+					Returns the tangent of the input expression
+				</Description>
 				<ReturnValue>
 					<Type>float</Type>
 				</ReturnValue>
@@ -644,7 +833,9 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>real</Type>
-						<Description>Expression of type float or real, interpreted as number of radians</Description>
+						<Description>
+							Expression of type float or real, interpreted as number of radians
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
@@ -652,11 +843,15 @@
 	</Category>
 	<Category>
 		<DisplayName>Aggregate Functions</DisplayName>
-		<Description>Aggregate functions perform a calculation on a set of values and return a single value</Description>
+		<Description>
+			Aggregate functions perform a calculation on a set of values and return a single value
+		</Description>
 		<Objects>
 			<Function>
 				<Name>SUM</Name>
-				<Description>The sum of the input values</Description>
+				<Description>
+					The sum of the input values
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -664,13 +859,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>numeric</Type>
-						<Description>Constant, column, or function, and any combination of arithmetic, bitwise, and string operators</Description>
+						<Description>
+							Constant, column, or function, and any combination of arithmetic, bitwise, and string operators
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>MIN</Name>
-				<Description>The lowest of the input values</Description>
+				<Description>
+					The lowest of the input values
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -678,13 +877,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>numeric</Type>
-						<Description>Constant, column, or function, and any combination of arithmetic, bitwise, and string operators</Description>
+						<Description>
+							Constant, column, or function, and any combination of arithmetic, bitwise, and string operators
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>MAX</Name>
-				<Description>The highest of the input values</Description>
+				<Description>
+					The highest of the input values
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -692,13 +895,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>numeric</Type>
-						<Description>Constant, column, or function, and any combination of arithmetic, bitwise, and string operators</Description>
+						<Description>
+							Constant, column, or function, and any combination of arithmetic, bitwise, and string operators
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>COUNT</Name>
-				<Description>The number of input values (int)</Description>
+				<Description>
+					The number of input values (int)
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -706,13 +913,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type></Type>
-						<Description>Expression of any type except uniqueidentifier, text, image, or ntext</Description>
+						<Description>
+							Expression of any type except uniqueidentifier, text, image, or ntext
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>COUNT(*)</Name>
-				<Description>Number of selected rows (int)</Description>
+				<Description>
+					Number of selected rows (int)
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -720,7 +931,9 @@
 			</Function>
 			<Function>
 				<Name>COUNT_BIG</Name>
-				<Description>The number of input values (bigint)</Description>
+				<Description>
+					The number of input values (bigint)
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>bigint</Type>
@@ -729,20 +942,26 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type></Type>
-						<Description>Expression of any type except uniqueidentifier, text, image, or ntext</Description>
+						<Description>
+							Expression of any type except uniqueidentifier, text, image, or ntext
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>COUNT_BIG(*)</Name>
-				<Description>Number of selected rows (bigint)</Description>
+				<Description>
+					Number of selected rows (bigint)
+				</Description>
 				<ReturnValue>
 					<Type>bigint</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>AVG</Name>
-				<Description>Returns the average of the values in a group. Null values are ignored</Description>
+				<Description>
+					Returns the average of the values in a group. Null values are ignored
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -750,13 +969,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>STDEV</Name>
-				<Description>Returns the statistical standard deviation of all values in the given expression</Description>
+				<Description>
+					Returns the statistical standard deviation of all values in the given expression
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -770,7 +993,9 @@
 			</Function>
 			<Function>
 				<Name>STDEVP</Name>
-				<Description>Returns the statistical standard deviation for the population for all values in the given expression</Description>
+				<Description>
+					Returns the statistical standard deviation for the population for all values in the given expression
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -784,7 +1009,9 @@
 			</Function>
 			<Function>
 				<Name>VAR</Name>
-				<Description>Returns the statistical variance of all values in the given expression</Description>
+				<Description>
+					Returns the statistical variance of all values in the given expression
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -792,13 +1019,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>VARP</Name>
-				<Description>Returns the statistical variance for the population for all values in the given expression</Description>
+				<Description>
+					Returns the statistical variance for the population for all values in the given expression
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -806,13 +1037,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of the exact numeric or approximate numeric data type category, except for the bit data type</Description>
+						<Description>
+							Expression of the exact numeric or approximate numeric data type category, except for the bit data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>BINARY_CHECKSUM</Name>
-				<Description>Returns the binary checksum value computed over a row of a table or over a list of expressions</Description>
+				<Description>
+					Returns the binary checksum value computed over a row of a table or over a list of expressions
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -820,13 +1055,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of any type</Description>
+						<Description>
+							Expression of any type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>CHECKSUM</Name>
-				<Description>Returns the checksum value computed over a row of a table, or over a list of expressions</Description>
+				<Description>
+					Returns the checksum value computed over a row of a table, or over a list of expressions
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -834,13 +1073,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>numeric</Type>
-						<Description>Expression of any type except a noncomparable data type</Description>
+						<Description>
+							Expression of any type except a noncomparable data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>CHECKSUM_AGG</Name>
-				<Description>Returns the checksum of the values in a group</Description>
+				<Description>
+					Returns the checksum of the values in a group
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -848,13 +1091,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>numeric</Type>
-						<Description>Constant, column, or function, and any combination of arithmetic, bitwise, and string operators</Description>
+						<Description>
+							Constant, column, or function, and any combination of arithmetic, bitwise, and string operators
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>GROUPING</Name>
-				<Description>Causes an additional column to be output with a value of 1 or 0</Description>
+				<Description>
+					Causes an additional column to be output with a value of 1 or 0
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -862,7 +1109,9 @@
 					<Parameter>
 						<Name>column_name</Name>
 						<Type>sysname</Type>
-						<Description>Column in a GROUP BY clause to check for CUBE or ROLLUP null values</Description>
+						<Description>
+							Column in a GROUP BY clause to check for CUBE or ROLLUP null values
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
@@ -870,11 +1119,15 @@
 	</Category>
 	<Category>
 		<DisplayName>Metadata Functions</DisplayName>
-		<Description>These scalar functions return information about the database and database objects</Description>
+		<Description>
+			These scalar functions return information about the database and database objects
+		</Description>
 		<Objects>
 			<Function>
 				<Name>COL_LENGTH</Name>
-				<Description>Returns the defined length of a column</Description>
+				<Description>
+					Returns the defined length of a column
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -882,18 +1135,24 @@
 					<Parameter>
 						<Name>table</Name>
 						<Type>nvarchar</Type>
-						<Description>Name of the table for which to determine column length information</Description>
+						<Description>
+							Name of the table for which to determine column length information
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>column</Name>
 						<Type>nvarchar</Type>
-						<Description>Name of the column for which to determine length</Description>
+						<Description>
+							Name of the column for which to determine length
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>COL_NAME</Name>
-				<Description>Returns the name of a database column</Description>
+				<Description>
+					Returns the name of a database column
+				</Description>
 				<ReturnValue>
 					<Type>sysname</Type>
 				</ReturnValue>
@@ -901,18 +1160,24 @@
 					<Parameter>
 						<Name>table_id</Name>
 						<Type>int</Type>
-						<Description>Identification number of the table containing the database column</Description>
+						<Description>
+							Identification number of the table containing the database column
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>column_id</Name>
 						<Type>int</Type>
-						<Description>Identification number of the column</Description>
+						<Description>
+							Identification number of the column
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>COLUMNPROPERTY</Name>
-				<Description>Returns information about a column or procedure parameter</Description>
+				<Description>
+					Returns information about a column or procedure parameter
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -920,23 +1185,31 @@
 					<Parameter>
 						<Name>id</Name>
 						<Type>int</Type>
-						<Description>Expression containing the identifier (ID) of the table or procedure</Description>
+						<Description>
+							Expression containing the identifier (ID) of the table or procedure
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>column</Name>
 						<Type>nvarchar</Type>
-						<Description>Expression containing the name of the column or parameter</Description>
+						<Description>
+							Expression containing the name of the column or parameter
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>nvarchar</Type>
-						<Description>Expression containing the information to be returned for id</Description>
+						<Description>
+							Expression containing the information to be returned for id
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DATABASEPROPERTY</Name>
-				<Description>Returns the named database property value for the given database and property name</Description>
+				<Description>
+					Returns the named database property value for the given database and property name
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -944,18 +1217,24 @@
 					<Parameter>
 						<Name>database</Name>
 						<Type>nvarchar(128)</Type>
-						<Description>Expression containing the name of the database for which to return the named property information</Description>
+						<Description>
+							Expression containing the name of the database for which to return the named property information
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>nvarchar</Type>
-						<Description>Expression containing the name of the database property to return</Description>
+						<Description>
+							Expression containing the name of the database property to return
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DATABASEPROPERTYEX</Name>
-				<Description>Returns the current setting of the specified database option or property for the specified database</Description>
+				<Description>
+					Returns the current setting of the specified database option or property for the specified database
+				</Description>
 				<ReturnValue>
 					<Type>sql_variant</Type>
 				</ReturnValue>
@@ -963,18 +1242,24 @@
 					<Parameter>
 						<Name>database</Name>
 						<Type>nvarchar(128)</Type>
-						<Description>Expression that evaluates to the name of the database for which a property setting is to be returned</Description>
+						<Description>
+							Expression that evaluates to the name of the database for which a property setting is to be returned
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>nvarchar(128)</Type>
-						<Description>Expression that indicates the option or property setting to be returned</Description>
+						<Description>
+							Expression that indicates the option or property setting to be returned
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DB_ID</Name>
-				<Description>Returns the database identification (ID) number</Description>
+				<Description>
+					Returns the database identification (ID) number
+				</Description>
 				<ReturnValue>
 					<Type>smallint</Type>
 				</ReturnValue>
@@ -982,13 +1267,17 @@
 					<Parameter>
 						<Name>database</Name>
 						<Type>nvarchar</Type>
-						<Description>Database name used to return the corresponding database ID</Description>
+						<Description>
+							Database name used to return the corresponding database ID
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DB_NAME</Name>
-				<Description>Returns the database name</Description>
+				<Description>
+					Returns the database name
+				</Description>
 				<ReturnValue>
 					<Type>nvarchar(128)</Type>
 				</ReturnValue>
@@ -996,13 +1285,17 @@
 					<Parameter>
 						<Name>database_id</Name>
 						<Type>smallint</Type>
-						<Description>Identification number (ID) of the database to be returned</Description>
+						<Description>
+							Identification number (ID) of the database to be returned
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>FILE_ID</Name>
-				<Description>Returns the file identification number (file ID) for the given logical file name</Description>
+				<Description>
+					Returns the file identification number (file ID) for the given logical file name
+				</Description>
 				<ReturnValue>
 					<Type>smallint</Type>
 				</ReturnValue>
@@ -1010,13 +1303,17 @@
 					<Parameter>
 						<Name>file_name</Name>
 						<Type>nchar(128)</Type>
-						<Description>Name of the file for which to return the file ID</Description>
+						<Description>
+							Name of the file for which to return the file ID
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>FILE_NAME</Name>
-				<Description>Returns the logical file name for the given file identification number (ID)</Description>
+				<Description>
+					Returns the logical file name for the given file identification number (ID)
+				</Description>
 				<ReturnValue>
 					<Type>nvarchar(128)</Type>
 				</ReturnValue>
@@ -1024,13 +1321,17 @@
 					<Parameter>
 						<Name>file_id</Name>
 						<Type>smallint</Type>
-						<Description>File identification number for which to return the file name</Description>
+						<Description>
+							File identification number for which to return the file name
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>FILEGROUP_ID</Name>
-				<Description>Returns the filegroup identification number (ID) for the given filegroup name</Description>
+				<Description>
+					Returns the filegroup identification number (ID) for the given filegroup name
+				</Description>
 				<ReturnValue>
 					<Type>smallint</Type>
 				</ReturnValue>
@@ -1038,13 +1339,17 @@
 					<Parameter>
 						<Name>filegroup_name</Name>
 						<Type>nvarchar(128)</Type>
-						<Description>Filegroup name for which to return the filegroup ID</Description>
+						<Description>
+							Filegroup name for which to return the filegroup ID
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>FILEGROUP_NAME</Name>
-				<Description>Returns the filegroup name for the given filegroup identification number (ID)</Description>
+				<Description>
+					Returns the filegroup name for the given filegroup identification number (ID)
+				</Description>
 				<ReturnValue>
 					<Type>nvarchar(128)</Type>
 				</ReturnValue>
@@ -1052,13 +1357,17 @@
 					<Parameter>
 						<Name>filegroup_id</Name>
 						<Type>smallint</Type>
-						<Description>Filegroup ID number for which to return the filegroup name</Description>
+						<Description>
+							Filegroup ID number for which to return the filegroup name
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>FILEGROUPPROPERTY</Name>
-				<Description>Returns the specified filegroup property value when given a filegroup and property name</Description>
+				<Description>
+					Returns the specified filegroup property value when given a filegroup and property name
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1066,18 +1375,24 @@
 					<Parameter>
 						<Name>filegroup_name</Name>
 						<Type>nvarchar(128)</Type>
-						<Description>Expression containing the name of the filegroup for which to return the named property information</Description>
+						<Description>
+							Expression containing the name of the filegroup for which to return the named property information
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Expression containing the name of the filegroup property to return</Description>
+						<Description>
+							Expression containing the name of the filegroup property to return
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>FILEPROPERTY</Name>
-				<Description>Returns the specified file name property value when given a file name and property name</Description>
+				<Description>
+					Returns the specified file name property value when given a file name and property name
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1085,18 +1400,26 @@
 					<Parameter>
 						<Name>file_name</Name>
 						<Type>nchar(128)</Type>
-						<Description>Expression containing the name of the file associated with the current database for which to return property information</Description>
+						<Description>
+							Expression containing the name of the file associated with the current database for which to return property information
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Expression containing the name of the file property to return</Description>
+						<Description>
+							Expression containing the name of the file property to return
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
-				<Name>FULLTEXTCATALOGPROPERTY</Name>
-				<Description>Returns information about full-text catalog properties</Description>
+				<Name>
+					FULLTEXTCATALOGPROPERTY
+				</Name>
+				<Description>
+					Returns information about full-text catalog properties
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1104,18 +1427,26 @@
 					<Parameter>
 						<Name>catalog_name</Name>
 						<Type>nchar(128)</Type>
-						<Description>Expression containing the name of the full-text catalog</Description>
+						<Description>
+							Expression containing the name of the full-text catalog
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Expression containing the name of the full-text catalog property</Description>
+						<Description>
+							Expression containing the name of the full-text catalog property
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
-				<Name>FULLTEXTSERVICEPROPERTY</Name>
-				<Description>Returns information about full-text service-level properties</Description>
+				<Name>
+					FULLTEXTSERVICEPROPERTY
+				</Name>
+				<Description>
+					Returns information about full-text service-level properties
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1123,13 +1454,17 @@
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Expression containing the name of the full-text service-level property</Description>
+						<Description>
+							Expression containing the name of the full-text service-level property
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>INDEX_COL</Name>
-				<Description>Returns the indexed column name</Description>
+				<Description>
+					Returns the indexed column name
+				</Description>
 				<ReturnValue>
 					<Type>nchar</Type>
 				</ReturnValue>
@@ -1153,7 +1488,9 @@
 			</Function>
 			<Function>
 				<Name>INDEXKEY_PROPERTY</Name>
-				<Description>Returns information about the index key</Description>
+				<Description>
+					Returns information about the index key
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1161,28 +1498,38 @@
 					<Parameter>
 						<Name>table_id</Name>
 						<Type>int</Type>
-						<Description>Table identification number</Description>
+						<Description>
+							Table identification number
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>index_id</Name>
 						<Type>int</Type>
-						<Description>Index identification number</Description>
+						<Description>
+							Index identification number
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>key_id</Name>
 						<Type>int</Type>
-						<Description>Index column position</Description>
+						<Description>
+							Index column position
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Name of the property for which information will be returned</Description>
+						<Description>
+							Name of the property for which information will be returned
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>INDEXPROPERTY</Name>
-				<Description>Returns the named index property value given a table identification number, index name, and property name</Description>
+				<Description>
+					Returns the named index property value given a table identification number, index name, and property name
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1190,23 +1537,31 @@
 					<Parameter>
 						<Name>table_id</Name>
 						<Type>int</Type>
-						<Description>Expression containing the identification number of the table or indexed view for which to provide index property information</Description>
+						<Description>
+							Expression containing the identification number of the table or indexed view for which to provide index property information
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>index</Name>
 						<Type>nvarchar(128)</Type>
-						<Description>Expression containing the name of the index for which to return property information</Description>
+						<Description>
+							Expression containing the name of the index for which to return property information
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Expression containing the name of the database property to return</Description>
+						<Description>
+							Expression containing the name of the database property to return
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>OBJECT_ID</Name>
-				<Description>Returns the database object identification number</Description>
+				<Description>
+					Returns the database object identification number
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1220,7 +1575,9 @@
 			</Function>
 			<Function>
 				<Name>OBJECT_NAME</Name>
-				<Description>Returns the database object name</Description>
+				<Description>
+					Returns the database object name
+				</Description>
 				<ReturnValue>
 					<Type>nchar</Type>
 				</ReturnValue>
@@ -1228,13 +1585,17 @@
 					<Parameter>
 						<Name>object_id</Name>
 						<Type>int</Type>
-						<Description>ID of the object to be used</Description>
+						<Description>
+							ID of the object to be used
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>OBJECTPROPERTY</Name>
-				<Description>Returns information about objects in the current database</Description>
+				<Description>
+					Returns information about objects in the current database
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1242,18 +1603,24 @@
 					<Parameter>
 						<Name>id</Name>
 						<Type>int</Type>
-						<Description>Expression containing the ID of the object in the current database</Description>
+						<Description>
+							Expression containing the ID of the object in the current database
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Expression containing the information to be returned for the object specified by id</Description>
+						<Description>
+							Expression containing the information to be returned for the object specified by id
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>@@PROCID</Name>
-				<Description>Returns the stored procedure identifier (ID) of the current procedure</Description>
+				<Description>
+					Returns the stored procedure identifier (ID) of the current procedure
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -1261,7 +1628,9 @@
 			</Function>
 			<Function>
 				<Name>TYPEPROPERTY</Name>
-				<Description>Returns information about a data type</Description>
+				<Description>
+					Returns information about a data type
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1269,18 +1638,24 @@
 					<Parameter>
 						<Name>type</Name>
 						<Type>nvarchar</Type>
-						<Description>Name of the data type</Description>
+						<Description>
+							Name of the data type
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Type of information to be returned for the data type</Description>
+						<Description>
+							Type of information to be returned for the data type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SQL_VARIANT_PROPERTY</Name>
-				<Description>Returns the base data type and other information about a sql_variant value</Description>
+				<Description>
+					Returns the base data type and other information about a sql_variant value
+				</Description>
 				<ReturnValue>
 					<Type>sql_variant</Type>
 				</ReturnValue>
@@ -1288,18 +1663,26 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>sql_variant</Type>
-						<Description>Expression of type sql_variant</Description>
+						<Description>
+							Expression of type sql_variant
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Contains the name of the sql_variant property for which information is to be provided</Description>
+						<Description>
+							Contains the name of the sql_variant property for which information is to be provided
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
-				<Name>fn_listextendedproperty</Name>
-				<Description>Returns extended property values of database objects</Description>
+				<Name>
+					fn_listextendedproperty
+				</Name>
+				<Description>
+					Returns extended property values of database objects
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -1312,32 +1695,44 @@
 					<Parameter>
 						<Name>level0_object_type</Name>
 						<Type>varchar(128)</Type>
-						<Description>User or user-defined type</Description>
+						<Description>
+							User or user-defined type
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>level0_object_name</Name>
 						<Type>sysname</Type>
-						<Description>Name of the level 0 object type specified</Description>
+						<Description>
+							Name of the level 0 object type specified
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>level1_object_type</Name>
 						<Type>varchar(128)</Type>
-						<Description>Type of level 1 object</Description>
+						<Description>
+							Type of level 1 object
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>level1_object_name</Name>
 						<Type>sysname</Type>
-						<Description>Name of the level 1 object type specified</Description>
+						<Description>
+							Name of the level 1 object type specified
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>level2_object_type</Name>
 						<Type>varchar(128)</Type>
-						<Description>Type of level 2 object</Description>
+						<Description>
+							Type of level 2 object
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>level2_object_name</Name>
 						<Type>sysname</Type>
-						<Description>Name of the level 2 object type specified</Description>
+						<Description>
+							Name of the level 2 object type specified
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
@@ -1345,11 +1740,15 @@
 	</Category>
 	<Category>
 		<DisplayName>Security Functions</DisplayName>
-		<Description>These scalar functions return information about users and roles</Description>
+		<Description>
+			These scalar functions return information about users and roles
+		</Description>
 		<Objects>
 			<Function>
 				<Name>IS_MEMBER</Name>
-				<Description>Indicates whether the current user is a member of the specified NT group or SQL Server role</Description>
+				<Description>
+					Indicates whether the current user is a member of the specified NT group or SQL Server role
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1357,13 +1756,17 @@
 					<Parameter>
 						<Name>group_or_role</Name>
 						<Type>sysname</Type>
-						<Description>Name of the Windows NT group or SQL Server role being checked</Description>
+						<Description>
+							Name of the Windows NT group or SQL Server role being checked
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>IS_SRVROLEMEMBER</Name>
-				<Description>Indicates whether the current user login is a member of the specified server role</Description>
+				<Description>
+					Indicates whether the current user login is a member of the specified server role
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1371,18 +1774,24 @@
 					<Parameter>
 						<Name>role</Name>
 						<Type>sysname</Type>
-						<Description>Name of the server role being checked</Description>
+						<Description>
+							Name of the server role being checked
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>login</Name>
 						<Type>sysname</Type>
-						<Description>Optional name of the login to check</Description>
+						<Description>
+							Optional name of the login to check
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SUSER_ID</Name>
-				<Description>Returns the user's login identification number</Description>
+				<Description>
+					Returns the user's login identification number
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1396,7 +1805,9 @@
 			</Function>
 			<Function>
 				<Name>SUSER_NAME</Name>
-				<Description>Returns the user's login identification name</Description>
+				<Description>
+					Returns the user's login identification name
+				</Description>
 				<ReturnValue>
 					<Type>nchar</Type>
 				</ReturnValue>
@@ -1410,7 +1821,9 @@
 			</Function>
 			<Function>
 				<Name>SUSER_SID</Name>
-				<Description>Returns the security identification number(SID) for the user's login name</Description>
+				<Description>
+					Returns the security identification number(SID) for the user's login name
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1424,7 +1837,9 @@
 			</Function>
 			<Function>
 				<Name>SUSER_SNAME</Name>
-				<Description>Returns the login identification name from a user's security identification number(SID)</Description>
+				<Description>
+					Returns the login identification name from a user's security identification number(SID)
+				</Description>
 				<ReturnValue>
 					<Type>nchar</Type>
 				</ReturnValue>
@@ -1432,13 +1847,17 @@
 					<Parameter>
 						<Name>server_user_id</Name>
 						<Type>varbinary(85)</Type>
-						<Description>User security identification number</Description>
+						<Description>
+							User security identification number
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>USER_ID</Name>
-				<Description>Returns a user's database identification number</Description>
+				<Description>
+					Returns a user's database identification number
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1452,7 +1871,9 @@
 			</Function>
 			<Function>
 				<Name>USER_NAME</Name>
-				<Description>Returns a user database username from a given identification number</Description>
+				<Description>
+					Returns a user database username from a given identification number
+				</Description>
 				<ReturnValue>
 					<Type>nchar</Type>
 				</ReturnValue>
@@ -1466,7 +1887,9 @@
 			</Function>
 			<Function>
 				<Name>USER</Name>
-				<Description>Allows a system-supplied value for the current user's database username to be inserted into a table</Description>
+				<Description>
+					Allows a system-supplied value for the current user's database username to be inserted into a table
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>char</Type>
@@ -1474,7 +1897,9 @@
 			</Function>
 			<Function>
 				<Name>HAS_DBACCESS</Name>
-				<Description>Returns information about whether the user has access to the specified database</Description>
+				<Description>
+					Returns information about whether the user has access to the specified database
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1482,13 +1907,19 @@
 					<Parameter>
 						<Name>database_name</Name>
 						<Type>sysname</Type>
-						<Description>Name of the database for which the user wants access information</Description>
+						<Description>
+							Name of the database for which the user wants access information
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
-				<Name>fn_trace_geteventinfo</Name>
-				<Description>Returns information about the events being traced</Description>
+				<Name>
+					fn_trace_geteventinfo
+				</Name>
+				<Description>
+					Returns information about the events being traced
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -1501,8 +1932,12 @@
 				</Parameters>
 			</Function>
 			<Function>
-				<Name>fn_trace_getfilterinfo</Name>
-				<Description>Returns information about the filters applied to a specified trace</Description>
+				<Name>
+					fn_trace_getfilterinfo
+				</Name>
+				<Description>
+					Returns information about the filters applied to a specified trace
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -1516,7 +1951,9 @@
 			</Function>
 			<Function>
 				<Name>fn_trace_getinfo</Name>
-				<Description>Returns information about a specified trace or existing traces</Description>
+				<Description>
+					Returns information about a specified trace or existing traces
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -1530,7 +1967,9 @@
 			</Function>
 			<Function>
 				<Name>fn_trace_gettable</Name>
-				<Description>Returns trace file information in a table format</Description>
+				<Description>
+					Returns trace file information in a table format
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -1538,12 +1977,16 @@
 					<Parameter>
 						<Name>filename</Name>
 						<Type>nvarchar(256)</Type>
-						<Description>Initial trace to be read</Description>
+						<Description>
+							Initial trace to be read
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>numfiles</Name>
 						<Type>int</Type>
-						<Description>Number of rollover files, including the initial file specified in filename, to be read</Description>
+						<Description>
+							Number of rollover files, including the initial file specified in filename, to be read
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
@@ -1551,11 +1994,15 @@
 	</Category>
 	<Category>
 		<DisplayName>String Functions</DisplayName>
-		<Description>These scalar functions perform an operation on a string input value and return a string or numeric value</Description>
+		<Description>
+			These scalar functions perform an operation on a string input value and return a string or numeric value
+		</Description>
 		<Objects>
 			<Function>
 				<Name>ASCII</Name>
-				<Description>Returns the ASCII code value of the leftmost character of a character expression</Description>
+				<Description>
+					Returns the ASCII code value of the leftmost character of a character expression
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1563,13 +2010,17 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression of the type char or varchar</Description>
+						<Description>
+							Expression of the type char or varchar
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>CHAR</Name>
-				<Description>A string function that converts an int ASCII code to a character</Description>
+				<Description>
+					A string function that converts an int ASCII code to a character
+				</Description>
 				<ReturnValue>
 					<Type>char(1)</Type>
 				</ReturnValue>
@@ -1577,13 +2028,17 @@
 					<Parameter>
 						<Name>integer_expression</Name>
 						<Type>int</Type>
-						<Description>Integer from 0 through 255</Description>
+						<Description>
+							Integer from 0 through 255
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>CHARINDEX</Name>
-				<Description>Returns the starting position of the specified expression in a character string</Description>
+				<Description>
+					Returns the starting position of the specified expression in a character string
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1591,42 +2046,60 @@
 					<Parameter>
 						<Name>expression1</Name>
 						<Type>varchar</Type>
-						<Description>Expression containing the sequence of characters to be found</Description>
+						<Description>
+							Expression containing the sequence of characters to be found
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>expression2</Name>
 						<Type>varchar</Type>
-						<Description>Expression, usually a column searched for the specified sequence</Description>
+						<Description>
+							Expression, usually a column searched for the specified sequence
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>start_location</Name>
 						<Type>int</Type>
-						<Description>Character position to start searching for expression1 in expression2</Description>
+						<Description>
+							Character position to start searching for expression1 in expression2
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>DIFFERENCE</Name>
-				<Description>Returns the difference between the SOUNDEX values of two character expressions as an integer</Description>
+				<Description>
+					Returns the difference between the SOUNDEX values of two character expressions as an integer
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
 				<Parameters>
 					<Parameter>
-						<Name>character_expression1</Name>
+						<Name>
+							character_expression1
+						</Name>
 						<Type>varchar</Type>
-						<Description>Expression of type char or varchar</Description>
+						<Description>
+							Expression of type char or varchar
+						</Description>
 					</Parameter>
 					<Parameter>
-						<Name>character_expression2</Name>
+						<Name>
+							character_expression2
+						</Name>
 						<Type>varchar</Type>
-						<Description>Expression of type char or varchar</Description>
+						<Description>
+							Expression of type char or varchar
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>LEFT</Name>
-				<Description>Returns the part of a character string starting at a specified number of characters from the left</Description>
+				<Description>
+					Returns the part of a character string starting at a specified number of characters from the left
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
@@ -1634,18 +2107,24 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression of character or binary data</Description>
+						<Description>
+							Expression of character or binary data
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>integer_expression</Name>
 						<Type>int</Type>
-						<Description>Positive whole number</Description>
+						<Description>
+							Positive whole number
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>LEN</Name>
-				<Description>Returns the number of characters, rather than the number of bytes, of the given string expression, excluding trailing blanks</Description>
+				<Description>
+					Returns the number of characters, rather than the number of bytes, of the given string expression, excluding trailing blanks
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1653,13 +2132,17 @@
 					<Parameter>
 						<Name>string_expression</Name>
 						<Type>varchar</Type>
-						<Description>String expression to be evaluated</Description>
+						<Description>
+							String expression to be evaluated
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>LOWER</Name>
-				<Description>Returns a character expression after converting uppercase character data to lowercase</Description>
+				<Description>
+					Returns a character expression after converting uppercase character data to lowercase
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
@@ -1667,13 +2150,17 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression of character or binary data</Description>
+						<Description>
+							Expression of character or binary data
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>LTRIM</Name>
-				<Description>Returns a character expression after removing leading blanks</Description>
+				<Description>
+					Returns a character expression after removing leading blanks
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
@@ -1681,13 +2168,17 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression of character or binary data</Description>
+						<Description>
+							Expression of character or binary data
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>NCHAR</Name>
-				<Description>Returns the Unicode character with the given integer code, as defined by the Unicode standard</Description>
+				<Description>
+					Returns the Unicode character with the given integer code, as defined by the Unicode standard
+				</Description>
 				<ReturnValue>
 					<Type>nchar(1)</Type>
 				</ReturnValue>
@@ -1695,13 +2186,17 @@
 					<Parameter>
 						<Name>integer_expression</Name>
 						<Type>int</Type>
-						<Description>Positive whole number from 0 through 65535</Description>
+						<Description>
+							Positive whole number from 0 through 65535
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>PATINDEX</Name>
-				<Description>Returns starting position of first occurrence of a pattern in a specified expression, or zeros if pattern is not found</Description>
+				<Description>
+					Returns starting position of first occurrence of a pattern in a specified expression, or zeros if pattern is not found
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -1714,13 +2209,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression, usually a column that is searched for the specified pattern</Description>
+						<Description>
+							Expression, usually a column that is searched for the specified pattern
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>REPLACE</Name>
-				<Description>Replaces all occurrences of the second given string expression in the first string expression with a third expression</Description>
+				<Description>
+					Replaces all occurrences of the second given string expression in the first string expression with a third expression
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
@@ -1728,23 +2227,31 @@
 					<Parameter>
 						<Name>string_expression1</Name>
 						<Type>varchar</Type>
-						<Description>String expression to be searched</Description>
+						<Description>
+							String expression to be searched
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>string_expression2</Name>
 						<Type>varchar</Type>
-						<Description>String expression to try to find</Description>
+						<Description>
+							String expression to try to find
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>string_expression3</Name>
 						<Type>varchar</Type>
-						<Description>Replacement string expression</Description>
+						<Description>
+							Replacement string expression
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>QUOTENAME</Name>
-				<Description>Returns a Unicode string with the delimiters added to make the input string a valid delimited identifier</Description>
+				<Description>
+					Returns a Unicode string with the delimiters added to make the input string a valid delimited identifier
+				</Description>
 				<ReturnValue>
 					<Type>nvarchar(129)</Type>
 				</ReturnValue>
@@ -1752,18 +2259,24 @@
 					<Parameter>
 						<Name>character_string</Name>
 						<Type>sysname</Type>
-						<Description>String of Unicode character data</Description>
+						<Description>
+							String of Unicode character data
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>quote_character</Name>
 						<Type>varchar</Type>
-						<Description>One-character string to use as the delimiter</Description>
+						<Description>
+							One-character string to use as the delimiter
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>REPLICATE</Name>
-				<Description>Repeats a character expression a specified number of times</Description>
+				<Description>
+					Repeats a character expression a specified number of times
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
@@ -1771,18 +2284,24 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Alphanumeric expression of character data</Description>
+						<Description>
+							Alphanumeric expression of character data
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>integer_expression</Name>
 						<Type>int</Type>
-						<Description>Positive whole number</Description>
+						<Description>
+							Positive whole number
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>REVERSE</Name>
-				<Description>Returns the reverse of a character expression</Description>
+				<Description>
+					Returns the reverse of a character expression
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
@@ -1790,13 +2309,17 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression of character data</Description>
+						<Description>
+							Expression of character data
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>RIGHT</Name>
-				<Description>Returns the part of a character string starting a specified number of integer_expression characters from the right</Description>
+				<Description>
+					Returns the part of a character string starting a specified number of integer_expression characters from the right
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
@@ -1804,18 +2327,24 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression of character data</Description>
+						<Description>
+							Expression of character data
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>integer_expression</Name>
 						<Type>int</Type>
-						<Description>Starting position, expressed as a positive whole number</Description>
+						<Description>
+							Starting position, expressed as a positive whole number
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>RTRIM</Name>
-				<Description>Returns a character string after removing all trailing blanks</Description>
+				<Description>
+					Returns a character string after removing all trailing blanks
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
@@ -1823,13 +2352,17 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression of character data</Description>
+						<Description>
+							Expression of character data
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SOUNDEX</Name>
-				<Description>Returns a four-character (SOUNDEX) code to evaluate the similarity of two strings</Description>
+				<Description>
+					Returns a four-character (SOUNDEX) code to evaluate the similarity of two strings
+				</Description>
 				<ReturnValue>
 					<Type>char</Type>
 				</ReturnValue>
@@ -1837,13 +2370,17 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Alphanumeric expression of character data</Description>
+						<Description>
+							Alphanumeric expression of character data
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SPACE</Name>
-				<Description>Returns a string of repeated spaces</Description>
+				<Description>
+					Returns a string of repeated spaces
+				</Description>
 				<ReturnValue>
 					<Type>char</Type>
 				</ReturnValue>
@@ -1851,13 +2388,17 @@
 					<Parameter>
 						<Name>integer_expression</Name>
 						<Type>int</Type>
-						<Description>Positive integer that indicates the number of spaces</Description>
+						<Description>
+							Positive integer that indicates the number of spaces
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>STR</Name>
-				<Description>Returns character data converted from numeric data</Description>
+				<Description>
+					Returns character data converted from numeric data
+				</Description>
 				<ReturnValue>
 					<Type>char</Type>
 				</ReturnValue>
@@ -1865,90 +2406,130 @@
 					<Parameter>
 						<Name>float_expression</Name>
 						<Type>float</Type>
-						<Description>Expression of approximate numeric (float) data type with a decimal point</Description>
+						<Description>
+							Expression of approximate numeric (float) data type with a decimal point
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>length</Name>
 						<Type>int</Type>
-						<Description>Total length, including decimal point, sign, digits, and spaces</Description>
+						<Description>
+							Total length, including decimal point, sign, digits, and spaces
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>decimal</Name>
 						<Type>int</Type>
-						<Description>Number of places to the right of the decimal point</Description>
+						<Description>
+							Number of places to the right of the decimal point
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>STUFF</Name>
-				<Description>Deletes a specified length of characters and inserts another set of characters at a specified starting point</Description>
+				<Description>
+					Deletes a specified length of characters and inserts another set of characters at a specified starting point
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
 				<Parameters>
 					<Parameter>
-						<Name>character_expression1</Name>
+						<Name>
+							character_expression1
+						</Name>
 						<Type>varchar</Type>
-						<Description>Expression of character data</Description>
+						<Description>
+							Expression of character data
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>start</Name>
 						<Type>int</Type>
-						<Description>Integer value that specifies the location to begin deletion and insertion</Description>
+						<Description>
+							Integer value that specifies the location to begin deletion and insertion
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>length</Name>
 						<Type>int</Type>
-						<Description>Integer that specifies the number of characters to delete</Description>
+						<Description>
+							Integer that specifies the number of characters to delete
+						</Description>
 					</Parameter>
 					<Parameter>
-						<Name>character_expression2</Name>
+						<Name>
+							character_expression2
+						</Name>
 						<Type>varchar</Type>
-						<Description>Expression of character data</Description>
+						<Description>
+							Expression of character data
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SUBSTRING</Name>
-				<Description>Returns part of a character, binary, text, or image expression</Description>
+				<Description>
+					Returns part of a character, binary, text, or image expression
+				</Description>
 				<ReturnValue>
-					<Type>varchar_nvarchar_varbinary</Type>
+					<Type>
+						varchar_nvarchar_varbinary
+					</Type>
 				</ReturnValue>
 				<Parameters>
 					<Parameter>
 						<Name>expression1</Name>
-						<Type>varchar_nvarchar_varbinary</Type>
-						<Description>Character string, binary string, text, image, a column, or an expression that includes a column</Description>
+						<Type>
+							varchar_nvarchar_varbinary
+						</Type>
+						<Description>
+							Character string, binary string, text, image, a column, or an expression that includes a column
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>start</Name>
 						<Type>int</Type>
-						<Description>Integer that specifies where the substring begins</Description>
+						<Description>
+							Integer that specifies where the substring begins
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>length</Name>
 						<Type>int</Type>
-						<Description>Integer that specifies the length of the substring (the number of characters or bytes to return)</Description>
+						<Description>
+							Integer that specifies the length of the substring (the number of characters or bytes to return)
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>UNICODE</Name>
-				<Description>Returns the integer value, as defined by the Unicode standard, for the first character of the input expression</Description>
+				<Description>
+					Returns the integer value, as defined by the Unicode standard, for the first character of the input expression
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
 				<Parameters>
 					<Parameter>
-						<Name>ncharacter_expression</Name>
+						<Name>
+							ncharacter_expression
+						</Name>
 						<Type>nvarchar</Type>
-						<Description>nchar or nvarchar expression</Description>
+						<Description>
+							nchar or nvarchar expression
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>UPPER</Name>
-				<Description>Returns a character expression with lowercase character data converted to uppercase</Description>
+				<Description>
+					Returns a character expression with lowercase character data converted to uppercase
+				</Description>
 				<ReturnValue>
 					<Type>varchar</Type>
 				</ReturnValue>
@@ -1956,7 +2537,9 @@
 					<Parameter>
 						<Name>character_expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression of character data</Description>
+						<Description>
+							Expression of character data
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
@@ -1964,18 +2547,24 @@
 	</Category>
 	<Category>
 		<DisplayName>System Functions</DisplayName>
-		<Description>These scalar functions perform operations on and return information about values, objects, and settings in Microsoft® SQL Server™</Description>
+		<Description>
+			These scalar functions perform operations on and return information about values, objects, and settings in Microsoft® SQL Server™
+		</Description>
 		<Objects>
 			<Function>
 				<Name>APP_NAME</Name>
-				<Description>Returns the application name for the current session if set by the application</Description>
+				<Description>
+					Returns the application name for the current session if set by the application
+				</Description>
 				<ReturnValue>
 					<Type>nvarchar(128)</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>CASE</Name>
-				<Description>Evaluates a list of conditions and returns one of multiple possible result expressions</Description>
+				<Description>
+					Evaluates a list of conditions and returns one of multiple possible result expressions
+				</Description>
 				<ReturnValue>
 					<Type>boolean</Type>
 				</ReturnValue>
@@ -1983,13 +2572,17 @@
 					<Parameter>
 						<Name>input_expression</Name>
 						<Type>expression</Type>
-						<Description>Any valid Microsoft® SQL Server™ expression</Description>
+						<Description>
+							Any valid Microsoft® SQL Server™ expression
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>CAST</Name>
-				<Description>Explicitly converts an expression of one data type to another</Description>
+				<Description>
+					Explicitly converts an expression of one data type to another
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -1997,18 +2590,24 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type></Type>
-						<Description>Any valid Microsoft® SQL Server™ expression</Description>
+						<Description>
+							Any valid Microsoft® SQL Server™ expression
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>type_name</Name>
 						<Type></Type>
-						<Description>Target system-supplied data type, including bigint and sql_variant</Description>
+						<Description>
+							Target system-supplied data type, including bigint and sql_variant
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>COALESCE</Name>
-				<Description>Returns the first nonnull expression among its arguments</Description>
+				<Description>
+					Returns the first nonnull expression among its arguments
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2016,13 +2615,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type></Type>
-						<Description>Expression of any type</Description>
+						<Description>
+							Expression of any type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>CONVERT</Name>
-				<Description>Explicitly converts an expression of one data type to another</Description>
+				<Description>
+					Explicitly converts an expression of one data type to another
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2030,23 +2633,31 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type></Type>
-						<Description>Any valid Microsoft® SQL Server™ expression</Description>
+						<Description>
+							Any valid Microsoft® SQL Server™ expression
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>type_name</Name>
 						<Type></Type>
-						<Description>Target system-supplied data type, including bigint and sql_variant</Description>
+						<Description>
+							Target system-supplied data type, including bigint and sql_variant
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>style</Name>
 						<Type>varchar</Type>
-						<Description>Style of date format used to convert</Description>
+						<Description>
+							Style of date format used to convert
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>CURRENT_TIMESTAMP</Name>
-				<Description>Returns the current date and time. This function is equivalent to GETDATE()</Description>
+				<Description>
+					Returns the current date and time. This function is equivalent to GETDATE()
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>datetime</Type>
@@ -2054,7 +2665,9 @@
 			</Function>
 			<Function>
 				<Name>CURRENT_USER</Name>
-				<Description>Returns the current user. This function is equivalent to USER_NAME()</Description>
+				<Description>
+					Returns the current user. This function is equivalent to USER_NAME()
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>sysname</Type>
@@ -2062,7 +2675,9 @@
 			</Function>
 			<Function>
 				<Name>DATALENGTH</Name>
-				<Description>Returns the number of bytes used to represent any expression</Description>
+				<Description>
+					Returns the number of bytes used to represent any expression
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -2070,13 +2685,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type></Type>
-						<Description>Expression of any type</Description>
+						<Description>
+							Expression of any type
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>@@ERROR</Name>
-				<Description>Returns the error number for the last Transact-SQL statement executed</Description>
+				<Description>
+					Returns the error number for the last Transact-SQL statement executed
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2084,7 +2703,9 @@
 			</Function>
 			<Function>
 				<Name>FORMATMESSAGE</Name>
-				<Description>Constructs a message from an existing message in sysmessages</Description>
+				<Description>
+					Constructs a message from an existing message in sysmessages
+				</Description>
 				<ReturnValue>
 					<Type>nvarchar</Type>
 				</ReturnValue>
@@ -2092,18 +2713,24 @@
 					<Parameter>
 						<Name>msg_number</Name>
 						<Type>int</Type>
-						<Description>ID of the message stored in sysmessages</Description>
+						<Description>
+							ID of the message stored in sysmessages
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>param_value</Name>
 						<Type></Type>
-						<Description>One or more parameter values for use in the message</Description>
+						<Description>
+							One or more parameter values for use in the message
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>GETANSINULL</Name>
-				<Description>Returns the default nullability for the database for this session</Description>
+				<Description>
+					Returns the default nullability for the database for this session
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -2111,27 +2738,35 @@
 					<Parameter>
 						<Name>database</Name>
 						<Type>nchar</Type>
-						<Description>Name of the database for which to return nullability information</Description>
+						<Description>
+							Name of the database for which to return nullability information
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>HOST_ID</Name>
-				<Description>Returns the workstation identification number</Description>
+				<Description>
+					Returns the workstation identification number
+				</Description>
 				<ReturnValue>
 					<Type>char(8)</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>HOST_NAME</Name>
-				<Description>Returns the workstation name</Description>
+				<Description>
+					Returns the workstation name
+				</Description>
 				<ReturnValue>
 					<Type>nchar</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>IDENT_INCR</Name>
-				<Description>Returns the increment value specified during the creation of an identity column in a table or view that has an identity column</Description>
+				<Description>
+					Returns the increment value specified during the creation of an identity column in a table or view that has an identity column
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -2139,13 +2774,17 @@
 					<Parameter>
 						<Name>table_or_view</Name>
 						<Type>nvarchar</Type>
-						<Description>Expression specifying the table or view to check for a valid identity increment value</Description>
+						<Description>
+							Expression specifying the table or view to check for a valid identity increment value
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>IDENT_SEED</Name>
-				<Description>Returns the seed value specified during the creation of an identity column in a table or a view that has an identity column</Description>
+				<Description>
+					Returns the seed value specified during the creation of an identity column in a table or a view that has an identity column
+				</Description>
 				<ReturnValue>
 					<Type>numeric</Type>
 				</ReturnValue>
@@ -2153,13 +2792,17 @@
 					<Parameter>
 						<Name>table_or_view</Name>
 						<Type>nvarchar</Type>
-						<Description>Expression specifying the table or view to check for a valid identity seed value</Description>
+						<Description>
+							Expression specifying the table or view to check for a valid identity seed value
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>@@IDENTITY</Name>
-				<Description>Returns the last-inserted identity value</Description>
+				<Description>
+					Returns the last-inserted identity value
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>numeric</Type>
@@ -2167,7 +2810,9 @@
 			</Function>
 			<Function>
 				<Name>IDENTITY</Name>
-				<Description>Used in a SELECT statement with an INTO table clause to insert an identity column into a new table</Description>
+				<Description>
+					Used in a SELECT statement with an INTO table clause to insert an identity column into a new table
+				</Description>
 				<ReturnValue>
 					<Type>nvarchar</Type>
 				</ReturnValue>
@@ -2175,23 +2820,31 @@
 					<Parameter>
 						<Name>data_type</Name>
 						<Type></Type>
-						<Description>Data type of the identity column</Description>
+						<Description>
+							Data type of the identity column
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>seed</Name>
 						<Type>int</Type>
-						<Description>Value to be assigned to the first row in the table</Description>
+						<Description>
+							Value to be assigned to the first row in the table
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>increment</Name>
 						<Type>int</Type>
-						<Description>Increment to add to the seed value for successive rows in the table</Description>
+						<Description>
+							Increment to add to the seed value for successive rows in the table
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>ISDATE</Name>
-				<Description>Determines whether an input expression is a valid date</Description>
+				<Description>
+					Determines whether an input expression is a valid date
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -2199,13 +2852,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>varchar</Type>
-						<Description>Expression to be validated as a date</Description>
+						<Description>
+							Expression to be validated as a date
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>ISNULL</Name>
-				<Description>Replaces NULL with the specified replacement value</Description>
+				<Description>
+					Replaces NULL with the specified replacement value
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2213,18 +2870,24 @@
 					<Parameter>
 						<Name>check_expression</Name>
 						<Type></Type>
-						<Description>Expression to be checked for NULL</Description>
+						<Description>
+							Expression to be checked for NULL
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>replacement_value</Name>
 						<Type></Type>
-						<Description>Expression to be returned if check_expression is NULL</Description>
+						<Description>
+							Expression to be returned if check_expression is NULL
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>ISNUMERIC</Name>
-				<Description>Determines whether an expression is a valid numeric type</Description>
+				<Description>
+					Determines whether an expression is a valid numeric type
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -2232,20 +2895,26 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type></Type>
-						<Description>Expression to be evaluated</Description>
+						<Description>
+							Expression to be evaluated
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>NEWID</Name>
-				<Description>Creates a unique value of type uniqueidentifier</Description>
+				<Description>
+					Creates a unique value of type uniqueidentifier
+				</Description>
 				<ReturnValue>
 					<Type>uniqueidentifier</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>NULLIF</Name>
-				<Description>Returns a null value if the two specified expressions are equivalent</Description>
+				<Description>
+					Returns a null value if the two specified expressions are equivalent
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2253,18 +2922,24 @@
 					<Parameter>
 						<Name>expression1</Name>
 						<Type></Type>
-						<Description>Constant, column name, function, subquery, or any combination of arithmetic, bitwise, and string operators</Description>
+						<Description>
+							Constant, column name, function, subquery, or any combination of arithmetic, bitwise, and string operators
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>expression2</Name>
 						<Type></Type>
-						<Description>Constant, column name, function, subquery, or any combination of arithmetic, bitwise, and string operators</Description>
+						<Description>
+							Constant, column name, function, subquery, or any combination of arithmetic, bitwise, and string operators
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>PARSENAME</Name>
-				<Description>Returns the specified part of an object name</Description>
+				<Description>
+					Returns the specified part of an object name
+				</Description>
 				<ReturnValue>
 					<Type>nchar</Type>
 				</ReturnValue>
@@ -2272,18 +2947,24 @@
 					<Parameter>
 						<Name>object_name</Name>
 						<Type>sysname</Type>
-						<Description>name of the object for which to retrieve the specified object part</Description>
+						<Description>
+							name of the object for which to retrieve the specified object part
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>object_piece</Name>
 						<Type>int</Type>
-						<Description>Object part to return</Description>
+						<Description>
+							Object part to return
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>PERMISSIONS</Name>
-				<Description>Returns a value containing a bitmap that indicates the statement, object, or column permissions for the current user</Description>
+				<Description>
+					Returns a value containing a bitmap that indicates the statement, object, or column permissions for the current user
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -2296,13 +2977,17 @@
 					<Parameter>
 						<Name>column</Name>
 						<Type>nvarchar</Type>
-						<Description>Optional name of a column for which permission information is being returned</Description>
+						<Description>
+							Optional name of a column for which permission information is being returned
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>@@ROWCOUNT</Name>
-				<Description>Returns the number of rows affected by the last statement</Description>
+				<Description>
+					Returns the number of rows affected by the last statement
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2310,14 +2995,18 @@
 			</Function>
 			<Function>
 				<Name>ROWCOUNT_BIG</Name>
-				<Description>Returns the number of rows affected by the last statement executed (bigint)</Description>
+				<Description>
+					Returns the number of rows affected by the last statement executed (bigint)
+				</Description>
 				<ReturnValue>
 					<Type>bigint</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>SESSION_USER</Name>
-				<Description>Allow system-supplied value for current session's username to be inserted into a table when no default value is specified</Description>
+				<Description>
+					Allow system-supplied value for current session's username to be inserted into a table when no default value is specified
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>nchar</Type>
@@ -2325,7 +3014,9 @@
 			</Function>
 			<Function>
 				<Name>STATS_DATE</Name>
-				<Description>Returns the date that the statistics for the specified index were last updated</Description>
+				<Description>
+					Returns the date that the statistics for the specified index were last updated
+				</Description>
 				<ReturnValue>
 					<Type>datetime</Type>
 				</ReturnValue>
@@ -2344,7 +3035,9 @@
 			</Function>
 			<Function>
 				<Name>SYSTEM_USER</Name>
-				<Description>Allows a system-supplied value for the current system username to be inserted into a table when no default value is specified</Description>
+				<Description>
+					Allows a system-supplied value for the current system username to be inserted into a table when no default value is specified
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>nchar</Type>
@@ -2352,7 +3045,9 @@
 			</Function>
 			<Function>
 				<Name>@@TRANCOUNT</Name>
-				<Description>Returns the number of active transactions for the current connection</Description>
+				<Description>
+					Returns the number of active transactions for the current connection
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2360,7 +3055,9 @@
 			</Function>
 			<Function>
 				<Name>USER_NAME</Name>
-				<Description>Returns a user database username from a given identification number</Description>
+				<Description>
+					Returns a user database username from a given identification number
+				</Description>
 				<ReturnValue>
 					<Type>nchar</Type>
 				</ReturnValue>
@@ -2368,13 +3065,17 @@
 					<Parameter>
 						<Name>id</Name>
 						<Type>int</Type>
-						<Description>Identification number used to return a user's name</Description>
+						<Description>
+							Identification number used to return a user's name
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>COLLATIONPROPERTY</Name>
-				<Description>Returns the property of a given collation</Description>
+				<Description>
+					Returns the property of a given collation
+				</Description>
 				<ReturnValue>
 					<Type>sql_variant</Type>
 				</ReturnValue>
@@ -2382,25 +3083,33 @@
 					<Parameter>
 						<Name>collation_name</Name>
 						<Type>nvarchar(128)</Type>
-						<Description>Name of the collation</Description>
+						<Description>
+							Name of the collation
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>property</Name>
 						<Type>varchar(128)</Type>
-						<Description>Property of the collation</Description>
+						<Description>
+							Property of the collation
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SCOPE_IDENTITY</Name>
-				<Description>Returns the last IDENTITY value inserted into an IDENTITY column in the same scope</Description>
+				<Description>
+					Returns the last IDENTITY value inserted into an IDENTITY column in the same scope
+				</Description>
 				<ReturnValue>
 					<Type>sql_variant</Type>
 				</ReturnValue>
 			</Function>
 			<Function>
 				<Name>SERVERPROPERTY</Name>
-				<Description>Returns property information about the server instance</Description>
+				<Description>
+					Returns property information about the server instance
+				</Description>
 				<ReturnValue>
 					<Type>sql_variant</Type>
 				</ReturnValue>
@@ -2408,13 +3117,17 @@
 					<Parameter>
 						<Name>propertyname</Name>
 						<Type>nvarchar</Type>
-						<Description>Expression containing the property information to be returned for the server</Description>
+						<Description>
+							Expression containing the property information to be returned for the server
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>SESSIONPROPERTY</Name>
-				<Description>Returns the SET options settings of a session</Description>
+				<Description>
+					Returns the SET options settings of a session
+				</Description>
 				<ReturnValue>
 					<Type>sql_variant</Type>
 				</ReturnValue>
@@ -2422,27 +3135,39 @@
 					<Parameter>
 						<Name>option</Name>
 						<Type>nvarchar</Type>
-						<Description>Current option setting for this session</Description>
+						<Description>
+							Current option setting for this session
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>fn_helpcollations</Name>
-				<Description>Returns a list of all the collations supported by Microsoft SQL Server 2000</Description>
+				<Description>
+					Returns a list of all the collations supported by Microsoft SQL Server 2000
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
 			</Function>
 			<Function>
-				<Name>fn_servershareddrives</Name>
-				<Description>Returns the names of the shared drives that can be used by the clustered server</Description>
+				<Name>
+					fn_servershareddrives
+				</Name>
+				<Description>
+					Returns the names of the shared drives that can be used by the clustered server
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
 			</Function>
 			<Function>
-				<Name>fn_virtualservernodes</Name>
-				<Description>Returns the list of nodes on which the virtual server can run</Description>
+				<Name>
+					fn_virtualservernodes
+				</Name>
+				<Description>
+					Returns the list of nodes on which the virtual server can run
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2450,12 +3175,18 @@
 		</Objects>
 	</Category>
 	<Category>
-		<DisplayName>System Statistical Functions</DisplayName>
-		<Description>These scalar functions return statistical information about the system</Description>
+		<DisplayName>
+			System Statistical Functions
+		</DisplayName>
+		<Description>
+			These scalar functions return statistical information about the system
+		</Description>
 		<Objects>
 			<Function>
 				<Name>@@CPU_BUSY</Name>
-				<Description>Returns the time in milliseconds that the CPU has spent working since server was last started</Description>
+				<Description>
+					Returns the time in milliseconds that the CPU has spent working since server was last started
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2463,7 +3194,9 @@
 			</Function>
 			<Function>
 				<Name>@@IDLE</Name>
-				<Description>Returns the time in milliseconds that server has been idle since last started</Description>
+				<Description>
+					Returns the time in milliseconds that server has been idle since last started
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2471,7 +3204,9 @@
 			</Function>
 			<Function>
 				<Name>@@IO_BUSY</Name>
-				<Description>Returns the time in milliseconds that server has spent performing input and output operations since it was last started</Description>
+				<Description>
+					Returns the time in milliseconds that server has spent performing input and output operations since it was last started
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2479,7 +3214,9 @@
 			</Function>
 			<Function>
 				<Name>@@PACK_RECEIVED</Name>
-				<Description>Returns the number of input packets read from the network by server since last started</Description>
+				<Description>
+					Returns the number of input packets read from the network by server since last started
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2487,7 +3224,9 @@
 			</Function>
 			<Function>
 				<Name>@@PACK_SENT</Name>
-				<Description>Returns the number of output packets written to the network by server since last started</Description>
+				<Description>
+					Returns the number of output packets written to the network by server since last started
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2495,7 +3234,9 @@
 			</Function>
 			<Function>
 				<Name>@@PACKET_ERRORS</Name>
-				<Description>Returns the number of network packet errors that have occurred on server connections since server was last started</Description>
+				<Description>
+					Returns the number of network packet errors that have occurred on server connections since server was last started
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2503,7 +3244,9 @@
 			</Function>
 			<Function>
 				<Name>@@TIMETICKS</Name>
-				<Description>Returns the number of microseconds per tick</Description>
+				<Description>
+					Returns the number of microseconds per tick
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2511,7 +3254,9 @@
 			</Function>
 			<Function>
 				<Name>@@TOTAL_ERRORS</Name>
-				<Description>Returns the number of disk read/write errors encountered by server since last started</Description>
+				<Description>
+					Returns the number of disk read/write errors encountered by server since last started
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2519,7 +3264,9 @@
 			</Function>
 			<Function>
 				<Name>@@TOTAL_READ</Name>
-				<Description>Returns the number of disk reads (not cache reads) by server since last started</Description>
+				<Description>
+					Returns the number of disk reads (not cache reads) by server since last started
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2527,7 +3274,9 @@
 			</Function>
 			<Function>
 				<Name>@@TOTAL_WRITE</Name>
-				<Description>Returns the number of disk writes by server since last started</Description>
+				<Description>
+					Returns the number of disk writes by server since last started
+				</Description>
 				<NoBraces>true</NoBraces>
 				<ReturnValue>
 					<Type>int</Type>
@@ -2535,7 +3284,9 @@
 			</Function>
 			<Function>
 				<Name>fn_virtualfilestats</Name>
-				<Description>Returns I/O statistics for database files, including log files</Description>
+				<Description>
+					Returns I/O statistics for database files, including log files
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2555,12 +3306,18 @@
 		</Objects>
 	</Category>
 	<Category>
-		<DisplayName>Text and Image Functions</DisplayName>
-		<Description>These scalar functions perform an operation on a text or image input value or column and return information about the value</Description>
+		<DisplayName>
+			Text and Image Functions
+		</DisplayName>
+		<Description>
+			These scalar functions perform an operation on a text or image input value or column and return information about the value
+		</Description>
 		<Objects>
 			<Function>
 				<Name>PATINDEX</Name>
-				<Description>Returns starting position of first occurrence of a pattern in a specified expression, or zeros if pattern is not found</Description>
+				<Description>
+					Returns starting position of first occurrence of a pattern in a specified expression, or zeros if pattern is not found
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -2573,13 +3330,17 @@
 					<Parameter>
 						<Name>expression</Name>
 						<Type>nvarchar</Type>
-						<Description>Expression, usually a column that is searched for the specified pattern</Description>
+						<Description>
+							Expression, usually a column that is searched for the specified pattern
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>TEXTPTR</Name>
-				<Description>Returns the text-pointer value that corresponds to a text, ntext, or image column in varbinary format</Description>
+				<Description>
+					Returns the text-pointer value that corresponds to a text, ntext, or image column in varbinary format
+				</Description>
 				<ReturnValue>
 					<Type>varbinary</Type>
 				</ReturnValue>
@@ -2587,13 +3348,17 @@
 					<Parameter>
 						<Name>column</Name>
 						<Type></Type>
-						<Description>text, ntext, or image column to be used</Description>
+						<Description>
+							text, ntext, or image column to be used
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>TEXTVALID</Name>
-				<Description>A text, ntext, or image function that checks whether a given text pointer is valid</Description>
+				<Description>
+					A text, ntext, or image function that checks whether a given text pointer is valid
+				</Description>
 				<ReturnValue>
 					<Type>int</Type>
 				</ReturnValue>
@@ -2601,12 +3366,16 @@
 					<Parameter>
 						<Name>table.column</Name>
 						<Type>nvarchar</Type>
-						<Description>Name of the table to be used and name of the column to be used</Description>
+						<Description>
+							Name of the table to be used and name of the column to be used
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>text_ptr</Name>
 						<Type></Type>
-						<Description>Text pointer to be checked</Description>
+						<Description>
+							Text pointer to be checked
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
@@ -2614,11 +3383,15 @@
 	</Category>
 	<Category>
 		<DisplayName>Rowset</DisplayName>
-		<Description>These rowset functions return an object that can be used in place of a table reference in a Transact-SQL statement</Description>
+		<Description>
+			These rowset functions return an object that can be used in place of a table reference in a Transact-SQL statement
+		</Description>
 		<Objects>
 			<Function>
 				<Name>CONTAINSTABLE</Name>
-				<Description>Returns a table for those columns containing character-based data types for precise or fuzzy matches to single words and phrases</Description>
+				<Description>
+					Returns a table for those columns containing character-based data types for precise or fuzzy matches to single words and phrases
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2626,28 +3399,40 @@
 					<Parameter>
 						<Name>table</Name>
 						<Type></Type>
-						<Description>Name of the table that has been marked for full-text querying</Description>
+						<Description>
+							Name of the table that has been marked for full-text querying
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>column</Name>
 						<Type></Type>
-						<Description>Name of the column to search, which resides in table</Description>
+						<Description>
+							Name of the column to search, which resides in table
+						</Description>
 					</Parameter>
 					<Parameter>
-						<Name>contains_search_condition</Name>
+						<Name>
+							contains_search_condition
+						</Name>
 						<Type>varchar</Type>
-						<Description>Specifies some text to search for in column</Description>
+						<Description>
+							Specifies some text to search for in column
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>top_n_by_rank</Name>
 						<Type>int</Type>
-						<Description>Specifies that only the n highest ranked matches, in descending order, are returned</Description>
+						<Description>
+							Specifies that only the n highest ranked matches, in descending order, are returned
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>FREETEXTTABLE</Name>
-				<Description>Returns a table for those columns containing character-based data types for values that match the meaning but not the exact wording of the text</Description>
+				<Description>
+					Returns a table for those columns containing character-based data types for values that match the meaning but not the exact wording of the text
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2655,28 +3440,38 @@
 					<Parameter>
 						<Name>table</Name>
 						<Type></Type>
-						<Description>Name of the table that has been marked for full-text querying</Description>
+						<Description>
+							Name of the table that has been marked for full-text querying
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>column</Name>
 						<Type></Type>
-						<Description>Name of the column to search, which resides in table</Description>
+						<Description>
+							Name of the column to search, which resides in table
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>freetext_string</Name>
 						<Type>varchar</Type>
-						<Description>Text to search for in the specified column</Description>
+						<Description>
+							Text to search for in the specified column
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>top_n_by_rank</Name>
 						<Type>int</Type>
-						<Description>When an integer value, n, is specified, FREETEXTTABLE returns only the top n matches, ordered by rank</Description>
+						<Description>
+							When an integer value, n, is specified, FREETEXTTABLE returns only the top n matches, ordered by rank
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>OPENQUERY</Name>
-				<Description>Executes the specified pass-through query on the given linked server, which is an OLE DB data source</Description>
+				<Description>
+					Executes the specified pass-through query on the given linked server, which is an OLE DB data source
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2684,18 +3479,24 @@
 					<Parameter>
 						<Name>linked_server</Name>
 						<Type></Type>
-						<Description>Identifier representing the name of the linked server</Description>
+						<Description>
+							Identifier representing the name of the linked server
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>query</Name>
 						<Type>varchar</Type>
-						<Description>Query string executed in the linked server</Description>
+						<Description>
+							Query string executed in the linked server
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>OPENROWSET</Name>
-				<Description>A one-time, ad hoc method of connecting and accessing remote data using OLE DB</Description>
+				<Description>
+					A one-time, ad hoc method of connecting and accessing remote data using OLE DB
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2703,28 +3504,38 @@
 					<Parameter>
 						<Name>provider_name</Name>
 						<Type>varchar</Type>
-						<Description>Character string that represents the friendly name of the OLE DB provider as specified in the registry</Description>
+						<Description>
+							Character string that represents the friendly name of the OLE DB provider as specified in the registry
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>provider_string</Name>
 						<Type>varchar</Type>
-						<Description>Provider-specific connection string that is passed in as the DBPROP_INIT_PROVIDERSTRING property to initialize the OLE DB provider</Description>
+						<Description>
+							Provider-specific connection string that is passed in as the DBPROP_INIT_PROVIDERSTRING property to initialize the OLE DB provider
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>Object</Name>
 						<Type></Type>
-						<Description>Object name that uniquely identifies the object to manipulate</Description>
+						<Description>
+							Object name that uniquely identifies the object to manipulate
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>query</Name>
 						<Type>varchar</Type>
-						<Description>String constant sent to and executed by the provider</Description>
+						<Description>
+							String constant sent to and executed by the provider
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>OPENDATASOURCE</Name>
-				<Description>Provides ad hoc connection information as part of a four-part object name without using a linked server name</Description>
+				<Description>
+					Provides ad hoc connection information as part of a four-part object name without using a linked server name
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2732,18 +3543,24 @@
 					<Parameter>
 						<Name>provider_name</Name>
 						<Type>varchar</Type>
-						<Description>Name registered as the PROGID of the OLE DB provider used to access the data source</Description>
+						<Description>
+							Name registered as the PROGID of the OLE DB provider used to access the data source
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>init_string</Name>
 						<Type>varchar</Type>
-						<Description>Connection string passed to the IDataInitialize interface of the destination provider</Description>
+						<Description>
+							Connection string passed to the IDataInitialize interface of the destination provider
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
 			<Function>
 				<Name>OPENXML</Name>
-				<Description>Provides a rowset view over an XML document</Description>
+				<Description>
+					Provides a rowset view over an XML document
+				</Description>
 				<ReturnValue>
 					<Type></Type>
 				</ReturnValue>
@@ -2751,17 +3568,23 @@
 					<Parameter>
 						<Name>idoc</Name>
 						<Type>int</Type>
-						<Description>Document handle of the internal representation of an XML document</Description>
+						<Description>
+							Document handle of the internal representation of an XML document
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>rowpattern</Name>
 						<Type>nvarchar</Type>
-						<Description>XPath pattern used to identify the nodes (in the XML document whose handle is passed in the idoc parameter) to be processed as rows</Description>
+						<Description>
+							XPath pattern used to identify the nodes (in the XML document whose handle is passed in the idoc parameter) to be processed as rows
+						</Description>
 					</Parameter>
 					<Parameter>
 						<Name>flags</Name>
 						<Type>byte</Type>
-						<Description>Indicates the mapping that should be used between the XML data and the relational rowset, and how the spill-over column should be filled</Description>
+						<Description>
+							Indicates the mapping that should be used between the XML data and the relational rowset, and how the spill-over column should be filled
+						</Description>
 					</Parameter>
 				</Parameters>
 			</Function>
@@ -2769,123 +3592,183 @@
 	</Category>
 	<Category>
 		<DisplayName>System Data Types</DisplayName>
-		<Description>The set of system-supplied data types</Description>
+		<Description>
+			The set of system-supplied data types
+		</Description>
 		<Objects>
 			<DataType>
 				<Name>bigint</Name>
-				<Description>Integer (whole number) data from -2^63  through 2^63-1</Description>
+				<Description>
+					Integer (whole number) data from -2^63  through 2^63-1
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>binary</Name>
-				<Description>Fixed-length binary data with a maximum length of 8,000 bytes</Description>
+				<Description>
+					Fixed-length binary data with a maximum length of 8,000 bytes
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>bit</Name>
-				<Description>Integer data with either a 1 or 0 value</Description>
+				<Description>
+					Integer data with either a 1 or 0 value
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>char</Name>
-				<Description>Fixed-length non-Unicode character data with a maximum length of 8,000 characters</Description>
+				<Description>
+					Fixed-length non-Unicode character data with a maximum length of 8,000 characters
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>cursor</Name>
-				<Description>A data type for variables or stored procedure OUTPUT parameters that contain a reference to a cursor</Description>
+				<Description>
+					A data type for variables or stored procedure OUTPUT parameters that contain a reference to a cursor
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>datetime</Name>
-				<Description>Date and time data from January 1, 1753, through December 31, 9999</Description>
+				<Description>
+					Date and time data from January 1, 1753, through December 31, 9999
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>decimal</Name>
-				<Description>Fixed precision and scale numeric data from -10^38 -1 through 10^38 -1</Description>
+				<Description>
+					Fixed precision and scale numeric data from -10^38 -1 through 10^38 -1
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>float</Name>
-				<Description>Floating precision number data from -1.79E + 308 through 1.79E + 308</Description>
+				<Description>
+					Floating precision number data from -1.79E + 308 through 1.79E + 308
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>image</Name>
-				<Description>Variable-length binary data with a maximum length of 2^31 - 1 bytes</Description>
+				<Description>
+					Variable-length binary data with a maximum length of 2^31 - 1 bytes
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>int</Name>
-				<Description>Integer (whole number) data from -2^31 through 2^31 - 1</Description>
+				<Description>
+					Integer (whole number) data from -2^31 through 2^31 - 1
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>money</Name>
-				<Description>Monetary data values from -2^63 through 2^63 - 1, with accuracy to a ten-thousandth of a monetary unit</Description>
+				<Description>
+					Monetary data values from -2^63 through 2^63 - 1, with accuracy to a ten-thousandth of a monetary unit
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>nchar</Name>
-				<Description>Fixed-length Unicode data with a maximum length of 4,000 characters</Description>
+				<Description>
+					Fixed-length Unicode data with a maximum length of 4,000 characters
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>ntext</Name>
-				<Description>Variable-length Unicode data with a maximum length of 2^30 - 1 characters</Description>
+				<Description>
+					Variable-length Unicode data with a maximum length of 2^30 - 1 characters
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>numeric</Name>
-				<Description>A synonym for decimal</Description>
+				<Description>
+					A synonym for decimal
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>nvarchar</Name>
-				<Description>Variable-length Unicode data with a maximum length of 4,000 characters</Description>
+				<Description>
+					Variable-length Unicode data with a maximum length of 4,000 characters
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>real</Name>
-				<Description>Floating precision number data from -3.40E + 38 through 3.40E + 38</Description>
+				<Description>
+					Floating precision number data from -3.40E + 38 through 3.40E + 38
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>rowversion</Name>
-				<Description>A database-wide unique number</Description>
+				<Description>
+					A database-wide unique number
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>smalldatetime</Name>
-				<Description>Date and time data from January 1, 1900, through June 6, 2079</Description>
+				<Description>
+					Date and time data from January 1, 1900, through June 6, 2079
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>smallint</Name>
-				<Description>Integer data from 2^15 through 2^15 - 1</Description>
+				<Description>
+					Integer data from 2^15 through 2^15 - 1
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>smallmoney</Name>
-				<Description>Monetary data values from -214,748.3648 through +214,748.3647</Description>
+				<Description>
+					Monetary data values from -214,748.3648 through +214,748.3647
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>sql_variant</Name>
-				<Description>A data type that stores values of various SQL Server-supported data types, except text, ntext, timestamp, and sql_variant</Description>
+				<Description>
+					A data type that stores values of various SQL Server-supported data types, except text, ntext, timestamp, and sql_variant
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>sysname</Name>
-				<Description>System-supplied user-defined data type that is a synonym for nvarchar(128)</Description>
+				<Description>
+					System-supplied user-defined data type that is a synonym for nvarchar(128)
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>table</Name>
-				<Description>A special data type that can be used to store a result set for later processing</Description>
+				<Description>
+					A special data type that can be used to store a result set for later processing
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>text</Name>
-				<Description>Variable-length non-Unicode data with a maximum length of 2^31 - 1 characters</Description>
+				<Description>
+					Variable-length non-Unicode data with a maximum length of 2^31 - 1 characters
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>timestamp</Name>
-				<Description>A database-wide unique number</Description>
+				<Description>
+					A database-wide unique number
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>tinyint</Name>
-				<Description>Integer data from 0 through 255</Description>
+				<Description>
+					Integer data from 0 through 255
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>uniqueidentifier</Name>
-				<Description>A globally unique identifier (GUID)</Description>
+				<Description>
+					A globally unique identifier (GUID)
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>varbinary</Name>
-				<Description>Variable-length binary data of n bytes. n must be a value from 1 through 8,000</Description>
+				<Description>
+					Variable-length binary data of n bytes. n must be a value from 1 through 8,000
+				</Description>
 			</DataType>
 			<DataType>
 				<Name>varchar</Name>
-				<Description>Variable-length non-Unicode data with a maximum of 8,000 characters</Description>
+				<Description>
+					Variable-length non-Unicode data with a maximum of 8,000 characters
+				</Description>
 			</DataType>
 		</Objects>
 	</Category>

@@ -7,6 +7,12 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExpressionFunctionCall: ExpressionFunction {
+		private static Qualified<SchemaName, FunctionName> CreateFunctionName(TableName qualification, ExpressionFunctionCall call) {
+			Qualified<SchemaName, FunctionName> result = new Qualified<SchemaName, FunctionName>(new SchemaName(qualification.Value), call.functionName.Name);
+			result.SetPosition(((IToken)qualification).Position);
+			return result;
+		}
+
 		private readonly List<Expression> arguments;
 		private readonly Qualified<SchemaName, FunctionName> functionName;
 
@@ -19,12 +25,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<Value> ::= <TableName> '.' <FunctionCall>", ConstructorParameterMapping = new[] {0, 2})]
 		public ExpressionFunctionCall(TableName qualification, ExpressionFunctionCall call): this(CreateFunctionName(qualification, call), call.arguments) {}
-
-		private static Qualified<SchemaName, FunctionName> CreateFunctionName(TableName qualification, ExpressionFunctionCall call) {
-			Qualified<SchemaName, FunctionName> result = new Qualified<SchemaName, FunctionName>(new SchemaName(qualification.Value), call.functionName.Name);
-			result.SetPosition(((IToken)qualification).Position);
-			return result;
-		}
 
 		private ExpressionFunctionCall(Qualified<SchemaName, FunctionName> functionName, List<Expression> arguments) {
 			Debug.Assert(functionName != null);

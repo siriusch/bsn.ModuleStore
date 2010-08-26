@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 
 using bsn.CommandLine.Context;
+using bsn.ModuleStore.Console.Commands;
 using bsn.ModuleStore.Console.Configurations;
 
 namespace bsn.ModuleStore.Console.Contexts {
 	internal class ModuleStoreContext: RootContext<ExecutionContext> {
 		public ModuleStoreContext(): base("modulestore") {}
+
+		public override IEnumerable<CommandBase<ExecutionContext>> Commands {
+			get {
+				yield return new DumpCommand(this);
+			}
+		}
 
 		public override IEnumerable<ConfigurationBase<ExecutionContext>> Configurations {
 			get {

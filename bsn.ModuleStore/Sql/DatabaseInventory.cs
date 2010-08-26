@@ -40,7 +40,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public string SchemaName {
+		public override string SchemaName {
 			get {
 				return schemaName;
 			}
@@ -96,34 +96,10 @@ namespace bsn.ModuleStore.Sql {
 						StringCollection script = ((IScriptable)smoObject).Script(options);
 						CreateTableStatement createTable = null;
 						foreach (string statementScript in script) {
-							ICollection<IQualifiedName<SchemaName>> names;
-							List<CreateStatement> objects = new List<CreateStatement>();
-							foreach (Statement statement in ScriptParser.Parse(statementScript, out names)) {
-								if (!((statement is SetOptionStatement) || (statement is AlterTableCheckConstraintStatementBase))) {
-									AlterTableAddStatement addToTable = statement as AlterTableAddStatement;
-									if (addToTable != null) {
-										if ((createTable == null) || (!createTable.TableName.Name.Equals(addToTable.TableName.Name))) {
-											throw CreateException("Statement tries to modify another table:", statement);
-										}
-										createTable.Definitions.AddRange(addToTable.Definitions);
-									} else {
-										if (!(statement is CreateStatement)) {
-											throw CreateException("Cannot process statement:", statement);
-										}
-										if (statement is CreateTableStatement) {
-											createTable = (CreateTableStatement)statement;
-										}
-										objects.Add((CreateStatement)statement);
-									}
-								}
-							}
-							foreach (IQualifiedName<SchemaName> qualifiedName in names) {
-								if (qualifiedName.IsQualified && qualifiedName.Qualification.Value.Equals(schemaName, StringComparison.OrdinalIgnoreCase)) {
-									AddSchemaQualifiedName(qualifiedName);
-								}
-							}
-							foreach (CreateStatement statement in objects) {
-								AddObject(statement);
+							using (TextReader scriptReader = new StringReader(statementScript)) {
+								ProcessSingleScript(scriptReader, ref createTable, statement => {
+								                                                   	throw CreateException("Cannot process statement:", statement);
+								                                                   });
 							}
 						}
 					}

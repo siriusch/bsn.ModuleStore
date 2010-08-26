@@ -26,12 +26,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.body = body;
 		}
 
-		public override string ObjectName {
-			get {
-				return functionName.Name.Value;
-			}
-		}
-
 		public TBody Body {
 			get {
 				return body;
@@ -41,6 +35,18 @@ namespace bsn.ModuleStore.Sql.Script {
 		public Qualified<SchemaName, FunctionName> FunctionName {
 			get {
 				return functionName;
+			}
+		}
+
+		public override sealed ObjectCategory ObjectCategory {
+			get {
+				return ObjectCategory.Function;
+			}
+		}
+
+		public override string ObjectName {
+			get {
+				return functionName.Name.Value;
 			}
 		}
 
