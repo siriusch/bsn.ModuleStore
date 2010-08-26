@@ -11,20 +11,19 @@ namespace bsn.ModuleStore.Console.Contexts {
 
 		public override IEnumerable<CommandBase<ExecutionContext>> Commands {
 			get {
-				yield return new DumpCommand(this);
+				return Merge(base.Commands, new DumpCommand(this), new DifferenceCommand(this));
 			}
 		}
 
 		public override IEnumerable<ConfigurationBase<ExecutionContext>> Configurations {
 			get {
-				yield return new ServerConfiguration();
-				yield return new SchemaConfiguration();
+				return Merge(base.Configurations, new ServerConfiguration(), new SchemaConfiguration(), new ScriptingConfiguration());
 			}
 		}
 
 		public override IEnumerable<ContextBase<ExecutionContext>> ChildContexts {
 			get {
-				yield return new DatabaseContext(this);
+				return Merge(base.ChildContexts, new DatabaseContext(this));
 			}
 		}
 	}

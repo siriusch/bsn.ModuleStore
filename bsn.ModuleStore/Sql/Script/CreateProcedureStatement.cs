@@ -31,13 +31,19 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override string ObjectSchema {
+			get {
+				return procedureName.IsQualified ? procedureName.Qualification.Value : string.Empty;
+			}
+		}
+
 		public bool ForReplication {
 			get {
 				return forReplication;
 			}
 		}
 
-		public override sealed ObjectCategory ObjectCategory {
+		public override ObjectCategory ObjectCategory {
 			get {
 				return ObjectCategory.Procedure;
 			}

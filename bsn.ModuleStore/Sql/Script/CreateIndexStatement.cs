@@ -23,6 +23,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override sealed string ObjectSchema {
+			get {
+				return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
+			}
+		}
+
 		public List<IndexOption> IndexOptions {
 			get {
 				return indexOptions;

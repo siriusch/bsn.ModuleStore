@@ -9,5 +9,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public abstract string ObjectName {
 			get;
 		}
+
+		public abstract string ObjectSchema {
+			get;
+		}
 	}
 }

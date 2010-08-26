@@ -8,7 +8,7 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory {
 		private readonly List<IQualifiedName<SchemaName>> names = new List<IQualifiedName<SchemaName>>();
-		private readonly HashSet<CreateStatement> objects = new HashSet<CreateStatement>();
+		private readonly SortedDictionary<string, CreateStatement> objects = new SortedDictionary<string, CreateStatement>(StringComparer.OrdinalIgnoreCase);
 
 		public abstract bool SchemaExists {
 			get;
@@ -25,7 +25,7 @@ namespace bsn.ModuleStore.Sql {
 			SetSchemaName(qualification);
 			try {
 				SqlWriter sqlWriter = new SqlWriter(writer);
-				foreach (CreateStatement statement in objects) {
+				foreach (CreateStatement statement in objects.Values) {
 					statement.WriteTo(sqlWriter);
 					writer.WriteLine(";");
 				}
@@ -40,9 +40,12 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		protected void AddObject(CreateStatement createStatement) {
+			if (createStatement == null) {
+				throw new ArgumentNullException("createStatement");
+			}
 			createStatement.ResetHash();
 			createStatement.GetHash();
-			objects.Add(createStatement);
+			objects.Add(createStatement.ObjectName, createStatement);
 		}
 
 		protected void AddSchemaQualifiedName(IQualifiedName<SchemaName> schemaQualifiedName) {

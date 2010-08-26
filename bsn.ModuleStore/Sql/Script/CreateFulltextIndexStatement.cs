@@ -24,6 +24,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.changeTracking = changeTracking.FulltextChangeTracking;
 		}
 
+		public override string ObjectSchema {
+			get {
+				return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
+			}
+		}
+
 		public FulltextChangeTracking ChangeTracking {
 			get {
 				return changeTracking;
@@ -42,7 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override sealed ObjectCategory ObjectCategory {
+		public override ObjectCategory ObjectCategory {
 			get {
 				return ObjectCategory.Index;
 			}

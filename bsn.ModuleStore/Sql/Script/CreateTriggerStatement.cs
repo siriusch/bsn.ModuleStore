@@ -36,8 +36,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override string ObjectSchema {
+			get {
+				return triggerName.IsQualified ? triggerName.Qualification.Value : string.Empty;
+			}
+		}
 
-		public override sealed ObjectCategory ObjectCategory {
+		public override ObjectCategory ObjectCategory {
 			get {
 				return ObjectCategory.Trigger;
 			}

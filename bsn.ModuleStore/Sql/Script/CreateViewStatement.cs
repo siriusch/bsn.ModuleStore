@@ -31,7 +31,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override sealed ObjectCategory ObjectCategory {
+		public override string ObjectSchema {
+			get {
+				return viewName.IsQualified ? viewName.Qualification.Value : string.Empty;
+			}
+		}
+
+		public override ObjectCategory ObjectCategory {
 			get {
 				return ObjectCategory.View;
 			}

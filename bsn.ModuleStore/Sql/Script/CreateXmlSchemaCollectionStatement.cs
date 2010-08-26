@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override sealed ObjectCategory ObjectCategory {
+		public override ObjectCategory ObjectCategory {
 			get {
 				return ObjectCategory.XmlSchema;
 			}
@@ -32,6 +32,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override string ObjectName {
 			get {
 				return xmlSchemaCollectionName.Name.Value;
+			}
+		}
+
+		public override string ObjectSchema {
+			get {
+				return xmlSchemaCollectionName.IsQualified ? xmlSchemaCollectionName.Qualification.Value : string.Empty;
 			}
 		}
 

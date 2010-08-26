@@ -15,15 +15,13 @@ namespace bsn.ModuleStore.Console.Contexts {
 
 		public override IEnumerable<CommandBase<ExecutionContext>> Commands {
 			get {
-				yield return new ConnectCommand(this);
-				yield return new DisconnectCommand(this);
+				return Merge(base.Commands, new ConnectCommand(this), new DisconnectCommand(this), new ScriptCommand(this));
 			}
 		}
 
 		public override IEnumerable<ConfigurationBase<ExecutionContext>> Configurations {
 			get {
-				yield return new ServerConfiguration();
-				yield return new SchemaConfiguration();
+				return Merge(base.Configurations, new ServerConfiguration(), new SchemaConfiguration());
 			}
 		}
 	}

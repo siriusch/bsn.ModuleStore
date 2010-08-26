@@ -24,7 +24,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override sealed ObjectCategory ObjectCategory {
+		public override ObjectCategory ObjectCategory {
 			get {
 				return ObjectCategory.Table;
 			}
@@ -33,6 +33,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override string ObjectName {
 			get {
 				return tableName.Name.Value;
+			}
+		}
+
+		public override string ObjectSchema {
+			get {
+				return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
 			}
 		}
 

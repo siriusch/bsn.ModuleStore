@@ -32,6 +32,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override sealed string ObjectSchema {
+			get {
+				return functionName.IsQualified ? functionName.Qualification.Value : string.Empty;
+			}
+		}
+
 		public Qualified<SchemaName, FunctionName> FunctionName {
 			get {
 				return functionName;
