@@ -50,10 +50,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override sealed string ObjectSchema {
-			get {
-				return functionName.IsQualified ? functionName.Qualification.Value : string.Empty;
-			}
+		protected override sealed string GetObjectSchema() {
+			return functionName.IsQualified ? functionName.Qualification.Value : string.Empty;
 		}
 
 		public FunctionOption Option {

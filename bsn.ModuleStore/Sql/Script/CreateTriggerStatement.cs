@@ -48,10 +48,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override string ObjectSchema {
-			get {
-				return triggerName.IsQualified ? triggerName.Qualification.Value : string.Empty;
-			}
+		protected override string GetObjectSchema() {
+			return triggerName.IsQualified ? triggerName.Qualification.Value : string.Empty;
 		}
 
 		public Statement Statement {

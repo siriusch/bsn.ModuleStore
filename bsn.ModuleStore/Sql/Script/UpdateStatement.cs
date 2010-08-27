@@ -78,7 +78,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScriptSequence(updateItems, WhitespacePadding.None, ", ");
 			writer.WriteScript(outputClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(fromClause, WhitespacePadding.SpaceBefore);
-			writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore, "WHERE ", null);
 		}
 	}
 }

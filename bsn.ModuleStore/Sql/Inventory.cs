@@ -1,6 +1,7 @@
 ﻿// (C) 2010 Arsène von Wyss / bsn
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -8,7 +9,6 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory {
-		private readonly List<IQualifiedName<SchemaName>> names = new List<IQualifiedName<SchemaName>>();
 		private readonly SortedDictionary<string, CreateStatement> objects = new SortedDictionary<string, CreateStatement>(StringComparer.OrdinalIgnoreCase);
 
 		public abstract bool SchemaExists {
@@ -23,21 +23,20 @@ namespace bsn.ModuleStore.Sql {
 
 		public void Dump(string schemaName, TextWriter writer) {
 			SchemaName qualification = string.IsNullOrEmpty(schemaName) ? null : new SchemaName(schemaName);
-			SetSchemaName(qualification);
-			try {
-				SqlWriter sqlWriter = new SqlWriter(writer);
-				foreach (CreateStatement statement in objects.Values) {
+			SqlWriter sqlWriter = new SqlWriter(writer);
+			foreach (CreateStatement statement in objects.Values) {
+				statement.ObjectSchema = schemaName;
+				try {
 					statement.WriteTo(sqlWriter);
 					writer.WriteLine(";");
+				} finally {
+					statement.ObjectSchema = null;
 				}
-			} finally {
-				SetSchemaName(null);
 			}
 		}
 
 		public virtual void Populate() {
 			objects.Clear();
-			names.Clear();
 		}
 
 		protected void AddObject(CreateStatement createStatement) {
@@ -49,21 +48,9 @@ namespace bsn.ModuleStore.Sql {
 			objects.Add(createStatement.ObjectName, createStatement);
 		}
 
-		protected void AddSchemaQualifiedName(IQualifiedName<SchemaName> schemaQualifiedName) {
-			if (schemaQualifiedName == null) {
-				throw new ArgumentNullException("schemaQualifiedName");
-			}
-			schemaQualifiedName.Qualification = null;
-			schemaQualifiedName.ResetHash();
-			schemaQualifiedName.GetHash();
-			names.Add(schemaQualifiedName);
-		}
-
 		protected void ProcessSingleScript(TextReader scriptReader, ref CreateTableStatement createTable, Action<Statement> unsupportedStatementFound) {
-			ICollection<IQualifiedName<SchemaName>> names;
-			int innerTokenCount = 0;
 			List<CreateStatement> objects = new List<CreateStatement>();
-			foreach (Statement statement in ScriptParser.Parse(scriptReader, out names)) {
+			foreach (Statement statement in ScriptParser.Parse(scriptReader)) {
 				if (!((statement is SetOptionStatement) || (statement is AlterTableCheckConstraintStatementBase))) {
 					AlterTableAddStatement addToTable = statement as AlterTableAddStatement;
 					if (addToTable != null) {
@@ -72,33 +59,23 @@ namespace bsn.ModuleStore.Sql {
 						}
 						createTable.Definitions.AddRange(addToTable.Definitions);
 					} else {
-						if (!(statement is CreateStatement)) {
+						CreateStatement createStatement = statement as CreateStatement;
+						if (createStatement == null) {
 							if (unsupportedStatementFound != null) {
 								unsupportedStatementFound(statement);
 							}
+						} else {
+							if (createStatement is CreateTableStatement) {
+								createTable = (CreateTableStatement)createStatement;
+							}
+							createStatement.ObjectSchema = null;
+							objects.Add(createStatement);
 						}
-						if (statement is CreateTableStatement) {
-							createTable = (CreateTableStatement)statement;
-						}
-						objects.Add((CreateStatement)statement);
 					}
-				}
-				innerTokenCount += statement.GetInnerTokens().OfType<IQualifiedName<SchemaName>>().Count();
-			}
-			Console.WriteLine("Qualified schema name count for statement group: {0} <=> {1}", innerTokenCount, names.Count);
-			foreach (IQualifiedName<SchemaName> qualifiedName in names) {
-				if (qualifiedName.IsQualified && qualifiedName.Qualification.Value.Equals(SchemaName, StringComparison.OrdinalIgnoreCase)) {
-					AddSchemaQualifiedName(qualifiedName);
 				}
 			}
 			foreach (CreateStatement statement in objects) {
 				AddObject(statement);
-			}
-		}
-
-		private void SetSchemaName(SchemaName qualification) {
-			foreach (IQualifiedName<SchemaName> name in names) {
-				name.Qualification = qualification;
 			}
 		}
 	}

@@ -35,10 +35,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override string ObjectSchema {
-			get {
-				return xmlSchemaCollectionName.IsQualified ? xmlSchemaCollectionName.Qualification.Value : string.Empty;
-			}
+		protected override string GetObjectSchema() {
+			return xmlSchemaCollectionName.IsQualified ? xmlSchemaCollectionName.Qualification.Value : string.Empty;
 		}
 
 		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName {

@@ -49,10 +49,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override string ObjectSchema {
-			get {
-				return procedureName.IsQualified ? procedureName.Qualification.Value : string.Empty;
-			}
+		protected override string GetObjectSchema() {
+			return procedureName.IsQualified ? procedureName.Qualification.Value : string.Empty;
 		}
 
 		public List<ProcedureParameter> Parameters {

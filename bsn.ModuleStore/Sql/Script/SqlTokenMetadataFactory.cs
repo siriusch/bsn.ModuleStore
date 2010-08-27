@@ -42,21 +42,22 @@ namespace bsn.ModuleStore.Sql.Script {
 				List<ISqlTokenEnumeratorGetter<TToken>> enumerators = new List<ISqlTokenEnumeratorGetter<TToken>>();
 				foreach (PropertyInfo property in typeof(TToken).GetProperties(BindingFlags.DeclaredOnly|BindingFlags.Instance|BindingFlags.Public)) {
 					MethodInfo propertyGetter = property.GetGetMethod();
-					Type delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), typeof(SqlToken));
 					if (propertyGetter != null) {
 						if (typeof(SqlToken).IsAssignableFrom(property.PropertyType)) {
 							if (propertyNames != null) {
 								propertyNames.Add(property.Name, false);
 							}
+							Type delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), typeof(SqlToken));
 							instances.Add((Func<TToken, SqlToken>)Delegate.CreateDelegate(delegateType, propertyGetter));
 						} else {
 							foreach (Type @interface in property.PropertyType.GetInterfaces()) {
 								if (@interface.IsGenericType && (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
 									Type enumerationType = @interface.GetGenericArguments()[0];
-									if (enumerationType.IsAssignableFrom(typeof(SqlToken))) {
+									if (typeof(SqlToken).IsAssignableFrom(enumerationType)) {
 										if (propertyNames != null) {
 											propertyNames.Add(property.Name, true);
 										}
+										Type delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), @interface);
 										Type getterType = typeof(SqlTokenEnumeratorGetter<,>).MakeGenericType(typeof(TToken), enumerationType);
 										ISqlTokenEnumeratorGetter<TToken> getter = (ISqlTokenEnumeratorGetter<TToken>)Activator.CreateInstance(getterType, Delegate.CreateDelegate(delegateType, propertyGetter));
 										enumerators.Add(getter);
@@ -88,7 +89,7 @@ namespace bsn.ModuleStore.Sql.Script {
 						foreach (Type @interface in field.FieldType.GetInterfaces()) {
 							if (@interface.IsGenericType && (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
 								Type enumerationType = @interface.GetGenericArguments()[0];
-								if (enumerationType.IsAssignableFrom(typeof(SqlToken))) {
+								if (typeof(SqlToken).IsAssignableFrom(enumerationType)) {
 									if (!propertyNames.Remove(field.Name)) {
 										checkFieldErrors.Add(string.Format("Missing enumerator property: {0}", field.Name));
 									}
@@ -162,20 +163,16 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public static IEnumerable<SqlToken> GetInnerTokens(this SqlToken token) {
 			if (token != null) {
-				//				Debug.WriteLine(token.GetType(), "***** Start get inner tokens");
 				Queue<SqlToken> itemsToProcess = new Queue<SqlToken>();
 				itemsToProcess.Enqueue(token);
 				do {
 					token = itemsToProcess.Dequeue();
 					Debug.Assert(token != null);
-					//					Debug.WriteLine(token.GetType(), "Getting tokens for");
 					foreach (SqlToken innerToken in GetTokenMetadataInternal(token.GetType(), null).EnumerateTokensUntyped(token)) {
 						yield return innerToken;
 						itemsToProcess.Enqueue(innerToken);
 					}
-					//					Debug.WriteLine(itemsToProcess.Count, "Pending");
 				} while (itemsToProcess.Count > 0);
-				//				Debug.WriteLine(token.GetType(), "***** End get inner tokens");
 			}
 		}
 

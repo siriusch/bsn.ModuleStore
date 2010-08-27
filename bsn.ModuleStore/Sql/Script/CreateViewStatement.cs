@@ -43,10 +43,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override string ObjectSchema {
-			get {
-				return viewName.IsQualified ? viewName.Qualification.Value : string.Empty;
-			}
+		protected override string GetObjectSchema() {
+			return viewName.IsQualified ? viewName.Qualification.Value : string.Empty;
 		}
 
 		public SelectStatement SelectStatement {

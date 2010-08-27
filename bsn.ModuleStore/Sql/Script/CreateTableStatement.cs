@@ -36,10 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override string ObjectSchema {
-			get {
-				return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
-			}
+		protected override string GetObjectSchema() {
+			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
 		}
 
 		public Qualified<SchemaName, TableName> TableName {

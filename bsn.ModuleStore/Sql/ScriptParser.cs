@@ -678,20 +678,18 @@ namespace bsn.ModuleStore.Sql {
 			return builtInFunctionNames.Contains(functionName);
 		}
 
-		public static IEnumerable<Statement> Parse(string sql, out ICollection<IQualifiedName<SchemaName>> schemaBoundNames) {
+		public static IEnumerable<Statement> Parse(string sql) {
 			using (StringReader reader = new StringReader(sql)) {
-				return Parse(reader, out schemaBoundNames);
+				return Parse(reader);
 			}
 		}
 
-		public static IEnumerable<Statement> Parse(TextReader sql, out ICollection<IQualifiedName<SchemaName>> schemaBoundNames) {
-			SemanticSqlProcessor processor = new SemanticSqlProcessor(sql, GetSemanticActions());
+		public static IEnumerable<Statement> Parse(TextReader sql) {
+			SemanticProcessor<SqlToken> processor = new SemanticProcessor<SqlToken>(sql, GetSemanticActions());
 			ParseMessage parseMessage = processor.ParseAll();
 			if (parseMessage != ParseMessage.Accept) {
-				schemaBoundNames = null;
 				throw new ArgumentException(string.Format("The supplied SQL could not be parsed: {0} at {1}", parseMessage, ((IToken)processor.CurrentToken).Position));
 			}
-			schemaBoundNames = processor.SchemaBoundNames;
 			return (IEnumerable<Statement>)processor.CurrentToken;
 		}
 	}
