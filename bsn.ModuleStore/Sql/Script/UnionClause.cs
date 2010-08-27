@@ -20,6 +20,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public SelectQuery SelectQuery {
+			get {
+				return selectQuery;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("UNION ");

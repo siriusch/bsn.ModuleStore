@@ -31,12 +31,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override string ObjectSchema {
-			get {
-				return viewName.IsQualified ? viewName.Qualification.Value : string.Empty;
-			}
-		}
-
 		public override ObjectCategory ObjectCategory {
 			get {
 				return ObjectCategory.View;
@@ -46,6 +40,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override string ObjectName {
 			get {
 				return viewName.Name.Value;
+			}
+		}
+
+		public override string ObjectSchema {
+			get {
+				return viewName.IsQualified ? viewName.Qualification.Value : string.Empty;
 			}
 		}
 

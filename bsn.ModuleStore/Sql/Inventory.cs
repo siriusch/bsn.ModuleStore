@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -60,6 +61,7 @@ namespace bsn.ModuleStore.Sql {
 
 		protected void ProcessSingleScript(TextReader scriptReader, ref CreateTableStatement createTable, Action<Statement> unsupportedStatementFound) {
 			ICollection<IQualifiedName<SchemaName>> names;
+			int innerTokenCount = 0;
 			List<CreateStatement> objects = new List<CreateStatement>();
 			foreach (Statement statement in ScriptParser.Parse(scriptReader, out names)) {
 				if (!((statement is SetOptionStatement) || (statement is AlterTableCheckConstraintStatementBase))) {
@@ -81,7 +83,9 @@ namespace bsn.ModuleStore.Sql {
 						objects.Add((CreateStatement)statement);
 					}
 				}
+				innerTokenCount += statement.GetInnerTokens().OfType<IQualifiedName<SchemaName>>().Count();
 			}
+			Console.WriteLine("Qualified schema name count for statement group: {0} <=> {1}", innerTokenCount, names.Count);
 			foreach (IQualifiedName<SchemaName> qualifiedName in names) {
 				if (qualifiedName.IsQualified && qualifiedName.Qualification.Value.Equals(SchemaName, StringComparison.OrdinalIgnoreCase)) {
 					AddSchemaQualifiedName(qualifiedName);

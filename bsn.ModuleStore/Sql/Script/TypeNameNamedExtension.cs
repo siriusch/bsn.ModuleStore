@@ -13,6 +13,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.extension = extension;
 		}
 
+		public SqlIdentifier Extension {
+			get {
+				return extension;
+			}
+		}
+
 		protected override void WriteArguments(SqlWriter writer) {
 			writer.Write(extension.Value);
 		}

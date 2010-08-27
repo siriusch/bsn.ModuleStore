@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableName = tableName;
 		}
 
-		public Qualified<SchemaName, TableName> TableName1 {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}

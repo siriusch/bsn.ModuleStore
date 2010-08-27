@@ -24,6 +24,24 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.key = key;
 		}
 
+		public StringLiteral ElementName {
+			get {
+				return elementName;
+			}
+		}
+
+		public Identifier Key {
+			get {
+				return key;
+			}
+		}
+
+		public Identifier Value {
+			get {
+				return value;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(key, WhitespacePadding.None);
 			writer.WriteScript(value, WhitespacePadding.SpaceBefore);

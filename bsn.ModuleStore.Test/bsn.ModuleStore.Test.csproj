@@ -53,6 +53,7 @@
     <Compile Include="Sql\Script\SemanticActionsTest.cs" />
     <Compile Include="Sql\Script\SqlIdentifierTest.cs" />
     <Compile Include="Sql\Script\StringLiteralTest.cs" />
+    <Compile Include="Sql\Script\SqlTokenMetadataFactoryTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GoldParser\bsn.GoldParser\bsn.GoldParser.csproj">
