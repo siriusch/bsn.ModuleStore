@@ -60,7 +60,7 @@ namespace bsn.ModuleStore.Sql {
 				options.ConvertUserDefinedDataTypesToBaseType = false;
 				options.ContinueScriptingOnError = false;
 				options.DriAll = true;
-				options.EnforceScriptingOptions = false;
+				options.EnforceScriptingOptions = true;
 				options.ExtendedProperties = false;
 				options.FullTextIndexes = true;
 				options.IncludeDatabaseContext = false;
@@ -78,6 +78,7 @@ namespace bsn.ModuleStore.Sql {
 				options.NoTablePartitioningSchemes = true;
 				options.OptimizerData = false;
 				options.Permissions = false;
+				options.PrimaryObject = true;
 				options.SchemaQualify = true;
 				options.SchemaQualifyForeignKeysReferences = true;
 				options.Bindings = false;
@@ -94,13 +95,10 @@ namespace bsn.ModuleStore.Sql {
 					if (IsSupportedType(smoObject)) {
 						Debug.Assert(smoObject != null);
 						StringCollection script = ((IScriptable)smoObject).Script(options);
-						CreateTableStatement createTable = null;
-						foreach (string statementScript in script) {
-							using (TextReader scriptReader = new StringReader(statementScript)) {
-								ProcessSingleScript(scriptReader, ref createTable, statement => {
-								                                                   	throw CreateException("Cannot process statement:", statement);
-								                                                   });
-							}
+						using (StringCollectionReader scriptReader = new StringCollectionReader(script, ";")) {
+							ProcessSingleScript(scriptReader, statement => {
+							                                  	throw CreateException("Cannot process statement:", statement);
+							                                  });
 						}
 					}
 				}

@@ -22,7 +22,6 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public void Dump(string schemaName, TextWriter writer) {
-			SchemaName qualification = string.IsNullOrEmpty(schemaName) ? null : new SchemaName(schemaName);
 			SqlWriter sqlWriter = new SqlWriter(writer);
 			foreach (CreateStatement statement in objects.Values) {
 				statement.ObjectSchema = schemaName;
@@ -32,6 +31,12 @@ namespace bsn.ModuleStore.Sql {
 				} finally {
 					statement.ObjectSchema = null;
 				}
+			}
+		}
+
+		public ICollection<CreateStatement> Objects {
+			get {
+				return objects.Values;
 			}
 		}
 
@@ -48,8 +53,9 @@ namespace bsn.ModuleStore.Sql {
 			objects.Add(createStatement.ObjectName, createStatement);
 		}
 
-		protected void ProcessSingleScript(TextReader scriptReader, ref CreateTableStatement createTable, Action<Statement> unsupportedStatementFound) {
+		protected void ProcessSingleScript(TextReader scriptReader, Action<Statement> unsupportedStatementFound) {
 			List<CreateStatement> objects = new List<CreateStatement>();
+			CreateTableStatement createTable = null;
 			foreach (Statement statement in ScriptParser.Parse(scriptReader)) {
 				if (!((statement is SetOptionStatement) || (statement is AlterTableCheckConstraintStatementBase))) {
 					AlterTableAddStatement addToTable = statement as AlterTableAddStatement;
@@ -58,6 +64,7 @@ namespace bsn.ModuleStore.Sql {
 							throw DatabaseInventory.CreateException("Statement tries to modify another table:", statement);
 						}
 						createTable.Definitions.AddRange(addToTable.Definitions);
+						createTable.ResetSchemaNames();
 					} else {
 						CreateStatement createStatement = statement as CreateStatement;
 						if (createStatement == null) {
@@ -68,13 +75,13 @@ namespace bsn.ModuleStore.Sql {
 							if (createStatement is CreateTableStatement) {
 								createTable = (CreateTableStatement)createStatement;
 							}
-							createStatement.ObjectSchema = null;
 							objects.Add(createStatement);
 						}
 					}
 				}
 			}
 			foreach (CreateStatement statement in objects) {
+				statement.ObjectSchema = null;
 				AddObject(statement);
 			}
 		}

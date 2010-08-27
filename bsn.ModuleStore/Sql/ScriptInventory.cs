@@ -24,12 +24,11 @@ namespace bsn.ModuleStore.Sql {
 
 		public override void Populate() {
 			base.Populate();
-			CreateTableStatement createTable = null;
 			List<Statement> unsupportedStatements = new List<Statement>();
 			foreach (string fileName in Directory.GetFiles(scriptPath, "*.sql", SearchOption.AllDirectories)) {
 				unsupportedStatements.Clear();
 				using (TextReader reader = new StreamReader(fileName, true)) {
-					ProcessSingleScript(reader, ref createTable, unsupportedStatements.Add);
+					ProcessSingleScript(reader, unsupportedStatements.Add);
 				}
 				Debug.WriteLine(string.Format("Script {0} contains {1} unsupported statements", fileName, unsupportedStatements.Count));
 			}

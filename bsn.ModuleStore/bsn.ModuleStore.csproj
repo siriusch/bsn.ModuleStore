@@ -107,6 +107,7 @@
     <Compile Include="Sql\Script\SourceParens.cs" />
     <Compile Include="Sql\Script\SqlToken.cs" />
     <Compile Include="Sql\Script\SqlTokenMetadataFactory.cs" />
+    <Compile Include="Sql\Script\StringCollectionReader.cs" />
     <Compile Include="Sql\Script\TableCheck.cs" />
     <Compile Include="Sql\Script\Tokens\AddToken.cs" />
     <Compile Include="Sql\Script\AliasName.cs" />

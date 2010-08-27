@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -20,7 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			set {
 				InitializeSchemaNames();
-				SchemaName schemaName = string.IsNullOrEmpty(value) ? null : new SchemaName(ObjectName);
+				SchemaName schemaName = string.IsNullOrEmpty(value) ? null : new SchemaName(value);
 				foreach (IQualifiedName<SchemaName> name in schemaQualifiedNames) {
 					name.Qualification = schemaName;
 				}
@@ -40,7 +41,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			return base.GetHashCode();
 		}
 
-		private void InitializeSchemaNames() {
+		internal void ResetSchemaNames() {
+			schemaQualifiedNames.Clear();
+		}
+
+		internal void InitializeSchemaNames() {
 			if (schemaQualifiedNames.Count == 0) {
 				string schemaName = GetObjectSchema();
 				schemaQualifiedNames.AddRange(this.GetInnerTokens().OfType<IQualifiedName<SchemaName>>().Where(name => name.IsQualified && name.Qualification.Value.Equals(schemaName, StringComparison.OrdinalIgnoreCase)));

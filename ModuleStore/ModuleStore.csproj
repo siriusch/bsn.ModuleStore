@@ -72,6 +72,10 @@
       <Project>{0F603313-DA30-4402-AB10-D0A94F01FA69}</Project>
       <Name>bsn.CommandLine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GoldParser\bsn.GoldParser\bsn.GoldParser.csproj">
+      <Project>{1A1A5AE9-7981-471C-9CC7-F7465E675A32}</Project>
+      <Name>bsn.GoldParser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\bsn.ModuleStore\bsn.ModuleStore.csproj">
       <Project>{085ABCD3-9471-40F7-AC15-5A1F5E369714}</Project>
       <Name>bsn.ModuleStore</Name>
