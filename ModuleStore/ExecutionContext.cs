@@ -9,12 +9,13 @@ using bsn.ModuleStore.Console.Contexts;
 using Microsoft.SqlServer.Management.Smo;
 
 namespace bsn.ModuleStore.Console {
-	internal class ExecutionContext: CommandLineContext<ExecutionContext, ModuleStoreContext> {
+	internal class ExecutionContext: CommandLineContext<ExecutionContext, ModuleStoreContext>, IDisposable {
 		private Server server;
 		private Database database;
 		private string serverName = ".";
 		private string databaseName;
 		private string schemaName;
+		private AssemblyHandler assembly;
 
 		public ExecutionContext(TextReader input, TextWriter output): base(new ModuleStoreContext(), input, output) {}
 
@@ -93,6 +94,18 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
+		public AssemblyHandler Assembly {
+			get {
+				return assembly;
+			}
+			set {
+				if (assembly != null) {
+					assembly.Dispose();
+				}
+				assembly = value;
+			}
+		}
+
 		public void Connect() {
 			if (server == null) {
 				server = new Server(serverName);
@@ -119,6 +132,18 @@ namespace bsn.ModuleStore.Console {
 			}
 			connectionString.Append("Integrated Security=SSPI;");
 			return connectionString.ToString();
+		}
+
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				Assembly = null;
+				Disconnect();
+			}
+		}
+
+		void IDisposable.Dispose() {
+			GC.SuppressFinalize(this);
+			Dispose(true);
 		}
 	}
 }

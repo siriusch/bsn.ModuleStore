@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Console.Contexts {
 
 		public override IEnumerable<ContextBase<ExecutionContext>> ChildContexts {
 			get {
-				return Merge(base.ChildContexts, new DatabaseContext(this));
+				return Merge(base.ChildContexts, new DatabaseContext(this), new AssemblyContext(this));
 			}
 		}
 	}

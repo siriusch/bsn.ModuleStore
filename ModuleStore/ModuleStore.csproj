@@ -49,13 +49,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyHandle.cs" />
+    <Compile Include="AssemblyHandler.cs" />
     <Compile Include="Commands\ConnectCommand.cs" />
     <Compile Include="Commands\DifferenceCommand.cs" />
     <Compile Include="Commands\DisconnectCommand.cs" />
     <Compile Include="Commands\DumpCommand.cs" />
+    <Compile Include="Commands\LoadCommand.cs" />
     <Compile Include="Commands\ScriptCommand.cs" />
+    <Compile Include="Commands\UnloadCommand.cs" />
+    <Compile Include="Configurations\AssemblyConfiguration.cs" />
     <Compile Include="Configurations\ScriptingConfiguration.cs" />
     <Compile Include="Configurations\ServerConfiguration.cs" />
+    <Compile Include="Contexts\AssemblyContext.cs" />
     <Compile Include="Contexts\ModuleStoreContext.cs" />
     <Compile Include="Contexts\DatabaseContext.cs" />
     <Compile Include="Entities\Source.cs" />
