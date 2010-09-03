@@ -6,6 +6,7 @@ using System.Text;
 namespace bsn.ModuleStore.Console.Entities {
 	public enum Source {
 		Database,
-		Files
+		Files,
+		Assembly
 	}
 }

@@ -43,10 +43,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override string GetObjectSchema() {
-			return viewName.IsQualified ? viewName.Qualification.Value : string.Empty;
-		}
-
 		public SelectStatement SelectStatement {
 			get {
 				return selectStatement;
@@ -87,6 +83,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (withCheckOption) {
 				writer.Write(" WITH CHECK OPTION");
 			}
+		}
+
+		protected override string GetObjectSchema() {
+			return viewName.IsQualified ? viewName.Qualification.Value : string.Empty;
 		}
 	}
 }

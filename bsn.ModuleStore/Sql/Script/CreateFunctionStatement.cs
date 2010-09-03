@@ -50,10 +50,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override sealed string GetObjectSchema() {
-			return functionName.IsQualified ? functionName.Qualification.Value : string.Empty;
-		}
-
 		public FunctionOption Option {
 			get {
 				return option;
@@ -76,6 +72,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteLine();
 			writer.WriteLine(")");
 			writer.Write("RETURNS ");
+		}
+
+		protected override sealed string GetObjectSchema() {
+			return functionName.IsQualified ? functionName.Qualification.Value : string.Empty;
 		}
 	}
 }

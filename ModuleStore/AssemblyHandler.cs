@@ -4,6 +4,8 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 
+using bsn.ModuleStore.Sql;
+
 namespace bsn.ModuleStore.Console {
 	public class AssemblyHandler: IDisposable {
 		private readonly AppDomain domain;

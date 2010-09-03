@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override string GetObjectSchema() {
-			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
-		}
-
 		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
@@ -55,6 +51,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(")");
+		}
+
+		protected override string GetObjectSchema() {
+			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
 		}
 	}
 }

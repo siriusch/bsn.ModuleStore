@@ -54,10 +54,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override string GetObjectSchema() {
-			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
-		}
-
 		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
@@ -75,6 +71,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write(" KEY INDEX ");
 			writer.WriteScript(indexName, WhitespacePadding.None);
 			writer.WriteEnum(changeTracking, WhitespacePadding.SpaceBefore);
+		}
+
+		protected override string GetObjectSchema() {
+			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
 		}
 	}
 }

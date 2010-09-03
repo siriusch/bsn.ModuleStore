@@ -49,10 +49,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override string GetObjectSchema() {
-			return procedureName.IsQualified ? procedureName.Qualification.Value : string.Empty;
-		}
-
 		public List<ProcedureParameter> Parameters {
 			get {
 				return parameters;
@@ -88,6 +84,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.IncreaseIndent();
 			writer.WriteScript(body, WhitespacePadding.NewlineBefore);
 			writer.DecreaseIndent();
+		}
+
+		protected override string GetObjectSchema() {
+			return procedureName.IsQualified ? procedureName.Qualification.Value : string.Empty;
 		}
 	}
 }

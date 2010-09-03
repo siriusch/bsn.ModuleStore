@@ -56,10 +56,12 @@
     <Compile Include="ModuleDependencyAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlAssemblyAttribute.cs" />
-    <Compile Include="SqlScriptAttribute.cs" />
+    <Compile Include="SqlManifestResourceAttribute.cs" />
     <Compile Include="SqlProcedureAttribute.cs" />
     <Compile Include="SqlSetupScriptAttribute.cs" />
     <Compile Include="SqlUpdateScriptAttribute.cs" />
+    <Compile Include="Sql\AssemblyHandle.cs" />
+    <Compile Include="Sql\AssemblyInventory.cs" />
     <Compile Include="Sql\Inventory.cs" />
     <Compile Include="Sql\DatabaseInventory.cs" />
     <Compile Include="Sql\ScriptInventory.cs" />

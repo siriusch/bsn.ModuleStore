@@ -11,13 +11,9 @@ namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory {
 		private readonly SortedDictionary<string, CreateStatement> objects = new SortedDictionary<string, CreateStatement>(StringComparer.OrdinalIgnoreCase);
 
-		public abstract bool SchemaExists {
-			get;
-		}
-
-		public virtual string SchemaName {
+		public ICollection<CreateStatement> Objects {
 			get {
-				return string.Empty;
+				return objects.Values;
 			}
 		}
 
@@ -34,14 +30,19 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public ICollection<CreateStatement> Objects {
-			get {
-				return objects.Values;
-			}
-		}
-
 		public virtual void Populate() {
 			objects.Clear();
+		}
+
+		public byte[] GetInventoryHash() {
+			using (HashWriter writer = new HashWriter()) {
+				SqlWriter sqlWriter = new SqlWriter(writer);
+				foreach (CreateStatement statement in objects.Values) {
+					Debug.Assert(string.IsNullOrEmpty(statement.ObjectSchema));
+					statement.WriteTo(sqlWriter);
+				}
+				return writer.ToArray();
+			}
 		}
 
 		protected void AddObject(CreateStatement createStatement) {

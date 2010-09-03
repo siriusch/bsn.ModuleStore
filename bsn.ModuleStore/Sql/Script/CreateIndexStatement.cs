@@ -41,14 +41,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override sealed string GetObjectSchema() {
-			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
-		}
-
 		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}
+		}
+
+		protected override sealed string GetObjectSchema() {
+			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
 		}
 	}
 }

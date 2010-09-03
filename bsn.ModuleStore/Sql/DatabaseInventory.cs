@@ -21,7 +21,6 @@ namespace bsn.ModuleStore.Sql {
 
 		private readonly Database database;
 		private readonly string schemaName;
-		private bool schemaExists;
 
 		public DatabaseInventory(Database database, string schemaName) {
 			if (database == null) {
@@ -34,13 +33,7 @@ namespace bsn.ModuleStore.Sql {
 			this.schemaName = schemaName ?? database.DefaultSchema;
 		}
 
-		public override bool SchemaExists {
-			get {
-				return schemaExists;
-			}
-		}
-
-		public override string SchemaName {
+		public string SchemaName {
 			get {
 				return schemaName;
 			}
@@ -48,10 +41,8 @@ namespace bsn.ModuleStore.Sql {
 
 		public override void Populate() {
 			base.Populate();
-			schemaExists = false;
 			Schema schema = database.Schemas[schemaName];
 			if (schema != null) {
-				schemaExists = true;
 				ScriptingOptions options = new ScriptingOptions();
 				options.AgentJobId = false;
 				options.AllowSystemObjects = false;

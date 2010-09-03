@@ -48,10 +48,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override string GetObjectSchema() {
-			return triggerName.IsQualified ? triggerName.Qualification.Value : string.Empty;
-		}
-
 		public Statement Statement {
 			get {
 				return statement;
@@ -99,6 +95,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.IncreaseIndent();
 			writer.WriteScript(statement, WhitespacePadding.NewlineBefore);
 			writer.DecreaseIndent();
+		}
+
+		protected override string GetObjectSchema() {
+			return triggerName.IsQualified ? triggerName.Qualification.Value : string.Empty;
 		}
 	}
 }

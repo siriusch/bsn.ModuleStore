@@ -49,7 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyHandle.cs" />
     <Compile Include="AssemblyHandler.cs" />
     <Compile Include="Commands\ConnectCommand.cs" />
     <Compile Include="Commands\DifferenceCommand.cs" />

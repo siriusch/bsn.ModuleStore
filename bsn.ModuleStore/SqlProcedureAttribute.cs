@@ -1,5 +1,5 @@
 ﻿using System;
 
 namespace bsn.ModuleStore {
-	internal class SqlProcedureAttribute {}
+	public sealed class SqlProcedureAttribute: Attribute {}
 }

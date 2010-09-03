@@ -16,12 +16,6 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public override bool SchemaExists {
-			get {
-				return Directory.Exists(scriptPath);
-			}
-		}
-
 		public override void Populate() {
 			base.Populate();
 			List<Statement> unsupportedStatements = new List<Statement>();

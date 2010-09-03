@@ -1,5 +1,8 @@
 ﻿using System;
 
 namespace bsn.ModuleStore {
-	internal class SqlAssemblyAttribute {}
+	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple=true, Inherited=true)]
+	public abstract class SqlAssemblyAttribute: Attribute {
+		internal SqlAssemblyAttribute() {}
+	}
 }

@@ -35,10 +35,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override string GetObjectSchema() {
-			return xmlSchemaCollectionName.IsQualified ? xmlSchemaCollectionName.Qualification.Value : string.Empty;
-		}
-
 		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName {
 			get {
 				return xmlSchemaCollectionName;
@@ -50,6 +46,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(xmlSchemaCollectionName, WhitespacePadding.None);
 			writer.Write(" AS ");
 			writer.WriteScript(expression, WhitespacePadding.None);
+		}
+
+		protected override string GetObjectSchema() {
+			return xmlSchemaCollectionName.IsQualified ? xmlSchemaCollectionName.Qualification.Value : string.Empty;
 		}
 	}
 }

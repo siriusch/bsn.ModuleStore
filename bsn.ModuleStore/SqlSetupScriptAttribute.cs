@@ -1,5 +1,9 @@
 ﻿using System;
 
 namespace bsn.ModuleStore {
-	internal class SqlSetupScriptAttribute {}
+	public sealed class SqlSetupScriptAttribute: SqlManifestResourceAttribute {
+		public SqlSetupScriptAttribute(Type type, string embeddedResourceName): base(type, embeddedResourceName) {}
+
+		public SqlSetupScriptAttribute(string embeddedResourceName): this(null, embeddedResourceName) {}
+	}
 }
