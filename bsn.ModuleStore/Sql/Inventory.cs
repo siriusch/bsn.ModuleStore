@@ -18,6 +18,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public void Dump(string schemaName, TextWriter writer) {
+			writer.WriteLine("-- Inventory hash: {0}", BitConverter.ToString(GetInventoryHash()).Replace("-", ""));
 			SqlWriter sqlWriter = new SqlWriter(writer);
 			foreach (CreateStatement statement in objects.Values) {
 				statement.ObjectSchema = schemaName;

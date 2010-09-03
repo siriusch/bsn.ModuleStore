@@ -62,6 +62,7 @@
     <Compile Include="SqlUpdateScriptAttribute.cs" />
     <Compile Include="Sql\AssemblyHandle.cs" />
     <Compile Include="Sql\AssemblyInventory.cs" />
+    <Compile Include="Sql\IAssemblyHandle.cs" />
     <Compile Include="Sql\Inventory.cs" />
     <Compile Include="Sql\DatabaseInventory.cs" />
     <Compile Include="Sql\ScriptInventory.cs" />

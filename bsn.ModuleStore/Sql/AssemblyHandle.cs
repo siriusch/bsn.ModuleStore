@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
 namespace bsn.ModuleStore.Sql {
-	public class AssemblyHandle: MarshalByRefObject, ICustomAttributeProvider {
+	public class AssemblyHandle: IAssemblyHandle {
 		private readonly Assembly assembly;
-
-		public AssemblyHandle(string assemblyFile): this(Assembly.ReflectionOnlyLoadFrom(assemblyFile)) {}
 
 		public AssemblyHandle(Assembly assembly) {
 			if (assembly == null) {
@@ -29,12 +30,12 @@ namespace bsn.ModuleStore.Sql {
 			return assembly.GetManifestResourceStream(streamName);
 		}
 
-		public object[] GetCustomAttributes(Type attributeType, bool inherit) {
+		public virtual object[] GetCustomAttributes(Type attributeType, bool inherit) {
 			return assembly.GetCustomAttributes(attributeType, inherit);
 		}
 
 		public object[] GetCustomAttributes(bool inherit) {
-			return assembly.GetCustomAttributes(inherit);
+			return GetCustomAttributes(typeof(Attribute), inherit);
 		}
 
 		public bool IsDefined(Type attributeType, bool inherit) {

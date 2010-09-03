@@ -26,6 +26,9 @@ namespace bsn.ModuleStore.Console.Commands {
 			case Source.Files:
 				inventory = new ScriptInventory(executionContext.ScriptPath);
 				break;
+			case Source.Assembly:
+				inventory = new AssemblyInventory(executionContext.Assembly);
+				break;
 			default:
 				throw new InvalidOperationException("No valid source specified");
 			}

@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyHandler.cs" />
+    <Compile Include="AssemblyReflectionLoader.cs" />
     <Compile Include="Commands\ConnectCommand.cs" />
     <Compile Include="Commands\DifferenceCommand.cs" />
     <Compile Include="Commands\DisconnectCommand.cs" />

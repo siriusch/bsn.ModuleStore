@@ -2,6 +2,7 @@
 using System.Text;
 
 namespace bsn.ModuleStore {
+	[Serializable]
 	public abstract class SqlManifestResourceAttribute: SqlAssemblyAttribute {
 		private readonly string manifestResourceName;
 

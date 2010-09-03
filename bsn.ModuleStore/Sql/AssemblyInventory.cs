@@ -11,14 +11,14 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public class AssemblyInventory: Inventory {
-		private readonly AssemblyHandle assembly;
+		private readonly IAssemblyHandle assembly;
 		private readonly ReadOnlyCollection<SqlAssemblyAttribute> attributes;
 		private readonly List<Statement> additionalSetupStatements = new List<Statement>();
 		private readonly SortedList<int, Statement[]> updateStatements = new SortedList<int, Statement[]>();
 
 		public AssemblyInventory(Assembly assembly): this(new AssemblyHandle(assembly)) {}
 
-		public AssemblyInventory(AssemblyHandle assembly) {
+		public AssemblyInventory(IAssemblyHandle assembly) {
 			this.assembly = assembly;
 			this.attributes = assembly.GetCustomAttributes(typeof(SqlAssemblyAttribute), true).Cast<SqlAssemblyAttribute>().ToList().AsReadOnly();
 		}
