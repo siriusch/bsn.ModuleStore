@@ -78,11 +78,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (withViewMetadata) {
 				writer.Write(" WITH VIEW_METADATA");
 			}
+			writer.IncreaseIndent();
 			writer.WriteLine(" AS");
 			writer.WriteScript(selectStatement, WhitespacePadding.None);
 			if (withCheckOption) {
 				writer.Write(" WITH CHECK OPTION");
 			}
+			writer.DecreaseIndent();
 		}
 
 		protected override string GetObjectSchema() {

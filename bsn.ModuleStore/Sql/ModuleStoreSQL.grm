@@ -515,7 +515,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                     |
 
 <DestinationRowset> ::= <VariableName>
-                      | <TableName>
+                      | <TableNameQualified>
 !                      | <Openrowset> -- not supported
 !                      | <Openquery> -- not supported
 

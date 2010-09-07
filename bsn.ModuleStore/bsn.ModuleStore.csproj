@@ -73,6 +73,7 @@
     <Compile Include="ModuleAttribute.cs" />
     <Compile Include="ModuleDependencyAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripts\Scripts.cs" />
     <Compile Include="SqlAssemblyAttribute.cs" />
     <Compile Include="SqlManifestResourceAttribute.cs" />
     <Compile Include="SqlProcedureAttribute.cs" />
@@ -417,6 +418,14 @@
   <ItemGroup>
     <None Include="app.config" />
     <EmbeddedResource Include="Sql\ModuleStoreSQL.cgt" />
+    <EmbeddedResource Include="Scripts\Indexes\IX_tblModule_Cluster.sql" />
+    <EmbeddedResource Include="Scripts\Indexes\IX_tblModule_uidAssembly.sql" />
+    <EmbeddedResource Include="Scripts\Procedures\spModuleAdd.sql" />
+    <EmbeddedResource Include="Scripts\Procedures\spModuleDelete.sql" />
+    <EmbeddedResource Include="Scripts\Procedures\spModuleList.sql" />
+    <EmbeddedResource Include="Scripts\Procedures\spModuleUpdate.sql" />
+    <EmbeddedResource Include="Scripts\Tables\tblModule.sql" />
+    <EmbeddedResource Include="Scripts\Views\vwModule.sql" />
     <None Include="Sql\ModuleStoreSQL.grm" />
   </ItemGroup>
   <ItemGroup>
@@ -427,9 +436,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sql\SqlCommonObjects.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

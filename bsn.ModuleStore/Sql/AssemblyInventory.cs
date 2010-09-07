@@ -50,7 +50,10 @@ namespace bsn.ModuleStore.Sql {
 		private Stream OpenStream(SqlManifestResourceAttribute attribute) {
 			Stream result = assembly.GetManifestResourceStream(attribute.ManifestResourceName);
 			if (result == null) {
-				throw new FileNotFoundException("The embedded SQL file was not found", attribute.ManifestResourceName);
+				result = assembly.GetManifestResourceStream(AssemblyName.Name+Type.Delimiter+attribute.ManifestResourceName);
+				if (result == null) {
+					throw new FileNotFoundException("The embedded SQL file was not found", attribute.ManifestResourceName);
+				}
 			}
 			return result;
 		}
