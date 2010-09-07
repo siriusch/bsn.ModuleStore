@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,7 +13,7 @@ namespace bsn.ModuleStore.Console {
 		private class ReflectionAssemblyHandle: MarshalByRefObject {
 			private readonly Assembly assembly;
 
-			public ReflectionAssemblyHandle(string assemblyFile) : base() {
+			public ReflectionAssemblyHandle(string assemblyFile): base() {
 				assembly = Assembly.ReflectionOnlyLoadFrom(assemblyFile);
 			}
 
@@ -24,17 +23,19 @@ namespace bsn.ModuleStore.Console {
 				}
 			}
 
-		public string[] GetManifestResourceNames() {
-			return assembly.GetManifestResourceNames();
-		}
+			public KeyValuePair<CustomAttributeData, string>[] GetAssemblyCustomAttributeData() {
+				return AssemblyHandle.FindCustomAttributes<CustomAttributeData>(assembly, CustomAttributeData.GetCustomAttributes, CustomAttributeData.GetCustomAttributes);
+			}
 
-		public Stream GetManifestResourceStream(string streamName) {
-			return assembly.GetManifestResourceStream(streamName);
-		}
+			public string[] GetManifestResourceNames() {
+				return assembly.GetManifestResourceNames();
+			}
 
-
-			public IList<CustomAttributeData> GetAssemblyCustomAttributeData() {
-				return CustomAttributeData.GetCustomAttributes(assembly);
+			public Stream GetManifestResourceStream(Type type, string streamName) {
+				if (type != null) {
+					return assembly.GetManifestResourceStream(type, streamName);
+				}
+				return assembly.GetManifestResourceStream(streamName);
 			}
 		}
 
@@ -53,7 +54,7 @@ namespace bsn.ModuleStore.Console {
 				string assemblyReflectionLoaderTypeName = typeof(AssemblyReflectionLoader).FullName;
 				Debug.Assert(!string.IsNullOrEmpty(assemblyReflectionLoaderTypeName));
 				newDomain.CreateInstance(typeof(AssemblyReflectionLoader).Assembly.FullName, assemblyReflectionLoaderTypeName);
-				handle = (ReflectionAssemblyHandle)newDomain.CreateInstanceAndUnwrap(typeof(ReflectionAssemblyHandle).Assembly.FullName, typeName, false, BindingFlags.Default, null, new object[] { assemblyFileName.FullName }, null, null, null);
+				handle = (ReflectionAssemblyHandle)newDomain.CreateInstanceAndUnwrap(typeof(ReflectionAssemblyHandle).Assembly.FullName, typeName, false, BindingFlags.Default, null, new object[] {assemblyFileName.FullName}, null, null, null);
 			} catch {
 				handle = null;
 				AppDomain.Unload(newDomain);
@@ -91,76 +92,64 @@ namespace bsn.ModuleStore.Console {
 			DisposeIfNotDisposed(false);
 		}
 
-		public void Dispose() {
-			GC.SuppressFinalize(this);
-			DisposeIfNotDisposed(true);
-		}
-
-		private IEnumerable GetCustomAttributesInternal(Type attributeType, bool inherit) {
-			if (attributeType == null) {
-				throw new ArgumentNullException("attributeType");
-			}
-			IList<CustomAttributeData> customAttributeDatas = handle.GetAssemblyCustomAttributeData();
-			if (customAttributeDatas.Count > 0) {
-				Dictionary<string, Assembly> execAssemblies = new Dictionary<string, Assembly>();
-				foreach (Assembly execAssembly in AppDomain.CurrentDomain.GetAssemblies()) {
-					execAssemblies.Add(execAssembly.FullName, execAssembly);
-				}
-				foreach (CustomAttributeData customAttributeData in customAttributeDatas) {
-					Assembly execAssembly;
-					if (execAssemblies.TryGetValue(customAttributeData.Constructor.DeclaringType.Assembly.FullName, out execAssembly)) {
-						Type execAttributeType = execAssembly.GetType(customAttributeData.Constructor.DeclaringType.FullName);
-						if (attributeType.IsAssignableFrom(execAttributeType)) {
-							ConstructorInfo execConstructor = execAttributeType.GetConstructor(customAttributeData.Constructor.GetParameters().OrderBy(arg => arg.Position).Select(arg => arg.ParameterType).ToArray());
-							Attribute attribute = (Attribute)execConstructor.Invoke(customAttributeData.ConstructorArguments.Select(argument => argument.Value).ToArray());
-							if (customAttributeData.NamedArguments != null) {
-								foreach (CustomAttributeNamedArgument namedArgument in customAttributeData.NamedArguments) {
-									MemberInfo execMember = execAttributeType.GetMember(namedArgument.MemberInfo.Name, namedArgument.MemberInfo.MemberType, BindingFlags.Instance|BindingFlags.Public).FirstOrDefault();
-									if (execMember != null) {
-										switch (execMember.MemberType) {
-										case MemberTypes.Property:
-											((PropertyInfo)execMember).SetValue(attribute, namedArgument.TypedValue.Value, null);
-											break;
-										case MemberTypes.Field:
-											((FieldInfo)execMember).SetValue(attribute, namedArgument.TypedValue.Value);
-											break;
-										}
-									}
-								}
-							}
-							yield return attribute;
-						}
-					} else {
-						Debug.WriteLine(attributeType, "Skipping custom attribute");
-					}
-				}
-			}
-		}
-
-		public object[] GetCustomAttributes(Type attributeType, bool inherit) {
-			return GetCustomAttributesInternal(attributeType, inherit).OfType<Attribute>().ToArray();
-		}
-
-		public object[] GetCustomAttributes(bool inherit) {
-			return GetCustomAttributes(typeof(Attribute), inherit);
-		}
-
-		public bool IsDefined(Type attributeType, bool inherit) {
-			return handle.GetAssemblyCustomAttributeData().Select(data => data.Constructor.DeclaringType).Contains(attributeType);
-		}
-
 		public AssemblyName AssemblyName {
 			get {
 				return handle.AssemblyName;
 			}
 		}
 
+		public KeyValuePair<T, string>[] GetCustomAttributes<T>() where T: Attribute {
+			KeyValuePair<CustomAttributeData, string>[] assemblyCustomAttributeData = handle.GetAssemblyCustomAttributeData();
+			if (assemblyCustomAttributeData.Length == 0) {
+				return new KeyValuePair<T, string>[0];
+			}
+			Dictionary<string, Assembly> execAssemblies = new Dictionary<string, Assembly>();
+			foreach (Assembly execAssembly in AppDomain.CurrentDomain.GetAssemblies()) {
+				execAssemblies.Add(execAssembly.FullName, execAssembly);
+			}
+			List<KeyValuePair<T, string>> result = new List<KeyValuePair<T, string>>(assemblyCustomAttributeData.Length);
+			foreach (KeyValuePair<CustomAttributeData, string> customAttributeData in assemblyCustomAttributeData) {
+				Assembly execAssembly;
+				if (execAssemblies.TryGetValue(customAttributeData.Key.Constructor.DeclaringType.Assembly.FullName, out execAssembly)) {
+					Type execAttributeType = execAssembly.GetType(customAttributeData.Key.Constructor.DeclaringType.FullName);
+					if (typeof(T).IsAssignableFrom(execAttributeType)) {
+						ConstructorInfo execConstructor = execAttributeType.GetConstructor(customAttributeData.Key.Constructor.GetParameters().OrderBy(arg => arg.Position).Select(arg => arg.ParameterType).ToArray());
+						T attribute = (T)execConstructor.Invoke(customAttributeData.Key.ConstructorArguments.Select(argument => argument.Value).ToArray());
+						if (customAttributeData.Key.NamedArguments != null) {
+							foreach (CustomAttributeNamedArgument namedArgument in customAttributeData.Key.NamedArguments) {
+								MemberInfo execMember = execAttributeType.GetMember(namedArgument.MemberInfo.Name, namedArgument.MemberInfo.MemberType, BindingFlags.Instance|BindingFlags.Public).FirstOrDefault();
+								if (execMember != null) {
+									switch (execMember.MemberType) {
+									case MemberTypes.Property:
+										((PropertyInfo)execMember).SetValue(attribute, namedArgument.TypedValue.Value, null);
+										break;
+									case MemberTypes.Field:
+										((FieldInfo)execMember).SetValue(attribute, namedArgument.TypedValue.Value);
+										break;
+									}
+								}
+							}
+						}
+						result.Add(new KeyValuePair<T, string>(attribute, customAttributeData.Value));
+					}
+				} else {
+					Debug.WriteLine(customAttributeData.Key.Constructor.DeclaringType, "Skipping custom attribute");
+				}
+			}
+			return result.ToArray();
+		}
+
 		public string[] GetManifestResourceNames() {
 			return handle.GetManifestResourceNames();
 		}
 
-		public Stream GetManifestResourceStream(string streamName) {
-			return handle.GetManifestResourceStream(streamName);
+		public Stream GetManifestResourceStream(Type type, string streamName) {
+			return handle.GetManifestResourceStream(type, streamName);
+		}
+
+		public void Dispose() {
+			GC.SuppressFinalize(this);
+			DisposeIfNotDisposed(true);
 		}
 	}
 }

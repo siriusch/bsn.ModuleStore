@@ -1,7 +1,6 @@
 ﻿using System;
 
 namespace bsn.ModuleStore {
-	[Serializable]
 	public sealed class SqlUpdateScriptAttribute: SqlManifestResourceAttribute {
 		private readonly int version;
 

@@ -6,6 +6,6 @@
 AS
     BEGIN
         SET NOCOUNT ON;
-        UPDATE [tblModule] SET [sAssemblyName]=@sAssemblyName, [binSetupHash]=@binSetupHash, [iUpdateVersion]=@iUpdateVersion WHERE (@uidModule=[tblModule].[uidModule]) AND ([iUpdateVersion]<=@iUpdateVersion);
+        UPDATE [tblModule] SET [sAssemblyName]=@sAssemblyName, [binSetupHash]=@binSetupHash, [iUpdateVersion]=@iUpdateVersion, [dtUpdate]=GETUTCDATE() WHERE (@uidModule=[tblModule].[uidModule]) AND ([iUpdateVersion]<=@iUpdateVersion);
         RETURN CAST(@@ROWCOUNT AS [int]);
     END

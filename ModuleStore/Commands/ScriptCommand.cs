@@ -16,6 +16,7 @@ namespace bsn.ModuleStore.Console.Commands {
 
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
 			yield return new Tag<ExecutionContext, string>("path", "The target path for the scripts.").SetDefault(context => context.ScriptPath).SetOptional(context => false);
+			yield return new Tag<ExecutionContext, bool>("directories", "If true, each object type is put in a separate directory.").SetDefault(context => false);
 			yield return new Tag<ExecutionContext, string>("schema", "The schema to be used in the scripts.").SetDefault(context => string.Empty).SetOptional(context => true);
 			yield return new Tag<ExecutionContext, string>("encoding", "The encoding used to save the scripts.").SetDefault(context => "UTF-8").SetOptional(context => true);
 		}
@@ -26,12 +27,16 @@ namespace bsn.ModuleStore.Console.Commands {
 			executionContext.Output.WriteLine("Scripting to {0} (Encoding: {1})...", basePath, encoding.WebName);
 			DatabaseInventory inventory = new DatabaseInventory(executionContext.DatabaseInstance, executionContext.Schema);
 			inventory.Populate();
+			bool objectDirectories = (bool)tags["directories"];
 			foreach (CreateStatement statement in inventory.Objects) {
 				statement.ObjectSchema = (string)tags["schema"];
 				try {
-					string categoryName = statement.ObjectCategory.ToString();
-					categoryName += categoryName.EndsWith("x") ? "es" : "s";
-					string fileRelativePath = string.Format("{0}\\{1}.sql", categoryName, statement.ObjectName);
+					string categoryName = string.Empty;
+					if (objectDirectories) {
+						statement.ObjectCategory.ToString();
+						categoryName += categoryName.EndsWith("x") ? "es\\" : "s\\";
+					}
+					string fileRelativePath = string.Format("{0}{1}.sql", categoryName, statement.ObjectName);
 					executionContext.Output.WriteLine("* Scripting {0}", fileRelativePath);
 					FileInfo fileName = new FileInfo(Path.Combine(basePath, fileRelativePath));
 					if (fileName.Exists) {

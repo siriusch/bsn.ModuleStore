@@ -6,7 +6,18 @@ namespace bsn.ModuleStore.Mapper {
 	/// The DbColumnAttribute is used to change the binding name on <see cref="ITypedDataReader"/> interfaces, or to specify the fields to be deserialized when the <see cref="DbDeserializer"/> is used.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property|AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-	public class SqlColumnAttribute: SqlNameAttribute {
+	public sealed class SqlColumnAttribute: Attribute {
+		private string name;
+
+		/// <summary>
+		/// The name for the database binding.
+		/// </summary>
+		public string Name {
+			get {
+				return name;
+			}
+		}
+
 		/// <summary>
 		/// Get a single DbColumnAttribute instance.
 		/// </summary>
@@ -40,6 +51,14 @@ namespace bsn.ModuleStore.Mapper {
 		/// Create a new DbColumnAttribute.
 		/// </summary>
 		/// <param name="name">The DB column name to bind to.</param>
-		public SqlColumnAttribute(string name): base(name) {}
+		public SqlColumnAttribute(string name): base() {
+			this.name = name;
+		}
+
+		internal SqlColumnAttribute CloneWithName(string newName) {
+			SqlColumnAttribute result = (SqlColumnAttribute)MemberwiseClone();
+			result.name = newName;
+			return result;
+		}
 	}
 }

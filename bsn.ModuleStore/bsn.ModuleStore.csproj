@@ -50,20 +50,20 @@
   <ItemGroup>
     <Compile Include="Bootstrapper\Database.cs" />
     <Compile Include="Bootstrapper\DatabaseType.cs" />
+    <Compile Include="Bootstrapper\IModules.cs" />
+    <Compile Include="Bootstrapper\Module.cs" />
     <Compile Include="DataObject.cs" />
     <Compile Include="HashWriter.cs" />
     <Compile Include="Mapper\DataReaderProxy.cs" />
-    <Compile Include="Mapper\SqlArgAttribute.cs" />
     <Compile Include="Mapper\SqlCallInfo.cs" />
     <Compile Include="Mapper\SqlCallParameterInfo.cs" />
     <Compile Include="Mapper\SqlCallProcedureInfo.cs" />
     <Compile Include="Mapper\SqlCallProxy.cs" />
-    <Compile Include="Mapper\SqlColumnAttribute.cs" />
+    <Compile Include="SqlColumnAttribute.cs" />
     <Compile Include="Mapper\SqlDeserializeAttribute.cs" />
     <Compile Include="Mapper\SqlDeserializer.cs" />
-    <Compile Include="Mapper\SqlNameAttribute.cs" />
     <Compile Include="Mapper\SqlNameTableAttribute.cs" />
-    <Compile Include="Mapper\SqlProcAttribute.cs" />
+    <Compile Include="SqlProcedureAttribute.cs" />
     <Compile Include="Mapper\SqlReturnValue.cs" />
     <Compile Include="Mapper\ISqlDeserializationHook.cs" />
     <Compile Include="Mapper\ITypedDataReader.cs" />
@@ -73,11 +73,11 @@
     <Compile Include="ModuleAttribute.cs" />
     <Compile Include="ModuleDependencyAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scripts\Scripts.cs" />
+    <Compile Include="Bootstrapper\Scripts.cs" />
     <Compile Include="SqlAssemblyAttribute.cs" />
     <Compile Include="SqlManifestResourceAttribute.cs" />
-    <Compile Include="SqlProcedureAttribute.cs" />
     <Compile Include="SqlSetupScriptAttribute.cs" />
+    <Compile Include="SqlSetupScriptAttributeBase.cs" />
     <Compile Include="SqlUpdateScriptAttribute.cs" />
     <Compile Include="Sql\AssemblyHandle.cs" />
     <Compile Include="Sql\AssemblyInventory.cs" />
@@ -418,14 +418,14 @@
   <ItemGroup>
     <None Include="app.config" />
     <EmbeddedResource Include="Sql\ModuleStoreSQL.cgt" />
-    <EmbeddedResource Include="Scripts\Indexes\IX_tblModule_Cluster.sql" />
-    <EmbeddedResource Include="Scripts\Indexes\IX_tblModule_uidAssembly.sql" />
-    <EmbeddedResource Include="Scripts\Procedures\spModuleAdd.sql" />
-    <EmbeddedResource Include="Scripts\Procedures\spModuleDelete.sql" />
-    <EmbeddedResource Include="Scripts\Procedures\spModuleList.sql" />
-    <EmbeddedResource Include="Scripts\Procedures\spModuleUpdate.sql" />
-    <EmbeddedResource Include="Scripts\Tables\tblModule.sql" />
-    <EmbeddedResource Include="Scripts\Views\vwModule.sql" />
+    <EmbeddedResource Include="Bootstrapper\IX_tblModule_Cluster.sql" />
+    <EmbeddedResource Include="Bootstrapper\IX_tblModule_uidAssembly.sql" />
+    <EmbeddedResource Include="Bootstrapper\spModuleAdd.sql" />
+    <EmbeddedResource Include="Bootstrapper\spModuleDelete.sql" />
+    <EmbeddedResource Include="Bootstrapper\spModuleList.sql" />
+    <EmbeddedResource Include="Bootstrapper\spModuleUpdate.sql" />
+    <EmbeddedResource Include="Bootstrapper\tblModule.sql" />
+    <EmbeddedResource Include="Bootstrapper\vwModule.sql" />
     <None Include="Sql\ModuleStoreSQL.grm" />
   </ItemGroup>
   <ItemGroup>

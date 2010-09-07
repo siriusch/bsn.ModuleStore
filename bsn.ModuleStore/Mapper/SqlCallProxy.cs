@@ -18,7 +18,7 @@ namespace bsn.ModuleStore.Mapper {
 	/// <br/><br/>
 	/// The interface can declare any number of methods, which are then used to call stored procedures on the database.
 	/// <br/><br/>
-	/// See also <see cref="SqlProcAttribute"/> and <see cref="SqlArgAttribute"/> for explicit bindings on methods.
+	/// See also <see cref="SqlProcedureAttribute"/> and <see cref="SqlArgAttribute"/> for explicit bindings on methods.
 	/// <br/><br/>
 	/// The result is returned as follows:<br/>
 	/// - When no return value is expected (void), the call is made as non-query call (<see cref="DbCommand.ExecuteNonQuery"/>).<br/>
@@ -28,27 +28,19 @@ namespace bsn.ModuleStore.Mapper {
 	/// - When the return value is an <see cref="int"/> and the <see cref="SqlReturnValue"/> is <see cref="SqlReturnValue.Auto"/> or <see cref="SqlReturnValue.ReturnValue"/>, the SP result is returned.
 	/// - When the return value is another primitive (or <see cref="int"/> with DbReturnValue.<see cref="SqlReturnValue.Scalar"/> set), a scalar call is made (<see cref="DbCommand.ExecuteScalar"/>).
 	/// </summary>
-	/// <seealso cref="SqlProcAttribute"/>
+	/// <seealso cref="SqlProcedureAttribute"/>
 	/// <seealso cref="SqlReturnValue"/>
 	/// <seealso cref="SqlArgAttribute"/>
 	/// <seealso cref="CreateConnection"/>
 	public class SqlCallProxy: RealProxy {
-		/// <summary>
-		/// The delegate used by the <see cref="SqlCallProxy"/> to create new <see cref="SqlConnection"/>s.
-		/// <br/><br/>
-		/// If the connection should be part of a transaction, it has to be assigned to the transaction before returning it. The connection will always be closed after usage by the proxy, therefore pooled connections should be used.
-		/// </summary>
-		/// <returns>A fully initialized database connection (open or closed does not matter).</returns>
-		public delegate SqlConnection CreateConnection();
-
 		/// <summary>
 		/// Create a new proxy to be used for stored procedure calls, which can be called through the interface specified by <typeparamref name="I"/>.
 		/// </summary>
 		/// <typeparam name="I">The interface declaring the calls. This interface must implement <see cref="IDisposable"/></typeparam>
 		/// <param name="createConnection">A delegate used to allocate new connections. This delegate is called for every call done on the interface.</param>
 		/// <returns>An instance of the type requested by <typeparamref name="I"/>.</returns>
-		public static I Create<I>(CreateConnection createConnection) where I: IDisposable {
-			return (I)(new SqlCallProxy(createConnection, typeof(I))).GetTransparentProxy();
+		public static I Create<I>(Func<SqlConnection> createConnection, string schemaName) where I: IDisposable {
+			return (I)(new SqlCallProxy(createConnection, schemaName, typeof(I))).GetTransparentProxy();
 		}
 
 		private static object[] GetOutArgValues(KeyValuePair<SqlParameter, Type>[] dbParams) {
@@ -71,13 +63,16 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		private readonly SqlCallInfo callInfo;
-		private readonly CreateConnection createConnection;
+		private readonly Func<SqlConnection> createConnection;
+		private readonly string schemaName;
 
-		private SqlCallProxy(CreateConnection createConnection, Type interfaceToProxy): base(interfaceToProxy) {
+		private SqlCallProxy(Func<SqlConnection> createConnection, string schemaName, Type interfaceToProxy)
+			: base(interfaceToProxy) {
 			if (createConnection == null) {
 				throw new ArgumentNullException("createConnection");
 			}
 			this.createConnection = createConnection;
+			this.schemaName = schemaName;
 			callInfo = SqlCallInfo.Get(interfaceToProxy);
 		}
 
@@ -100,10 +95,10 @@ namespace bsn.ModuleStore.Mapper {
 					SqlParameter returnParameter;
 					KeyValuePair<SqlParameter, Type>[] outParameters;
 					SqlDeserializer.TypeInfo returnTypeInfo;
-					SqlProcAttribute procInfo;
+					SqlProcedureAttribute procInfo;
 					IList<IDisposable> disposeList = new List<IDisposable>(0);
 					XmlNameTable xmlNameTable;
-					using (SqlCommand command = callInfo.CreateCommand(mcm, connection, out returnParameter, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList)) {
+					using (SqlCommand command = callInfo.CreateCommand(mcm, connection, schemaName, out returnParameter, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList)) {
 						try {
 							Type returnType = ((MethodInfo)mcm.MethodBase).ReturnType;
 							object returnValue;

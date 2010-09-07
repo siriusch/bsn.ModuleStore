@@ -67,9 +67,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(top, WhitespacePadding.SpaceAfter);
 			writer.WriteScriptSequence(columnItems, WhitespacePadding.None, ", ");
+			writer.IncreaseIndent();
 			writer.WriteScript(intoClause, WhitespacePadding.NewlineBefore, "INTO ", null);
 			WriteToInternal(writer);
 			writer.WriteScript(unionClause, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
 		}
 
 		protected virtual void WriteToInternal(SqlWriter writer) {}

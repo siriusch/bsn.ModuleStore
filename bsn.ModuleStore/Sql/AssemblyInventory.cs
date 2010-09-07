@@ -12,7 +12,7 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql {
 	public class AssemblyInventory: Inventory {
 		private readonly IAssemblyHandle assembly;
-		private readonly ReadOnlyCollection<SqlAssemblyAttribute> attributes;
+		private readonly ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> attributes;
 		private readonly List<Statement> additionalSetupStatements = new List<Statement>();
 		private readonly SortedList<int, Statement[]> updateStatements = new SortedList<int, Statement[]>();
 
@@ -20,7 +20,7 @@ namespace bsn.ModuleStore.Sql {
 
 		public AssemblyInventory(IAssemblyHandle assembly) {
 			this.assembly = assembly;
-			this.attributes = assembly.GetCustomAttributes(typeof(SqlAssemblyAttribute), true).Cast<SqlAssemblyAttribute>().ToList().AsReadOnly();
+			this.attributes = assembly.GetCustomAttributes<SqlAssemblyAttribute>().ToList().AsReadOnly();
 		}
 
 		public AssemblyName AssemblyName {
@@ -29,7 +29,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public ReadOnlyCollection<SqlAssemblyAttribute> Attributes {
+		public ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> Attributes {
 			get {
 				return attributes;
 			}
@@ -47,10 +47,10 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		private Stream OpenStream(SqlManifestResourceAttribute attribute) {
-			Stream result = assembly.GetManifestResourceStream(attribute.ManifestResourceName);
-			if (result == null) {
-				result = assembly.GetManifestResourceStream(AssemblyName.Name+Type.Delimiter+attribute.ManifestResourceName);
+		private Stream OpenStream(SqlManifestResourceAttribute attribute, string optionalPrefix) {
+			Stream result = assembly.GetManifestResourceStream(attribute.ManifestResourceType, attribute.ManifestResourceName);
+			if ((result == null) && (attribute.ManifestResourceType == null) && (!string.IsNullOrEmpty(optionalPrefix))) {
+				result = assembly.GetManifestResourceStream(null, optionalPrefix+Type.Delimiter+attribute.ManifestResourceName);
 				if (result == null) {
 					throw new FileNotFoundException("The embedded SQL file was not found", attribute.ManifestResourceName);
 				}
@@ -58,26 +58,26 @@ namespace bsn.ModuleStore.Sql {
 			return result;
 		}
 
-		private TextReader OpenText(SqlManifestResourceAttribute attribute) {
-			return new StreamReader(OpenStream(attribute), true);
+		private TextReader OpenText(SqlManifestResourceAttribute attribute, string optionalPrefix) {
+			return new StreamReader(OpenStream(attribute, optionalPrefix), true);
 		}
 
 		public override void Populate() {
 			base.Populate();
-			foreach (SqlAssemblyAttribute attribute in attributes) {
-				SqlSetupScriptAttribute setupScriptAttribute = attribute as SqlSetupScriptAttribute;
+			foreach (KeyValuePair<SqlAssemblyAttribute, string> attribute in attributes) {
+				SqlSetupScriptAttributeBase setupScriptAttribute = attribute.Key as SqlSetupScriptAttributeBase;
 				if (setupScriptAttribute != null) {
-					using (TextReader reader = OpenText(setupScriptAttribute)) {
+					using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value)) {
 						ProcessSingleScript(reader, statement => additionalSetupStatements.Add(statement));
 					}
 				} else {
-					SqlUpdateScriptAttribute updateScriptAttribute = attribute as SqlUpdateScriptAttribute;
+					SqlUpdateScriptAttribute updateScriptAttribute = attribute.Key as SqlUpdateScriptAttribute;
 					if (updateScriptAttribute != null) {
-						using (TextReader reader = OpenText(setupScriptAttribute)) {
+						using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value)) {
 							updateStatements.Add(updateScriptAttribute.Version, ScriptParser.Parse(reader).ToArray());
 						}
 					} else {
-						Debug.WriteLine(attribute.GetType(), "Unrecognized assembly SQL attribute");
+						Debug.WriteLine(attribute.Key.GetType(), "Unrecognized assembly SQL attribute");
 					}
 				}
 			}
