@@ -12,10 +12,8 @@ namespace bsn.ModuleStore.Console.Commands {
 		public DumpCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
-			Inventory inventory;
 			Source inventorySource = (Source)tags["source"];
-			inventory = executionContext.GetInventory(inventorySource);
-			inventory.Populate();
+			Inventory inventory = executionContext.GetInventory(inventorySource);
 			inventory.Dump(null, executionContext.Output);
 		}
 

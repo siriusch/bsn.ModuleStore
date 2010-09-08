@@ -13,9 +13,7 @@ namespace bsn.ModuleStore.Console.Commands {
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
 			Inventory sourceInventory = executionContext.GetInventory((Entities.Source)tags["source"]);
-			sourceInventory.Populate();
 			Inventory targetInventory = executionContext.GetInventory((Entities.Source)tags["target"]);
-			targetInventory.Populate();
 			foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> difference in Inventory.Compare(sourceInventory, targetInventory)) {
 				executionContext.Output.WriteLine(string.Format(" {0} {1}: {2}", difference.Key.ObjectCategory, difference.Key.ObjectName, difference.Value));
 			}

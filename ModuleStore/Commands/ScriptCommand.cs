@@ -20,7 +20,6 @@ namespace bsn.ModuleStore.Console.Commands {
 			DirectoryInfo baseDirectory = Directory.CreateDirectory(Path.Combine(executionContext.ScriptPath, (string)tags["path"]));
 			executionContext.Output.WriteLine("Scripting to {0} (Encoding: {1})...", baseDirectory.FullName, encoding.WebName);
 			DatabaseInventory inventory = new DatabaseInventory(executionContext.DatabaseInstance, executionContext.Schema);
-			inventory.Populate();
 			HashSet<string> filesToDelete = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if ((bool)tags["delete"]) {
 				foreach (FileInfo fileInfo in baseDirectory.GetFiles("*.sql", SearchOption.AllDirectories)) {

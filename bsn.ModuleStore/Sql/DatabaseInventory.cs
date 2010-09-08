@@ -31,16 +31,6 @@ namespace bsn.ModuleStore.Sql {
 			}
 			this.database = database;
 			this.schemaName = schemaName ?? database.DefaultSchema;
-		}
-
-		public string SchemaName {
-			get {
-				return schemaName;
-			}
-		}
-
-		public override void Populate() {
-			base.Populate();
 			Schema schema = database.Schemas[schemaName];
 			if (schema != null) {
 				ScriptingOptions options = new ScriptingOptions();
@@ -88,11 +78,17 @@ namespace bsn.ModuleStore.Sql {
 						StringCollection script = ((IScriptable)smoObject).Script(options);
 						using (StringCollectionReader scriptReader = new StringCollectionReader(script, ";")) {
 							ProcessSingleScript(scriptReader, statement => {
-							                                  	throw CreateException("Cannot process statement:", statement);
-							                                  });
+								throw CreateException("Cannot process statement:", statement);
+							});
 						}
 					}
 				}
+			}
+		}
+
+		public string SchemaName {
+			get {
+				return schemaName;
 			}
 		}
 

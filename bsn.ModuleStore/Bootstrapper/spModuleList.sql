@@ -4,6 +4,6 @@ AS
     BEGIN
         SET NOCOUNT ON;
         SELECT *
-        FROM [vwModule] AS [m]
+        FROM [schema].[vwModule] AS [m]
         WHERE (@uidAssemblyGuid IS NULL) OR (@uidAssemblyGuid=[m].[uidAssemblyGuid]);
     END;

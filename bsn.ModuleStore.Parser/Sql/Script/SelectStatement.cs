@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
+	[CommonTableExpressionScope]
 	public sealed class SelectStatement: Statement {
 		private readonly List<CommonTableExpression> ctes;
 		private readonly ForClause forClause;

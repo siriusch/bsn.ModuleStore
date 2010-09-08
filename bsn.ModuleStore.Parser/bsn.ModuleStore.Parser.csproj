@@ -204,6 +204,7 @@
     <Compile Include="Sql\Script\LeftOuterJoin.cs" />
     <Compile Include="Sql\Script\Literal.cs" />
     <Compile Include="Sql\Script\LocalIdentifier.cs" />
+    <Compile Include="Sql\Script\CommonTableExpressionScopeAttribute.cs" />
     <Compile Include="Sql\Script\NestedSelectQuery.cs" />
     <Compile Include="Sql\Script\NullLiteral.cs" />
     <Compile Include="Sql\Script\NumericLiteral.cs" />

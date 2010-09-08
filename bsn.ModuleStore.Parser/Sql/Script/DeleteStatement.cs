@@ -5,6 +5,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
+	[CommonTableExpressionScope]
 	public sealed class DeleteStatement: Statement {
 		private readonly List<CommonTableExpression> ctes;
 		private readonly DestinationRowset destinationRowset;

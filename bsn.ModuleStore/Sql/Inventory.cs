@@ -50,10 +50,17 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private readonly SortedDictionary<string, CreateStatement> objects = new SortedDictionary<string, CreateStatement>(StringComparer.OrdinalIgnoreCase);
+		private readonly HashSet<string> objectSchemas = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public ICollection<CreateStatement> Objects {
 			get {
 				return objects.Values;
+			}
+		}
+
+		protected HashSet<string> ObjectSchemas {
+			get {
+				return objectSchemas;
 			}
 		}
 
@@ -82,14 +89,12 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public virtual void Populate() {
-			objects.Clear();
-		}
-
 		protected void AddObject(CreateStatement createStatement) {
 			if (createStatement == null) {
 				throw new ArgumentNullException("createStatement");
 			}
+			objectSchemas.Add(createStatement.ObjectSchema);
+			createStatement.ObjectSchema = null;
 			createStatement.ResetHash();
 			createStatement.GetHash();
 			objects.Add(createStatement.ObjectName, createStatement);
@@ -123,7 +128,6 @@ namespace bsn.ModuleStore.Sql {
 				}
 			}
 			foreach (CreateStatement statement in objects) {
-				statement.ObjectSchema = null;
 				AddObject(statement);
 			}
 		}

@@ -24,6 +24,6 @@ AS
         FROM [SchemaName] AS [sn]
         ORDER BY [sn].[iInstance] DESC;
         SELECT *
-        FROM [vwModule] AS [m]
+        FROM [schema].[vwModule] AS [m]
         WHERE [m].[uidModule]=@uidModule;
     END;

@@ -11,7 +11,7 @@ namespace bsn.ModuleStore.Console.Contexts {
 
 		public override IEnumerable<CommandBase<ExecutionContext>> Commands {
 			get {
-				return Merge(base.Commands, new DumpCommand(this), new DifferenceCommand(this));
+				return Merge(base.Commands, new DumpCommand(this), new DifferenceCommand(this), new InstallCommand(this));
 			}
 		}
 

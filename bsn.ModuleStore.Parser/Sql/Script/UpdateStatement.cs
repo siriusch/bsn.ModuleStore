@@ -6,6 +6,7 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
+	[CommonTableExpressionScope]
 	public class UpdateStatement: Statement {
 		private readonly List<CommonTableExpression> ctes;
 		private readonly DestinationRowset destinationRowset;

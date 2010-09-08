@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
+	[CommonTableExpressionScope]
 	public abstract class InsertStatement: Statement {
 		private readonly List<CommonTableExpression> ctes;
 		private readonly DestinationRowset destinationRowset;
