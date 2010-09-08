@@ -47,13 +47,12 @@ namespace bsn.ModuleStore.Console.Commands {
 					using (FileStream stream = scriptFileName.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
 						using (StreamWriter writer = new StreamWriter(stream, encoding)) {
 							SqlWriter sqlWriter = new SqlWriter(writer);
-							statement.WriteTo(sqlWriter);
+							ScriptStatement(statement, sqlWriter);
 							CreateTableStatement createTableStatement = statement as CreateTableStatement;
 							if (createTableStatement != null) {
 								foreach (CreateIndexStatement createIndexStatement in inventory.Objects.OfType<CreateIndexStatement>().Where(s => s.TableName.Name.Equals(createTableStatement.TableName.Name)).OrderBy(s => s.IndexName.Value)) {
-									writer.WriteLine(";");
 									writer.WriteLine();
-									createIndexStatement.WriteTo(sqlWriter);
+									ScriptStatement(createIndexStatement, sqlWriter);
 								}
 							}
 						}
@@ -74,6 +73,16 @@ namespace bsn.ModuleStore.Console.Commands {
 					executionContext.Output.WriteLine();
 				}
 			}
+		}
+
+		private void ScriptStatement(CreateStatement statement, SqlWriter sqlWriter) {
+			statement.ObjectSchema = "schema";
+			try {
+				statement.WriteTo(sqlWriter);
+			} finally {
+				statement.ObjectSchema = null;
+			}
+			sqlWriter.WriteLine(";");
 		}
 
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {

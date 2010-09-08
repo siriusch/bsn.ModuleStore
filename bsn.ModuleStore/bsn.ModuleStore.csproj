@@ -88,8 +88,6 @@
     <Compile Include="Sql\StringCollectionReader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Bootstrapper\IX_tblModule_Cluster.sql" />
-    <EmbeddedResource Include="Bootstrapper\IX_tblModule_uidAssembly.sql" />
     <EmbeddedResource Include="Bootstrapper\spModuleAdd.sql" />
     <EmbeddedResource Include="Bootstrapper\spModuleDelete.sql" />
     <EmbeddedResource Include="Bootstrapper\spModuleList.sql" />

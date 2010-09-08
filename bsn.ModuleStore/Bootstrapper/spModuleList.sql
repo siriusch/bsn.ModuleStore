@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [spModuleList]
+﻿CREATE PROCEDURE [schema].[spModuleList]
     @uidAssemblyGuid [uniqueidentifier]
 AS
     BEGIN
@@ -6,4 +6,4 @@ AS
         SELECT *
         FROM [vwModule] AS [m]
         WHERE (@uidAssemblyGuid IS NULL) OR (@uidAssemblyGuid=[m].[uidAssemblyGuid]);
-    END
+    END;
