@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Sql {
 				} else {
 					nodes.Enqueue(node);
 					if (skipCount++ > nodes.Count) {
-						throw new InvalidOperationException("Cycle detected");
+						throw new InvalidOperationException("Cycle or missing dependency detected");
 					}
 				}
 			}

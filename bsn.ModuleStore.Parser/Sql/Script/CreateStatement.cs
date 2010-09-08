@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private void InitializeSchemaNames() {
 			if (schemaQualifiedNames.Count == 0) {
 				string schemaName = GetObjectSchema();
-				schemaQualifiedNames.AddRange(this.GetInnerTokens().OfType<IQualifiedName<SchemaName>>().Where(name => (!name.IsQualified) || name.Qualification.Value.Equals(schemaName, StringComparison.OrdinalIgnoreCase)));
+				schemaQualifiedNames.AddRange(this.GetInnerTokens().OfType<IQualifiedName<SchemaName>>().Where(n => n.IsQualified && n.Qualification.Value.Equals(schemaName, StringComparison.OrdinalIgnoreCase)));
 			}
 		}
 

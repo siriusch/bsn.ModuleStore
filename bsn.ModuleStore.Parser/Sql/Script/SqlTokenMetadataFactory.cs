@@ -9,7 +9,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			IEnumerable<SqlToken> GetEnumerator(TInstance instance);
 		}
 
-		private class SqlTokenEnumeratorGetter<TInstance, TItem>: ISqlTokenEnumeratorGetter<TInstance> where TInstance: SqlToken where TItem: SqlToken {
+		private class SqlTokenEnumeratorGetter<TInstance, TItem>: ISqlTokenEnumeratorGetter<TInstance> where TInstance: SqlToken
+		                                                                                               where TItem: SqlToken {
 			private readonly Func<TInstance, IEnumerable<TItem>> propertyGetter;
 
 			public SqlTokenEnumeratorGetter(Func<TInstance, IEnumerable<TItem>> propertyGetter) {
@@ -21,13 +22,23 @@ namespace bsn.ModuleStore.Sql.Script {
 					yield return item;
 				}
 			}
-		}
+		                                                                                               }
 
 		private abstract class SqlTokenMetadata {
 			public abstract IEnumerable<SqlToken> EnumerateTokensUntyped(SqlToken instance);
 		}
 
-		private class SqlTokenMetadata<TToken, TTokenBase>: SqlTokenMetadata, ISqlTokenMetadata<TToken> where TToken: TTokenBase where TTokenBase: SqlToken {
+		private class SqlTokenMetadata<TToken, TTokenBase>: SqlTokenMetadata, ISqlTokenMetadata<TToken> where TToken: TTokenBase
+		                                                                                                where TTokenBase: SqlToken {
+			private static IEnumerable<Type> GetInterfaces(Type type) {
+				if (type.IsInterface) {
+					yield return type;
+				}
+				foreach (Type @interface in type.GetInterfaces()) {
+					yield return @interface;
+				}
+			}
+
 			private readonly ISqlTokenMetadata<TTokenBase> baseMetadata;
 			private readonly ISqlTokenEnumeratorGetter<TToken>[] enumeratorGetters;
 			private readonly Func<TToken, SqlToken>[] instanceGetters;
@@ -50,7 +61,7 @@ namespace bsn.ModuleStore.Sql.Script {
 							Type delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), typeof(SqlToken));
 							instances.Add((Func<TToken, SqlToken>)Delegate.CreateDelegate(delegateType, propertyGetter));
 						} else {
-							foreach (Type @interface in property.PropertyType.GetInterfaces()) {
+							foreach (Type @interface in GetInterfaces(property.PropertyType)) {
 								if (@interface.IsGenericType && (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
 									Type enumerationType = @interface.GetGenericArguments()[0];
 									if (typeof(SqlToken).IsAssignableFrom(enumerationType)) {
@@ -130,7 +141,7 @@ namespace bsn.ModuleStore.Sql.Script {
 					}
 				}
 			}
-		}
+		                                                                                                }
 
 		private static readonly Dictionary<Type, SqlTokenMetadata> tokenMetadata = new Dictionary<Type, SqlTokenMetadata>();
 
