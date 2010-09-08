@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			valueExpressions = value.ToList();
 		}
 
-		public List<Expression> ValueExpressions {
+		public IEnumerable<Expression> ValueExpressions {
 			get {
 				return valueExpressions;
 			}

@@ -19,17 +19,24 @@ namespace bsn.ModuleStore.Sql.Script {
 				return GetObjectSchema() ?? string.Empty;
 			}
 			set {
-				InitializeSchemaNames();
 				SchemaName schemaName = string.IsNullOrEmpty(value) ? null : new SchemaName(value);
-				foreach (IQualifiedName<SchemaName> name in schemaQualifiedNames) {
+				foreach (IQualifiedName<SchemaName> name in SchemaQualifiedNames) {
 					name.Qualification = schemaName;
 				}
 			}
 		}
 
-		public List<IQualifiedName<SchemaName>> SchemaQualifiedNames {
+		public IEnumerable<IQualifiedName<SchemaName>> SchemaQualifiedNames {
 			get {
+				InitializeSchemaNames();
 				return schemaQualifiedNames;
+			}
+		}
+
+		private void InitializeSchemaNames() {
+			if (schemaQualifiedNames.Count == 0) {
+				string schemaName = GetObjectSchema();
+				schemaQualifiedNames.AddRange(this.GetInnerTokens().OfType<IQualifiedName<SchemaName>>().Where(name => (!name.IsQualified) || name.Qualification.Value.Equals(schemaName, StringComparison.OrdinalIgnoreCase)));
 			}
 		}
 
@@ -40,11 +47,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected abstract string GetObjectSchema();
 
-		internal void InitializeSchemaNames() {
-			if (schemaQualifiedNames.Count == 0) {
-				string schemaName = GetObjectSchema();
-				schemaQualifiedNames.AddRange(this.GetInnerTokens().OfType<IQualifiedName<SchemaName>>().Where(name => name.IsQualified && name.Qualification.Value.Equals(schemaName, StringComparison.OrdinalIgnoreCase)));
-			}
+		public IEnumerable<SqlName> GetReferencedObjectNames() {
+			return schemaQualifiedNames.Select(qn => qn.Name).Where(n => !n.Value.Equals(ObjectName, StringComparison.OrdinalIgnoreCase)).Distinct();
 		}
 
 		internal void ResetSchemaNames() {

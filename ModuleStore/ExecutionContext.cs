@@ -1,23 +1,42 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 using bsn.CommandLine;
 using bsn.ModuleStore.Console.Contexts;
+using bsn.ModuleStore.Console.Entities;
+using bsn.ModuleStore.Sql;
 
 using Microsoft.SqlServer.Management.Smo;
 
 namespace bsn.ModuleStore.Console {
 	internal class ExecutionContext: CommandLineContext<ExecutionContext, ModuleStoreContext>, IDisposable {
-		private Server server;
+		private AssemblyHandler assembly;
 		private Database database;
-		private string serverName = ".";
 		private string databaseName;
 		private string schemaName;
-		private AssemblyHandler assembly;
+		private Server server;
+		private string serverName = ".";
 
 		public ExecutionContext(TextReader input, TextWriter output): base(new ModuleStoreContext(), input, output) {}
+
+		public AssemblyHandler Assembly {
+			get {
+				return assembly;
+			}
+			set {
+				if (assembly != null) {
+					assembly.Dispose();
+				}
+				assembly = value;
+			}
+		}
+
+		public bool Connected {
+			get {
+				return server != null;
+			}
+		}
 
 		public string Database {
 			get {
@@ -36,20 +55,9 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public string Server {
+		public Database DatabaseInstance {
 			get {
-				return serverName;
-			}
-			set {
-				if (value != serverName) {
-					if (Connected) {
-						throw new InvalidOperationException("Cannot change database server while connected");
-					}
-					if (string.IsNullOrEmpty(value)) {
-						throw new ArgumentNullException("value");
-					}
-					serverName = value;
-				}
+				return database;
 			}
 		}
 
@@ -71,12 +79,6 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public bool Connected {
-			get {
-				return server != null;
-			}
-		}
-
 		public string ScriptPath {
 			get {
 				return Directory.GetCurrentDirectory();
@@ -88,21 +90,20 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public Database DatabaseInstance {
+		public string Server {
 			get {
-				return database;
-			}
-		}
-
-		public AssemblyHandler Assembly {
-			get {
-				return assembly;
+				return serverName;
 			}
 			set {
-				if (assembly != null) {
-					assembly.Dispose();
+				if (value != serverName) {
+					if (Connected) {
+						throw new InvalidOperationException("Cannot change database server while connected");
+					}
+					if (string.IsNullOrEmpty(value)) {
+						throw new ArgumentNullException("value");
+					}
+					serverName = value;
 				}
-				assembly = value;
 			}
 		}
 
@@ -132,6 +133,24 @@ namespace bsn.ModuleStore.Console {
 			}
 			connectionString.Append("Integrated Security=SSPI;");
 			return connectionString.ToString();
+		}
+
+		public Inventory GetInventory(Source inventorySource) {
+			Inventory inventory;
+			switch (inventorySource) {
+			case Source.Database:
+				inventory = new DatabaseInventory(DatabaseInstance, Schema);
+				break;
+			case Source.Files:
+				inventory = new ScriptInventory(ScriptPath);
+				break;
+			case Source.Assembly:
+				inventory = new AssemblyInventory(Assembly);
+				break;
+			default:
+				throw new InvalidOperationException("No valid source specified");
+			}
+			return inventory;
 		}
 
 		protected virtual void Dispose(bool disposing) {

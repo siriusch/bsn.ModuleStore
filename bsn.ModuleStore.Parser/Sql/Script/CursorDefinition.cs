@@ -26,7 +26,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<string> CursorOptions {
+		public IEnumerable<string> CursorOptions {
 			get {
 				return cursorOptions;
 			}

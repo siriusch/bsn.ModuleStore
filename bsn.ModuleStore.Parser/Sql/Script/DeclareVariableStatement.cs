@@ -15,7 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.declarations = declarations.ToList();
 		}
 
-		public List<DeclareItem> Declarations {
+		public IEnumerable<DeclareItem> Declarations {
 			get {
 				return declarations;
 			}

@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expressions = expressions.ToList();
 		}
 
-		public List<Expression> Expressions {
+		public IEnumerable<Expression> Expressions {
 			get {
 				return expressions;
 			}

@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public interface IQualifiedName<TQ> where TQ: SqlName {
+	public interface IQualifiedName<TQ>: IEquatable<IQualifiedName<TQ>>, IComparable<IQualifiedName<TQ>> where TQ: SqlName {
 		bool IsQualified {
 			get;
 		}
@@ -15,9 +15,5 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 			set;
 		}
-
-		byte[] GetHash();
-
-		void ResetHash();
 	}
 }

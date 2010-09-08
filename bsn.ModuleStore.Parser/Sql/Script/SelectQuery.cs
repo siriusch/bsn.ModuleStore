@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.restriction = restriction;
 		}
 
-		public List<ColumnItem> ColumnItems {
+		public IEnumerable<ColumnItem> ColumnItems {
 			get {
 				return columnItems;
 			}

@@ -12,7 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columns = columns.ToList();
 		}
 
-		public List<OpenxmlColumn> Columns {
+		public IEnumerable<OpenxmlColumn> Columns {
 			get {
 				return columns;
 			}

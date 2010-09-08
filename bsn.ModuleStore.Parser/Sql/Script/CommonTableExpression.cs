@@ -25,7 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<ColumnName> ColumnNames {
+		public IEnumerable<ColumnName> ColumnNames {
 			get {
 				return columnNames;
 			}

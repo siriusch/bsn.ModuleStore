@@ -56,7 +56,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<FunctionParameter> Parameters {
+		public IEnumerable<FunctionParameter> Parameters {
 			get {
 				return parameters;
 			}

@@ -22,7 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<Join> Joins {
+		public IEnumerable<Join> Joins {
 			get {
 				return joins;
 			}

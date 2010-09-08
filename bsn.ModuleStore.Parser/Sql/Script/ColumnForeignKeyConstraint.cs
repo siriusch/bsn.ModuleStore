@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.keyActions = keyActions.ToList();
 		}
 
-		public List<ForeignKeyAction> KeyActions {
+		public IEnumerable<ForeignKeyAction> KeyActions {
 			get {
 				return keyActions;
 			}

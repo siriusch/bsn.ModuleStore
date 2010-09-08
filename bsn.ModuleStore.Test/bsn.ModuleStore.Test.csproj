@@ -52,6 +52,8 @@
     <Compile Include="Sql\ScriptParserTest.cs" />
     <Compile Include="Sql\Script\SemanticActionsTest.cs" />
     <Compile Include="Sql\Script\SqlIdentifierTest.cs" />
+    <Compile Include="Sql\Script\SqlNameTest.cs" />
+    <Compile Include="Sql\Script\SqlQualifiedNameTest.cs" />
     <Compile Include="Sql\Script\StringLiteralTest.cs" />
     <Compile Include="Sql\Script\SqlTokenMetadataFactoryTest.cs" />
   </ItemGroup>

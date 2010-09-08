@@ -25,7 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExecuteStatement> ::= EXECUTE <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>", ConstructorParameterMapping = new[] {1, 2, 3})]
 		public ExecuteStatement(Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, Optional<WithRecompileToken> recompile): this(null, procedureName, parameters, recompile) {}
 
-		public List<ExecuteParameter> Parameters {
+		public IEnumerable<ExecuteParameter> Parameters {
 			get {
 				return parameters;
 			}

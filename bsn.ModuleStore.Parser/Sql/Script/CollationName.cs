@@ -4,8 +4,10 @@ using System.Linq;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class CollationName: SqlName {
+	public sealed class CollationName: SqlName {
 		[Rule("<CollationName> ::= Id")]
-		public CollationName(Identifier identifier): base(identifier.Value) {}
+		public CollationName(Identifier identifier): this(identifier.Value) {}
+
+		internal CollationName(string name): base(name) {}
 	}
 }

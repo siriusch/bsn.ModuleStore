@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.elementName = elementName;
 		}
 
-		public List<XmlDirective> Directives {
+		public IEnumerable<XmlDirective> Directives {
 			get {
 				return directives;
 			}

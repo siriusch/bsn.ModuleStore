@@ -19,7 +19,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<CaseWhen<T>> WhenItems {
+		public IEnumerable<CaseWhen<T>> WhenItems {
 			get {
 				return whenItems;
 			}

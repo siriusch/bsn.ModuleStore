@@ -203,11 +203,13 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void WriteIndexOptions(ICollection<IndexOption> indexOptions) {
-			if (indexOptions.Count > 0) {
-				Write(" WITH (");
-				WriteScriptSequence(indexOptions, WhitespacePadding.None, ", ");
-				Write(')');
+		public void WriteIndexOptions(IEnumerable<IndexOption> indexOptions) {
+			using (IEnumerator<IndexOption> enumerator = indexOptions.GetEnumerator()) {
+				if (enumerator.MoveNext()) {
+					Write(" WITH (");
+					WriteScriptSequence(indexOptions, WhitespacePadding.None, ", ");
+					Write(')');
+				}
 			}
 		}
 

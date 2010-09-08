@@ -27,7 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.whereClause = whereClause;
 		}
 
-		public List<CommonTableExpression> Ctes {
+		public IEnumerable<CommonTableExpression> Ctes {
 			get {
 				return ctes;
 			}
@@ -57,7 +57,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<UpdateItem> UpdateItems {
+		public IEnumerable<UpdateItem> UpdateItems {
 			get {
 				return updateItems;
 			}

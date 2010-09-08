@@ -23,13 +23,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnItems = columnItems.ToList();
 		}
 
-		public List<ColumnItem> ColumnItems {
+		public IEnumerable<ColumnItem> ColumnItems {
 			get {
 				return columnItems;
 			}
 		}
 
-		public List<ColumnName> DestinationColumnNames {
+		public IEnumerable<ColumnName> DestinationColumnNames {
 			get {
 				return destinationColumnNames;
 			}

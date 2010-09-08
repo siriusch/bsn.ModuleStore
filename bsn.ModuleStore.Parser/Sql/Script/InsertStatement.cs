@@ -16,7 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.ctes = ctes.ToList();
 		}
 
-		public List<CommonTableExpression> Ctes {
+		public IEnumerable<CommonTableExpression> Ctes {
 			get {
 				return ctes;
 			}

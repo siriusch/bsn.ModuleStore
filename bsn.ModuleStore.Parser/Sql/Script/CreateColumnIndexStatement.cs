@@ -32,13 +32,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<ColumnName> IncludeColumnNames {
+		public IEnumerable<ColumnName> IncludeColumnNames {
 			get {
 				return includeColumnNames;
 			}
 		}
 
-		public List<IndexColumn> IndexColumns {
+		public IEnumerable<IndexColumn> IndexColumns {
 			get {
 				return indexColumns;
 			}

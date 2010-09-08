@@ -26,7 +26,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<IndexOption> IndexOptions {
+		public IEnumerable<IndexOption> IndexOptions {
 			get {
 				return indexOptions;
 			}

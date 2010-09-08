@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<ColumnConstraint> Constraints {
+		public IEnumerable<ColumnConstraint> Constraints {
 			get {
 				return constraints;
 			}

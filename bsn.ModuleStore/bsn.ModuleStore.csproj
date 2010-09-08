@@ -80,6 +80,8 @@
     <Compile Include="Sql\AssemblyHandle.cs" />
     <Compile Include="Sql\AssemblyInventory.cs" />
     <Compile Include="Sql\DatabaseInventory.cs" />
+    <Compile Include="Sql\DependencyResolver.cs" />
+    <Compile Include="Sql\InventoryObjectDifference.cs" />
     <Compile Include="Sql\IAssemblyHandle.cs" />
     <Compile Include="Sql\Inventory.cs" />
     <Compile Include="Sql\ScriptInventory.cs" />

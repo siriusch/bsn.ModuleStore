@@ -18,7 +18,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<Statement> Statements {
+		public IEnumerable<Statement> Statements {
 			get {
 				return statements;
 			}

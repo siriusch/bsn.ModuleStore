@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -49,9 +50,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<ProcedureParameter> Parameters {
+		public ReadOnlyCollection<ProcedureParameter> Parameters {
 			get {
-				return parameters;
+				return parameters.AsReadOnly();
 			}
 		}
 

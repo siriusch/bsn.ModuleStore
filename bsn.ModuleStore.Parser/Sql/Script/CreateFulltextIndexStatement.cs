@@ -30,7 +30,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<FulltextColumn> Columns {
+		public IEnumerable<FulltextColumn> Columns {
 			get {
 				return columns;
 			}

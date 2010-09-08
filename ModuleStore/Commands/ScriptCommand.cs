@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 using bsn.CommandLine;
@@ -14,13 +13,6 @@ namespace bsn.ModuleStore.Console.Commands {
 	internal class ScriptCommand: CommandBase<ExecutionContext> {
 		public ScriptCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
-		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
-			yield return new Tag<ExecutionContext, string>("path", "The target path for the scripts.").SetDefault(context => context.ScriptPath).SetOptional(context => false);
-			yield return new Tag<ExecutionContext, bool>("directories", "If true, each object type is put in a separate directory.").SetDefault(context => false);
-			yield return new Tag<ExecutionContext, string>("schema", "The schema to be used in the scripts.").SetDefault(context => string.Empty).SetOptional(context => true);
-			yield return new Tag<ExecutionContext, string>("encoding", "The encoding used to save the scripts.").SetDefault(context => "UTF-8").SetOptional(context => true);
-		}
-
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
 			Encoding encoding = Encoding.GetEncoding((string)tags["encoding"]);
 			string basePath = Directory.CreateDirectory(Path.Combine(executionContext.ScriptPath, (string)tags["path"])).FullName;
@@ -28,6 +20,7 @@ namespace bsn.ModuleStore.Console.Commands {
 			DatabaseInventory inventory = new DatabaseInventory(executionContext.DatabaseInstance, executionContext.Schema);
 			inventory.Populate();
 			bool objectDirectories = (bool)tags["directories"];
+			Dictionary<string, List<CreateStatement>> objectGroups = new Dictionary<string, List<CreateStatement>>();
 			foreach (CreateStatement statement in inventory.Objects) {
 				statement.ObjectSchema = (string)tags["schema"];
 				try {
@@ -54,6 +47,13 @@ namespace bsn.ModuleStore.Console.Commands {
 					statement.ObjectSchema = null;
 				}
 			}
+		}
+
+		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
+			yield return new Tag<ExecutionContext, string>("path", "The target path for the scripts.").SetDefault(context => context.ScriptPath).SetOptional(context => false);
+			yield return new Tag<ExecutionContext, bool>("directories", "If true, each object type is put in a separate directory.").SetDefault(context => false);
+			yield return new Tag<ExecutionContext, string>("schema", "The schema to be used in the scripts.").SetDefault(context => string.Empty).SetOptional(context => true);
+			yield return new Tag<ExecutionContext, string>("encoding", "The encoding used to save the scripts.").SetDefault(context => "UTF-8").SetOptional(context => true);
 		}
 	}
 }

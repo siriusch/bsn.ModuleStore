@@ -17,7 +17,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columns.AddRange(columns);
 		}
 
-		public List<ColumnName> Columns {
+		public IEnumerable<ColumnName> Columns {
 			get {
 				return columns;
 			}

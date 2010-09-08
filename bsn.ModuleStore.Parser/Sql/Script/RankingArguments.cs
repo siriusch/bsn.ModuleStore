@@ -19,13 +19,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.orders = orders.ToList();
 		}
 
-		public List<OrderExpression> Orders {
+		public IEnumerable<OrderExpression> Orders {
 			get {
 				return orders;
 			}
 		}
 
-		public List<Expression> Partitions {
+		public IEnumerable<Expression> Partitions {
 			get {
 				return partitions;
 			}

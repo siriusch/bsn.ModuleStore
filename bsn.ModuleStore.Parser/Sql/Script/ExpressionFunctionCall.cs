@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.arguments = arguments;
 		}
 
-		public List<Expression> Arguments {
+		public IEnumerable<Expression> Arguments {
 			get {
 				return arguments;
 			}

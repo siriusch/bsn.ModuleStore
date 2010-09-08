@@ -14,13 +14,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.catchStatements = catchStatements.ToList();
 		}
 
-		public List<Statement> CatchStatements {
+		public IEnumerable<Statement> CatchStatements {
 			get {
 				return catchStatements;
 			}
 		}
 
-		public List<Statement> TryStatements {
+		public IEnumerable<Statement> TryStatements {
 			get {
 				return tryStatements;
 			}

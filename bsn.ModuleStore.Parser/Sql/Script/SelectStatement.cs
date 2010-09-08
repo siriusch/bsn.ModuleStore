@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.queryHint = queryHint;
 		}
 
-		public List<CommonTableExpression> Ctes {
+		public IEnumerable<CommonTableExpression> Ctes {
 			get {
 				return ctes;
 			}

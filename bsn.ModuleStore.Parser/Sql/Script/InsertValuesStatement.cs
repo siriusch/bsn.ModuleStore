@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.output = output;
 		}
 
-		public List<ColumnName> ColumnNames {
+		public IEnumerable<ColumnName> ColumnNames {
 			get {
 				return columnNames;
 			}

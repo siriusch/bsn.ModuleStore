@@ -3,12 +3,52 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory {
+		public static IEnumerable<KeyValuePair<CreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target) {
+			if (source == null) {
+				throw new ArgumentNullException("source");
+			}
+			if (target == null) {
+				throw new ArgumentNullException("target");
+			}
+			using (IEnumerator<CreateStatement> sourceEnumerator = source.Objects.GetEnumerator()) {
+				using (IEnumerator<CreateStatement> targetEnumerator = target.Objects.GetEnumerator()) {
+					bool hasSource = sourceEnumerator.MoveNext();
+					bool hasTarget = targetEnumerator.MoveNext();
+					while (hasSource && hasTarget) {
+						CreateStatement sourceStatement = sourceEnumerator.Current;
+						Debug.Assert(sourceStatement != null);
+						CreateStatement targetStatement = targetEnumerator.Current;
+						Debug.Assert(targetStatement != null);
+						int diff = string.Compare(sourceStatement.ObjectName, targetStatement.ObjectName, StringComparison.OrdinalIgnoreCase);
+						if (diff < 0) {
+							yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(sourceStatement, InventoryObjectDifference.SourceOnly);
+							hasSource = sourceEnumerator.MoveNext();
+						} else if (diff > 0) {
+							yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(targetStatement, InventoryObjectDifference.TargetOnly);
+							hasTarget = targetEnumerator.MoveNext();
+						} else {
+							yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(targetStatement, targetStatement.Equals(sourceStatement) ? InventoryObjectDifference.None : InventoryObjectDifference.Different);
+							hasSource = sourceEnumerator.MoveNext();
+							hasTarget = targetEnumerator.MoveNext();
+						}
+					}
+					while (hasSource) {
+						yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(sourceEnumerator.Current, InventoryObjectDifference.SourceOnly);
+						hasSource = sourceEnumerator.MoveNext();
+					}
+					while (hasTarget) {
+						yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(targetEnumerator.Current, InventoryObjectDifference.TargetOnly);
+						hasTarget = targetEnumerator.MoveNext();
+					}
+				}
+			}
+		}
+
 		private readonly SortedDictionary<string, CreateStatement> objects = new SortedDictionary<string, CreateStatement>(StringComparer.OrdinalIgnoreCase);
 
 		public ICollection<CreateStatement> Objects {
@@ -31,10 +71,6 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public virtual void Populate() {
-			objects.Clear();
-		}
-
 		public byte[] GetInventoryHash() {
 			using (HashWriter writer = new HashWriter()) {
 				SqlWriter sqlWriter = new SqlWriter(writer);
@@ -44,6 +80,10 @@ namespace bsn.ModuleStore.Sql {
 				}
 				return writer.ToArray();
 			}
+		}
+
+		public virtual void Populate() {
+			objects.Clear();
 		}
 
 		protected void AddObject(CreateStatement createStatement) {

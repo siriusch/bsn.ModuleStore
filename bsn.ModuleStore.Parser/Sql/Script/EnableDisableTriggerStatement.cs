@@ -25,7 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<Qualified<SchemaName, TriggerName>> TriggerNames {
+		public IEnumerable<Qualified<SchemaName, TriggerName>> TriggerNames {
 			get {
 				return triggerNames;
 			}

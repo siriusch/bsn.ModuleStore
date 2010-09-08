@@ -43,7 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<Expression> GroupByClause {
+		public IEnumerable<Expression> GroupByClause {
 			get {
 				return groupByClause;
 			}
@@ -55,7 +55,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<OrderExpression> OrderList {
+		public IEnumerable<OrderExpression> OrderList {
 			get {
 				return orderList;
 			}

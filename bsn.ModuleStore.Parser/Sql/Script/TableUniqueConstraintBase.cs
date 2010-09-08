@@ -27,7 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<IndexColumn> IndexColumns {
+		public IEnumerable<IndexColumn> IndexColumns {
 			get {
 				return indexColumns;
 			}

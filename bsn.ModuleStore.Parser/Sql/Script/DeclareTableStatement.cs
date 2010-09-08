@@ -17,7 +17,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableDefinitions = tableDefinitions.ToList();
 		}
 
-		public List<TableDefinition> TableDefinitions {
+		public IEnumerable<TableDefinition> TableDefinitions {
 			get {
 				return tableDefinitions;
 			}

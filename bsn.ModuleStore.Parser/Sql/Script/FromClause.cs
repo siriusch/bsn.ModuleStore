@@ -16,7 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.joins = join.ToList();
 		}
 
-		public List<Join> Joins {
+		public IEnumerable<Join> Joins {
 			get {
 				return joins;
 			}

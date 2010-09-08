@@ -62,6 +62,53 @@ namespace bsn.ModuleStore.Sql.Script {
 			Initialize(((IToken)name).Symbol, position);
 		}
 
+		public override int GetHashCode() {
+			int hashCode = name.GetHashCode();
+			if (qualification != null) {
+				hashCode ^= qualification.GetHashCode();
+			}
+			return hashCode;
+		}
+
+		public int CompareTo(IQualifiedName<TQ> other) {
+			if (other != null) {
+				if (ReferenceEquals(this, other)) {
+					return 0;
+				}
+				if (qualification == null) {
+					if (other.Qualification != null) {
+						return -1;
+					}
+				} else {
+					int diff = qualification.CompareTo(other.Qualification);
+					if (diff != 0) {
+						return diff;
+					}
+				}
+				return name.CompareTo(other.Name);
+			}
+			return 1;
+		}
+
+		public bool Equals(IQualifiedName<TQ> other) {
+			if (other != null) {
+				if (ReferenceEquals(this, other)) {
+					return true;
+				}
+				if (qualification == null) {
+					if (other.Qualification != null) {
+						return false;
+					}
+				} else {
+					if (!qualification.Equals(other.Qualification)) {
+						return false;
+					}
+				}
+				return name.Equals(other.Name);
+			}
+			return false;
+		}
+
 		public bool IsQualified {
 			get {
 				return qualification != null;

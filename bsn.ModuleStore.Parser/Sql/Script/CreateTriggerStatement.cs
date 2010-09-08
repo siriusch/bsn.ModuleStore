@@ -66,7 +66,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public List<DmlOperation> TriggerOperations {
+		public IEnumerable<DmlOperation> TriggerOperations {
 			get {
 				return triggerOperations;
 			}
