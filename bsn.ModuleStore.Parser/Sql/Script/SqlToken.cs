@@ -11,7 +11,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			                      	if (name.IsQualified) {
 			                      		return checkSchemaName(name.Qualification.Value);
 			                      	}
-			                      	return (name.Name is TableName) && (!scope.ContainsName(name.Name.Value));
+			                      	if (((name.Name is TableName) || (name.Name is ViewName)) && (!scope.ContainsName(name.Name.Value))) {
+			                      		return true;
+			                      	}
+			                      	FunctionName functionName = name.Name as FunctionName;
+			                      	if ((functionName != null) && (!functionName.IsBuiltinFunction)) {
+			                      		return true;
+			                      	}
+			                      	return false;
 			                      });
 		}
 

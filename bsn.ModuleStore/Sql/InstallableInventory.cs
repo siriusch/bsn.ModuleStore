@@ -36,9 +36,28 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public IEnumerable<string> GenerateInstallSql(string schemaName) {
+			if (string.IsNullOrEmpty(schemaName)) {
+				throw new ArgumentNullException("schemaName");
+			}
+			SchemaName nameQualification = new SchemaName(schemaName);
 			DependencyResolver resolver = new DependencyResolver();
-			foreach (CreateStatement statement in Objects) {
-				resolver.Add(statement);
+			using (StringWriter writer = new StringWriter()) {
+				SqlWriter sqlWriter = new SqlWriter(writer);
+				sqlWriter.Write("CREATE SCHEMA");
+				sqlWriter.IncreaseIndent();
+				sqlWriter.WriteScript(nameQualification, WhitespacePadding.SpaceBefore);
+				foreach (CreateStatement statement in Objects) {
+					if ((statement is CreateTableStatement) || (statement is CreateViewStatement)) {
+						statement.ObjectSchema = null;
+						resolver.AddExistingObject(statement.ObjectName);
+						sqlWriter.WriteLine();
+						statement.WriteTo(sqlWriter);
+					} else {
+						resolver.Add(statement);
+					}
+				}
+				sqlWriter.DecreaseIndent();
+				yield return writer.ToString();
 			}
 			StringBuilder builder = new StringBuilder(4096);
 			foreach (CreateStatement statement in resolver.GetInOrder()) {
@@ -54,7 +73,6 @@ namespace bsn.ModuleStore.Sql {
 				}
 				yield return builder.ToString();
 			}
-			SchemaName nameQualification = string.IsNullOrEmpty(schemaName) ? null : new SchemaName(schemaName);
 			foreach (KeyValuePair<Statement, ICollection<IQualifiedName<SchemaName>>> additionalSetupStatement in AdditionalSetupStatements) {
 				builder.Length = 0;
 				using (StringWriter writer = new StringWriter(builder)) {

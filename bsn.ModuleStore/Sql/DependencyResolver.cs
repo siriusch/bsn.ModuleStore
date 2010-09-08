@@ -30,13 +30,18 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private readonly SortedList<string, DependencyNode> dependencies = new SortedList<string, DependencyNode>(StringComparer.OrdinalIgnoreCase);
+		private readonly HashSet<string> existingObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public void Add(CreateStatement statement) {
 			dependencies.Add(statement.ObjectName, new DependencyNode(statement));
 		}
 
+		public void AddExistingObject(string objectName) {
+			existingObjectNames.Add(objectName);
+		}
+
 		public IEnumerable<CreateStatement> GetInOrder() {
-			HashSet<string> resolvedObjects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			HashSet<string> resolvedObjects = new HashSet<string>(existingObjectNames, StringComparer.OrdinalIgnoreCase);
 			Queue<DependencyNode> nodes = new Queue<DependencyNode>(dependencies.Values);
 			int skipCount = 0;
 			while (nodes.Count > 0) {
