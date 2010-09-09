@@ -4,9 +4,9 @@ using System.Linq;
 using bsn.ModuleStore.Mapper;
 
 namespace bsn.ModuleStore.Bootstrapper {
-	internal interface IModules {
+	internal interface IModules: IStoredProcedures {
 		[SqlProcedure("spModuleAdd.sql")]
-		Module Add(Guid id, Guid assemblyId, string schemaPrefix, string assemblyName);
+		Module Add(Guid? id, Guid assemblyId, string schemaPrefix, string assemblyName);
 
 		[SqlProcedure("spModuleDelete.sql", UseReturnValue = SqlReturnValue.Scalar)]
 		bool Delete(Guid id);

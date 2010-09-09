@@ -29,18 +29,21 @@ namespace bsn.ModuleStore.Mapper {
 
 		private SqlCallInfo(Type interfaceType) {
 			Debug.Assert(interfaceType != null);
-			if ((!interfaceType.IsInterface) || (interfaceType.IsGenericTypeDefinition) || (!typeof(IDisposable).IsAssignableFrom(interfaceType))) {
-				throw new ArgumentException("interfaceType");
+			if ((!interfaceType.IsInterface) || (interfaceType.IsGenericTypeDefinition) || (!typeof(IStoredProcedures).IsAssignableFrom(interfaceType))) {
+				throw new ArgumentException("The interface must inherit from IStoredProcedures", "interfaceType");
 			}
 			this.interfaceType = interfaceType;
-			foreach (MemberInfo memberInfo in interfaceType.GetMembers()) {
+			foreach (Type innerInterface in interfaceType.GetInterfaces()) {
+				if (innerInterface != typeof(IStoredProcedures)) {
+					throw new ArgumentException("The interface cannot inherit from other interfaces then IStoredProcedures", "interfaceType");
+				}
+			}
+			foreach (MemberInfo memberInfo in interfaceType.GetMembers(BindingFlags.Instance|BindingFlags.Public|BindingFlags.DeclaredOnly)) {
 				MethodInfo methodInfo = memberInfo as MethodInfo;
 				if (methodInfo == null) {
-					throw new InvalidOperationException("Only methods are supported");
+					throw new ArgumentException("Only methods are supported", "interfaceType");
 				}
-				if (methodInfo.Name != "Dispose") {
-					methods.Add(methodInfo, new SqlCallProcedureInfo(methodInfo));
-				}
+				methods.Add(methodInfo, new SqlCallProcedureInfo(methodInfo));
 			}
 		}
 

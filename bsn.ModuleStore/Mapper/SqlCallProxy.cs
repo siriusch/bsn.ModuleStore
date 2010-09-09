@@ -32,13 +32,16 @@ namespace bsn.ModuleStore.Mapper {
 	/// <seealso cref="SqlArgAttribute"/>
 	/// <seealso cref="CreateConnection"/>
 	public class SqlCallProxy: RealProxy {
+		private static readonly MethodInfo getAssembly = typeof(IStoredProcedures).GetProperty("Assembly").GetGetMethod();
+		private static readonly MethodInfo getInstanceName = typeof(IStoredProcedures).GetProperty("InstanceName").GetGetMethod();
+
 		/// <summary>
 		/// Create a new proxy to be used for stored procedure calls, which can be called through the interface specified by <typeparamref name="I"/>.
 		/// </summary>
-		/// <typeparam name="I">The interface declaring the calls. This interface must implement <see cref="IDisposable"/></typeparam>
+		/// <typeparam name="I">The interface declaring the calls. This interface must implement <see cref="IStoredProcedures"/></typeparam>
 		/// <param name="createConnection">A delegate used to allocate new connections. This delegate is called for every call done on the interface.</param>
 		/// <returns>An instance of the type requested by <typeparamref name="I"/>.</returns>
-		public static I Create<I>(Func<SqlConnection> createConnection, string schemaName) where I: IDisposable {
+		public static I Create<I>(Func<SqlConnection> createConnection, string schemaName) where I: IStoredProcedures {
 			return (I)(new SqlCallProxy(createConnection, schemaName, typeof(I))).GetTransparentProxy();
 		}
 
@@ -80,10 +83,13 @@ namespace bsn.ModuleStore.Mapper {
 		public override IMessage Invoke(IMessage msg) {
 			IMethodCallMessage mcm = (IMethodCallMessage)msg;
 			try {
-				if (mcm.MethodName == "Dispose") {
-					// release connections etc.
-					return new ReturnMessage(null, null, 0, mcm.LogicalCallContext, mcm);
+				if (mcm.MethodBase == getInstanceName) {
+					return new ReturnMessage(schemaName, null, 0, mcm.LogicalCallContext, mcm);
 				}
+				if (mcm.MethodBase == getAssembly) {
+					return new ReturnMessage(callInfo.InterfaceType.Assembly, null, 0, mcm.LogicalCallContext, mcm);
+				}
+				// add code for IStoredProcedure interface here
 				SqlConnection connection = createConnection();
 				SqlDataReader reader = null;
 				try {

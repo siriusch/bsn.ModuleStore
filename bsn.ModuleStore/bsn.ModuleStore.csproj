@@ -41,6 +41,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -51,8 +52,11 @@
     <Compile Include="Bootstrapper\DatabaseType.cs" />
     <Compile Include="Bootstrapper\IModules.cs" />
     <Compile Include="Bootstrapper\Module.cs" />
+    <Compile Include="Bootstrapper\ModuleInstance.cs" />
+    <Compile Include="Bootstrapper\ModuleInstanceCache.cs" />
     <Compile Include="DataObject.cs" />
     <Compile Include="Mapper\DataReaderProxy.cs" />
+    <Compile Include="Mapper\IStoredProcedures.cs" />
     <Compile Include="Mapper\SqlCallInfo.cs" />
     <Compile Include="Mapper\SqlCallParameterInfo.cs" />
     <Compile Include="Mapper\SqlCallProcedureInfo.cs" />
