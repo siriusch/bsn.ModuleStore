@@ -66,6 +66,7 @@ namespace bsn.ModuleStore.Sql {
 				throw new ArgumentNullException("inventory");
 			}
 			SetQualification(inventory.SchemaName);
+			inventory.SetQualification(inventory.SchemaName);
 			try {
 				DependencyResolver resolver = new DependencyResolver();
 				List<CreateTableStatement> tables = new List<CreateTableStatement>();
@@ -116,6 +117,7 @@ namespace bsn.ModuleStore.Sql {
 				}
 			} finally {
 				UnsetQualification();
+				inventory.UnsetQualification();
 			}
 		}
 

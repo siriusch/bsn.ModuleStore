@@ -20,7 +20,6 @@ namespace bsn.ModuleStore.Sql {
 			return new InvalidOperationException(writer.ToString());
 		}
 
-		private readonly Database database;
 		private readonly string schemaName;
 
 		public DatabaseInventory(Database database, string schemaName) {
@@ -30,7 +29,6 @@ namespace bsn.ModuleStore.Sql {
 			if (database.IsSystemObject) {
 				throw new ArgumentException("The connection does not point to a valid user database", "database");
 			}
-			this.database = database;
 			this.schemaName = schemaName ?? database.DefaultSchema;
 			Schema schema = database.Schemas[schemaName];
 			if (schema != null) {
@@ -76,6 +74,7 @@ namespace bsn.ModuleStore.Sql {
 					NamedSmoObject smoObject = database.Parent.GetSmoObject(urn) as NamedSmoObject;
 					if (IsSupportedType(smoObject)) {
 						Debug.Assert(smoObject != null);
+						smoObject.Refresh();
 						StringCollection script = ((IScriptable)smoObject).Script(options);
 						using (StringCollectionReader scriptReader = new StringCollectionReader(script, ";")) {
 							ProcessSingleScript(scriptReader, statement => {
