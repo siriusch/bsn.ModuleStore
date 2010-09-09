@@ -1,4 +1,6 @@
-﻿namespace bsn.ModuleStore.Mapper {
+﻿using System;
+
+namespace bsn.ModuleStore.Mapper {
 	/// <summary>
 	/// Controls the handling of the return value.
 	/// </summary>

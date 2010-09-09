@@ -31,10 +31,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			return base.GetHashCode();
 		}
 
-		public IEnumerable<SqlName> GetReferencedObjectNames() {
-			return GetObjectSchemaQualifiedNames().Select(qn => qn.Name).Where(n => !n.Value.Equals(ObjectName, StringComparison.OrdinalIgnoreCase)).Distinct();
-		}
-
 		protected abstract string GetObjectSchema();
 
 		internal IEnumerable<IQualifiedName<SchemaName>> GetObjectSchemaQualifiedNames() {

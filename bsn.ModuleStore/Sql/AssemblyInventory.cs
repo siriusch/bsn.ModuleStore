@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -20,27 +19,28 @@ namespace bsn.ModuleStore.Sql {
 
 		public AssemblyInventory(IAssemblyHandle assembly) {
 			this.assembly = assembly;
-			this.attributes = assembly.GetCustomAttributes<SqlAssemblyAttribute>().ToList().AsReadOnly();
+			attributes = assembly.GetCustomAttributes<SqlAssemblyAttribute>().ToList().AsReadOnly();
 			foreach (KeyValuePair<SqlAssemblyAttribute, string> attribute in attributes) {
 				SqlSetupScriptAttributeBase setupScriptAttribute = attribute.Key as SqlSetupScriptAttributeBase;
 				if (setupScriptAttribute != null) {
 					using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value)) {
 						ProcessSingleScript(reader, AddAdditionalSetupStatement);
 					}
-				}
-				else {
+				} else {
 					SqlUpdateScriptAttribute updateScriptAttribute = attribute.Key as SqlUpdateScriptAttribute;
 					if (updateScriptAttribute != null) {
 						using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value)) {
 							updateStatements.Add(updateScriptAttribute.Version, ScriptParser.Parse(reader).ToArray());
 						}
-					}
-					else {
+					} else {
 						Debug.WriteLine(attribute.Key.GetType(), "Unrecognized assembly SQL attribute");
 					}
 				}
 			}
-			AdditionalSetupStatementSchemaFixup();
+			foreach (Statement[] statements in updateStatements.Values) {
+				StatementSetSchemaOverride(statements);
+			}
+			AdditionalSetupStatementSetSchemaOverride();
 		}
 
 		public AssemblyName AssemblyName {
@@ -58,6 +58,64 @@ namespace bsn.ModuleStore.Sql {
 		public SortedList<int, Statement[]> UpdateStatements {
 			get {
 				return updateStatements;
+			}
+		}
+
+		public IEnumerable<string> GenerateUpdateSql(DatabaseInventory inventory, int currentVersion) {
+			if (inventory == null) {
+				throw new ArgumentNullException("inventory");
+			}
+			SetQualification(inventory.SchemaName);
+			try {
+				DependencyResolver resolver = new DependencyResolver();
+				List<CreateTableStatement> tables = new List<CreateTableStatement>();
+				List<DropStatement> dropStatements = new List<DropStatement>();
+				foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> pair in Compare(inventory, this)) {
+					switch (pair.Value) {
+					case InventoryObjectDifference.None:
+						resolver.AddExistingObject(pair.Key.ObjectName);
+						break;
+					case InventoryObjectDifference.Different:
+						CreateTableStatement createTable = pair.Key as CreateTableStatement;
+						if (createTable != null) {
+							tables.Add(createTable);
+						} else {
+							resolver.Add(pair.Key.ObjectName, pair.Key.CreateAlterStatement());
+						}
+						break;
+					case InventoryObjectDifference.SourceOnly:
+						dropStatements.Add(pair.Key.CreateDropStatement());
+						break;
+					case InventoryObjectDifference.TargetOnly:
+						resolver.Add(pair.Key);
+						break;
+					}
+				}
+				StringBuilder builder = new StringBuilder(4096);
+				// first perform all possible actions which do not rely on tables which are altered
+				foreach (Statement statement in resolver.GetInOrder(false)) {
+					yield return WriteStatement(statement, builder);
+				}
+				// then perform updates (if any)
+				foreach (KeyValuePair<int, Statement[]> update in updateStatements.Where(u => u.Key > currentVersion)) {
+					foreach (Statement statement in update.Value) {
+						yield return WriteStatement(statement, builder);
+					}
+				}
+				// now that the update scripts have updated the tables, mark the tables in the dependency resolver
+				foreach (CreateTableStatement createTableStatement in tables) {
+					resolver.AddExistingObject(createTableStatement.ObjectName);
+				}
+				// try to perform the remaining actions
+				foreach (Statement statement in resolver.GetInOrder(true)) {
+					yield return WriteStatement(statement, builder);
+				}
+				// finally drop objects which are no longer used
+				foreach (DropStatement dropStatement in dropStatements) {
+					yield return WriteStatement(dropStatement, builder);
+				}
+			} finally {
+				UnsetQualification();
 			}
 		}
 

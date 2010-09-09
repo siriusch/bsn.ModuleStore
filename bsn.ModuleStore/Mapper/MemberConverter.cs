@@ -19,6 +19,22 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
+		private class XDocumentMemberConverter: XmlReaderMemberConverterBase {
+			public XDocumentMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
+
+			protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
+				return XDocument.Load(reader);
+			}
+		}
+
+		private class XElementMemberConverter: XmlReaderMemberConverterBase {
+			public XElementMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
+
+			protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
+				return XElement.Load(reader);
+			}
+		}
+
 		private class XPathDocumentMemberConverter: XmlReaderMemberConverterBase {
 			public XPathDocumentMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
 
@@ -48,23 +64,6 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		private class XDocumentMemberConverter: XmlReaderMemberConverterBase {
-			public XDocumentMemberConverter(Type type, int memberIndex) : base(type, memberIndex) {
-			}
-
-			protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
-				return XDocument.Load(reader);
-			}
-		}
-
-		private class XElementMemberConverter: XmlReaderMemberConverterBase {
-			public XElementMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
-
-			protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
-				return XElement.Load(reader);
-			}
-		}
-
 		private class XmlReaderMemberConverter: MemberConverter {
 			public XmlReaderMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
 
@@ -90,13 +89,13 @@ namespace bsn.ModuleStore.Mapper {
 		private abstract class XmlReaderMemberConverterBase: XmlReaderMemberConverter {
 			protected XmlReaderMemberConverterBase(Type type, int memberIndex): base(type, memberIndex) {}
 
-			protected sealed override object ProcessXmlReader(SqlDeserializer.DeserializerContext context, XmlReader xmlReader) {
+			protected abstract object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader);
+
+			protected override sealed object ProcessXmlReader(SqlDeserializer.DeserializerContext context, XmlReader xmlReader) {
 				using (xmlReader) {
 					return GetXmlObject(context, xmlReader);
 				}
 			}
-
-			protected abstract object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader);
 		}
 
 		public static MemberConverter Get(Type type, int memberIndex) {

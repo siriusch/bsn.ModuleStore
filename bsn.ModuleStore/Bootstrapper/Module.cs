@@ -1,45 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using bsn.ModuleStore.Mapper;
 
 namespace bsn.ModuleStore.Bootstrapper {
 	public class Module {
-		[SqlColumn("uidModule")]
-		private Guid id;
-
 		[SqlColumn("uidAssemblyGuid")]
 		private Guid assemblyGuid;
+
+		[SqlColumn("uidModule")]
+		private Guid id;
 
 		[SqlColumn("sSchema")]
 		private string schema;
 
-		[SqlColumn("binSetupHash")]
-		private byte[] setupHash;
-
-		[SqlColumn("iUpdateVersion")]
-		private int updateVersion;
+		[SqlColumn("fSchemaExists")]
+		private bool schemaExists;
 
 		[SqlColumn("dtSetup")]
 		private DateTime setupDate;
 
+		[SqlColumn("binSetupHash")]
+		private byte[] setupHash;
+
 		[SqlColumn("dtUpdate")]
 		private DateTime updateDate;
 
-		[SqlColumn("fSchemaExists")]
-		private bool schemaExists;
-
-		public Guid Id {
-			get {
-				return id;
-			}
-		}
+		[SqlColumn("iUpdateVersion")]
+		private int updateVersion;
 
 		public Guid AssemblyGuid {
 			get {
 				return assemblyGuid;
+			}
+		}
+
+		public Guid Id {
+			get {
+				return id;
 			}
 		}
 
@@ -49,15 +47,9 @@ namespace bsn.ModuleStore.Bootstrapper {
 			}
 		}
 
-		public byte[] SetupHash {
+		public bool SchemaExists {
 			get {
-				return setupHash;
-			}
-		}
-
-		public int UpdateVersion {
-			get {
-				return updateVersion;
+				return schemaExists;
 			}
 		}
 
@@ -67,15 +59,21 @@ namespace bsn.ModuleStore.Bootstrapper {
 			}
 		}
 
+		public byte[] SetupHash {
+			get {
+				return setupHash;
+			}
+		}
+
 		public DateTime UpdateDate {
 			get {
 				return updateDate;
 			}
 		}
 
-		public bool SchemaExists {
+		public int UpdateVersion {
 			get {
-				return schemaExists;
+				return updateVersion;
 			}
 		}
 	}

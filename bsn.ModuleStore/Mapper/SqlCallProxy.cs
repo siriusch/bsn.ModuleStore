@@ -5,7 +5,6 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
@@ -53,7 +52,7 @@ namespace bsn.ModuleStore.Mapper {
 				Type valueType = dbParams[i].Value;
 				if (param != null) {
 					if ((valueType != null) && ((param.Value == null) || (param.Value == DBNull.Value))) {
-					    result[i] = Activator.CreateInstance(valueType);
+						result[i] = Activator.CreateInstance(valueType);
 					} else {
 						result[i] = param.Value;
 					}
@@ -66,8 +65,7 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly Func<SqlConnection> createConnection;
 		private readonly string schemaName;
 
-		private SqlCallProxy(Func<SqlConnection> createConnection, string schemaName, Type interfaceToProxy)
-			: base(interfaceToProxy) {
+		private SqlCallProxy(Func<SqlConnection> createConnection, string schemaName, Type interfaceToProxy): base(interfaceToProxy) {
 			if (createConnection == null) {
 				throw new ArgumentNullException("createConnection");
 			}
@@ -123,8 +121,7 @@ namespace bsn.ModuleStore.Mapper {
 									if (isTypedDataReader || typeof(IDataReader).IsAssignableFrom(returnType)) {
 										Debug.Assert(returnParameter == null);
 										if (outParameters.Length > 0) {
-											throw new NotSupportedException(
-													"Out arguments cannot be combined with a DataReader return value, because DB output values are only returned after the reader is closed. See remarks section of http://msdn.microsoft.com/en-us/library/system.data.common.dbparameter.direction.aspx");
+											throw new NotSupportedException("Out arguments cannot be combined with a DataReader return value, because DB output values are only returned after the reader is closed. See remarks section of http://msdn.microsoft.com/en-us/library/system.data.common.dbparameter.direction.aspx");
 										}
 										reader = command.ExecuteReader(CommandBehavior.CloseConnection);
 										connection = null;

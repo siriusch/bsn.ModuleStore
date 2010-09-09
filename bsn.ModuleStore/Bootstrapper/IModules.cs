@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using bsn.ModuleStore.Mapper;
 
@@ -16,7 +14,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 		[SqlProcedure("spModuleList.sql")]
 		Module[] List(Guid assemblyGuid);
 
-		[SqlProcedure("spModuleUpdate.sql", UseReturnValue=SqlReturnValue.Scalar)]
+		[SqlProcedure("spModuleUpdate.sql", UseReturnValue = SqlReturnValue.Scalar)]
 		bool Update(Guid id, string assemblyName, byte[] setupHash, int updateVersion);
 	}
 }

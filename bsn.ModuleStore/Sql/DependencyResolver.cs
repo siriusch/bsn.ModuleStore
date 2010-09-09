@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -7,11 +8,13 @@ namespace bsn.ModuleStore.Sql {
 	public class DependencyResolver {
 		private class DependencyNode {
 			private readonly HashSet<string> edges = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			private readonly CreateStatement statement;
+			private readonly string objectName;
+			private readonly Statement statement;
 
-			public DependencyNode(CreateStatement statement) {
+			public DependencyNode(string objectName, Statement statement) {
+				this.objectName = objectName;
 				this.statement = statement;
-				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames()) {
+				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames().Where(n => !n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase))) {
 					edges.Add(referencedObjectName.Value);
 				}
 			}
@@ -22,7 +25,13 @@ namespace bsn.ModuleStore.Sql {
 				}
 			}
 
-			public CreateStatement Statement {
+			public string ObjectName {
+				get {
+					return objectName;
+				}
+			}
+
+			public Statement Statement {
 				get {
 					return statement;
 				}
@@ -32,28 +41,76 @@ namespace bsn.ModuleStore.Sql {
 		private readonly SortedList<string, DependencyNode> dependencies = new SortedList<string, DependencyNode>(StringComparer.OrdinalIgnoreCase);
 		private readonly HashSet<string> existingObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+		public int State {
+			get {
+				return dependencies.Count+existingObjectNames.Count*16384;
+			}
+		}
+
 		public void Add(CreateStatement statement) {
-			dependencies.Add(statement.ObjectName, new DependencyNode(statement));
+			if (statement == null) {
+				throw new ArgumentNullException("statement");
+			}
+			Add(statement.ObjectName, statement);
+		}
+
+		public void Add(string objectName, Statement statement) {
+			if (statement == null) {
+				throw new ArgumentNullException("statement");
+			}
+			if (string.IsNullOrEmpty(objectName)) {
+				throw new ArgumentNullException("objectName");
+			}
+			dependencies.Add(objectName, new DependencyNode(objectName, statement));
 		}
 
 		public void AddExistingObject(string objectName) {
 			existingObjectNames.Add(objectName);
 		}
 
-		public IEnumerable<CreateStatement> GetInOrder() {
-			HashSet<string> resolvedObjects = new HashSet<string>(existingObjectNames, StringComparer.OrdinalIgnoreCase);
+		public IEnumerable<Statement> GetInOrder(bool throwOnCycle) {
 			Queue<DependencyNode> nodes = new Queue<DependencyNode>(dependencies.Values);
 			int skipCount = 0;
 			while (nodes.Count > 0) {
 				DependencyNode node = nodes.Dequeue();
-				if (resolvedObjects.IsSupersetOf(node.Edges)) {
-					resolvedObjects.Add(node.Statement.ObjectName);
+				if (existingObjectNames.IsSupersetOf(node.Edges)) {
+					existingObjectNames.Add(node.ObjectName);
+					dependencies.Remove(node.ObjectName);
 					skipCount = 0;
-					yield return node.Statement;
+					StatementBlock block = node.Statement as StatementBlock;
+					if (block != null) {
+						Stack<IEnumerator<Statement>> blockStack = new Stack<IEnumerator<Statement>>();
+						try {
+							blockStack.Push(block.Statements.GetEnumerator());
+							do {
+								IEnumerator<Statement> enumerator = blockStack.Pop();
+								if (enumerator.MoveNext()) {
+									blockStack.Push(enumerator);
+									block = enumerator.Current as StatementBlock;
+									if (block != null) {
+										blockStack.Push(block.Statements.GetEnumerator());
+									} else {
+										yield return enumerator.Current;
+									}
+								} else {
+									enumerator.Dispose();
+								}
+							} while (blockStack.Count > 0);
+						} finally {
+							while (blockStack.Count > 0) {
+								blockStack.Pop().Dispose();
+							}
+						}
+					} else {
+						yield return node.Statement;
+					}
 				} else {
 					nodes.Enqueue(node);
 					if (skipCount++ > nodes.Count) {
-						throw new InvalidOperationException("Cycle or missing dependency detected");
+						if (throwOnCycle) {
+							throw new InvalidOperationException("Cycle or missing dependency detected");
+						}
+						yield break;
 					}
 				}
 			}

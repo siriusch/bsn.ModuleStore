@@ -10,20 +10,7 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 [assembly: RuleTrim("<OrderClause> ::= ORDER BY <OrderList>", "<OrderList>", SemanticTokenType = typeof(SqlToken))]
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateFunctionStatement<TBody>: CreateStatement where TBody: Statement {
-		private class AlterFunctionStatement: Statement {
-			private readonly CreateFunctionStatement<TBody> owner;
-
-			public AlterFunctionStatement(CreateFunctionStatement<TBody> owner) {
-				Debug.Assert(owner != null);
-				this.owner = owner;
-			}
-
-			public override void WriteTo(SqlWriter writer) {
-				owner.WriteToInternal(writer, "ALTER");
-			}
-		}
-
+	public abstract class CreateFunctionStatement<TBody>: CreateStatement, ICreateOrAlterStatement where TBody: Statement {
 		private readonly TBody body;
 		private readonly Qualified<SchemaName, FunctionName> functionName;
 		private readonly FunctionOption option;
@@ -75,23 +62,29 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override Statement CreateAlterStatement() {
-			return new AlterFunctionStatement(this);
+			return new AlterOfCreateStatement<CreateFunctionStatement<TBody>>(this);
 		}
 
 		public override DropStatement CreateDropStatement() {
 			return new DropFunctionStatement(functionName);
 		}
 
-		public override sealed void WriteTo(SqlWriter writer) {
-			WriteToInternal(writer, "CREATE");
-		}
-
 		protected override sealed string GetObjectSchema() {
 			return functionName.IsQualified ? functionName.Qualification.Value : string.Empty;
 		}
 
+		public override sealed void WriteTo(SqlWriter writer) {
+			WriteToInternal(writer, "CREATE");
+		}
+
+		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
+			if (string.IsNullOrEmpty(command)) {
+				throw new ArgumentNullException("command");
+			}
+			WriteToInternal(writer, command);
+		}
+
 		protected virtual void WriteToInternal(SqlWriter writer, string command) {
-			Debug.Assert(!string.IsNullOrEmpty(command));
 			writer.Write(command);
 			writer.Write(" FUNCTION ");
 			writer.WriteScript(functionName, WhitespacePadding.None);

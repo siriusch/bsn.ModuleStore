@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 namespace bsn.ModuleStore {
 	public abstract class SqlManifestResourceAttribute: SqlAssemblyAttribute {
@@ -11,18 +10,18 @@ namespace bsn.ModuleStore {
 				throw new ArgumentNullException("embeddedResourceName");
 			}
 			this.type = type;
-			this.manifestResourceName = embeddedResourceName;
-		}
-
-		public Type ManifestResourceType {
-			get {
-				return type;
-			}
+			manifestResourceName = embeddedResourceName;
 		}
 
 		public string ManifestResourceName {
 			get {
 				return manifestResourceName;
+			}
+		}
+
+		public Type ManifestResourceType {
+			get {
+				return type;
 			}
 		}
 	}

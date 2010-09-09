@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -78,8 +79,8 @@ namespace bsn.ModuleStore.Sql {
 						StringCollection script = ((IScriptable)smoObject).Script(options);
 						using (StringCollectionReader scriptReader = new StringCollectionReader(script, ";")) {
 							ProcessSingleScript(scriptReader, statement => {
-								throw CreateException("Cannot process statement:", statement);
-							});
+							                                  	throw CreateException("Cannot process statement:", statement);
+							                                  });
 						}
 					}
 				}
@@ -89,6 +90,25 @@ namespace bsn.ModuleStore.Sql {
 		public string SchemaName {
 			get {
 				return schemaName;
+			}
+		}
+
+		public IEnumerable<string> GenerateUninstallSql() {
+			StringBuilder buffer = new StringBuilder(512);
+			SetQualification(SchemaName);
+			try {
+				foreach (CreateStatement statement in Objects) {
+					yield return WriteStatement(statement.CreateDropStatement(), buffer);
+				}
+				buffer.Length = 0;
+				using (TextWriter writer = new StringWriter(buffer)) {
+					SqlWriter sqlWriter = new SqlWriter(writer);
+					sqlWriter.Write("DROP SCHEMA ");
+					new SchemaName(SchemaName).WriteTo(sqlWriter);
+				}
+				yield return buffer.ToString();
+			} finally {
+				UnsetQualification();
 			}
 		}
 

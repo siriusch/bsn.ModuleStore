@@ -7,7 +7,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateProcedureStatement: CreateStatement {
+	public sealed class CreateProcedureStatement: CreateStatement, ICreateOrAlterStatement {
 		private readonly StatementBlock body;
 		private readonly bool forReplication;
 		private readonly List<ProcedureParameter> parameters;
@@ -67,12 +67,28 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override Statement CreateAlterStatement() {
+			return new AlterOfCreateStatement<CreateProcedureStatement>(this);
+		}
+
 		public override DropStatement CreateDropStatement() {
 			return new DropProcedureStatement(procedureName);
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("CREATE PROCEDURE ");
+			WriteToInternal(writer, "CREATE");
+		}
+
+		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
+			if (string.IsNullOrEmpty(command)) {
+				throw new ArgumentNullException("command");
+			}
+			WriteToInternal(writer, command);
+		}
+
+		private void WriteToInternal(SqlWriter writer, string command) {
+			writer.Write(command);
+			writer.Write(" PROCEDURE ");
 			writer.WriteScript(procedureName, WhitespacePadding.None);
 			writer.IncreaseIndent();
 			writer.WriteScriptSequence(parameters, WhitespacePadding.NewlineBefore, ",");

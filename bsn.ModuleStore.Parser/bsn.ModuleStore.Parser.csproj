@@ -51,6 +51,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sql\ScriptParser.cs" />
     <Compile Include="Sql\Script\AliasName.cs" />
+    <Compile Include="Sql\Script\AlterOfCreateStatement.cs" />
     <Compile Include="Sql\Script\AlterTableAddStatement.cs" />
     <Compile Include="Sql\Script\AlterTableCheckConstraintStatement.cs" />
     <Compile Include="Sql\Script\AlterTableCheckConstraintStatementBase.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="Sql\Script\FunctionOption.cs" />
     <Compile Include="Sql\Script\FunctionParameter.cs" />
     <Compile Include="Sql\Script\GotoStatement.cs" />
+    <Compile Include="Sql\Script\ICreateOrAlterStatement.cs" />
     <Compile Include="Sql\Script\Identifier.cs" />
     <Compile Include="Sql\Script\IfStatement.cs" />
     <Compile Include="Sql\Script\IndexColumn.cs" />

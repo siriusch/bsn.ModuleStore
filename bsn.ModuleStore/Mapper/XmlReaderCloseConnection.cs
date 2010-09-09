@@ -1,5 +1,4 @@
 using System;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Xml;
 using System.Xml.Schema;
@@ -116,15 +115,15 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public override string NamespaceURI {
-			get {
-				return reader.NamespaceURI;
-			}
-		}
-
 		public override XmlNameTable NameTable {
 			get {
 				return reader.NameTable;
+			}
+		}
+
+		public override string NamespaceURI {
+			get {
+				return reader.NamespaceURI;
 			}
 		}
 
@@ -146,15 +145,15 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public XmlReader Reader {
-			get {
-				return reader;
-			}
-		}
-
 		public override ReadState ReadState {
 			get {
 				return reader.ReadState;
+			}
+		}
+
+		public XmlReader Reader {
+			get {
+				return reader;
 			}
 		}
 

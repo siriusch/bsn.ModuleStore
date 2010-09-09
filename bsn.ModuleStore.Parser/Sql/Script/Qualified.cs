@@ -57,6 +57,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public bool IsOverridden {
+			get {
+				return qualificationOverride != null;
+			}
+		}
+
 		public override int GetHashCode() {
 			int hashCode = name.GetHashCode();
 			if ((qualificationOverride == null) && (qualification != null)) {

@@ -13,8 +13,7 @@ namespace bsn.ModuleStore.Mapper {
 		private int timeout;
 		private SqlReturnValue useReturnValue = SqlReturnValue.Auto;
 
-		public SqlProcedureAttribute(string embeddedResourceName) : base(null, embeddedResourceName) {
-		}
+		public SqlProcedureAttribute(string embeddedResourceName): base(null, embeddedResourceName) {}
 
 		/// <summary>
 		/// If true, the default constructor will be called instead of creating empty instances. For best performance, leave this setting on false. This corresponds to the parameter passed to <see cref="SqlDeserializer{T}"/> constructor.

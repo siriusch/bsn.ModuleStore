@@ -15,12 +15,6 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		/// <summary>
-		/// Move the typed data reader to the next record. Corresponds to <see cref="IDataReader.Read"/>.
-		/// </summary>
-		/// <returns>True if the next row could be read, false otherwise (no more rows).</returns>
-		bool Read();
-
-		/// <summary>
 		/// Move the reader to the next resultset and add it to a typed data reader. Corresponds to <see cref="IDataReader.NextResult"/>.
 		/// </summary>
 		/// <remarks>Adter calling this method, the typed data reader is implicitly disposed because it transfers the ownership of the reader. Therefore, any calls afterwards (except to <see cref="IDisposable.Dispose"/>) will throw a <see cref="ObjectDisposedException"/>.</remarks>
@@ -34,5 +28,11 @@ namespace bsn.ModuleStore.Mapper {
 		/// <remarks>Adter calling this method, the typed data reader is implicitly disposed because it transfers the ownership of the reader. Therefore, any calls afterwards (except to <see cref="IDisposable.Dispose"/>) will throw a <see cref="ObjectDisposedException"/>.</remarks>
 		/// <returns>If another resultset is available, the original <see cref="IDataReader"/> is returned and ownership is released, otherwise null.</returns>
 		IDataReader NextResult();
+
+		/// <summary>
+		/// Move the typed data reader to the next record. Corresponds to <see cref="IDataReader.Read"/>.
+		/// </summary>
+		/// <returns>True if the next row could be read, false otherwise (no more rows).</returns>
+		bool Read();
 	}
 }

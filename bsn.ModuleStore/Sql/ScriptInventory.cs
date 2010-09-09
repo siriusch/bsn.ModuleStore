@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -32,7 +32,7 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 			}
-			AdditionalSetupStatementSchemaFixup();
+			AdditionalSetupStatementSetSchemaOverride();
 		}
 
 		public string ScriptPath {

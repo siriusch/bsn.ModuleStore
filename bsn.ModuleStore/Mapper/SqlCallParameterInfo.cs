@@ -16,8 +16,8 @@ namespace bsn.ModuleStore.Mapper {
 	internal class SqlCallParameterInfo {
 		private static readonly Dictionary<string, SqlDbType> knownDbTypes = Enum.GetValues(typeof(SqlDbType)).Cast<SqlDbType>().ToDictionary(x => x.ToString(), x => x, StringComparer.OrdinalIgnoreCase);
 
-		private readonly ParameterDirection direction = ParameterDirection.Input;
 		private readonly string argName;
+		private readonly ParameterDirection direction = ParameterDirection.Input;
 		private readonly bool nullable;
 		private readonly int outArgIndex;
 		private readonly Type parameterType;

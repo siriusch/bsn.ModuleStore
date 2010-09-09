@@ -2,8 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -50,6 +51,14 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
+		protected static string WriteStatement(Statement statement, StringBuilder buffer) {
+			buffer.Length = 0;
+			using (StringWriter writer = new StringWriter(buffer)) {
+				statement.WriteTo(new SqlWriter(writer));
+			}
+			return buffer.ToString();
+		}
+
 		private readonly HashSet<string> objectSchemas = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		private readonly SortedDictionary<string, CreateStatement> objects = new SortedDictionary<string, CreateStatement>(StringComparer.OrdinalIgnoreCase);
 		private readonly Stack<SchemaName> qualificationStack = new Stack<SchemaName>(4);
@@ -69,14 +78,6 @@ namespace bsn.ModuleStore.Sql {
 				SchemaName qualification = qualificationStack.Peek();
 				return (qualification == null) ? string.Empty : qualification.Value;
 			}
-		}
-
-		protected internal void SetQualification(string schemaName) {
-			qualificationStack.Push(string.IsNullOrEmpty(schemaName) ? null : new SchemaName(schemaName));
-		}
-
-		protected internal void UnsetQualification() {
-			qualificationStack.Pop();
 		}
 
 		protected HashSet<string> ObjectSchemas {
@@ -112,6 +113,14 @@ namespace bsn.ModuleStore.Sql {
 			} finally {
 				UnsetQualification();
 			}
+		}
+
+		protected internal void SetQualification(string schemaName) {
+			qualificationStack.Push(string.IsNullOrEmpty(schemaName) ? null : new SchemaName(schemaName));
+		}
+
+		protected internal void UnsetQualification() {
+			qualificationStack.Pop();
 		}
 
 		protected void AddObject(CreateStatement createStatement) {

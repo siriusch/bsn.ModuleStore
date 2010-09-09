@@ -7,7 +7,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateTriggerStatement: CreateStatement {
+	public sealed class CreateTriggerStatement: CreateStatement, ICreateOrAlterStatement {
 		private readonly bool notForReplication;
 		private readonly Statement statement;
 		private readonly Qualified<SchemaName, TableName> tableName;
@@ -83,7 +83,19 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("CREATE TRIGGER ");
+			WriteToInternal(writer, "CREATE");
+		}
+
+		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
+			if (string.IsNullOrEmpty(command)) {
+				throw new ArgumentNullException("command");
+			}
+			WriteToInternal(writer, command);
+		}
+
+		private void WriteToInternal(SqlWriter writer, string command) {
+			writer.Write(command);
+			writer.Write(" TRIGGER ");
 			writer.WriteScript(triggerName, WhitespacePadding.None);
 			writer.Write(" ON ");
 			writer.WriteScript(tableName, WhitespacePadding.SpaceAfter);

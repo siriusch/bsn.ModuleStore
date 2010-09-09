@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Xml;
-
-using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
 	internal class SqlCallInfo {
@@ -53,8 +50,8 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public SqlCommand CreateCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out KeyValuePair<SqlParameter, Type>[] outParameters, out SqlDeserializer.TypeInfo returnTypeInfo,
-		                               out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable, IList<IDisposable> disposeList) {
+		public SqlCommand CreateCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out KeyValuePair<SqlParameter, Type>[] outParameters, out SqlDeserializer.TypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
+		                                IList<IDisposable> disposeList) {
 			return methods[mcm.MethodBase].GetCommand(mcm, connection, schemaName, out returnValue, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList);
 		}
 	}

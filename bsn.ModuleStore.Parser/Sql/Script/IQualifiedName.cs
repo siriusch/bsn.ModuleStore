@@ -6,6 +6,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
+		bool IsOverridden {
+			get;
+		}
+
 		void SetOverride(IQualified<TQ> qualificationProvider);
 	}
 }

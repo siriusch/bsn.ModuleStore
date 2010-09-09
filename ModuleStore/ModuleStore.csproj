@@ -57,9 +57,10 @@
     <Compile Include="Commands\DumpCommand.cs" />
     <Compile Include="Commands\InstallCommand.cs" />
     <Compile Include="Commands\LoadCommand.cs" />
-    <Compile Include="Commands\PurgeCommand.cs" />
     <Compile Include="Commands\ScriptCommand.cs" />
+    <Compile Include="Commands\UninstallCommand.cs" />
     <Compile Include="Commands\UnloadCommand.cs" />
+    <Compile Include="Commands\UpdateCommand.cs" />
     <Compile Include="Configurations\AssemblyConfiguration.cs" />
     <Compile Include="Configurations\ScriptingConfiguration.cs" />
     <Compile Include="Configurations\ServerConfiguration.cs" />

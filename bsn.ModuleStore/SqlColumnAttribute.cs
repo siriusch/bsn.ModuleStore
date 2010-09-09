@@ -7,17 +7,6 @@ namespace bsn.ModuleStore.Mapper {
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property|AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
 	public sealed class SqlColumnAttribute: Attribute {
-		private string name;
-
-		/// <summary>
-		/// The name for the database binding.
-		/// </summary>
-		public string Name {
-			get {
-				return name;
-			}
-		}
-
 		/// <summary>
 		/// Get a single DbColumnAttribute instance.
 		/// </summary>
@@ -32,7 +21,7 @@ namespace bsn.ModuleStore.Mapper {
 			if (columnAttributes.Length > 0) {
 				SqlColumnAttribute result = columnAttributes[0];
 				if (string.IsNullOrEmpty(result.Name)) {
-					result = (SqlColumnAttribute)result.CloneWithName(info.Name);
+					result = result.CloneWithName(info.Name);
 				}
 				return result;
 			}
@@ -41,6 +30,8 @@ namespace bsn.ModuleStore.Mapper {
 			}
 			return null;
 		}
+
+		private string name;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlColumnAttribute"/> class.
@@ -53,6 +44,15 @@ namespace bsn.ModuleStore.Mapper {
 		/// <param name="name">The DB column name to bind to.</param>
 		public SqlColumnAttribute(string name): base() {
 			this.name = name;
+		}
+
+		/// <summary>
+		/// The name for the database binding.
+		/// </summary>
+		public string Name {
+			get {
+				return name;
+			}
 		}
 
 		internal SqlColumnAttribute CloneWithName(string newName) {

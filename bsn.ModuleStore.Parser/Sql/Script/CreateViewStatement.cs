@@ -6,7 +6,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateViewStatement: CreateStatement {
+	public sealed class CreateViewStatement: CreateStatement, ICreateOrAlterStatement {
 		private readonly List<ColumnName> columnNames;
 		private readonly SelectStatement selectStatement;
 		private readonly Qualified<SchemaName, ViewName> viewName;
@@ -66,12 +66,28 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override Statement CreateAlterStatement() {
+			return new AlterOfCreateStatement<CreateViewStatement>(this);
+		}
+
 		public override DropStatement CreateDropStatement() {
 			return new DropViewStatement(viewName);
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("CREATE VIEW ");
+			WriteToInternal(writer, "CREATE");
+		}
+
+		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
+			if (string.IsNullOrEmpty(command)) {
+				throw new ArgumentNullException("command");
+			}
+			WriteToInternal(writer, command);
+		}
+
+		private void WriteToInternal(SqlWriter writer, string command) {
+			writer.Write(command);
+			writer.Write(" VIEW ");
 			writer.WriteScript(viewName, WhitespacePadding.None);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");
