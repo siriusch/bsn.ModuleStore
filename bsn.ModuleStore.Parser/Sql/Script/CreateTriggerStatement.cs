@@ -78,6 +78,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override DropStatement CreateDropStatement() {
+			return new DropTriggerStatement(triggerName);
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("CREATE TRIGGER ");
 			writer.WriteScript(triggerName, WhitespacePadding.None);

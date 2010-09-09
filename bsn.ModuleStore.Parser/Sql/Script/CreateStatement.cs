@@ -18,41 +18,31 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return GetObjectSchema() ?? string.Empty;
 			}
-			set {
-				SchemaName schemaName = string.IsNullOrEmpty(value) ? null : new SchemaName(value);
-				foreach (IQualifiedName<SchemaName> name in SchemaQualifiedNames) {
-					name.Qualification = schemaName;
-				}
-			}
 		}
 
-		public IEnumerable<IQualifiedName<SchemaName>> SchemaQualifiedNames {
-			get {
-				InitializeSchemaNames();
-				return schemaQualifiedNames;
-			}
+		public virtual Statement CreateAlterStatement() {
+			return new StatementBlock(CreateDropStatement(), this);
 		}
 
-		private void InitializeSchemaNames() {
-			if (schemaQualifiedNames.Count == 0) {
-				string schemaName = GetObjectSchema();
-				schemaQualifiedNames.AddRange(this.GetInnerSchemaQualifiedNames(n => n.Equals(schemaName, StringComparison.OrdinalIgnoreCase)));
-			}
-		}
+		public abstract DropStatement CreateDropStatement();
 
 		public override int GetHashCode() {
-			InitializeSchemaNames();
+			GetObjectSchemaQualifiedNames();
 			return base.GetHashCode();
+		}
+
+		public IEnumerable<SqlName> GetReferencedObjectNames() {
+			return GetObjectSchemaQualifiedNames().Select(qn => qn.Name).Where(n => !n.Value.Equals(ObjectName, StringComparison.OrdinalIgnoreCase)).Distinct();
 		}
 
 		protected abstract string GetObjectSchema();
 
-		public IEnumerable<SqlName> GetReferencedObjectNames() {
-			return schemaQualifiedNames.Select(qn => qn.Name).Where(n => !n.Value.Equals(ObjectName, StringComparison.OrdinalIgnoreCase)).Distinct();
-		}
-
-		internal void ResetSchemaNames() {
-			schemaQualifiedNames.Clear();
+		internal IEnumerable<IQualifiedName<SchemaName>> GetObjectSchemaQualifiedNames() {
+			if (schemaQualifiedNames.Count == 0) {
+				string schemaName = GetObjectSchema();
+				schemaQualifiedNames.AddRange(GetInnerSchemaQualifiedNames(n => n.Equals(schemaName, StringComparison.OrdinalIgnoreCase)));
+			}
+			return schemaQualifiedNames;
 		}
 	}
 }

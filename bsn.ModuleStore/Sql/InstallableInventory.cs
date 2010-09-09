@@ -9,86 +9,115 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class InstallableInventory: Inventory {
-		private readonly Dictionary<Statement, ICollection<IQualifiedName<SchemaName>>> additionalSetupStatements = new Dictionary<Statement, ICollection<IQualifiedName<SchemaName>>>();
+		private readonly List<Statement> additionalSetupStatements = new List<Statement>();
 
 		protected void AddAdditionalSetupStatement(Statement statement) {
 			if (statement == null) {
 				throw new ArgumentNullException("statement");
 			}
-			additionalSetupStatements.Add(statement, new List<IQualifiedName<SchemaName>>(1));
+			additionalSetupStatements.Add(statement);
 		}
 
-		public Dictionary<Statement, ICollection<IQualifiedName<SchemaName>>> AdditionalSetupStatements {
+		public IEnumerable<Statement> AdditionalSetupStatements {
 			get {
 				return additionalSetupStatements;
 			}
 		}
 
 		protected void AdditionalSetupStatementSchemaFixup() {
-			foreach (KeyValuePair<Statement, ICollection<IQualifiedName<SchemaName>>> additionalSetupStatement in additionalSetupStatements) {
-				if (additionalSetupStatement.Value.Count == 0) {
-					foreach (IQualifiedName<SchemaName> name in additionalSetupStatement.Key.GetInnerSchemaQualifiedNames(n => ObjectSchemas.Contains(n))) {
-						additionalSetupStatement.Value.Add(name);
-						name.Qualification = null;
-					}
+			StatementSetSchemaOverride(additionalSetupStatements);
+		}
+
+		protected void StatementSetSchemaOverride(IEnumerable<Statement> statements) {
+			foreach (Statement statement in statements) {
+				foreach (IQualifiedName<SchemaName> name in statement.GetInnerSchemaQualifiedNames(n => ObjectSchemas.Contains(n))) {
+					name.SetOverride(this);
 				}
 			}
 		}
-
+		/*
+		public IEnumerable<string> GenerateUpdateSql(DatabaseInventory inventory, int currentVersion) {
+			if (inventory == null) {
+				throw new ArgumentNullException("inventory");
+			}
+			SchemaName nameQualification = new SchemaName(inventory.SchemaName);
+			DependencyResolver createResolver = new DependencyResolver();
+			List<Statement> alterStatements = new List<Statement>();
+			List<DropStatement> dropStatements = new List<DropStatement>();
+			List<CreateStatement> qualifiedStatements = new List<CreateStatement>();
+			foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> pair in Compare(inventory, this)) {
+				if (pair.Value == InventoryObjectDifference.None) {
+					createResolver.AddExistingObject(pair.Key.ObjectName);
+				} else {
+					pair.Key.ObjectSchema = inventory.SchemaName;
+					qualifiedStatements.Add(pair.Key);
+					switch (pair.Value) {
+					case InventoryObjectDifference.None:
+						createResolver.AddExistingObject(pair.Key.ObjectName);
+						break;
+					case InventoryObjectDifference.Different:
+						createResolver.AddExistingObject(pair.Key.ObjectName);
+						if (pair.Key.ObjectCategory != ObjectCategory.Table) {
+							alterStatements.Add(pair.Key.CreateAlterStatement());
+						}
+						break;
+					case InventoryObjectDifference.SourceOnly:
+						createResolver.Add(pair.Key);
+						break;
+					case InventoryObjectDifference.TargetOnly:
+						dropStatements.Add(pair.Key.CreateDropStatement());
+						break;
+					}
+				}
+			}
+			foreach (DropStatement dropStatement in dropStatements) {
+				
+			}
+		}
+		*/
 		public IEnumerable<string> GenerateInstallSql(string schemaName) {
 			if (string.IsNullOrEmpty(schemaName)) {
 				throw new ArgumentNullException("schemaName");
 			}
-			SchemaName nameQualification = new SchemaName(schemaName);
 			DependencyResolver resolver = new DependencyResolver();
-			using (StringWriter writer = new StringWriter()) {
-				SqlWriter sqlWriter = new SqlWriter(writer);
-				sqlWriter.Write("CREATE SCHEMA");
-				sqlWriter.IncreaseIndent();
-				sqlWriter.WriteScript(nameQualification, WhitespacePadding.SpaceBefore);
-				foreach (CreateStatement statement in Objects) {
-					if ((statement is CreateTableStatement) || (statement is CreateViewStatement)) {
-						statement.ObjectSchema = null;
-						resolver.AddExistingObject(statement.ObjectName);
-						sqlWriter.WriteLine();
-						statement.WriteTo(sqlWriter);
-					} else {
-						resolver.Add(statement);
-					}
-				}
-				sqlWriter.DecreaseIndent();
-				yield return writer.ToString();
-			}
-			StringBuilder builder = new StringBuilder(4096);
-			foreach (CreateStatement statement in resolver.GetInOrder()) {
-				builder.Length = 0;
-				using (StringWriter writer = new StringWriter(builder)) {
+			SetQualification(null);
+			try {
+				using (StringWriter writer = new StringWriter()) {
 					SqlWriter sqlWriter = new SqlWriter(writer);
-					statement.ObjectSchema = schemaName;
-					try {
-						statement.WriteTo(sqlWriter);
-					} finally {
-						statement.ObjectSchema = null;
-					}
-				}
-				yield return builder.ToString();
-			}
-			foreach (KeyValuePair<Statement, ICollection<IQualifiedName<SchemaName>>> additionalSetupStatement in AdditionalSetupStatements) {
-				builder.Length = 0;
-				using (StringWriter writer = new StringWriter(builder)) {
-					SqlWriter sqlWriter = new SqlWriter(writer);
-					foreach (IQualifiedName<SchemaName> name in additionalSetupStatement.Value) {
-						name.Qualification = nameQualification;
-					}
-					try {
-						additionalSetupStatement.Key.WriteTo(sqlWriter);
-					} finally {
-						foreach (IQualifiedName<SchemaName> name in additionalSetupStatement.Value) {
-							name.Qualification = null;
+					sqlWriter.Write("CREATE SCHEMA");
+					sqlWriter.IncreaseIndent();
+					sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
+					foreach (CreateStatement statement in Objects) {
+						if ((statement is CreateTableStatement) || (statement is CreateViewStatement)) {
+							resolver.AddExistingObject(statement.ObjectName);
+							sqlWriter.WriteLine();
+							statement.WriteTo(sqlWriter);
+						} else {
+							resolver.Add(statement);
 						}
 					}
+					sqlWriter.DecreaseIndent();
+					yield return writer.ToString();
 				}
-				yield return builder.ToString();
+				UnsetQualification();
+				SetQualification(schemaName);
+				StringBuilder builder = new StringBuilder(4096);
+				foreach (CreateStatement statement in resolver.GetInOrder()) {
+					builder.Length = 0;
+					using (StringWriter writer = new StringWriter(builder)) {
+						statement.WriteTo(new SqlWriter(writer));
+					}
+					yield return builder.ToString();
+				}
+				foreach (Statement additionalSetupStatement in AdditionalSetupStatements) {
+					builder.Length = 0;
+					using (StringWriter writer = new StringWriter(builder)) {
+						additionalSetupStatement.WriteTo(new SqlWriter(writer));
+					}
+					yield return builder.ToString();
+				}
+			} finally {
+				UnsetQualification();
 			}
 		}
 	}

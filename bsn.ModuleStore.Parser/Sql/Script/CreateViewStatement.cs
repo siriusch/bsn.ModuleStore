@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
@@ -65,6 +64,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return withViewMetadata;
 			}
+		}
+
+		public override DropStatement CreateDropStatement() {
+			return new DropViewStatement(viewName);
 		}
 
 		public override void WriteTo(SqlWriter writer) {

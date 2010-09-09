@@ -91,6 +91,7 @@
     <Compile Include="Sql\Script\ColumnVariableItem.cs" />
     <Compile Include="Sql\Script\ColumnWildcardItem.cs" />
     <Compile Include="Sql\Script\CommonTableExpression.cs" />
+    <Compile Include="Sql\Script\CommonTableExpressionScope.cs" />
     <Compile Include="Sql\Script\ComputedColumnDefinition.cs" />
     <Compile Include="Sql\Script\ConstraintIndex.cs" />
     <Compile Include="Sql\Script\ConstraintIndexFillfactor.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Sql\Script\IntegerLiteral.cs" />
     <Compile Include="Sql\Script\IOptional.cs" />
     <Compile Include="Sql\Script\IQualifiedName.cs" />
+    <Compile Include="Sql\Script\IQualified.cs" />
     <Compile Include="Sql\Script\ISqlTokenMetadata.cs" />
     <Compile Include="Sql\Script\Join.cs" />
     <Compile Include="Sql\Script\JoinKind.cs" />
@@ -386,13 +388,14 @@
     <None Include="Sql\ModuleStoreSQL.grm" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\SqlCommonObjects.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\GoldParser\bsn.GoldParser\bsn.GoldParser.csproj">
       <Project>{1A1A5AE9-7981-471C-9CC7-F7465E675A32}</Project>
       <Name>bsn.GoldParser</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\Sql2005Functions.txt" />
+    <EmbeddedResource Include="Sql\Sql2005Keywords.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

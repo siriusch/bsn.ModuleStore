@@ -20,8 +20,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
+		protected override void WriteToInternal(SqlWriter writer, string command) {
+			base.WriteToInternal(writer, command);
 			writer.WriteScript(returnTypeName, WhitespacePadding.None);
 			writer.WriteEnum(Option, WhitespacePadding.SpaceBefore);
 			writer.WriteLine();

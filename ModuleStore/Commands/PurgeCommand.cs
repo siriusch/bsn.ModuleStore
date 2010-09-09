@@ -1,7 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
 
 using bsn.CommandLine;
 using bsn.CommandLine.Context;
@@ -10,8 +12,8 @@ using bsn.ModuleStore.Sql;
 
 namespace bsn.ModuleStore.Console.Commands {
 	[NamedItem("install", "Generate or execute SQL statements to install a source")]
-	internal class InstallCommand: CommandBase<ExecutionContext> {
-		public InstallCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
+	internal class PurgeCommand: CommandBase<ExecutionContext> {
+		public PurgeCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
 			Source inventorySource = (Source)tags["source"];

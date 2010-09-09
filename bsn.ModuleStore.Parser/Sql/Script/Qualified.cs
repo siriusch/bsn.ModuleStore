@@ -5,9 +5,11 @@ using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName where TN: SqlName {
+	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName
+	                                                                              where TN: SqlName {
 		private readonly TN name;
-		private TQ qualification;
+		private readonly TQ qualification;
+		private IQualified<TQ> qualificationOverride;
 
 		[Rule("<ColumnNameQualified> ::= <ColumnName>", typeof(SqlName), typeof(ColumnName))]
 		[Rule("<ColumnWildQualified> ::= <ColumnWild>", typeof(SqlName), typeof(ColumnName))]
@@ -43,16 +45,31 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public bool IsQualified {
+			get {
+				return Qualification != null;
+			}
+		}
+
 		public TN Name {
 			get {
 				return name;
 			}
 		}
 
+		public override int GetHashCode() {
+			int hashCode = name.GetHashCode();
+			if ((qualificationOverride == null) && (qualification != null)) {
+				hashCode ^= qualification.GetHashCode();
+			}
+			return hashCode;
+		}
+
 		public override void WriteTo(SqlWriter writer) {
-			bool isQualified = qualification != null;
+			TQ currentQualification = Qualification;
+			bool isQualified = currentQualification != null;
 			if (isQualified) {
-				qualification.WriteToInternal(writer, true);
+				currentQualification.WriteToInternal(writer, true);
 				writer.Write('.');
 			}
 			name.WriteToInternal(writer, isQualified);
@@ -62,25 +79,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			Initialize(((IToken)name).Symbol, position);
 		}
 
-		public override int GetHashCode() {
-			int hashCode = name.GetHashCode();
-			if (qualification != null) {
-				hashCode ^= qualification.GetHashCode();
-			}
-			return hashCode;
-		}
-
 		public int CompareTo(IQualifiedName<TQ> other) {
 			if (other != null) {
 				if (ReferenceEquals(this, other)) {
 					return 0;
 				}
-				if (qualification == null) {
+				TQ currentQualification = Qualification;
+				if (currentQualification == null) {
 					if (other.Qualification != null) {
 						return -1;
 					}
 				} else {
-					int diff = qualification.CompareTo(other.Qualification);
+					int diff = currentQualification.CompareTo(other.Qualification);
 					if (diff != 0) {
 						return diff;
 					}
@@ -95,12 +105,13 @@ namespace bsn.ModuleStore.Sql.Script {
 				if (ReferenceEquals(this, other)) {
 					return true;
 				}
-				if (qualification == null) {
+				TQ currentQualification = Qualification;
+				if (currentQualification == null) {
 					if (other.Qualification != null) {
 						return false;
 					}
 				} else {
-					if (!qualification.Equals(other.Qualification)) {
+					if (!currentQualification.Equals(other.Qualification)) {
 						return false;
 					}
 				}
@@ -109,25 +120,26 @@ namespace bsn.ModuleStore.Sql.Script {
 			return false;
 		}
 
-		public bool IsQualified {
-			get {
-				return qualification != null;
-			}
-		}
-
 		SqlName IQualifiedName<TQ>.Name {
 			get {
 				return Name;
 			}
 		}
 
+		void IQualifiedName<TQ>.SetOverride(IQualified<TQ> qualificationProvider) {
+			if (ReferenceEquals(this, qualificationProvider)) {
+				throw new ArgumentException("Cannot assign itself as override", "qualificationProvider");
+			}
+			qualificationOverride = qualificationProvider;
+		}
+
 		public TQ Qualification {
 			get {
+				if (qualificationOverride != null) {
+					return qualificationOverride.Qualification;
+				}
 				return qualification;
 			}
-			set {
-				qualification = value;
-			}
 		}
-	}
+	                                                                              }
 }

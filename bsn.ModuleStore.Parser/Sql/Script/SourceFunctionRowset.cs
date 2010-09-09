@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<SourceRowset> ::= <SchemaName> '.' <FunctionCall> <OptionalAlias>", ConstructorParameterMapping = new[] {0, 2, 3})]
 		public SourceFunctionRowset(SchemaName schemaName, ExpressionFunctionCall function, Optional<AliasName> aliasName): this(function, aliasName) {
-			function.FunctionName.Qualification = schemaName;
+			function.FunctionName = new Qualified<SchemaName, FunctionName>(schemaName, function.FunctionName.Name);
 		}
 
 		[Rule("<SourceRowset> ::= <FunctionCall> <OptionalAlias>")]

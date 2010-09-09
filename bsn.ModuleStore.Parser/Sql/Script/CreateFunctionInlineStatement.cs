@@ -8,8 +8,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>", ConstructorParameterMapping = new[] {2, 4, 7, 10})]
 		public CreateFunctionInlineStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, FunctionOptionToken options, SelectStatement body): base(functionName, parameters, options, body) {}
 
-		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
+		protected override void WriteToInternal(SqlWriter writer, string command) {
+			base.WriteToInternal(writer, command);
 			writer.Write("TABLE");
 			writer.WriteEnum(Option, WhitespacePadding.SpaceBefore);
 			writer.WriteLine();

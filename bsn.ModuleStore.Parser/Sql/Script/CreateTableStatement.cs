@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script;
@@ -40,6 +39,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return tableName;
 			}
+		}
+
+		public override Statement CreateAlterStatement() {
+			throw new NotSupportedException("Tables must be altered via change scripts");
+		}
+
+		public override DropStatement CreateDropStatement() {
+			return new DropTableStatement(tableName);
 		}
 
 		public override void WriteTo(SqlWriter writer) {

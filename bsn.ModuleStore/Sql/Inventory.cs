@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
-	public abstract class Inventory {
+	public abstract class Inventory: IQualified<SchemaName> {
 		public static IEnumerable<KeyValuePair<CreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target) {
 			if (source == null) {
 				throw new ArgumentNullException("source");
@@ -49,13 +50,33 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		private readonly SortedDictionary<string, CreateStatement> objects = new SortedDictionary<string, CreateStatement>(StringComparer.OrdinalIgnoreCase);
 		private readonly HashSet<string> objectSchemas = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		private readonly SortedDictionary<string, CreateStatement> objects = new SortedDictionary<string, CreateStatement>(StringComparer.OrdinalIgnoreCase);
+		private readonly Stack<SchemaName> qualificationStack = new Stack<SchemaName>(4);
+
+		protected Inventory() {
+			qualificationStack.Push(null);
+		}
 
 		public ICollection<CreateStatement> Objects {
 			get {
 				return objects.Values;
 			}
+		}
+
+		protected internal string ObjectSchema {
+			get {
+				SchemaName qualification = qualificationStack.Peek();
+				return (qualification == null) ? string.Empty : qualification.Value;
+			}
+		}
+
+		protected internal void SetQualification(string schemaName) {
+			qualificationStack.Push(string.IsNullOrEmpty(schemaName) ? null : new SchemaName(schemaName));
+		}
+
+		protected internal void UnsetQualification() {
+			qualificationStack.Pop();
 		}
 
 		protected HashSet<string> ObjectSchemas {
@@ -67,25 +88,29 @@ namespace bsn.ModuleStore.Sql {
 		public void Dump(string schemaName, TextWriter writer) {
 			writer.WriteLine("-- Inventory hash: {0}", BitConverter.ToString(GetInventoryHash()).Replace("-", ""));
 			SqlWriter sqlWriter = new SqlWriter(writer);
-			foreach (CreateStatement statement in objects.Values) {
-				statement.ObjectSchema = schemaName;
-				try {
+			SetQualification(schemaName);
+			try {
+				foreach (CreateStatement statement in objects.Values) {
 					statement.WriteTo(sqlWriter);
 					writer.WriteLine(";");
-				} finally {
-					statement.ObjectSchema = null;
 				}
+			} finally {
+				UnsetQualification();
 			}
 		}
 
 		public byte[] GetInventoryHash() {
-			using (HashWriter writer = new HashWriter()) {
-				SqlWriter sqlWriter = new SqlWriter(writer);
-				foreach (CreateStatement statement in objects.Values) {
-					Debug.Assert(string.IsNullOrEmpty(statement.ObjectSchema));
-					statement.WriteTo(sqlWriter);
+			SetQualification(null);
+			try {
+				using (HashWriter writer = new HashWriter()) {
+					SqlWriter sqlWriter = new SqlWriter(writer);
+					foreach (CreateStatement statement in objects.Values) {
+						statement.WriteTo(sqlWriter);
+					}
+					return writer.ToArray();
 				}
-				return writer.ToArray();
+			} finally {
+				UnsetQualification();
 			}
 		}
 
@@ -94,7 +119,9 @@ namespace bsn.ModuleStore.Sql {
 				throw new ArgumentNullException("createStatement");
 			}
 			objectSchemas.Add(createStatement.ObjectSchema);
-			createStatement.ObjectSchema = null;
+			foreach (IQualifiedName<SchemaName> qualifiedName in createStatement.GetObjectSchemaQualifiedNames()) {
+				qualifiedName.SetOverride(this);
+			}
 			createStatement.ResetHash();
 			createStatement.GetHash();
 			objects.Add(createStatement.ObjectName, createStatement);
@@ -111,7 +138,6 @@ namespace bsn.ModuleStore.Sql {
 							throw DatabaseInventory.CreateException("Statement tries to modify another table:", statement);
 						}
 						createTable.Definitions.AddRange(addToTable.Definitions);
-						createTable.ResetSchemaNames();
 					} else {
 						CreateStatement createStatement = statement as CreateStatement;
 						if (createStatement == null) {
@@ -129,6 +155,12 @@ namespace bsn.ModuleStore.Sql {
 			}
 			foreach (CreateStatement statement in objects) {
 				AddObject(statement);
+			}
+		}
+
+		SchemaName IQualified<SchemaName>.Qualification {
+			get {
+				return qualificationStack.Peek();
 			}
 		}
 	}

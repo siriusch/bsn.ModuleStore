@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
 
@@ -8,8 +9,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<Statement> statements;
 
 		[Rule("<StatementBlock> ::= BEGIN <StatementList> END", ConstructorParameterMapping = new[] {1})]
-		public StatementBlock(Sequence<Statement> statements) {
-			this.statements = statements.ToList();
+		public StatementBlock(Sequence<Statement> statements): this(statements.ToList()) {}
+
+		internal StatementBlock(params Statement[] statements): this(new List<Statement>(statements)) {}
+
+		private StatementBlock(List<Statement> statements) {
+			Debug.Assert(statements != null);
+			this.statements = statements;
 			if (this.statements.Count == 1) {
 				StatementBlock innerBlock = this.statements[0] as StatementBlock;
 				if (innerBlock != null) {

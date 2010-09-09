@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 
 using bsn.GoldParser.Semantic;
 
@@ -39,6 +38,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return xmlSchemaCollectionName;
 			}
+		}
+
+		public override DropStatement CreateDropStatement() {
+			return new DropXmlSchemaCollectionStatement(xmlSchemaCollectionName);
 		}
 
 		public override void WriteTo(SqlWriter writer) {

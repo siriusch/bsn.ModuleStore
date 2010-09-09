@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
@@ -66,6 +65,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return recompile;
 			}
+		}
+
+		public override DropStatement CreateDropStatement() {
+			return new DropProcedureStatement(procedureName);
 		}
 
 		public override void WriteTo(SqlWriter writer) {

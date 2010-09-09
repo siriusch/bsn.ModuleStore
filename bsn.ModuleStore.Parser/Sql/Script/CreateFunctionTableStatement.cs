@@ -31,8 +31,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
+		protected override void WriteToInternal(SqlWriter writer, string command) {
+			base.WriteToInternal(writer, command);
 			writer.WriteScript(resultVariableName, WhitespacePadding.None);
 			writer.Write(" TABLE (");
 			writer.IncreaseIndent();

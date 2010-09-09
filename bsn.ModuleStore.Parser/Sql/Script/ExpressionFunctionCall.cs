@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		private readonly List<Expression> arguments;
-		private readonly Qualified<SchemaName, FunctionName> functionName;
+		private Qualified<SchemaName, FunctionName> functionName;
 
 		[Rule("<FunctionCall> ::= <FunctionName> '(' ')'", AllowTruncationForConstructor = true)]
 		public ExpressionFunctionCall(FunctionName functionName): this(functionName, null) {}
@@ -41,6 +41,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		public Qualified<SchemaName, FunctionName> FunctionName {
 			get {
 				return functionName;
+			}
+			internal set {
+				Debug.Assert(value != null);
+				functionName = value;
 			}
 		}
 

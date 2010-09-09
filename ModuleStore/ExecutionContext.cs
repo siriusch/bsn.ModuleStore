@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 using bsn.CommandLine;
 using bsn.ModuleStore.Console.Contexts;
@@ -18,7 +19,10 @@ namespace bsn.ModuleStore.Console {
 		private Server server;
 		private string serverName = ".";
 
-		public ExecutionContext(TextReader input, TextWriter output): base(new ModuleStoreContext(), input, output) {}
+		public ExecutionContext(TextReader input, TextWriter output): base(new ModuleStoreContext(), input, output) {
+			// trigger async initialization on app start
+			ThreadPool.QueueUserWorkItem(state => ScriptParser.GetSemanticActions());
+		}
 
 		public AssemblyHandler Assembly {
 			get {

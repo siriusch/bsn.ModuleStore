@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateIndexStatement: CreateStatement {
@@ -45,6 +44,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return tableName;
 			}
+		}
+
+		public override DropStatement CreateDropStatement() {
+			return new DropIndexStatement(indexName, tableName, null);
 		}
 
 		protected override sealed string GetObjectSchema() {

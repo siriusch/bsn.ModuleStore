@@ -27,9 +27,9 @@ namespace bsn.ModuleStore.Console.Commands {
 				}
 			}
 			bool objectDirectories = (bool)tags["directories"];
-			foreach (CreateStatement statement in inventory.Objects.Where(statement => !(statement is CreateIndexStatement))) {
-				statement.ObjectSchema = (string)tags["schema"];
-				try {
+			inventory.SetQualification(string.IsNullOrEmpty((string)tags["schema"]) ? "schema" : (string)tags["schema"]);
+			try {
+				foreach (CreateStatement statement in inventory.Objects.Where(statement => !(statement is CreateIndexStatement))) {
 					string categoryName = string.Empty;
 					if (objectDirectories) {
 						categoryName = statement.ObjectCategory+"s\\";
@@ -46,19 +46,21 @@ namespace bsn.ModuleStore.Console.Commands {
 					using (FileStream stream = scriptFileName.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
 						using (StreamWriter writer = new StreamWriter(stream, encoding)) {
 							SqlWriter sqlWriter = new SqlWriter(writer);
-							ScriptStatement(statement, sqlWriter);
+							statement.WriteTo(sqlWriter);
+							sqlWriter.WriteLine(";");
 							CreateTableStatement createTableStatement = statement as CreateTableStatement;
 							if (createTableStatement != null) {
 								foreach (CreateIndexStatement createIndexStatement in inventory.Objects.OfType<CreateIndexStatement>().Where(s => s.TableName.Name.Equals(createTableStatement.TableName.Name)).OrderBy(s => s.IndexName.Value)) {
 									writer.WriteLine();
-									ScriptStatement(createIndexStatement, sqlWriter);
+									createIndexStatement.WriteTo(sqlWriter);
+									sqlWriter.WriteLine(";");
 								}
 							}
 						}
 					}
-				} finally {
-					statement.ObjectSchema = null;
 				}
+			} finally {
+				inventory.UnsetQualification();
 			}
 			foreach (FileInfo deleteFileName in filesToDelete.Select(f => new FileInfo(f))) {
 				if (deleteFileName.Exists) {
@@ -72,16 +74,6 @@ namespace bsn.ModuleStore.Console.Commands {
 					executionContext.Output.WriteLine();
 				}
 			}
-		}
-
-		private void ScriptStatement(CreateStatement statement, SqlWriter sqlWriter) {
-			statement.ObjectSchema = "schema";
-			try {
-				statement.WriteTo(sqlWriter);
-			} finally {
-				statement.ObjectSchema = null;
-			}
-			sqlWriter.WriteLine(";");
 		}
 
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
