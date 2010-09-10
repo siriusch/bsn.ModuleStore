@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
@@ -96,7 +97,11 @@ namespace bsn.ModuleStore.Sql {
 			StringBuilder buffer = new StringBuilder(512);
 			SetQualification(SchemaName);
 			try {
+				DependencyResolver resolver = new DependencyResolver();
 				foreach (CreateStatement statement in Objects) {
+					resolver.Add(statement);
+				}
+				foreach (CreateStatement statement in resolver.GetInOrder(true).Reverse()) {
 					yield return WriteStatement(statement.CreateDropStatement(), buffer);
 				}
 				buffer.Length = 0;

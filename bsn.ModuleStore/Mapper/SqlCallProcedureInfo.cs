@@ -73,16 +73,17 @@ namespace bsn.ModuleStore.Mapper {
 					throw new FileNotFoundException(String.Format("The embedded script for the method {0}.{1} could not be found", method.DeclaringType.FullName, method.Name), proc.ManifestResourceName);
 				}
 				using (TextReader reader = new StreamReader(stream, true)) {
-					foreach (Statement statement in ScriptParser.Parse(reader)) {
-						createStatement = statement as CreateProcedureStatement;
-						if (createStatement != null) {
-							break;
+					using (IEnumerator<CreateProcedureStatement> enumerator = ScriptParser.Parse(reader).OfType<CreateProcedureStatement>().GetEnumerator()) {
+						if (!enumerator.MoveNext()) {
+							throw new InvalidOperationException(String.Format("No CREATE PROCEDURE statement found in script {2} (method {0}.{1}).", method.DeclaringType.FullName, method.Name, proc.ManifestResourceName));
+						}
+						createStatement = enumerator.Current;
+						Debug.Assert(createStatement != null);
+						if (enumerator.MoveNext()) {
+							throw new InvalidOperationException(String.Format("More than one CREATE PROCEDURE statement was found in script {2} (method {0}.{1}).", method.DeclaringType.FullName, method.Name, proc.ManifestResourceName));
 						}
 					}
 				}
-			}
-			if (createStatement == null) {
-				throw new InvalidOperationException(String.Format("No CREATE PROCEDURE statement found in script {2} (method {0}.{1}).", method.DeclaringType.FullName, method.Name, proc.ManifestResourceName));
 			}
 			procedureName = createStatement.ProcedureName.Name.Value;
 			SortedDictionary<int, ParameterInfo> sortedParams = new SortedDictionary<int, ParameterInfo>();

@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql {
 	public class AssemblyInventory: InstallableInventory {
 		private readonly IAssemblyHandle assembly;
 		private readonly ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> attributes;
-		private readonly int setupUpdateVersion;
+		private readonly int updateVersion;
 		private readonly SortedList<int, Statement[]> updateStatements = new SortedList<int, Statement[]>();
 
 		public AssemblyInventory(Assembly assembly): this(new AssemblyHandle(assembly)) {}
@@ -30,9 +30,9 @@ namespace bsn.ModuleStore.Sql {
 				} else {
 					SqlUpdateScriptAttribute updateScriptAttribute = attribute.Key as SqlUpdateScriptAttribute;
 					if (updateScriptAttribute != null) {
-						using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value)) {
+						using (TextReader reader = OpenText(updateScriptAttribute, attribute.Value)) {
 							updateStatements.Add(updateScriptAttribute.Version, ScriptParser.Parse(reader).ToArray());
-							setupUpdateVersion = Math.Max(setupUpdateVersion, updateScriptAttribute.Version);
+							updateVersion = Math.Max(updateVersion, updateScriptAttribute.Version);
 						}
 					} else {
 						Debug.WriteLine(attribute.Key.GetType(), "Unrecognized assembly SQL attribute");
@@ -57,9 +57,9 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public int SetupUpdateVersion {
+		public int UpdateVersion {
 			get {
-				return setupUpdateVersion;
+				return updateVersion;
 			}
 		}
 
