@@ -11,7 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<TableDefinition> definitions;
 		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<CreateTableStatement> ::= CREATE TABLE <TableNameQualified> <TableDefinitionGroup>", ConstructorParameterMapping = new[] {2, 3})]
+		[Rule("<CreateTableStatement> ::= ~CREATE ~TABLE <TableNameQualified> <TableDefinitionGroup>")]
 		public CreateTableStatement(Qualified<SchemaName, TableName> tableName, Sequence<TableDefinition> definitions) {
 			this.tableName = tableName;
 			this.definitions = definitions.ToList();

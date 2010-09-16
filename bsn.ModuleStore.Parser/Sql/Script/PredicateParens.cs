@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class PredicateParens: Predicate {
 		private readonly Predicate predicate;
 
-		[Rule("<PredicateParens> ::= '(' <Predicate> ')'", ConstructorParameterMapping = new[] {1})]
+		[Rule("<PredicateParens> ::= ~'(' <Predicate> ~')'")]
 		public PredicateParens(Predicate predicate) {
 			Debug.Assert(predicate != null);
 			PredicateParens parens = predicate as PredicateParens;

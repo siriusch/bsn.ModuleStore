@@ -10,10 +10,10 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ColumnDefaultConstraint: ColumnNamedConstraintBase {
 		private readonly Expression defaultValue;
 
-		[Rule("<NamedColumnConstraint> ::= DEFAULT <ConstraintDefaultValue>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<NamedColumnConstraint> ::= ~DEFAULT <ConstraintDefaultValue>")]
 		public ColumnDefaultConstraint(Expression defaultValue): this(null, defaultValue) {}
 
-		[Rule("<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> DEFAULT <ConstraintDefaultValue>", ConstructorParameterMapping = new[] {1, 3})]
+		[Rule("<NamedColumnConstraint> ::= ~CONSTRAINT <ConstraintName> ~DEFAULT <ConstraintDefaultValue>")]
 		public ColumnDefaultConstraint(ConstraintName constraintName, Expression defaultValue): base(constraintName) {
 			Debug.Assert(defaultValue != null);
 			this.defaultValue = defaultValue;

@@ -7,10 +7,10 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExpressionSimpleCase: ExpressionCase<Expression> {
 		private readonly Expression inputExpression;
 
-		[Rule("<ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> END", ConstructorParameterMapping = new[] {1, 2})]
+		[Rule("<ExpressionCase> ::= ~CASE <Expression> <CaseWhenExpressionList> ~END")]
 		public ExpressionSimpleCase(Expression inputExpression, Sequence<CaseWhen<Expression>> whenItems): this(inputExpression, whenItems, null) {}
 
-		[Rule("<ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> ELSE <Expression> END", ConstructorParameterMapping = new[] {1, 2, 4})]
+		[Rule("<ExpressionCase> ::= ~CASE <Expression> <CaseWhenExpressionList> ~ELSE <Expression> ~END")]
 		public ExpressionSimpleCase(Expression inputExpression, Sequence<CaseWhen<Expression>> whenItems, Expression elseExpression): base(whenItems, elseExpression) {
 			Debug.Assert(inputExpression != null);
 			this.inputExpression = inputExpression;

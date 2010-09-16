@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression expression;
 		private readonly Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName;
 
-		[Rule("<CreateXmlSchemaCollectionStatement> ::= CREATE XML_SCHEMA_COLLECTION <XmlSchemaCollectionNameQualified> AS <Expression>", ConstructorParameterMapping = new[] {2, 4})]
+		[Rule("<CreateXmlSchemaCollectionStatement> ::= ~CREATE ~XML_SCHEMA_COLLECTION <XmlSchemaCollectionNameQualified> ~AS <Expression>")]
 		public CreateXmlSchemaCollectionStatement(Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName, Expression expression) {
 			Debug.Assert(xmlSchemaCollectionName != null);
 			Debug.Assert(expression != null);

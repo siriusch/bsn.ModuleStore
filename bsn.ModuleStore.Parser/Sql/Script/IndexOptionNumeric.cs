@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class IndexOptionNumeric: IndexOption {
 		private readonly IntegerLiteral value;
 
-		[Rule("<IndexOption> ::= Id '=' <IntegerLiteral>", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<IndexOption> ::= Id ~'=' <IntegerLiteral>")]
 		public IndexOptionNumeric(Identifier key, IntegerLiteral value): base(key) {
 			Debug.Assert(value != null);
 			this.value = value;

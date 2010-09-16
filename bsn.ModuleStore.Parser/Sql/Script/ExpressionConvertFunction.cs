@@ -9,10 +9,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly TypeName typeName;
 		private readonly Expression valueExpression;
 
-		[Rule("<Value> ::= CONVERT '(' <TypeName> ',' <Expression> ')'", ConstructorParameterMapping = new[] {2, 4})]
+		[Rule("<Value> ::= ~CONVERT ~'(' <TypeName> ~',' <Expression> ~')'")]
 		public ExpressionConvertFunction(TypeName typeName, Expression valueExpression): this(typeName, valueExpression, null) {}
 
-		[Rule("<Value> ::= CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'", ConstructorParameterMapping = new[] {2, 4, 6})]
+		[Rule("<Value> ::= ~CONVERT ~'(' <TypeName> ~',' <Expression> ~',' IntegerLiteral ~')'")]
 		public ExpressionConvertFunction(TypeName typeName, Expression valueExpression, IntegerLiteral style): base() {
 			Debug.Assert(typeName != null);
 			Debug.Assert(valueExpression != null);

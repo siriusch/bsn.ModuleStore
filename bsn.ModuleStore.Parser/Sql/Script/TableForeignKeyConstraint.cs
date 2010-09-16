@@ -11,10 +11,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<ColumnName> refColumnNames;
 		private readonly Qualified<SchemaName, TableName> refTableName;
 
-		[Rule("<TableConstraint> ::= FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>", ConstructorParameterMapping = new[] {3, 6, 7, 8})]
+		[Rule("<TableConstraint> ::= ~FOREIGN ~KEY ~'(' <ColumnNameList> ~')' ~REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>")]
 		public TableForeignKeyConstraint(Sequence<ColumnName> columnNames, Qualified<SchemaName, TableName> refTableName, Optional<Sequence<ColumnName>> refColumnNames, Sequence<ForeignKeyAction> keyActions): this(null, columnNames, refTableName, refColumnNames, keyActions) {}
 
-		[Rule("<TableConstraint> ::= CONSTRAINT <ConstraintName> FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>", ConstructorParameterMapping = new[] {1, 5, 8, 9, 10})]
+		[Rule("<TableConstraint> ::= ~CONSTRAINT <ConstraintName> ~FOREIGN ~KEY ~'(' <ColumnNameList> ~')' ~REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>")]
 		public TableForeignKeyConstraint(ConstraintName constraintName, Sequence<ColumnName> columnNames, Qualified<SchemaName, TableName> refTableName, Optional<Sequence<ColumnName>> refColumnNames, Sequence<ForeignKeyAction> keyActions): base(constraintName) {
 			Debug.Assert(refTableName != null);
 			this.columnNames = columnNames.ToList();

@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DeclareCursorStatement: CursorStatement {
 		private readonly CursorDefinition definition;
 
-		[Rule("<DeclareStatement> ::= DECLARE <CursorName> <CursorDefinition>", ConstructorParameterMapping = new[] {1, 2})]
+		[Rule("<DeclareStatement> ::= ~DECLARE <CursorName> <CursorDefinition>")]
 		public DeclareCursorStatement(CursorName cursorName, CursorDefinition definition): base(definition.Global ? cursorName.AsGlobal() : cursorName) {
 			this.definition = definition;
 		}

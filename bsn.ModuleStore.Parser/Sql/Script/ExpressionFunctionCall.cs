@@ -16,14 +16,14 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<Expression> arguments;
 		private Qualified<SchemaName, FunctionName> functionName;
 
-		[Rule("<FunctionCall> ::= <FunctionName> '(' ')'", AllowTruncationForConstructor = true)]
+		[Rule("<FunctionCall> ::= <FunctionName> ~'(' ~')'")]
 		public ExpressionFunctionCall(FunctionName functionName): this(functionName, null) {}
 
-		[Rule("<FunctionCall> ::= <FunctionName> '(' <ExpressionList> ')'", ConstructorParameterMapping = new[] {0, 2})]
-		[Rule("<Value> ::= COALESCE '(' <ExpressionList> ')'", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<FunctionCall> ::= <FunctionName> ~'(' <ExpressionList> ~')'")]
+		[Rule("<Value> ::= COALESCE ~'(' <ExpressionList> ~')'")]
 		public ExpressionFunctionCall(FunctionName functionName, Sequence<Expression> arguments): this(new Qualified<SchemaName, FunctionName>(functionName), arguments.ToList()) {}
 
-		[Rule("<Value> ::= <TableName> '.' <FunctionCall>", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<Value> ::= <TableName> ~'.' <FunctionCall>")]
 		public ExpressionFunctionCall(TableName qualification, ExpressionFunctionCall call): this(CreateFunctionName(qualification, call), call.arguments) {}
 
 		private ExpressionFunctionCall(Qualified<SchemaName, FunctionName> functionName, List<Expression> arguments) {

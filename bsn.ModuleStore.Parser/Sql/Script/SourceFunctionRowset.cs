@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SourceFunctionRowset: SourceRowset {
 		private readonly ExpressionFunctionCall function;
 
-		[Rule("<SourceRowset> ::= <SchemaName> '.' <FunctionCall> <OptionalAlias>", ConstructorParameterMapping = new[] {0, 2, 3})]
+		[Rule("<SourceRowset> ::= <SchemaName> ~'.' <FunctionCall> <OptionalAlias>")]
 		public SourceFunctionRowset(SchemaName schemaName, ExpressionFunctionCall function, Optional<AliasName> aliasName): this(function, aliasName) {
 			function.FunctionName = new Qualified<SchemaName, FunctionName>(schemaName, function.FunctionName.Name);
 		}

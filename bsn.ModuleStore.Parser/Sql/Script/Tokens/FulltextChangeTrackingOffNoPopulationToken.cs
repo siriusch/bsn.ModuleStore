@@ -4,7 +4,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script.Tokens {
 	public sealed class FulltextChangeTrackingOffNoPopulationToken: FulltextChangeTrackingToken {
-		[Rule("<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING OFF ',' NO_POPULATION", AllowTruncationForConstructor = true)]
+		[Rule("<FulltextChangeTracking> ::= ~WITH_CHANGE_TRACKING ~OFF ~',' ~NO_POPULATION")]
 		public FulltextChangeTrackingOffNoPopulationToken() {}
 
 		public override FulltextChangeTracking FulltextChangeTracking {

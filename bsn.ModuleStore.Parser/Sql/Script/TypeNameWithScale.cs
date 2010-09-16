@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class TypeNameWithScale: TypeNameWithPrecision {
 		private readonly long scale;
 
-		[Rule("<TypeName> ::= Id '(' <IntegerLiteral> ',' <IntegerLiteral> ')'", ConstructorParameterMapping = new[] {0, 2, 4})]
+		[Rule("<TypeName> ::= Id ~'(' <IntegerLiteral> ~',' <IntegerLiteral> ~')'")]
 		public TypeNameWithScale(SqlIdentifier identifier, IntegerLiteral precision, IntegerLiteral scale): base(identifier, precision) {
 			Debug.Assert(scale != null);
 			this.scale = scale.Value;

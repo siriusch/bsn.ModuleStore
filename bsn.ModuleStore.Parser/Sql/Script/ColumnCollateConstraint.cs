@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ColumnCollateConstraint: ColumnConstraint {
 		private readonly CollationName collation;
 
-		[Rule("<ColumnConstraint> ::= COLLATE <CollationName>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<ColumnConstraint> ::= ~COLLATE <CollationName>")]
 		public ColumnCollateConstraint(CollationName collation) {
 			Debug.Assert(collation != null);
 			this.collation = collation;

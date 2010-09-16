@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExpressionParens: Expression {
 		private readonly Expression expression;
 
-		[Rule("<ExpressionParens> ::= '(' <Expression> ')'", ConstructorParameterMapping = new[] {1})]
+		[Rule("<ExpressionParens> ::= ~'(' <Expression> ~')'")]
 		public ExpressionParens(Expression expression) {
 			Debug.Assert(expression != null);
 			ExpressionParens parens = expression as ExpressionParens;

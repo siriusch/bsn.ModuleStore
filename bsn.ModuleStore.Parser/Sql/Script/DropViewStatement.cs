@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropViewStatement: DropStatement {
 		private readonly Qualified<SchemaName, ViewName> viewName;
 
-		[Rule("<DropViewStatement> ::= DROP VIEW <ViewNameQualified>", ConstructorParameterMapping = new[] {2})]
+		[Rule("<DropViewStatement> ::= ~DROP ~VIEW <ViewNameQualified>")]
 		public DropViewStatement(Qualified<SchemaName, ViewName> viewName) {
 			Debug.Assert(viewName != null);
 			this.viewName = viewName;

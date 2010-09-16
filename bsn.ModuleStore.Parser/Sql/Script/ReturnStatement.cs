@@ -6,10 +6,10 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ReturnStatement: Statement {
 		private readonly Expression expression;
 
-		[Rule("<ReturnStatement> ::= RETURN", AllowTruncationForConstructor = true)]
+		[Rule("<ReturnStatement> ::= ~RETURN")]
 		public ReturnStatement(): this(null) {}
 
-		[Rule("<ReturnStatement> ::= RETURN <Expression>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<ReturnStatement> ::= ~RETURN <Expression>")]
 		public ReturnStatement(Expression expression) {
 			this.expression = expression;
 		}

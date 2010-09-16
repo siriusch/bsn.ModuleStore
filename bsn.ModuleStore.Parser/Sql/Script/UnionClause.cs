@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<UnionClause> ::=")]
 		public UnionClause(): this(null) {}
 
-		[Rule("<UnionClause> ::= UNION <SelectQuery>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<UnionClause> ::= ~UNION <SelectQuery>")]
 		public UnionClause(SelectQuery selectQuery): base() {
 			this.selectQuery = selectQuery;
 		}

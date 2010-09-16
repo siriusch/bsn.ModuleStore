@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ComputedColumnDefinition: ColumnDefinition {
 		private readonly Expression expression;
 
-		[Rule("<ColumnDefinition> ::= AS <Expression>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<ColumnDefinition> ::= ~AS <Expression>")]
 		public ComputedColumnDefinition(Expression expression): base() {
 			Debug.Assert(expression != null);
 			this.expression = expression;

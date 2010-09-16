@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly ParameterName parameterName;
 		private readonly Qualified<SchemaName, TypeName> parameterTypeName;
 
-		[Rule("<FunctionParameter> ::= <ParameterName> <OptionalAs> <TypeNameQualified> <OptionalDefault>", ConstructorParameterMapping = new[] {0, 2, 3})]
+		[Rule("<FunctionParameter> ::= <ParameterName> ~<OptionalAs> <TypeNameQualified> <OptionalDefault>")]
 		public FunctionParameter(ParameterName parameterName, Qualified<SchemaName, TypeName> parameterTypeName, Optional<Literal> defaultValue) {
 			Debug.Assert(parameterName != null);
 			Debug.Assert(parameterTypeName != null);

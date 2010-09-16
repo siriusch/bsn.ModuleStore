@@ -8,8 +8,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Identifier identifier;
 		private readonly SqlScriptableToken stringValue;
 
-		[Rule("<WaitforStatement> ::= WAITFOR Id <StringLiteral>", ConstructorParameterMapping = new[] {1, 2})]
-		[Rule("<WaitforStatement> ::= WAITFOR Id <VariableName>", ConstructorParameterMapping = new[] {1, 2})]
+		[Rule("<WaitforStatement> ::= ~WAITFOR Id <StringLiteral>")]
+		[Rule("<WaitforStatement> ::= ~WAITFOR Id <VariableName>")]
 		public WaitforStatement(Identifier identifier, SqlScriptableToken stringValue) {
 			Debug.Assert(identifier != null);
 			Debug.Assert(stringValue != null);

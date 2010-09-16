@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly CollationName collation;
 		private readonly bool isUnicode;
 
-		[Rule("<CollableStringLiteral> ::= StringLiteral COLLATE <CollationName>", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<CollableStringLiteral> ::= StringLiteral ~COLLATE <CollationName>")]
 		public StringLiteral(StringLiteral value, CollationName collation): this(value.Value, value.IsUnicode, collation) {}
 
 		public StringLiteral(string value): this(ParseValue(value), ParseIsUnicode(value), null) {}

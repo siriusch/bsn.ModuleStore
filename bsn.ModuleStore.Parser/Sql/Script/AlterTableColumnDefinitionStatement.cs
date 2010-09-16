@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class AlterTableColumnDefinitionStatement: AlterTableColumnStatement {
 		private readonly ColumnDefinition definition;
 
-		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> <ColumnDefinition>", ConstructorParameterMapping = new[] {2, 5, 6})]
+		[Rule("<AlterTableStatement> ::= ~ALTER ~TABLE <TableNameQualified> ~ALTER ~COLUMN <ColumnName> <ColumnDefinition>")]
 		public AlterTableColumnDefinitionStatement(Qualified<SchemaName, TableName> tableName, ColumnName columnName, ColumnDefinition definition): base(tableName, columnName) {
 			Debug.Assert(definition != null);
 			this.definition = definition;

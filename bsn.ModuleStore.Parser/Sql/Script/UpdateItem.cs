@@ -8,16 +8,16 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression expression;
 		private readonly VariableName variableName;
 
-		[Rule("<UpdateItem> ::= <ColumnNameQualified> '=' DEFAULT", ConstructorParameterMapping = new[] {0})]
+		[Rule("<UpdateItem> ::= <ColumnNameQualified> ~'=' ~DEFAULT")]
 		public UpdateItem(Qualified<SqlName, ColumnName> columnName): this(null, columnName, null) {}
 
-		[Rule("<UpdateItem> ::= <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<UpdateItem> ::= <VariableName> ~'=' <Expression>")]
 		public UpdateItem(VariableName variableName, Expression expression): this(variableName, null, expression) {}
 
-		[Rule("<UpdateItem> ::= <ColumnNameQualified> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<UpdateItem> ::= <ColumnNameQualified> ~'=' <Expression>")]
 		public UpdateItem(Qualified<SqlName, ColumnName> columnName, Expression expression): this(null, columnName, expression) {}
 
-		[Rule("<UpdateItem> ::= <VariableName> '=' <ColumnNameQualified> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2, 4})]
+		[Rule("<UpdateItem> ::= <VariableName> ~'=' <ColumnNameQualified> ~'=' <Expression>")]
 		public UpdateItem(VariableName variableName, Qualified<SqlName, ColumnName> columnName, Expression expression) {
 			this.columnName = columnName;
 			this.variableName = variableName;

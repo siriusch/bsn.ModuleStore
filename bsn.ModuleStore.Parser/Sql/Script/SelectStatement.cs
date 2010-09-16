@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<SelectStatement> ::= <SelectQuery> <ForClause> <QueryHint>")]
 		public SelectStatement(SelectQuery selectQuery, ForClause forClause, QueryHint queryHint): this(null, selectQuery, forClause, queryHint) {}
 
-		[Rule("<SelectStatement> ::= WITH <CTEList> <SelectQuery> <ForClause> <QueryHint>", ConstructorParameterMapping = new[] {1, 2, 3, 4})]
+		[Rule("<SelectStatement> ::= ~WITH <CTEList> <SelectQuery> <ForClause> <QueryHint>")]
 		public SelectStatement(Sequence<CommonTableExpression> ctes, SelectQuery selectQuery, ForClause forClause, QueryHint queryHint) {
 			Debug.Assert(selectQuery != null);
 			this.ctes = ctes.ToList();

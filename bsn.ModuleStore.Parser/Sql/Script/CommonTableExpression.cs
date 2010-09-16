@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<ColumnName> columnNames;
 		private readonly SelectQuery selectQuery;
 
-		[Rule("<CTE> ::= <AliasName> <ColumnNameGroup> AS '(' <SelectQuery> ')'", ConstructorParameterMapping = new[] {0, 1, 4})]
+		[Rule("<CTE> ::= <AliasName> <ColumnNameGroup> ~AS ~'(' <SelectQuery> ~')'")]
 		public CommonTableExpression(AliasName aliasName, Optional<Sequence<ColumnName>> columnNames, SelectQuery selectQuery) {
 			Debug.Assert(aliasName != null);
 			Debug.Assert(selectQuery != null);

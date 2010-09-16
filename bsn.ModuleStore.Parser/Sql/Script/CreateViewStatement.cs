@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool withCheckOption;
 		private readonly bool withViewMetadata;
 
-		[Rule("<CreateViewStatement> ::= CREATE VIEW <ViewNameQualified> <ColumnNameGroup> <ViewOptionalAttribute> AS <SelectStatement> <ViewOptionalCheckOption>", ConstructorParameterMapping = new[] {2, 3, 4, 6, 7})]
+		[Rule("<CreateViewStatement> ::= ~CREATE ~VIEW <ViewNameQualified> <ColumnNameGroup> <ViewOptionalAttribute> ~AS <SelectStatement> <ViewOptionalCheckOption>")]
 		public CreateViewStatement(Qualified<SchemaName, ViewName> viewName, Optional<Sequence<ColumnName>> columnNames, Optional<WithViewMetadataToken> withViewMetadata, SelectStatement selectStatement, Optional<WithCheckOptionToken> withCheckOption) {
 			Debug.Assert(viewName != null);
 			Debug.Assert(selectStatement != null);

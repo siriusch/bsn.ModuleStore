@@ -9,10 +9,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression expression;
 		private readonly bool notForReplication;
 
-		[Rule("<TableConstraint> ::= CHECK <OptionalNotForReplication> '(' <Expression> ')'", ConstructorParameterMapping = new[] {1, 3})]
+		[Rule("<TableConstraint> ::= ~CHECK <OptionalNotForReplication> ~'(' <Expression> ~')'")]
 		public TableCheckConstraint(Optional<ForReplicationToken> notForReplication, Expression expression): this(null, notForReplication, expression) {}
 
-		[Rule("<TableConstraint> ::= CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Expression> ')'", ConstructorParameterMapping = new[] {1, 3, 5})]
+		[Rule("<TableConstraint> ::= ~CONSTRAINT <ConstraintName> ~CHECK <OptionalNotForReplication> ~'(' <Expression> ~')'")]
 		public TableCheckConstraint(ConstraintName constraintName, Optional<ForReplicationToken> notForReplication, Expression expression): base(constraintName) {
 			Debug.Assert(expression != null);
 			this.notForReplication = notForReplication.HasValue();

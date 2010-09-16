@@ -8,8 +8,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class ForeignKeyAction: SqlScriptableToken {
 		private readonly DmlOperation operation;
 
-		[Rule("<ForeignKeyAction> ::= ON DELETE NO_ACTION", ConstructorParameterMapping = new[] {1})]
-		[Rule("<ForeignKeyAction> ::= ON UPDATE NO_ACTION", ConstructorParameterMapping = new[] {1})]
+		[Rule("<ForeignKeyAction> ::= ~ON DELETE ~NO_ACTION")]
+		[Rule("<ForeignKeyAction> ::= ~ON UPDATE ~NO_ACTION")]
 		public ForeignKeyAction(DmlOperationToken operation): base() {
 			Debug.Assert(operation != null);
 			this.operation = operation.Operation;

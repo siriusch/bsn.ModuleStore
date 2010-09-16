@@ -8,10 +8,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly IntegerLiteral increment;
 		private readonly IntegerLiteral seed;
 
-		[Rule("<ColumnConstraint> ::= IDENTITY", AllowTruncationForConstructor = true)]
+		[Rule("<ColumnConstraint> ::= ~IDENTITY")]
 		public ColumnIdentityConstraint() {}
 
-		[Rule("<ColumnConstraint> ::= IDENTITY '(' IntegerLiteral ',' IntegerLiteral ')'", ConstructorParameterMapping = new[] {2, 4})]
+		[Rule("<ColumnConstraint> ::= ~IDENTITY ~'(' IntegerLiteral ~',' IntegerLiteral ~')'")]
 		public ColumnIdentityConstraint(IntegerLiteral seed, IntegerLiteral increment) {
 			this.seed = seed;
 			this.increment = increment;

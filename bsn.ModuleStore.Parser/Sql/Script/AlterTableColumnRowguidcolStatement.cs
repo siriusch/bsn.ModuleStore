@@ -5,8 +5,8 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class AlterTableColumnRowguidcolStatement: AlterTableColumnAttributeStatement {
-		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD ROWGUIDCOL", ConstructorParameterMapping = new[] {2, 5, 6})]
-		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP ROWGUIDCOL", ConstructorParameterMapping = new[] {2, 5, 6})]
+		[Rule("<AlterTableStatement> ::= ~ALTER ~TABLE <TableNameQualified> ~ALTER ~COLUMN <ColumnName> ADD ~ROWGUIDCOL")]
+		[Rule("<AlterTableStatement> ::= ~ALTER ~TABLE <TableNameQualified> ~ALTER ~COLUMN <ColumnName> DROP ~ROWGUIDCOL")]
 		public AlterTableColumnRowguidcolStatement(Qualified<SchemaName, TableName> tableName, ColumnName columnName, DdlOperationToken ddlOperationToken): base(tableName, columnName, ddlOperationToken) {}
 
 		public override void WriteTo(SqlWriter writer) {

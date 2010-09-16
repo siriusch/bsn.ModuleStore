@@ -4,7 +4,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class ForBrowsingClause: ForClause {
-		[Rule("<ForClause> ::= FOR BROWSE", AllowTruncationForConstructor = true)]
+		[Rule("<ForClause> ::= ~FOR ~BROWSE")]
 		public ForBrowsingClause() {}
 
 		public override SelectFor SelectFor {

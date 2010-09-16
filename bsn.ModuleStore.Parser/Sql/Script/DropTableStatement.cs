@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropTableStatement: DropStatement {
 		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<DropTableStatement> ::= DROP TABLE <TableNameQualified>", ConstructorParameterMapping = new[] {2})]
+		[Rule("<DropTableStatement> ::= ~DROP ~TABLE <TableNameQualified>")]
 		public DropTableStatement(Qualified<SchemaName, TableName> tableName) {
 			Debug.Assert(tableName != null);
 			this.tableName = tableName;

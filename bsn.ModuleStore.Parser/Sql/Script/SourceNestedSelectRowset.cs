@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SourceNestedSelectRowset: SourceRowset {
 		private readonly SelectQuery @select;
 
-		[Rule("<SourceRowset> ::= '(' <SelectQuery> ')' <OptionalAlias>", ConstructorParameterMapping = new[] {1, 3})]
+		[Rule("<SourceRowset> ::= ~'(' <SelectQuery> ~')' <OptionalAlias>")]
 		public SourceNestedSelectRowset(SelectQuery select, Optional<AliasName> aliasName): base(aliasName) {
 			Debug.Assert(select != null);
 			this.@select = select;

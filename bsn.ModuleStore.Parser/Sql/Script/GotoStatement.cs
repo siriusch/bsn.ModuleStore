@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class GotoStatement: Statement {
 		private readonly LabelName labelName;
 
-		[Rule("<GotoStatement> ::= GOTO <LabelName>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<GotoStatement> ::= ~GOTO <LabelName>")]
 		public GotoStatement(LabelName labelName) {
 			Debug.Assert(labelName != null);
 			this.labelName = labelName;

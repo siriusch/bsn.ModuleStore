@@ -6,7 +6,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SetVariableExpressionStatement: SetVariableStatement {
 		private readonly Expression expression;
 
-		[Rule("<SetVariableStatement> ::= SET <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {1, 3})]
+		[Rule("<SetVariableStatement> ::= ~SET <VariableName> ~'=' <Expression>")]
 		public SetVariableExpressionStatement(VariableName variableName, Expression expression): base(variableName) {
 			this.expression = expression;
 		}

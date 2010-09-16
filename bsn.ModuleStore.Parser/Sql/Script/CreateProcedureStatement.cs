@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Qualified<SchemaName, ProcedureName> procedureName;
 		private readonly bool recompile;
 
-		[Rule("<CreateProcedureStatement> ::= CREATE PROCEDURE <ProcedureNameQualified> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> AS <StatementBlock>", ConstructorParameterMapping = new[] {2, 3, 4, 5, 7})]
+		[Rule("<CreateProcedureStatement> ::= ~CREATE ~PROCEDURE <ProcedureNameQualified> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> ~AS <StatementBlock>")]
 		public CreateProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ProcedureParameter>> parameters, Optional<WithRecompileToken> recompile, Optional<ForReplicationToken> forReplication, StatementBlock body) {
 			Debug.Assert(procedureName != null);
 			Debug.Assert(body != null);

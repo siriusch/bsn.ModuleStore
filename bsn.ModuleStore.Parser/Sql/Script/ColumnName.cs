@@ -4,7 +4,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ColumnName: SqlQuotedName {
-		[Rule("<ColumnWild> ::= '*'", AllowTruncationForConstructor = true)]
+		[Rule("<ColumnWild> ::= ~'*'")]
 		public ColumnName(): this("*") {}
 
 		[Rule("<ColumnName> ::= Id")]

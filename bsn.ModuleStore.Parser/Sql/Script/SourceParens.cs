@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Source inner;
 		private readonly List<Join> joins;
 
-		[Rule("<Source> ::= '(' <Source> <JoinChain> ')'", ConstructorParameterMapping = new[] {1, 2})]
+		[Rule("<Source> ::= ~'(' <Source> <JoinChain> ~')'")]
 		public SourceParens(Source inner, Sequence<Join> joins) {
 			Debug.Assert(inner != null);
 			this.inner = inner;

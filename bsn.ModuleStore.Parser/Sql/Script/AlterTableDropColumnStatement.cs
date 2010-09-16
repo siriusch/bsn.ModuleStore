@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class AlterTableDropColumnStatement: AlterTableStatement {
 		private readonly ColumnName columnName;
 
-		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableNameQualified> DROP COLUMN <ColumnName>", ConstructorParameterMapping = new[] {2, 5})]
+		[Rule("<AlterTableStatement> ::= ~ALTER ~TABLE <TableNameQualified> ~DROP ~COLUMN <ColumnName>")]
 		public AlterTableDropColumnStatement(Qualified<SchemaName, TableName> tableName, ColumnName columnName): base(tableName) {
 			Debug.Assert(columnName != null);
 			this.columnName = columnName;

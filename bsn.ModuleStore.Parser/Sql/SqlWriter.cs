@@ -12,7 +12,6 @@ namespace bsn.ModuleStore.Sql {
 		private readonly TextWriter writer;
 		private string indentation = "    ";
 		private int indentationLevel;
-		private SchemaName schemaName;
 
 		public SqlWriter(TextWriter writer) {
 			if (writer == null) {

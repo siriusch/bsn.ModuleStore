@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly CollationName collation;
 		private readonly Expression valueExpression;
 
-		[Rule("<CollatedValue> ::= <Value> COLLATE <CollationName>", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<CollatedValue> ::= <Value> ~COLLATE <CollationName>")]
 		public CollableValue(Expression valueExpression, CollationName collation) {
 			Debug.Assert(valueExpression != null);
 			Debug.Assert(collation != null);

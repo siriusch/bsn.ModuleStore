@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropFunctionStatement: DropStatement {
 		private readonly Qualified<SchemaName, FunctionName> functionName;
 
-		[Rule("<DropFunctionStatement> ::= DROP FUNCTION <FunctionNameQualified>", ConstructorParameterMapping = new[] {2})]
+		[Rule("<DropFunctionStatement> ::= ~DROP ~FUNCTION <FunctionNameQualified>")]
 		public DropFunctionStatement(Qualified<SchemaName, FunctionName> functionName) {
 			Debug.Assert(functionName != null);
 			this.functionName = functionName;

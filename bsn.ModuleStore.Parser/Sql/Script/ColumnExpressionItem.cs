@@ -11,7 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ColumnItem> ::= <Expression> <OptionalAlias>")]
 		public ColumnExpressionItem(Expression expression, Optional<AliasName> aliasName): this(aliasName, expression) {}
 
-		[Rule("<ColumnItem> ::= <AliasName> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<ColumnItem> ::= <AliasName> ~'=' <Expression>")]
 		public ColumnExpressionItem(AliasName aliasName, Expression expression) {
 			Debug.Assert(expression != null);
 			this.expression = expression;

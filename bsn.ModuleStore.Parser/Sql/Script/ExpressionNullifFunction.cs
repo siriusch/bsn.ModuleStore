@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression firstExpression;
 		private readonly Expression secondExpression;
 
-		[Rule("<Value> ::= NULLIF '(' <Expression> ',' <Expression> ')'", ConstructorParameterMapping = new[] {2, 4})]
+		[Rule("<Value> ::= ~NULLIF ~'(' <Expression> ~',' <Expression> ~')'")]
 		public ExpressionNullifFunction(Expression firstExpression, Expression secondExpression) {
 			Debug.Assert(firstExpression != null);
 			Debug.Assert(secondExpression != null);

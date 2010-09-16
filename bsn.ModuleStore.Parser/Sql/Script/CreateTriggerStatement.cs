@@ -15,7 +15,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<DmlOperation> triggerOperations;
 		private readonly TriggerType type;
 
-		[Rule("<CreateTriggerStatement> ::= CREATE TRIGGER <TriggerNameQualified> ON <TableNameQualified> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <StatementGroup>", ConstructorParameterMapping = new[] {2, 4, 5, 6, 7, 9})]
+		[Rule("<CreateTriggerStatement> ::= ~CREATE ~TRIGGER <TriggerNameQualified> ~ON <TableNameQualified> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> ~AS <StatementGroup>")]
 		public CreateTriggerStatement(Qualified<SchemaName, TriggerName> triggerName, Qualified<SchemaName, TableName> tableName, TriggerTypeToken triggerType, Sequence<DmlOperationToken> triggerOperations, Optional<ForReplicationToken> notForReplication, Statement statement) {
 			Debug.Assert(triggerName != null);
 			Debug.Assert(triggerOperations != null);

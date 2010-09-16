@@ -15,9 +15,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly TopExpression topExpression;
 		private readonly List<UpdateItem> updateItems;
 		private readonly Predicate whereClause;
+		private readonly QueryHint queryHint;
 
-		[Rule("<UpdateStatement> ::= <CTEGroup> UPDATE <OptionalTop> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>", ConstructorParameterMapping = new[] {0, 2, 3, 5, 6, 7, 8})]
-		public UpdateStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Sequence<UpdateItem> updateItems, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause) {
+		[Rule("<UpdateStatement> ::= <CTEGroup> ~UPDATE <OptionalTop> <DestinationRowset> ~SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>")]
+		public UpdateStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Sequence<UpdateItem> updateItems, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause, QueryHint queryHint) {
 			Debug.Assert(destinationRowset != null);
 			this.ctes = ctes.ToList();
 			this.topExpression = topExpression;
@@ -26,6 +27,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.outputClause = outputClause;
 			this.fromClause = fromClause;
 			this.whereClause = whereClause;
+			this.queryHint = queryHint;
 		}
 
 		public IEnumerable<CommonTableExpression> Ctes {
@@ -80,6 +82,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(outputClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(fromClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore, "WHERE ", null);
+			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

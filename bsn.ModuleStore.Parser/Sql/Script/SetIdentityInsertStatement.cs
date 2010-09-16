@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool enabled;
 		private readonly TableName tableName;
 
-		[Rule("<SetOptionStatement> ::= SET IDENTITY_INSERT <TableName> <Toggle>", ConstructorParameterMapping = new[] {2, 3})]
+		[Rule("<SetOptionStatement> ::= ~SET ~IDENTITY_INSERT <TableName> <Toggle>")]
 		public SetIdentityInsertStatement(TableName tableName, ToggleToken toggle) {
 			Debug.Assert(tableName != null);
 			Debug.Assert(toggle != null);

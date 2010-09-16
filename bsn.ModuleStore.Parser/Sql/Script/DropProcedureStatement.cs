@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropProcedureStatement: DropStatement {
 		private readonly Qualified<SchemaName, ProcedureName> procedureName;
 
-		[Rule("<DropProcedureStatement> ::= DROP PROCEDURE <ProcedureNameQualified>", ConstructorParameterMapping = new[] {2})]
+		[Rule("<DropProcedureStatement> ::= ~DROP ~PROCEDURE <ProcedureNameQualified>")]
 		public DropProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName) {
 			Debug.Assert(procedureName != null);
 			this.procedureName = procedureName;

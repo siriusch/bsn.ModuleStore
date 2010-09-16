@@ -6,7 +6,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 	public sealed class FulltextChangeTrackingCustomToken: FulltextChangeTrackingToken {
 		private readonly FulltextChangeTracking mode;
 
-		[Rule("<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING Id", ConstructorParameterMapping = new[] {1})]
+		[Rule("<FulltextChangeTracking> ::= ~WITH_CHANGE_TRACKING Id")]
 		public FulltextChangeTrackingCustomToken(Identifier identifier) {
 			if (string.Equals(identifier.Value, "MANUAL", StringComparison.OrdinalIgnoreCase)) {
 				mode = FulltextChangeTracking.Manual;

@@ -7,8 +7,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly T condition;
 		private readonly Expression valueExpression;
 
-		[Rule("<CaseWhenExpression> ::= WHEN <Expression> THEN <Expression>", typeof(Expression), ConstructorParameterMapping = new[] {1, 3})]
-		[Rule("<CaseWhenPredicate> ::= WHEN <Predicate> THEN <Expression>", typeof(Predicate), ConstructorParameterMapping = new[] {1, 3})]
+		[Rule("<CaseWhenExpression> ::= ~WHEN <Expression> ~THEN <Expression>", typeof(Expression))]
+		[Rule("<CaseWhenPredicate> ::= ~WHEN <Predicate> ~THEN <Expression>", typeof(Predicate))]
 		public CaseWhen(T condition, Expression valueExpression) {
 			this.condition = condition;
 			this.valueExpression = valueExpression;

@@ -10,12 +10,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly ColumnName refColumnName;
 		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<NamedColumnConstraint> ::= REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>", ConstructorParameterMapping = new[] {1, 2, 3})]
-		[Rule("<NamedColumnConstraint> ::= FOREIGN KEY REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>", ConstructorParameterMapping = new[] {3, 4, 5})]
+		[Rule("<NamedColumnConstraint> ::= ~REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>")]
+		[Rule("<NamedColumnConstraint> ::= ~FOREIGN ~KEY ~REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>")]
 		public ColumnForeignKeyConstraint(Qualified<SchemaName, TableName> tableName, Optional<ColumnName> refColumnName, Sequence<ForeignKeyAction> keyActions): this(null, tableName, refColumnName, keyActions) {}
 
-		[Rule("<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>", ConstructorParameterMapping = new[] {1, 3, 4, 5})]
-		[Rule("<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> FOREIGN KEY REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>", ConstructorParameterMapping = new[] {1, 5, 6, 7})]
+		[Rule("<NamedColumnConstraint> ::= ~CONSTRAINT <ConstraintName> ~REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>")]
+		[Rule("<NamedColumnConstraint> ::= ~CONSTRAINT <ConstraintName> ~FOREIGN ~KEY ~REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>")]
 		public ColumnForeignKeyConstraint(ConstraintName constraintName, Qualified<SchemaName, TableName> tableName, Optional<ColumnName> refColumnName, Sequence<ForeignKeyAction> keyActions): base(constraintName) {
 			Debug.Assert(tableName != null);
 			this.tableName = tableName;

@@ -17,9 +17,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExecuteParameter> ::= <Literal> <OptionalOutput>", typeof(Literal))]
 		public ExecuteParameter(T value, Optional<OutputToken> output): this(null, value, output) {}
 
-		[Rule("<ExecuteParameter> ::= <ParameterName> '=' <VariableName> <OptionalOutput>", typeof(VariableName), ConstructorParameterMapping = new[] {0, 2, 3})]
-		[Rule("<ExecuteParameter> ::= <ParameterName> '=' <SystemVariableName> <OptionalOutput>", typeof(VariableName), ConstructorParameterMapping = new[] {0, 2, 3})]
-		[Rule("<ExecuteParameter> ::= <ParameterName> '=' <Literal> <OptionalOutput>", typeof(Literal), ConstructorParameterMapping = new[] {0, 2, 3})]
+		[Rule("<ExecuteParameter> ::= <ParameterName> ~'=' <VariableName> <OptionalOutput>", typeof(VariableName))]
+		[Rule("<ExecuteParameter> ::= <ParameterName> ~'=' <SystemVariableName> <OptionalOutput>", typeof(VariableName))]
+		[Rule("<ExecuteParameter> ::= <ParameterName> ~'=' <Literal> <OptionalOutput>", typeof(Literal))]
 		public ExecuteParameter(ParameterName parameterName, T value, Optional<OutputToken> output): base() {
 			Debug.Assert(value != null);
 			this.parameterName = parameterName;

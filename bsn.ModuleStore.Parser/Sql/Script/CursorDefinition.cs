@@ -10,10 +10,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool global;
 		private readonly SelectStatement selectStatement;
 
-		[Rule("<CursorDefinition> ::= CURSOR <CursorOptionList> FOR <SelectStatement>", ConstructorParameterMapping = new[] {1, 3})]
+		[Rule("<CursorDefinition> ::= ~CURSOR <CursorOptionList> ~FOR <SelectStatement>")]
 		public CursorDefinition(Sequence<Identifier> cursorOptions, SelectStatement selectStatement): this(cursorOptions, selectStatement, null) {}
 
-		[Rule("<CursorDefinition> ::= CURSOR <CursorOptionList> FOR <SelectStatement> <CursorUpdate>", ConstructorParameterMapping = new[] {1, 3, 4})]
+		[Rule("<CursorDefinition> ::= ~CURSOR <CursorOptionList> ~FOR <SelectStatement> <CursorUpdate>")]
 		public CursorDefinition(Sequence<Identifier> cursorOptions, SelectStatement selectStatement, UpdateMode cursorUpdate) {
 			this.selectStatement = selectStatement;
 			this.cursorUpdate = cursorUpdate;

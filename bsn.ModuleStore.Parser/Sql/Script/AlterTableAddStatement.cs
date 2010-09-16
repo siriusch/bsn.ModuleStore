@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly TableCheck check;
 		private readonly List<TableDefinition> definitions;
 
-		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableNameQualified> <TableCheck> ADD <TableDefinitionList>", ConstructorParameterMapping = new[] {2, 3, 5})]
+		[Rule("<AlterTableStatement> ::= ~ALTER ~TABLE <TableNameQualified> <TableCheck> ~ADD <TableDefinitionList>")]
 		public AlterTableAddStatement(Qualified<SchemaName, TableName> tableName, TableCheckToken check, Sequence<TableDefinition> definitions): base(tableName) {
 			Debug.Assert(check != null);
 			Debug.Assert(definitions != null);

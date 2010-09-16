@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class TypeNameNamedExtension: TypeNameExtended {
 		private readonly SqlIdentifier extension;
 
-		[Rule("<TypeName> ::= Id '(' Id ')'", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<TypeName> ::= Id ~'(' Id ~')'")]
 		public TypeNameNamedExtension(SqlIdentifier identifier, SqlIdentifier extension): base(identifier) {
 			Debug.Assert(extension != null);
 			this.extension = extension;

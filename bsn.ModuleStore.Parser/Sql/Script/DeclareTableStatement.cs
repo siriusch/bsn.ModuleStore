@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<TableDefinition> tableDefinitions;
 		private readonly VariableName variableName;
 
-		[Rule("<DeclareStatement> ::= DECLARE <VariableName> <OptionalAs> TABLE <TableDefinitionGroup>", ConstructorParameterMapping = new[] {1, 4})]
+		[Rule("<DeclareStatement> ::= ~DECLARE <VariableName> ~<OptionalAs> ~TABLE <TableDefinitionGroup>")]
 		public DeclareTableStatement(VariableName variableName, Sequence<TableDefinition> tableDefinitions): base() {
 			Debug.Assert(variableName != null);
 			this.variableName = variableName;

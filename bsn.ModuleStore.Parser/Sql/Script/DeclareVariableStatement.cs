@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DeclareVariableStatement: Statement {
 		private readonly List<DeclareItem> declarations;
 
-		[Rule("<DeclareStatement> ::= DECLARE <DeclareItemList>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<DeclareStatement> ::= ~DECLARE <DeclareItemList>")]
 		public DeclareVariableStatement(Sequence<DeclareItem> declarations) {
 			Debug.Assert(declarations != null);
 			this.declarations = declarations.ToList();

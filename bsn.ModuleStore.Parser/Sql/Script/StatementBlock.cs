@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class StatementBlock: Statement {
 		private readonly List<Statement> statements;
 
-		[Rule("<StatementBlock> ::= BEGIN <StatementList> END", ConstructorParameterMapping = new[] {1})]
+		[Rule("<StatementBlock> ::= ~BEGIN <StatementList> ~END")]
 		public StatementBlock(Sequence<Statement> statements): this(statements.ToList()) {}
 
 		internal StatementBlock(params Statement[] statements): this(new List<Statement>(statements)) {}

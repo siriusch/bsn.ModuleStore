@@ -7,8 +7,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class NestedSelectQuery: Tuple {
 		private readonly SelectQuery value;
 
-		[Rule("<Tuple> ::= '(' <SelectQuery> ')'", ConstructorParameterMapping = new[] {1})]
-		[Rule("<ExpressionParens> ::= '(' <SelectQuery> ')'", ConstructorParameterMapping = new[] {1})]
+		[Rule("<Tuple> ::= ~'(' <SelectQuery> ~')'")]
+		[Rule("<ExpressionParens> ::= ~'(' <SelectQuery> ~')'")]
 		public NestedSelectQuery(SelectQuery value): base() {
 			Debug.Assert(value != null);
 			this.value = value;

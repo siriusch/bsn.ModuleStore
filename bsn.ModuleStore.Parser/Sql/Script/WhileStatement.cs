@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression expression;
 		private readonly Statement statement;
 
-		[Rule("<WhileStatement> ::= WHILE <Expression> <StatementGroup>", ConstructorParameterMapping = new[] {1, 2})]
+		[Rule("<WhileStatement> ::= ~WHILE <Expression> <StatementGroup>")]
 		public WhileStatement(Expression expression, Statement statement) {
 			Debug.Assert(expression != null);
 			Debug.Assert(statement != null);

@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class PrintStatement: Statement {
 		private readonly Expression expression;
 
-		[Rule("<PrintStatement> ::= PRINT <Expression>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<PrintStatement> ::= ~PRINT <Expression>")]
 		public PrintStatement(Expression expression) {
 			Debug.Assert(expression != null);
 			this.expression = expression;

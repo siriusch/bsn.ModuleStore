@@ -4,7 +4,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ContinueStatement: Statement {
-		[Rule("<ContinueStatement> ::= CONTINUE", AllowTruncationForConstructor = true)]
+		[Rule("<ContinueStatement> ::= ~CONTINUE")]
 		public ContinueStatement() {}
 
 		public override void WriteTo(SqlWriter writer) {

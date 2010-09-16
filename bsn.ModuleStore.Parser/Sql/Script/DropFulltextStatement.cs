@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropFulltextStatement: DropStatement {
 		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableNameQualified>", ConstructorParameterMapping = new[] {3})]
+		[Rule("<DropFulltextStatement> ::= ~DROP ~FULLTEXT_INDEX ~ON <TableNameQualified>")]
 		public DropFulltextStatement(Qualified<SchemaName, TableName> tableName) {
 			Debug.Assert(tableName != null);
 			this.tableName = tableName;

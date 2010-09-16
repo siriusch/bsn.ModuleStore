@@ -7,8 +7,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class AlterTableDropConstraintStatement: AlterTableStatement {
 		private readonly ConstraintName constraintName;
 
-		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableNameQualified> DROP <ConstraintName>", ConstructorParameterMapping = new[] {2, 4})]
-		[Rule("<AlterTableStatement> ::= ALTER TABLE <TableNameQualified> DROP CONSTRAINT <ConstraintName>", ConstructorParameterMapping = new[] {2, 5})]
+		[Rule("<AlterTableStatement> ::= ~ALTER ~TABLE <TableNameQualified> ~DROP <ConstraintName>")]
+		[Rule("<AlterTableStatement> ::= ~ALTER ~TABLE <TableNameQualified> ~DROP ~CONSTRAINT <ConstraintName>")]
 		public AlterTableDropConstraintStatement(Qualified<SchemaName, TableName> tableName, ConstraintName constraintName): base(tableName) {
 			Debug.Assert(constraintName != null);
 			this.constraintName = constraintName;

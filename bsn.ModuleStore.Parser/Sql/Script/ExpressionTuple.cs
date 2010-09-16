@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExpressionTuple: Tuple {
 		private readonly List<Expression> valueExpressions;
 
-		[Rule("<Tuple> ::= '(' <ExpressionList> ')'", ConstructorParameterMapping = new[] {1})]
+		[Rule("<Tuple> ::= ~'(' <ExpressionList> ~')'")]
 		public ExpressionTuple(Sequence<Expression> value): base() {
 			Debug.Assert(value != null);
 			valueExpressions = value.ToList();

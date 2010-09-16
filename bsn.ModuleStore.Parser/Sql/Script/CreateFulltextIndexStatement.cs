@@ -12,7 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly IndexName indexName;
 		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableNameQualified> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>", ConstructorParameterMapping = new[] {4, 5, 8, 9})]
+		[Rule("<CreateFulltextStatement> ::= ~CREATE ~FULLTEXT_INDEX ~ON ~TABLE <TableNameQualified> <FulltextColumnGroup> ~KEY ~INDEX <IndexName> <FulltextChangeTracking>")]
 		public CreateFulltextIndexStatement(Qualified<SchemaName, TableName> tableName, Optional<Sequence<FulltextColumn>> columns, IndexName indexName, FulltextChangeTrackingToken changeTracking) {
 			Debug.Assert(tableName != null);
 			Debug.Assert(indexName != null);

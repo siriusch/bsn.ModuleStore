@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropTriggerStatement: DropStatement {
 		private readonly Qualified<SchemaName, TriggerName> triggerName;
 
-		[Rule("<DropTriggerStatement> ::= DROP TRIGGER <TriggerNameQualified>", ConstructorParameterMapping = new[] {2})]
+		[Rule("<DropTriggerStatement> ::= ~DROP ~TRIGGER <TriggerNameQualified>")]
 		public DropTriggerStatement(Qualified<SchemaName, TriggerName> triggerName) {
 			Debug.Assert(triggerName != null);
 			this.triggerName = triggerName;

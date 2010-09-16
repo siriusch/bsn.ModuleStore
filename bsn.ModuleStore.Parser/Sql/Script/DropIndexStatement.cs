@@ -11,7 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<IndexOption> indexOptions;
 		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<DropIndexStatement> ::= DROP INDEX <IndexName> ON <TableNameQualified> <IndexOptionGroup>", ConstructorParameterMapping = new[] {2, 4, 5})]
+		[Rule("<DropIndexStatement> ::= ~DROP ~INDEX <IndexName> ~ON <TableNameQualified> <IndexOptionGroup>")]
 		public DropIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, Optional<Sequence<IndexOption>> indexOptions) {
 			Debug.Assert(indexName != null);
 			Debug.Assert(tableName != null);

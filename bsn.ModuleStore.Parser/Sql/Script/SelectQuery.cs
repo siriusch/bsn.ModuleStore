@@ -12,16 +12,16 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly TopExpression top;
 		private readonly UnionClause unionClause;
 
-		[Rule("<SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>", ConstructorParameterMapping = new[] {1, 2, 3, 4, 5})]
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>")]
 		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(restriction.Distinct, top, columnItems, intoClause, unionClause) {}
 
-		[Rule("<SelectQuery> ::= SELECT <Restriction> <ColumnItemList> <IntoClause> <UnionClause>", ConstructorParameterMapping = new[] {1, 2, 3, 4})]
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <ColumnItemList> <IntoClause> <UnionClause>")]
 		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(restriction.Distinct, null, columnItems, intoClause, unionClause) {}
 
-		[Rule("<SelectQuery> ::= SELECT <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>", ConstructorParameterMapping = new[] {1, 2, 3, 4})]
+		[Rule("<SelectQuery> ::= ~SELECT <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>")]
 		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(default(bool?), top, columnItems, intoClause, unionClause) {}
 
-		[Rule("<SelectQuery> ::= SELECT <ColumnItemList> <IntoClause> <UnionClause>", ConstructorParameterMapping = new[] {1, 2, 3})]
+		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <UnionClause>")]
 		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(default(bool?), null, columnItems, intoClause, unionClause) {}
 
 		protected SelectQuery(bool? restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause) {

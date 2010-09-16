@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class OpenxmlExplicitSchema: OpenxmlSchema {
 		private readonly List<OpenxmlColumn> columns;
 
-		[Rule("<OpenxmlExplicitSchema> ::= WITH '(' <OpenxmlColumnList> ')'", ConstructorParameterMapping = new[] {2})]
+		[Rule("<OpenxmlExplicitSchema> ::= ~WITH ~'(' <OpenxmlColumnList> ~')'")]
 		public OpenxmlExplicitSchema(Sequence<OpenxmlColumn> columns) {
 			this.columns = columns.ToList();
 		}

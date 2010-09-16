@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression expression;
 		private readonly TypeName typeName;
 
-		[Rule("<Value> ::= CAST_ <Expression> AS <TypeName> ')'", ConstructorParameterMapping = new[] {1, 3})]
+		[Rule("<Value> ::= ~CAST_ <Expression> ~AS <TypeName> ~')'")]
 		public ExpressionCastFunction(Expression expression, TypeName typeName) {
 			Debug.Assert(expression != null);
 			Debug.Assert(typeName != null);

@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class TypeNameWithPrecision: TypeNameExtended {
 		private readonly long precision;
 
-		[Rule("<TypeName> ::= Id '(' <IntegerLiteral> ')'", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<TypeName> ::= Id ~'(' <IntegerLiteral> ~')'")]
 		public TypeNameWithPrecision(SqlIdentifier identifier, IntegerLiteral precision): base(identifier) {
 			Debug.Assert(precision != null);
 			this.precision = precision.Value;

@@ -9,10 +9,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Qualified<SqlName, ColumnName> columnName;
 		private readonly bool? restriction;
 
-		[Rule("<ExpressionCountFunction> ::= COUNT_ <Restriction> <ColumnWildNameQualified> ')'", ConstructorParameterMapping = new[] {1, 2})]
+		[Rule("<ExpressionCountFunction> ::= ~COUNT_ <Restriction> <ColumnWildNameQualified> ~')'")]
 		public ExpressionCountFunction(DuplicateRestrictionToken restriction, Qualified<SqlName, ColumnName> columnName): this(restriction.Distinct, columnName) {}
 
-		[Rule("<ExpressionCountFunction> ::= COUNT_ <ColumnWildNameQualified> ')'", ConstructorParameterMapping = new[] {1})]
+		[Rule("<ExpressionCountFunction> ::= ~COUNT_ <ColumnWildNameQualified> ~')'")]
 		public ExpressionCountFunction(Qualified<SqlName, ColumnName> columnName): this(default(bool?), columnName) {}
 
 		private ExpressionCountFunction(bool? restriction, Qualified<SqlName, ColumnName> columnName) {

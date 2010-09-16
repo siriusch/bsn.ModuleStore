@@ -11,9 +11,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexUsing> ::=")]
 		public IndexUsing(): this(null, null) {}
 
-		[Rule("<IndexUsing> ::= USING_XML_INDEX <IndexName> FOR_VALUE", ConstructorParameterMapping = new[] {1, 2})]
-		[Rule("<IndexUsing> ::= USING_XML_INDEX <IndexName> FOR_PATH", ConstructorParameterMapping = new[] {1, 2})]
-		[Rule("<IndexUsing> ::= USING_XML_INDEX <IndexName> FOR_PROPERTY", ConstructorParameterMapping = new[] {1, 2})]
+		[Rule("<IndexUsing> ::= ~USING_XML_INDEX <IndexName> FOR_VALUE")]
+		[Rule("<IndexUsing> ::= ~USING_XML_INDEX <IndexName> FOR_PATH")]
+		[Rule("<IndexUsing> ::= ~USING_XML_INDEX <IndexName> FOR_PROPERTY")]
 		public IndexUsing(IndexName indexName, IndexForToken indexFor) {
 			this.indexName = indexName;
 			this.indexFor = indexFor.IndexFor;

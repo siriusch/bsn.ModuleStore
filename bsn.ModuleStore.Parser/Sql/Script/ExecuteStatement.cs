@@ -13,7 +13,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool recompile;
 		private readonly VariableName resultVariableName;
 
-		[Rule("<ExecuteStatement> ::= EXECUTE <VariableName> '=' <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>", ConstructorParameterMapping = new[] {1, 3, 4, 5})]
+		[Rule("<ExecuteStatement> ::= ~EXECUTE <VariableName> ~'=' <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>")]
 		public ExecuteStatement(VariableName resultVariableName, Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, Optional<WithRecompileToken> recompile) {
 			Debug.Assert(procedureName != null);
 			this.resultVariableName = resultVariableName;
@@ -22,7 +22,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.recompile = recompile.HasValue();
 		}
 
-		[Rule("<ExecuteStatement> ::= EXECUTE <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>", ConstructorParameterMapping = new[] {1, 2, 3})]
+		[Rule("<ExecuteStatement> ::= ~EXECUTE <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>")]
 		public ExecuteStatement(Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, Optional<WithRecompileToken> recompile): this(null, procedureName, parameters, recompile) {}
 
 		public IEnumerable<ExecuteParameter> Parameters {

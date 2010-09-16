@@ -9,7 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<Join> joins;
 		private readonly Source source;
 
-		[Rule("<FromClause> ::= FROM <Source> <JoinChain>", ConstructorParameterMapping = new[] {1, 2})]
+		[Rule("<FromClause> ::= ~FROM <Source> <JoinChain>")]
 		public FromClause(Source source, Sequence<Join> join) {
 			Debug.Assert(source != null);
 			this.source = source;

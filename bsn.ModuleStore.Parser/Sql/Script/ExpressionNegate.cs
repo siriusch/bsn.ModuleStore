@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExpressionNegate: Expression {
 		private readonly Expression expression;
 
-		[Rule("<ExpressionNegate> ::= '-' <ExpressionCase>", ConstructorParameterMapping = new[] {1})]
+		[Rule("<ExpressionNegate> ::= ~'-' <ExpressionCase>")]
 		public ExpressionNegate(Expression expression) {
 			Debug.Assert(expression != null);
 			this.expression = expression;

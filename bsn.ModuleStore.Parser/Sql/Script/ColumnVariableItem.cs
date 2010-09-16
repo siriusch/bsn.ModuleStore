@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression expression;
 		private readonly VariableName variableName;
 
-		[Rule("<ColumnItem> ::= <VariableName> '=' <Expression>", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<ColumnItem> ::= <VariableName> ~'=' <Expression>")]
 		public ColumnVariableItem(VariableName variableName, Expression expression) {
 			Debug.Assert(expression != null);
 			Debug.Assert(variableName != null);

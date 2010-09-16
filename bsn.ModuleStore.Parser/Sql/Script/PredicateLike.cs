@@ -9,10 +9,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly StringLiteral text;
 		private readonly Expression valueExpression;
 
-		[Rule("<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral>", ConstructorParameterMapping = new[] {0, 2})]
+		[Rule("<PredicateLike> ::= <Expression> ~LIKE <CollableStringLiteral>")]
 		public PredicateLike(Expression valueExpression, StringLiteral text): this(valueExpression, false, text, null) {}
 
-		[Rule("<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral> ESCAPE StringLiteral", ConstructorParameterMapping = new[] {0, 2, 4})]
+		[Rule("<PredicateLike> ::= <Expression> ~LIKE <CollableStringLiteral> ~ESCAPE StringLiteral")]
 		public PredicateLike(Expression valueExpression, StringLiteral text, StringLiteral escape): this(valueExpression, false, text, escape) {}
 
 		protected PredicateLike(Expression valueExpression, bool not, StringLiteral text, StringLiteral escape): base(not) {

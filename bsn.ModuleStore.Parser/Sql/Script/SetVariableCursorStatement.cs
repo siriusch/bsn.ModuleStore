@@ -6,7 +6,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SetVariableCursorStatement: SetVariableStatement {
 		private readonly CursorDefinition definition;
 
-		[Rule("<SetVariableStatement> ::= SET <VariableName> '=' <CursorDefinition>", ConstructorParameterMapping = new[] {1, 3})]
+		[Rule("<SetVariableStatement> ::= ~SET <VariableName> ~'=' <CursorDefinition>")]
 		public SetVariableCursorStatement(VariableName variableName, CursorDefinition definition): base(variableName) {
 			if (definition.Global) {
 				throw new ArgumentException("GLOBAL not allowed here");
