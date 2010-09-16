@@ -48,6 +48,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public QueryHint QueryHint {
+			get {
+				return queryHint;
+			}
+		}
+
 		public OutputClause OutputClause {
 			get {
 				return outputClause;
