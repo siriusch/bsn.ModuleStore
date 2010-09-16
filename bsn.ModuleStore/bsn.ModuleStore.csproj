@@ -71,7 +71,7 @@
     <Compile Include="Mapper\SqlDeserializer.cs" />
     <Compile Include="Mapper\SqlNameTableAttribute.cs" />
     <Compile Include="SqlManifestResourceAttribute.cs" />
-    <Compile Include="SqlProcedureAttribute.cs" />
+    <Compile Include="Mapper\SqlProcedureAttribute.cs" />
     <Compile Include="Mapper\SqlReturnValue.cs" />
     <Compile Include="Mapper\ISqlDeserializationHook.cs" />
     <Compile Include="Mapper\ITypedDataReader.cs" />
