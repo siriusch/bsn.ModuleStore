@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace bsn.ModuleStore {
+namespace bsn.ModuleStore.Mapper {
 	/// <summary>
 	/// The DbColumnAttribute is used to change the binding name on <see cref="ITypedDataReader"/> interfaces, or to specify the fields to be deserialized when the <see cref="DbDeserializer"/> is used.
 	/// </summary>
