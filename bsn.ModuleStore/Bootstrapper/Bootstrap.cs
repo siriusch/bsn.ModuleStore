@@ -41,10 +41,9 @@ namespace bsn.ModuleStore.Bootstrapper {
 			}
 		}
 
-		public static IModules InitializeModuleStore(ModuleDatabase database) {
-			IModules result;
+		public static void InitializeModuleStore(ModuleDatabase database, out IModules modules) {
 			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.RequiresNew)) {
-				result = SqlCallProxy.Create<IModules>(database.CreateConnection, "ModuleStore");
+				modules = SqlCallProxy.Create<IModules>(database.CreateConnection, "ModuleStore");
 				Debug.WriteLine(DateTime.Now, "Got ModuleStore proxy");
 				string dbName;
 				ModuleInstanceCache cache = database.GetModuleInstanceCache(typeof(IModules).Assembly);
@@ -67,7 +66,6 @@ namespace bsn.ModuleStore.Bootstrapper {
 				scope.Complete();
 			}
 			Debug.WriteLine(DateTime.Now, "End DB initialization");
-			return result;
 		}
 
 		private static void CreateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {

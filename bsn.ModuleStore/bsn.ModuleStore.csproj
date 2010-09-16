@@ -56,7 +56,7 @@
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />
     <Compile Include="Bootstrapper\IModules.cs" />
-    <Compile Include="Bootstrapper\Module.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="Bootstrapper\ModuleInstance.cs" />
     <Compile Include="Bootstrapper\ModuleInstanceCache.cs" />
     <Compile Include="Mapper\DataReaderProxy.cs" />

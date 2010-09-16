@@ -30,7 +30,7 @@ namespace bsn.ModuleStore {
 			Debug.WriteLine(DateTime.Now, "Start DB initialization");
 			this.connectionString = connectionString;
 			this.autoUpdate = autoUpdate;
-			moduleStore = Bootstrap.InitializeModuleStore(this);
+			Bootstrap.InitializeModuleStore(this, out moduleStore);
 		}
 
 		public bool AutoUpdate {
@@ -63,7 +63,11 @@ namespace bsn.ModuleStore {
 			return GetModuleInstanceCache(typeof(TI).Assembly).GetInstance(instance).GetProxy<TI>();
 		}
 
-		public IEnumerable<string> ListInstances(Assembly assembly) {
+		public IEnumerable<string> ListInstanceNamess(Assembly assembly) {
+			return GetModuleInstanceCache(assembly).ListInstanceNames();
+		}
+
+		public IEnumerable<Module> ListInstances(Assembly assembly) {
 			return GetModuleInstanceCache(assembly).ListInstances();
 		}
 
@@ -103,17 +107,20 @@ namespace bsn.ModuleStore {
 			lock (instances) {
 				if (!instances.TryGetValue(assembly, out moduleInstances)) {
 					moduleInstances = new ModuleInstanceCache(this, assembly);
+					if (autoUpdate) {
+						moduleInstances.UpdateDatabase(false);
+					}
 					instances.Add(assembly, moduleInstances);
 				}
 			}
 			return moduleInstances;
 		}
 
-		internal void UpdateInstanceDatabaseSchema(AssemblyInventory inventory, Bootstrapper.Module module) {
+		internal void UpdateInstanceDatabaseSchema(AssemblyInventory inventory, Module module) {
 			using (SqlConnection connection = CreateConnection()) {
 				connection.Open();
 				Server server = new Server(new ServerConnection(connection));
-				Microsoft.SqlServer.Management.Smo.Database database = server.Databases[connection.Database];
+				Database database = server.Databases[connection.Database];
 				DatabaseInventory databaseInventory = new DatabaseInventory(database, module.Schema);
 				bool hasChanges = !HashWriter.HashEqual(databaseInventory.GetInventoryHash(), inventory.GetInventoryHash());
 				foreach (string sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {

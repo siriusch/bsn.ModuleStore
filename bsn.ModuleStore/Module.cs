@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
 
 using bsn.ModuleStore.Mapper;
 
-namespace bsn.ModuleStore.Bootstrapper {
+namespace bsn.ModuleStore {
 	public class Module {
 		[SqlColumn("uidAssemblyGuid")]
 		private Guid assemblyGuid;
