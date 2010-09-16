@@ -31,7 +31,7 @@ namespace bsn.ModuleStore.Console.Configurations {
 			string connectionString = executionContext.GetConnectionString();
 			executionContext.Output.WriteLine("Connection string: {0}", connectionString);
 			if (executionContext.DatabaseInstance != null) {
-				executionContext.Output.WriteLine("Database Type: {0}", Database.GetDatabaseType(connectionString));
+				executionContext.Output.WriteLine("Database Type: {0}", ModuleDatabase.GetDatabaseType(connectionString));
 			}
 		}
 	}

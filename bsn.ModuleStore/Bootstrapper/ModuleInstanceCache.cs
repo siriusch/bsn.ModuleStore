@@ -19,10 +19,10 @@ namespace bsn.ModuleStore.Bootstrapper {
 		private readonly Guid assemblyGuid;
 		private readonly SortedList<string, ModuleInstance> instances = new SortedList<string, ModuleInstance>(StringComparer.OrdinalIgnoreCase);
 		private readonly AssemblyInventory inventory;
-		private readonly Database owner;
+		private readonly ModuleDatabase owner;
 		private bool dirty;
 
-		public ModuleInstanceCache(Database owner, Assembly assembly) {
+		public ModuleInstanceCache(ModuleDatabase owner, Assembly assembly) {
 			if (owner == null) {
 				throw new ArgumentNullException("owner");
 			}
@@ -71,7 +71,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 			}
 		}
 
-		public Database Owner {
+		public ModuleDatabase Owner {
 			get {
 				return owner;
 			}

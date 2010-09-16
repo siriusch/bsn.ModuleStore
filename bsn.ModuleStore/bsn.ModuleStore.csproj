@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper\Bootstrap.cs" />
-    <Compile Include="Database.cs" />
+    <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />
     <Compile Include="Bootstrapper\IModules.cs" />
     <Compile Include="Bootstrapper\Module.cs" />

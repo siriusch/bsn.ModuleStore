@@ -13,7 +13,7 @@ using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 
 namespace bsn.ModuleStore {
-	public sealed class Database {
+	public sealed class ModuleDatabase {
 		public static DatabaseType GetDatabaseType(string connectionString) {
 			string dummy;
 			return Bootstrap.GetDatabaseType(connectionString, out dummy);
@@ -24,9 +24,9 @@ namespace bsn.ModuleStore {
 		private readonly Dictionary<Assembly, ModuleInstanceCache> instances = new Dictionary<Assembly, ModuleInstanceCache>();
 		private readonly IModules moduleStore;
 
-		public Database(string connectionString): this(connectionString, false) {}
+		public ModuleDatabase(string connectionString): this(connectionString, false) {}
 
-		public Database(string connectionString, bool autoUpdate) {
+		public ModuleDatabase(string connectionString, bool autoUpdate) {
 			Debug.WriteLine(DateTime.Now, "Start DB initialization");
 			this.connectionString = connectionString;
 			this.autoUpdate = autoUpdate;
