@@ -3,7 +3,7 @@
     [uidAssemblyGuid] [uniqueidentifier] NOT NULL,
     [sSchema] [sysname] COLLATE Latin1_General_CI_AS NOT NULL,
     [sAssemblyName] [nvarchar](250) COLLATE Latin1_General_CI_AS NOT NULL,
-    [binSetupHash] [binary](64) NULL,
+    [binSetupHash] [varbinary](64) NULL,
     [iUpdateVersion] [int] NOT NULL CONSTRAINT [DF_tblModule_iUpdateVersion] DEFAULT (0),
     [dtSetup] [datetime] NOT NULL CONSTRAINT [DF_tblModule_dtSetup] DEFAULT (getutcdate()),
     [dtUpdate] [datetime] NULL,

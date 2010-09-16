@@ -132,10 +132,13 @@ namespace bsn.ModuleStore.Bootstrapper {
 		public void UpdateDatabase(bool force) {
 			lock (instances) {
 				LoadModules(false);
-				foreach (ModuleInstance instance in instances.Values) {
-					if (force || (inventory.UpdateVersion > instance.Module.UpdateVersion) || (!HashWriter.HashEqual(instance.Module.SetupHash, inventory.GetInventoryHash()))) {
-						owner.UpdateInstanceDatabaseSchema(inventory, instance.Module);
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromMinutes(5.0))) {
+					foreach (ModuleInstance instance in instances.Values) {
+						if (force || (inventory.UpdateVersion > instance.Module.UpdateVersion) || (!HashWriter.HashEqual(instance.Module.SetupHash, inventory.GetInventoryHash()))) {
+							owner.UpdateInstanceDatabaseSchema(inventory, instance.Module);
+						}
 					}
+					scope.Complete();
 				}
 				LoadModules(true);
 			}

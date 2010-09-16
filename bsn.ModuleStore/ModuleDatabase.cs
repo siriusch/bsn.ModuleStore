@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 
 using bsn.ModuleStore.Bootstrapper;
@@ -30,7 +31,8 @@ namespace bsn.ModuleStore {
 			Debug.WriteLine(DateTime.Now, "Start DB initialization");
 			this.connectionString = connectionString;
 			this.autoUpdate = autoUpdate;
-			Bootstrap.InitializeModuleStore(this, out moduleStore);
+			moduleStore = SqlCallProxy.Create<IModules>(CreateConnection, "ModuleStore");
+			Bootstrap.InitializeModuleStore(this);
 		}
 
 		public bool AutoUpdate {
@@ -124,6 +126,7 @@ namespace bsn.ModuleStore {
 				DatabaseInventory databaseInventory = new DatabaseInventory(database, module.Schema);
 				bool hasChanges = !HashWriter.HashEqual(databaseInventory.GetInventoryHash(), inventory.GetInventoryHash());
 				foreach (string sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
+					DebugWriteFirstLine(sql);
 					hasChanges = true;
 					using (SqlCommand command = connection.CreateCommand()) {
 						command.CommandType = CommandType.Text;
@@ -143,6 +146,16 @@ namespace bsn.ModuleStore {
 				}
 			}
 			moduleStore.Update(module.Id, inventory.AssemblyName.FullName, inventory.GetInventoryHash(), inventory.UpdateVersion);
+		}
+
+		[Conditional("DEBUG")]
+		private void DebugWriteFirstLine(string sql) {
+			using (StringReader reader = new StringReader(sql)) {
+				string line = reader.ReadLine();
+				if (!string.IsNullOrEmpty(line)) {
+					Debug.WriteLine(line);
+				}
+			}
 		}
 	}
 }

@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [schema].[spModuleUpdate]
     @uidModule [uniqueidentifier],
     @sAssemblyName [nvarchar](250),
-    @binSetupHash [binary](64),
+    @binSetupHash [varbinary](64),
     @iUpdateVersion [int]
 AS
     BEGIN
