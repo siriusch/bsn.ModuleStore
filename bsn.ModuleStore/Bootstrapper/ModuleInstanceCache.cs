@@ -111,7 +111,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 			}
 		}
 
-		public IEnumerable<string> ListInstanceNames() {
+		public ICollection<string> ListInstanceNames() {
 			lock (instances) {
 				LoadModules(false);
 				return instances.Keys.ToArray();

@@ -63,7 +63,7 @@ namespace bsn.ModuleStore {
 			return GetModuleInstanceCache(typeof(TI).Assembly).GetInstance(instance).GetProxy<TI>();
 		}
 
-		public IEnumerable<string> ListInstanceNamess(Assembly assembly) {
+		public ICollection<string> ListInstanceNames(Assembly assembly) {
 			return GetModuleInstanceCache(assembly).ListInstanceNames();
 		}
 
