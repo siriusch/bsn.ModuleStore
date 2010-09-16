@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 
-namespace bsn.ModuleStore.Sql.Script {
+namespace bsn.ModuleStore.Sql {
 	internal class StringCollectionReader: TextReader {
 		private readonly string newLine;
 		private readonly StringEnumerator stringEnumerator;

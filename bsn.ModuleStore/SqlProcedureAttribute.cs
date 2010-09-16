@@ -1,7 +1,9 @@
 using System;
 using System.Data.Common;
 
-namespace bsn.ModuleStore.Mapper {
+using bsn.ModuleStore.Mapper;
+
+namespace bsn.ModuleStore {
 	/// The DbProcAttribute attribute is used to specify an explicit database procedure binding on an interface.
 	/// <br/><br/>
 	/// Information which can be specified includes the <see cref="SqlColumnAttribute.Name"/>, <see cref="Timeout"/>, <see cref="UseReturnValue"/>, <see cref="DeserializeRowLimit"/>, <see cref="DeserializeReturnNullOnEmptyReader"/> and <see cref="DeserializeCallConstructor"/>.

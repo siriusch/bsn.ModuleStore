@@ -7,6 +7,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 	internal class ModuleInstance {
 		private readonly ModuleInstanceCache owner;
 		private readonly Dictionary<Type, IStoredProcedures> proxies = new Dictionary<Type, IStoredProcedures>();
+		private bool isUpToDate;
 		private Module module;
 
 		public ModuleInstance(ModuleInstanceCache owner, Module module) {
@@ -18,6 +19,13 @@ namespace bsn.ModuleStore.Bootstrapper {
 			}
 			this.owner = owner;
 			this.module = module;
+			UpdateUpToDateStatus();
+		}
+
+		public bool IsUpToDate {
+			get {
+				return isUpToDate;
+			}
 		}
 
 		public Module Module {
@@ -29,6 +37,13 @@ namespace bsn.ModuleStore.Bootstrapper {
 					throw new ArgumentNullException("value");
 				}
 				module = value;
+				UpdateUpToDateStatus();
+			}
+		}
+
+		public void AssertIsUpToDate() {
+			if (!IsUpToDate) {
+				throw new InvalidOperationException(string.Format("The module instance {0} is not up to date", module.Schema));
 			}
 		}
 
@@ -38,10 +53,15 @@ namespace bsn.ModuleStore.Bootstrapper {
 				if (proxies.TryGetValue(typeof(TI), out proxy)) {
 					return (TI)proxy;
 				}
+				AssertIsUpToDate();
 				TI result = SqlCallProxy.Create<TI>(owner.Owner.CreateConnection, module.Schema);
 				proxies.Add(typeof(TI), result);
 				return result;
 			}
+		}
+
+		private void UpdateUpToDateStatus() {
+			isUpToDate = HashWriter.HashEqual(owner.Inventory.GetInventoryHash(), module.SetupHash);
 		}
 	}
 }

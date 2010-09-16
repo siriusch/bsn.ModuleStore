@@ -52,13 +52,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bootstrapper\Database.cs" />
-    <Compile Include="Bootstrapper\DatabaseType.cs" />
+    <Compile Include="Bootstrapper\Bootstrap.cs" />
+    <Compile Include="Database.cs" />
+    <Compile Include="DatabaseType.cs" />
     <Compile Include="Bootstrapper\IModules.cs" />
     <Compile Include="Bootstrapper\Module.cs" />
     <Compile Include="Bootstrapper\ModuleInstance.cs" />
     <Compile Include="Bootstrapper\ModuleInstanceCache.cs" />
-    <Compile Include="DataObject.cs" />
     <Compile Include="Mapper\DataReaderProxy.cs" />
     <Compile Include="Mapper\IStoredProcedures.cs" />
     <Compile Include="Mapper\SqlCallInfo.cs" />
@@ -78,8 +78,6 @@
     <Compile Include="Mapper\MemberConverter.cs" />
     <Compile Include="Mapper\TypedDataReaderInfo.cs" />
     <Compile Include="Mapper\XmlReaderCloseConnection.cs" />
-    <Compile Include="ModuleAttribute.cs" />
-    <Compile Include="ModuleDependencyAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bootstrapper\SetupScripts.cs" />
     <Compile Include="SqlSetupScriptAttribute.cs" />

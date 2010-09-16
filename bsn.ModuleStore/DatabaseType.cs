@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace bsn.ModuleStore.Bootstrapper {
+namespace bsn.ModuleStore {
 	public enum DatabaseType {
 		None,
 		Empty,
