@@ -84,7 +84,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 					Debug.Assert(!module.SchemaExists);
 					string moduleSchema = module.Schema;
 					owner.CreateInstanceDatabaseSchema(inventory, moduleSchema);
-					owner.ModuleStore.Update(module.Id, assembly.FullName, inventory.GetInventoryHash(), inventory.SetupUpdateVersion);
+					owner.ModuleStore.Update(module.Id, assembly.FullName, inventory.GetInventoryHash(), inventory.UpdateVersion);
 					instances.Add(moduleSchema, new ModuleInstance(this, module));
 					scope.Complete();
 					return moduleSchema;
@@ -94,7 +94,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public ModuleInstance GetInstance(string instance) {
 			lock (instances) {
-				LoadIfDirty();
+				LoadModules(false);
 				if (string.IsNullOrEmpty(instance)) {
 					if (instances.Count == 1) {
 						foreach (ModuleInstance moduleInstance in instances.Values) {
@@ -113,7 +113,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public IEnumerable<string> ListInstances() {
 			lock (instances) {
-				LoadIfDirty();
+				LoadModules(false);
 				return instances.Keys.ToArray();
 			}
 		}
@@ -124,28 +124,39 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public void UpdateDatabase(bool force) {
 			lock (instances) {
-				LoadIfDirty();
+				LoadModules(false);
 				foreach (ModuleInstance instance in instances.Values) {
-					if (force || (!HashWriter.HashEqual(instance.Module.SetupHash, inventory.GetInventoryHash()))) {
-						owner.UpdateInstanceDatabaseSchema(inventory, instance.Module.Schema);
+					if (force || (inventory.UpdateVersion > instance.Module.UpdateVersion) || (!HashWriter.HashEqual(instance.Module.SetupHash, inventory.GetInventoryHash()))) {
+						owner.UpdateInstanceDatabaseSchema(inventory, instance.Module);
 					}
 				}
+				LoadModules(true);
 			}
 		}
 
-		private void LoadIfDirty() {
-			HashSet<string> toRemove = new HashSet<string>(instances.Keys);
-			foreach (Module module in owner.ModuleStore.List(assemblyGuid)) {
-				toRemove.Remove(module.Schema);
-				ModuleInstance instance;
-				if (instances.TryGetValue(module.Schema, out instance)) {
-					instance.Module = module;
-				} else {
-					instances.Add(module.Schema, new ModuleInstance(this, module));
+		private void LoadModules(bool force) {
+			if (dirty || force) {
+				lock (instances) {
+					dirty = false;
+					try {
+						HashSet<string> toRemove = new HashSet<string>(instances.Keys);
+						foreach (Module module in owner.ModuleStore.List(assemblyGuid)) {
+							toRemove.Remove(module.Schema);
+							ModuleInstance instance;
+							if (instances.TryGetValue(module.Schema, out instance)) {
+								instance.Module = module;
+							} else {
+								instances.Add(module.Schema, new ModuleInstance(this, module));
+							}
+						}
+						foreach (string schemaName in toRemove) {
+							instances.Remove(schemaName);
+						}
+					} catch {
+						dirty = true;
+						throw;
+					}
 				}
-			}
-			foreach (string schemaName in toRemove) {
-				instances.Remove(schemaName);
 			}
 		}
 	}

@@ -14,7 +14,13 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
 	internal class SqlCallParameterInfo {
-		private static readonly Dictionary<string, SqlDbType> knownDbTypes = Enum.GetValues(typeof(SqlDbType)).Cast<SqlDbType>().ToDictionary(x => x.ToString(), x => x, StringComparer.OrdinalIgnoreCase);
+		private static readonly Dictionary<string, SqlDbType> knownDbTypes = GetKnownDbTypes();
+
+		private static Dictionary<string, SqlDbType> GetKnownDbTypes() {
+			Dictionary<string, SqlDbType> result = Enum.GetValues(typeof(SqlDbType)).Cast<SqlDbType>().ToDictionary(x => x.ToString(), x => x, StringComparer.OrdinalIgnoreCase);
+			result.Add("sysname", SqlDbType.NVarChar);
+			return result;
+		}
 
 		private readonly string argName;
 		private readonly ParameterDirection direction = ParameterDirection.Input;

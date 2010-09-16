@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Transactions;
 
 using bsn.ModuleStore.Mapper;
 using bsn.ModuleStore.Sql;
+
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
 
 namespace bsn.ModuleStore.Bootstrapper {
 	public sealed class Database {
@@ -53,37 +57,32 @@ namespace bsn.ModuleStore.Bootstrapper {
 		private readonly IModules moduleStore;
 
 		public Database(string connectionString) {
+			Debug.WriteLine(DateTime.Now, "Start DB initialization");
 			this.connectionString = connectionString;
-			using (TransactionScope scope = new TransactionScope()) {
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.RequiresNew)) {
 				moduleStore = SqlCallProxy.Create<IModules>(CreateConnection, "ModuleStore");
+				Debug.WriteLine(DateTime.Now, "Got ModuleStore proxy");
 				string dbName;
 				ModuleInstanceCache cache = GetModuleInstanceCache(typeof(IModules).Assembly);
 				switch (GetDatabaseType(connectionString, out dbName)) {
 				case DatabaseType.Other:
 					throw new InvalidOperationException(string.Format("The database {0} is not a ModuleStore database", dbName));
 				case DatabaseType.Empty:
-					CreateInstanceDatabaseSchema(cache.Inventory, "ModuleStore");
-					using (SqlConnection connection = CreateConnection()) {
-						using (SqlCommand command = connection.CreateCommand()) {
-							command.CommandType = CommandType.Text;
-							command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
-							command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyGuid);
-							command.Parameters.AddWithValue("@sAssemblyName", cache.Assembly.FullName);
-							command.Parameters.AddWithValue("@binSetupHash", cache.Inventory.GetInventoryHash());
-							command.Parameters.AddWithValue("@iUpdateVersion", cache.Inventory.SetupUpdateVersion);
-							command.ExecuteNonQuery();
-						}
-					}
-					Trace.WriteLine("Installed ModuleStore in empty database");
+					Debug.WriteLine(DateTime.Now, "Create ModuleStore schema start");
+					CreateModuleStoreSchema(dbName, cache);
+					Debug.WriteLine(DateTime.Now, "Create ModuleStore schema end");
 					break;
 				case DatabaseType.ModuleStore:
-					GetModuleInstanceCache(cache.Assembly).UpdateDatabase(false);
+					Debug.WriteLine(DateTime.Now, "Update ModuleStore schema start");
+					UpdateModuleStoreSchema(dbName, cache);
+					Debug.WriteLine(DateTime.Now, "Update ModuleStore schema end");
 					break;
 				case DatabaseType.None:
 					throw new InvalidOperationException(string.Format("The database {0} does not exist", dbName));
 				}
 				scope.Complete();
 			}
+			Debug.WriteLine(DateTime.Now, "End DB initialization");
 		}
 
 		internal IModules ModuleStore {
@@ -125,6 +124,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 				throw new ArgumentNullException("moduleSchema");
 			}
 			using (SqlConnection connection = CreateConnection()) {
+				connection.Open();
 				foreach (string sql in inventory.GenerateInstallSql(moduleSchema)) {
 					using (SqlCommand command = connection.CreateCommand()) {
 						command.CommandType = CommandType.Text;
@@ -135,8 +135,50 @@ namespace bsn.ModuleStore.Bootstrapper {
 			}
 		}
 
-		internal void UpdateInstanceDatabaseSchema(AssemblyInventory inventory, string moduleSchema) {
-			throw new NotImplementedException();
+		internal void UpdateInstanceDatabaseSchema(AssemblyInventory inventory, Module module) {
+			using (SqlConnection connection = CreateConnection()) {
+				connection.Open();
+				Server server = new Server(new ServerConnection(connection));
+				Microsoft.SqlServer.Management.Smo.Database database = server.Databases[connection.Database];
+				DatabaseInventory databaseInventory = new DatabaseInventory(database, module.Schema);
+				bool hasChanges = !HashWriter.HashEqual(databaseInventory.GetInventoryHash(), inventory.GetInventoryHash());
+				foreach (string sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
+					hasChanges = true;
+					using (SqlCommand command = connection.CreateCommand()) {
+						command.CommandType = CommandType.Text;
+						command.CommandText = sql;
+						command.ExecuteNonQuery();
+					}
+				}
+				if (hasChanges) {
+					// check fails because SMO somehow does not see the DDL performed in the scope of the transaction
+					/*
+					databaseInventory = new DatabaseInventory(database, module.Schema);
+					string[] differences = Inventory.Compare(inventory, databaseInventory).Where(pair => pair.Value != InventoryObjectDifference.None).Select(pair => pair.Key.ObjectName).ToArray();
+					if (differences.Length > 0) {
+						throw new InvalidOperationException("Update failed for: "+string.Join(", ", differences));
+					}
+					 */
+				}
+			}
+			moduleStore.Update(module.Id, inventory.AssemblyName.FullName, inventory.GetInventoryHash(), inventory.UpdateVersion);
+		}
+
+		private void CreateModuleStoreSchema(string dbName, ModuleInstanceCache cache) {
+			CreateInstanceDatabaseSchema(cache.Inventory, "ModuleStore");
+			using (SqlConnection connection = CreateConnection()) {
+				connection.Open();
+				using (SqlCommand command = connection.CreateCommand()) {
+					command.CommandType = CommandType.Text;
+					command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
+					command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyGuid);
+					command.Parameters.AddWithValue("@sAssemblyName", cache.Assembly.FullName);
+					command.Parameters.AddWithValue("@binSetupHash", cache.Inventory.GetInventoryHash());
+					command.Parameters.AddWithValue("@iUpdateVersion", cache.Inventory.UpdateVersion);
+					command.ExecuteNonQuery();
+				}
+			}
+			Trace.WriteLine(string.Format("Installed ModuleStore in database {0}", dbName));
 		}
 
 		private ModuleInstanceCache GetModuleInstanceCache(Assembly assembly) {
@@ -151,6 +193,10 @@ namespace bsn.ModuleStore.Bootstrapper {
 				}
 			}
 			return moduleInstances;
+		}
+
+		private void UpdateModuleStoreSchema(string dbName, ModuleInstanceCache cache) {
+			GetModuleInstanceCache(cache.Assembly).UpdateDatabase(false);
 		}
 	}
 }

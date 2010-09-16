@@ -8,13 +8,13 @@ namespace bsn.ModuleStore.Bootstrapper {
 		[SqlProcedure("spModuleAdd.sql")]
 		Module Add(Guid? id, Guid assemblyId, string schemaPrefix, string assemblyName);
 
-		[SqlProcedure("spModuleDelete.sql", UseReturnValue = SqlReturnValue.Scalar)]
+		[SqlProcedure("spModuleDelete.sql", UseReturnValue = SqlReturnValue.ReturnValue)]
 		bool Delete(Guid id);
 
 		[SqlProcedure("spModuleList.sql")]
 		Module[] List(Guid assemblyGuid);
 
-		[SqlProcedure("spModuleUpdate.sql", UseReturnValue = SqlReturnValue.Scalar)]
+		[SqlProcedure("spModuleUpdate.sql", UseReturnValue = SqlReturnValue.ReturnValue)]
 		bool Update(Guid id, string assemblyName, byte[] setupHash, int updateVersion);
 	}
 }

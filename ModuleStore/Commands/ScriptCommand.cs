@@ -27,7 +27,7 @@ namespace bsn.ModuleStore.Console.Commands {
 				}
 			}
 			bool objectDirectories = (bool)tags["directories"];
-			inventory.SetQualification(string.IsNullOrEmpty((string)tags["schema"]) ? "schema" : (string)tags["schema"]);
+			inventory.SetQualification(string.IsNullOrEmpty((string)tags["schema"]) ? "dbo" : (string)tags["schema"]);
 			try {
 				foreach (CreateStatement statement in inventory.Objects.Where(statement => !(statement is CreateIndexStatement))) {
 					string categoryName = string.Empty;
