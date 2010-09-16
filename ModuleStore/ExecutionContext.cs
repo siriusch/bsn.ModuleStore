@@ -13,7 +13,7 @@ using Microsoft.SqlServer.Management.Smo;
 namespace bsn.ModuleStore.Console {
 	internal class ExecutionContext: CommandLineContext<ExecutionContext, ModuleStoreContext>, IDisposable {
 		private AssemblyHandler assembly;
-		private Database database;
+		private Microsoft.SqlServer.Management.Smo.Database database;
 		private string databaseName;
 		private string schemaName;
 		private Server server;
@@ -59,7 +59,7 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public Database DatabaseInstance {
+		public Microsoft.SqlServer.Management.Smo.Database DatabaseInstance {
 			get {
 				return database;
 			}

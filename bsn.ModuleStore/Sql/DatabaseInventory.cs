@@ -23,7 +23,7 @@ namespace bsn.ModuleStore.Sql {
 
 		private readonly string schemaName;
 
-		public DatabaseInventory(Database database, string schemaName) {
+		public DatabaseInventory(Microsoft.SqlServer.Management.Smo.Database database, string schemaName) {
 			if (database == null) {
 				throw new ArgumentNullException("database");
 			}
