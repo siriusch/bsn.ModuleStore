@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleStore", "ModuleStore\ModuleStore.csproj", "{B487D994-7191-451B-9B8C-D46A5CEC67E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bsn.ModuleStore.Parser", "bsn.ModuleStore.Parser\bsn.ModuleStore.Parser.csproj", "{CE71AB0F-0241-400A-82A1-F385A2D8B985}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bsn.ModuleStore.Test", "bsn.ModuleStore.Test\bsn.ModuleStore.Test.csproj", "{CC654D7A-DF9B-4BF9-AFA5-021A178D12BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bsn.ModuleStore", "bsn.ModuleStore\bsn.ModuleStore.csproj", "{085ABCD3-9471-40F7-AC15-5A1F5E369714}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B487D994-7191-451B-9B8C-D46A5CEC67E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B487D994-7191-451B-9B8C-D46A5CEC67E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B487D994-7191-451B-9B8C-D46A5CEC67E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B487D994-7191-451B-9B8C-D46A5CEC67E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE71AB0F-0241-400A-82A1-F385A2D8B985}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE71AB0F-0241-400A-82A1-F385A2D8B985}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE71AB0F-0241-400A-82A1-F385A2D8B985}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE71AB0F-0241-400A-82A1-F385A2D8B985}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC654D7A-DF9B-4BF9-AFA5-021A178D12BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC654D7A-DF9B-4BF9-AFA5-021A178D12BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC654D7A-DF9B-4BF9-AFA5-021A178D12BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC654D7A-DF9B-4BF9-AFA5-021A178D12BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{085ABCD3-9471-40F7-AC15-5A1F5E369714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{085ABCD3-9471-40F7-AC15-5A1F5E369714}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{085ABCD3-9471-40F7-AC15-5A1F5E369714}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{085ABCD3-9471-40F7-AC15-5A1F5E369714}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SpecExplorer.ActivityCompletionStatus) = preSolution
+		SpecExplorer.ActivityCompletionStatus = 
+	EndGlobalSection
+EndGlobal
