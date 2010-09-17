@@ -4,6 +4,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public enum FunctionOption {
 		None,
 		CalledOnNullInput,
-		ReturnsNullOnNullInput
+		ReturnsNullOnNullInput,
+		ExecuteAsCaller,
+		Schemabinding
 	}
 }

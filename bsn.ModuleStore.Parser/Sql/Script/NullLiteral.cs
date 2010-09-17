@@ -7,6 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("NULL")]
 	public sealed class NullLiteral: Literal {
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("NULL");
 		}
 	}

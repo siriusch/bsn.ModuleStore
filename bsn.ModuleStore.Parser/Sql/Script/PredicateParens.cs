@@ -21,6 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write('(');
 			writer.WriteScript(predicate, WhitespacePadding.None);
 			writer.Write(')');

@@ -5,20 +5,20 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class WhileStatement: Statement {
-		private readonly Expression expression;
+		private readonly Predicate predicate;
 		private readonly Statement statement;
 
-		[Rule("<WhileStatement> ::= ~WHILE <Expression> <StatementGroup>")]
-		public WhileStatement(Expression expression, Statement statement) {
-			Debug.Assert(expression != null);
+		[Rule("<WhileStatement> ::= ~WHILE <Predicate> <StatementGroup>")]
+		public WhileStatement(Predicate predicate, Statement statement) {
+			Debug.Assert(predicate != null);
 			Debug.Assert(statement != null);
-			this.expression = expression;
+			this.predicate = predicate;
 			this.statement = statement;
 		}
 
-		public Expression Expression {
+		public Predicate Predicate {
 			get {
-				return expression;
+				return predicate;
 			}
 		}
 
@@ -31,7 +31,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("WHILE ");
-			writer.WriteScript(expression, WhitespacePadding.SpaceAfter);
+			writer.WriteScript(predicate, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(statement, WhitespacePadding.None);
 		}
 	}

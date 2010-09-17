@@ -31,6 +31,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			base.WriteTo(writer);
 			writer.Write(" IN ");

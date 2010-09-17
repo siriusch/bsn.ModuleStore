@@ -29,6 +29,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("CAST(");
 			writer.WriteScript(expression, WhitespacePadding.None);
 			writer.Write(" AS ");

@@ -70,8 +70,13 @@
     <Compile Include="Sql\Script\AlterTableNocheckConstraintStatement.cs" />
     <Compile Include="Sql\Script\AlterTableStatement.cs" />
     <Compile Include="Sql\Script\AnyStatement.cs" />
+    <Compile Include="Sql\Script\CrossApply.cs" />
+    <Compile Include="Sql\Script\OuterApply.cs" />
+    <Compile Include="Sql\Script\RaiserrorStatement.cs" />
+    <Compile Include="Sql\Script\SqlAssemblyName.cs" />
     <Compile Include="Sql\Script\BreakStatement.cs" />
     <Compile Include="Sql\Script\CaseWhen.cs" />
+    <Compile Include="Sql\Script\ClassName.cs" />
     <Compile Include="Sql\Script\CloseStatement.cs" />
     <Compile Include="Sql\Script\Clustered.cs" />
     <Compile Include="Sql\Script\CollableValue.cs" />
@@ -166,6 +171,7 @@
     <Compile Include="Sql\Script\ExpressionSimpleCase.cs" />
     <Compile Include="Sql\Script\ExpressionTuple.cs" />
     <Compile Include="Sql\Script\ExpressionValue.cs" />
+    <Compile Include="Sql\Script\ExternalName.cs" />
     <Compile Include="Sql\Script\ForBrowsingClause.cs" />
     <Compile Include="Sql\Script\ForClause.cs" />
     <Compile Include="Sql\Script\ForeignKeyAction.cs" />
@@ -214,6 +220,7 @@
     <Compile Include="Sql\Script\Literal.cs" />
     <Compile Include="Sql\Script\LocalIdentifier.cs" />
     <Compile Include="Sql\Script\CommonTableExpressionScopeAttribute.cs" />
+    <Compile Include="Sql\Script\MethodName.cs" />
     <Compile Include="Sql\Script\NestedSelectQuery.cs" />
     <Compile Include="Sql\Script\NullLiteral.cs" />
     <Compile Include="Sql\Script\NumericLiteral.cs" />
@@ -323,7 +330,9 @@
     <Compile Include="Sql\Script\Tokens\FulltextChangeTrackingOffToken.cs" />
     <Compile Include="Sql\Script\Tokens\FulltextChangeTrackingToken.cs" />
     <Compile Include="Sql\Script\Tokens\FunctionOptionCalledOnNullInputToken.cs" />
+    <Compile Include="Sql\Script\Tokens\FunctionOptionExecuteAsCallerToken.cs" />
     <Compile Include="Sql\Script\Tokens\FunctionOptionReturnsNullOnNullInputToken.cs" />
+    <Compile Include="Sql\Script\Tokens\FunctionOptionSchemabindingToken.cs" />
     <Compile Include="Sql\Script\Tokens\FunctionOptionToken.cs" />
     <Compile Include="Sql\Script\Tokens\IndexForPathToken.cs" />
     <Compile Include="Sql\Script\Tokens\IndexForPropertyToken.cs" />
@@ -354,6 +363,7 @@
     <Compile Include="Sql\Script\Tokens\VaryingToken.cs" />
     <Compile Include="Sql\Script\Tokens\WithCheckOptionToken.cs" />
     <Compile Include="Sql\Script\Tokens\WithRecompileToken.cs" />
+    <Compile Include="Sql\Script\Tokens\WithSchemabindingToken.cs" />
     <Compile Include="Sql\Script\Tokens\WithTiesToken.cs" />
     <Compile Include="Sql\Script\Tokens\WithViewMetadataToken.cs" />
     <Compile Include="Sql\Script\TopExpression.cs" />

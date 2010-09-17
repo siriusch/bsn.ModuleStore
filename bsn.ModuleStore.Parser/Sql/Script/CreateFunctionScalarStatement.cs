@@ -5,11 +5,13 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateFunctionScalarStatement: CreateFunctionStatement<StatementBlock> {
+	public sealed class CreateFunctionScalarStatement<T>: CreateFunctionStatement<T> where T: SqlScriptableToken {
 		private readonly Qualified<SchemaName, TypeName> returnTypeName;
 
-		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~_RETURNS <TypeNameQualified> <OptionalFunctionOption> ~<OptionalAs> <StatementBlock>")]
-		public CreateFunctionScalarStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, Qualified<SchemaName, TypeName> returnTypeName, FunctionOptionToken options, StatementBlock body): base(functionName, parameters, options, body) {
+		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~_RETURNS <TypeNameQualified> <OptionalFunctionOption> ~<OptionalAs> <StatementBlock>", typeof(StatementBlock))]
+		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~_RETURNS <TypeNameQualified> <OptionalFunctionOption> ~<OptionalAs> <ExternalName>", typeof(ExternalName))]
+		public CreateFunctionScalarStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, Qualified<SchemaName, TypeName> returnTypeName, FunctionOptionToken options, T body)
+			: base(functionName, parameters, options, body) {
 			Debug.Assert(returnTypeName != null);
 			this.returnTypeName = returnTypeName;
 		}

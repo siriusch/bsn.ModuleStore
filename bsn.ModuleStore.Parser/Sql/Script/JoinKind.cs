@@ -6,6 +6,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		Inner,
 		Left,
 		Right,
-		Full
+		Full,
+		CrossApply,
+		OuterApply
 	}
 }

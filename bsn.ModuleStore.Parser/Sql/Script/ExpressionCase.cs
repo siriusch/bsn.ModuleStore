@@ -26,6 +26,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.WriteScriptSequence(whenItems, WhitespacePadding.NewlineBefore, null);
 			if (elseExpression != null) {
 				writer.WriteLine();

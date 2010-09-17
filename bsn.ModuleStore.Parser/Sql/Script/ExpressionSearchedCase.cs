@@ -11,6 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public ExpressionSearchedCase(Sequence<CaseWhen<Predicate>> whenItems, Expression elseExpression): base(whenItems, elseExpression) {}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("CASE");
 			base.WriteTo(writer);
 		}

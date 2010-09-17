@@ -40,6 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("CONVERT(");
 			writer.WriteScript(typeName, WhitespacePadding.None);
 			writer.Write(", ");
