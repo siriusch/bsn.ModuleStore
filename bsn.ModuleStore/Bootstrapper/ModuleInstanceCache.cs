@@ -79,15 +79,19 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public string CreateInstance() {
 			lock (instances) {
-				using (TransactionScope scope = new TransactionScope()) {
+				bool commit = false;
+				owner.BeginSmoTransaction();
+				try {
 					Module module = owner.ModuleStore.Add(null, assemblyGuid, rxPrefixExtractor.Match(assembly.GetName().Name).Value, assembly.FullName);
 					Debug.Assert(!module.SchemaExists);
 					string moduleSchema = module.Schema;
 					owner.CreateInstanceDatabaseSchema(inventory, moduleSchema);
 					owner.ModuleStore.Update(module.Id, assembly.FullName, inventory.GetInventoryHash(), inventory.UpdateVersion);
 					instances.Add(moduleSchema, new ModuleInstance(this, module));
-					scope.Complete();
+					commit = true;
 					return moduleSchema;
+				} finally {
+					owner.EndSmoTransaction(commit);
 				}
 			}
 		}
@@ -131,16 +135,20 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public void UpdateDatabase(bool force) {
 			lock (instances) {
-				LoadModules(false);
-				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromMinutes(5.0))) {
+				bool commit = false;
+				owner.BeginSmoTransaction();
+				try {
+					LoadModules(false);
 					foreach (ModuleInstance instance in instances.Values) {
 						if (force || (inventory.UpdateVersion > instance.Module.UpdateVersion) || (!HashWriter.HashEqual(instance.Module.SetupHash, inventory.GetInventoryHash()))) {
 							owner.UpdateInstanceDatabaseSchema(inventory, instance.Module);
 						}
 					}
-					scope.Complete();
+					LoadModules(true);
+					commit = true;
+				} finally {
+					owner.EndSmoTransaction(commit);
 				}
-				LoadModules(true);
 			}
 		}
 
@@ -150,13 +158,15 @@ namespace bsn.ModuleStore.Bootstrapper {
 					dirty = false;
 					try {
 						HashSet<string> toRemove = new HashSet<string>(instances.Keys);
-						foreach (Module module in owner.ModuleStore.List(assemblyGuid)) {
-							toRemove.Remove(module.Schema);
-							ModuleInstance instance;
-							if (instances.TryGetValue(module.Schema, out instance)) {
-								instance.Module = module;
-							} else {
-								instances.Add(module.Schema, new ModuleInstance(this, module));
+						lock (owner.ModuleStore) {
+							foreach (Module module in owner.ModuleStore.List(assemblyGuid)) {
+								toRemove.Remove(module.Schema);
+								ModuleInstance instance;
+								if (instances.TryGetValue(module.Schema, out instance)) {
+									instance.Module = module;
+								} else {
+									instances.Add(module.Schema, new ModuleInstance(this, module));
+								}
 							}
 						}
 						foreach (string schemaName in toRemove) {

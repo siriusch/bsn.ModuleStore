@@ -53,6 +53,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper\Bootstrap.cs" />
+    <Compile Include="Mapper\ConnectionProvider.cs" />
+    <Compile Include="Mapper\IConnectionProvider.cs" />
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />
     <Compile Include="Bootstrapper\IModules.cs" />
@@ -65,6 +67,7 @@
     <Compile Include="Mapper\SqlCallParameterInfo.cs" />
     <Compile Include="Mapper\SqlCallProcedureInfo.cs" />
     <Compile Include="Mapper\SqlCallProxy.cs" />
+    <Compile Include="Mapper\SmoConnectionProvider.cs" />
     <Compile Include="SqlAssemblyAttribute.cs" />
     <Compile Include="Mapper\SqlColumnAttribute.cs" />
     <Compile Include="Mapper\SqlDeserializeAttribute.cs" />

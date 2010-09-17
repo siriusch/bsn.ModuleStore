@@ -42,7 +42,9 @@ namespace bsn.ModuleStore.Bootstrapper {
 		}
 
 		public static void InitializeModuleStore(ModuleDatabase database) {
-			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.RequiresNew, TimeSpan.FromMinutes(1.0))) {
+			bool commit = false;
+			database.BeginSmoTransaction();
+			try {
 				Debug.WriteLine(DateTime.Now, "Got ModuleStore proxy");
 				string dbName;
 				ModuleInstanceCache cache = database.GetModuleInstanceCache(typeof(IModules).Assembly);
@@ -62,7 +64,9 @@ namespace bsn.ModuleStore.Bootstrapper {
 				case DatabaseType.None:
 					throw new InvalidOperationException(string.Format("The database {0} does not exist", dbName));
 				}
-				scope.Complete();
+				commit = true;
+			} finally {
+				database.EndSmoTransaction(commit);
 			}
 			Debug.WriteLine(DateTime.Now, "End DB initialization");
 		}

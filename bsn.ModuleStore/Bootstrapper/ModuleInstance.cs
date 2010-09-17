@@ -54,7 +54,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 					return (TI)proxy;
 				}
 				AssertIsUpToDate();
-				TI result = SqlCallProxy.Create<TI>(owner.Owner.CreateConnection, module.Schema);
+				TI result = SqlCallProxy.Create<TI>(new ConnectionProvider(owner.Owner.ConnectionString, module.Schema));
 				proxies.Add(typeof(TI), result);
 				return result;
 			}

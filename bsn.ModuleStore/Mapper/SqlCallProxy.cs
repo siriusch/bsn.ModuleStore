@@ -17,7 +17,7 @@ namespace bsn.ModuleStore.Mapper {
 	/// <br/><br/>
 	/// The interface can declare any number of methods, which are then used to call stored procedures on the database.
 	/// <br/><br/>
-	/// See also <see cref="SqlProcedureAttribute"/> and <see cref="SqlArgAttribute"/> for explicit bindings on methods.
+	/// See also <see cref="SqlProcedureAttribute"/> for bindings on methods.
 	/// <br/><br/>
 	/// The result is returned as follows:<br/>
 	/// - When no return value is expected (void), the call is made as non-query call (<see cref="DbCommand.ExecuteNonQuery"/>).<br/>
@@ -29,8 +29,7 @@ namespace bsn.ModuleStore.Mapper {
 	/// </summary>
 	/// <seealso cref="SqlProcedureAttribute"/>
 	/// <seealso cref="SqlReturnValue"/>
-	/// <seealso cref="SqlArgAttribute"/>
-	/// <seealso cref="CreateConnection"/>
+	/// <seealso cref="IConnectionProvider"/>
 	public class SqlCallProxy: RealProxy {
 		private static readonly MethodInfo getAssembly = typeof(IStoredProcedures).GetProperty("Assembly").GetGetMethod();
 		private static readonly MethodInfo getInstanceName = typeof(IStoredProcedures).GetProperty("InstanceName").GetGetMethod();
@@ -39,10 +38,10 @@ namespace bsn.ModuleStore.Mapper {
 		/// Create a new proxy to be used for stored procedure calls, which can be called through the interface specified by <typeparamref name="I"/>.
 		/// </summary>
 		/// <typeparam name="I">The interface declaring the calls. This interface must implement <see cref="IStoredProcedures"/></typeparam>
-		/// <param name="createConnection">A delegate used to allocate new connections. This delegate is called for every call done on the interface.</param>
+		/// <param name="connectionProvider">The provider for the SQL connections.</param>
 		/// <returns>An instance of the type requested by <typeparamref name="I"/>.</returns>
-		public static I Create<I>(Func<SqlConnection> createConnection, string schemaName) where I: IStoredProcedures {
-			return (I)(new SqlCallProxy(createConnection, schemaName, typeof(I))).GetTransparentProxy();
+		public static I Create<I>(IConnectionProvider connectionProvider) where I: IStoredProcedures {
+			return (I)(new SqlCallProxy(connectionProvider, typeof(I))).GetTransparentProxy();
 		}
 
 		private static object[] GetOutArgValues(KeyValuePair<SqlParameter, Type>[] dbParams) {
@@ -65,15 +64,14 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		private readonly SqlCallInfo callInfo;
-		private readonly Func<SqlConnection> createConnection;
-		private readonly string schemaName;
+		private readonly IConnectionProvider connectionProvider;
 
-		private SqlCallProxy(Func<SqlConnection> createConnection, string schemaName, Type interfaceToProxy): base(interfaceToProxy) {
-			if (createConnection == null) {
-				throw new ArgumentNullException("createConnection");
+		private SqlCallProxy(IConnectionProvider connectionProvider, Type interfaceToProxy)
+			: base(interfaceToProxy) {
+			if (connectionProvider == null) {
+				throw new ArgumentNullException("connectionProvider");
 			}
-			this.createConnection = createConnection;
-			this.schemaName = schemaName;
+			this.connectionProvider = connectionProvider;
 			callInfo = SqlCallInfo.Get(interfaceToProxy);
 		}
 
@@ -84,17 +82,32 @@ namespace bsn.ModuleStore.Mapper {
 			IMethodCallMessage mcm = (IMethodCallMessage)msg;
 			try {
 				if (mcm.MethodBase == getInstanceName) {
-					return new ReturnMessage(schemaName, null, 0, mcm.LogicalCallContext, mcm);
+					return new ReturnMessage(connectionProvider.SchemaName, null, 0, mcm.LogicalCallContext, mcm);
 				}
 				if (mcm.MethodBase == getAssembly) {
 					return new ReturnMessage(callInfo.InterfaceType.Assembly, null, 0, mcm.LogicalCallContext, mcm);
 				}
-				// add code for IStoredProcedure interface here
-				SqlConnection connection = createConnection();
+				bool ownsConnection = false;
+				SqlConnection connection;
+				SqlTransaction transaction = connectionProvider.GetTransaction();
+				if (transaction != null) {
+					connection = transaction.Connection;
+					if (connection == null) {
+						throw new InvalidOperationException("The transaction is not associated to a connection");
+					}
+				} else {
+					connection = connectionProvider.GetConnection();
+					if (connection == null) {
+						throw new InvalidOperationException("No connection was returned by the provider");
+					}
+				}
 				SqlDataReader reader = null;
 				try {
-					if (connection.State != ConnectionState.Open) {
+					ownsConnection = (transaction == null) && (connection.State == ConnectionState.Closed);
+					if (ownsConnection) {
 						connection.Open();
+					} else {
+						Debug.Assert(connection.State == ConnectionState.Open);
 					}
 					SqlParameter returnParameter;
 					KeyValuePair<SqlParameter, Type>[] outParameters;
@@ -102,7 +115,8 @@ namespace bsn.ModuleStore.Mapper {
 					SqlProcedureAttribute procInfo;
 					IList<IDisposable> disposeList = new List<IDisposable>(0);
 					XmlNameTable xmlNameTable;
-					using (SqlCommand command = callInfo.CreateCommand(mcm, connection, schemaName, out returnParameter, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList)) {
+					using (SqlCommand command = callInfo.CreateCommand(mcm, connection, connectionProvider.SchemaName, out returnParameter, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList)) {
+						command.Transaction = transaction;
 						try {
 							Type returnType = ((MethodInfo)mcm.MethodBase).ReturnType;
 							object returnValue;
@@ -120,7 +134,11 @@ namespace bsn.ModuleStore.Mapper {
 										}
 									}
 								} else if (returnType == typeof(XmlReader)) {
-									returnValue = new XmlReaderCloseConnection(command.ExecuteXmlReader(), connection);
+									if (ownsConnection) {
+										returnValue = new XmlReaderCloseConnection(command.ExecuteXmlReader(), connection);
+									} else {
+										returnValue = command.ExecuteXmlReader();
+									}
 									connection = null;
 								} else {
 									bool isTypedDataReader = typeof(ITypedDataReader).IsAssignableFrom(returnType);
@@ -129,7 +147,7 @@ namespace bsn.ModuleStore.Mapper {
 										if (outParameters.Length > 0) {
 											throw new NotSupportedException("Out arguments cannot be combined with a DataReader return value, because DB output values are only returned after the reader is closed. See remarks section of http://msdn.microsoft.com/en-us/library/system.data.common.dbparameter.direction.aspx");
 										}
-										reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+										reader = command.ExecuteReader(ownsConnection ? CommandBehavior.CloseConnection : CommandBehavior.Default);
 										connection = null;
 										if (isTypedDataReader) {
 											try {
@@ -197,7 +215,7 @@ namespace bsn.ModuleStore.Mapper {
 					}
 					throw;
 				} finally {
-					if (connection != null) {
+					if (ownsConnection && (connection != null)) {
 						connection.Dispose();
 					}
 				}
