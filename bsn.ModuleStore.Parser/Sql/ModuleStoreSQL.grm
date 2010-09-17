@@ -456,6 +456,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                  | <TryCatchStatement>
                  | <WaitforStatement>
                  | <WhileStatement>
+                 | <RaiserrorStatement>
 
 ! =============================================================================
 ! Control-of-Flow and simple statements
@@ -484,6 +485,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <PrintStatement> ::= PRINT <Expression>
 
 <AnyStatement> ::= Id <ExpressionList>
+
+<RaiserrorStatement> ::= RAISERROR '(' <ExpressionList> ')'
 
 ! =============================================================================
 ! DECLARE and Cursor statements
