@@ -3,9 +3,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
-using System.Transactions;
-
-using bsn.ModuleStore.Mapper;
 
 namespace bsn.ModuleStore.Bootstrapper {
 	internal static class Bootstrap {
@@ -72,16 +69,16 @@ namespace bsn.ModuleStore.Bootstrapper {
 		}
 
 		private static void CreateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {
-			database.CreateInstanceDatabaseSchema(cache.Inventory, "ModuleStore");
+			database.CreateInstanceDatabaseSchema(cache.AssemblyInfo.Inventory, "ModuleStore");
 			using (SqlConnection connection = database.CreateConnection()) {
 				connection.Open();
 				using (SqlCommand command = connection.CreateCommand()) {
 					command.CommandType = CommandType.Text;
 					command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
-					command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyGuid);
-					command.Parameters.AddWithValue("@sAssemblyName", cache.Assembly.FullName);
-					command.Parameters.AddWithValue("@binSetupHash", cache.Inventory.GetInventoryHash());
-					command.Parameters.AddWithValue("@iUpdateVersion", cache.Inventory.UpdateVersion);
+					command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyInfo.AssemblyGuid);
+					command.Parameters.AddWithValue("@sAssemblyName", cache.AssemblyInfo.Assembly.FullName);
+					command.Parameters.AddWithValue("@binSetupHash", cache.AssemblyInfo.Inventory.GetInventoryHash());
+					command.Parameters.AddWithValue("@iUpdateVersion", cache.AssemblyInfo.Inventory.UpdateVersion);
 					command.ExecuteNonQuery();
 				}
 			}
@@ -89,7 +86,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 		}
 
 		private static void UpdateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {
-			database.GetModuleInstanceCache(cache.Assembly).UpdateDatabase(false);
+			database.GetModuleInstanceCache(cache.AssemblyInfo.Assembly).UpdateDatabase(false);
 		}
 	}
 }

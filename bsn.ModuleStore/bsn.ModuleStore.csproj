@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper\Bootstrap.cs" />
+    <Compile Include="Bootstrapper\ModuleAssemblyInfo.cs" />
     <Compile Include="Mapper\ConnectionProvider.cs" />
     <Compile Include="Mapper\IConnectionProvider.cs" />
     <Compile Include="ModuleDatabase.cs" />

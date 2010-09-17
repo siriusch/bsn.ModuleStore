@@ -10,7 +10,7 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory: IQualified<SchemaName> {
-		private static readonly byte[] hashXor = new byte[] { 0xDA, 0x39, 0xA3, 0xEE, 0x5E, 0x6B, 0x4B, 0x0D, 0x32, 0x55, 0xBF, 0xEF, 0x95, 0x60, 0x18, 0x90, 0xAF, 0xD8, 0x07, 0x09 };
+		private static readonly byte[] hashXor = new byte[] {0xDA, 0x39, 0xA3, 0xEE, 0x5E, 0x6B, 0x4B, 0x0D, 0x32, 0x55, 0xBF, 0xEF, 0x95, 0x60, 0x18, 0x90, 0xAF, 0xD8, 0x07, 0x09};
 
 		public static IEnumerable<KeyValuePair<CreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target) {
 			if (source == null) {
@@ -69,6 +69,12 @@ namespace bsn.ModuleStore.Sql {
 			qualificationStack.Push(null);
 		}
 
+		public bool IsEmpty {
+			get {
+				return objects.Count == 0;
+			}
+		}
+
 		public ICollection<CreateStatement> Objects {
 			get {
 				return objects.Values;
@@ -119,6 +125,13 @@ namespace bsn.ModuleStore.Sql {
 			} finally {
 				UnsetQualification();
 			}
+		}
+
+		public bool IsSameInventoryHash(byte[] inventoryHash) {
+			if (inventoryHash == null) {
+				throw new ArgumentNullException("inventoryHash");
+			}
+			return HashWriter.HashEqual(GetInventoryHash(), inventoryHash);
 		}
 
 		protected internal void SetQualification(string schemaName) {

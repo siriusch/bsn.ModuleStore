@@ -3,22 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Transactions;
-
-using bsn.ModuleStore.Sql;
 
 namespace bsn.ModuleStore.Bootstrapper {
 	internal class ModuleInstanceCache {
 		private static readonly Regex rxPrefixExtractor = new Regex(@"[^#@\.\s]+$", RegexOptions.CultureInvariant|RegexOptions.RightToLeft);
+		private readonly ModuleAssemblyInfo assemblyInfo;
 
-		private readonly Assembly assembly;
-		private readonly Guid assemblyGuid;
 		private readonly SortedList<string, ModuleInstance> instances = new SortedList<string, ModuleInstance>(StringComparer.OrdinalIgnoreCase);
-		private readonly AssemblyInventory inventory;
 		private readonly ModuleDatabase owner;
 		private bool dirty;
 
@@ -30,44 +22,19 @@ namespace bsn.ModuleStore.Bootstrapper {
 				throw new ArgumentNullException("assembly");
 			}
 			this.owner = owner;
-			this.assembly = assembly;
-			inventory = new AssemblyInventory(assembly);
-			using (IEnumerator<GuidAttribute> guidAttributeEnumerator = assembly.GetCustomAttributes(typeof(GuidAttribute), true).Cast<GuidAttribute>().GetEnumerator()) {
-				if (guidAttributeEnumerator.MoveNext()) {
-					GuidAttribute guidAttribute = guidAttributeEnumerator.Current;
-					Debug.Assert(guidAttribute != null);
-					assemblyGuid = new Guid(guidAttribute.Value);
-				} else {
-					Debug.WriteLine(string.Format("Inferring GUID from assembly short name for assembly {0}", assembly.FullName));
-					using (MD5 md5 = MD5.Create()) {
-						assemblyGuid = new Guid(md5.ComputeHash(Encoding.Unicode.GetBytes(assembly.GetName().Name)));
-					}
-				}
-			}
+			assemblyInfo = ModuleAssemblyInfo.Get(assembly);
 			dirty = true;
 		}
 
-		public Assembly Assembly {
+		public ModuleAssemblyInfo AssemblyInfo {
 			get {
-				return assembly;
-			}
-		}
-
-		public Guid AssemblyGuid {
-			get {
-				return assemblyGuid;
+				return assemblyInfo;
 			}
 		}
 
 		public bool Dirty {
 			get {
 				return dirty;
-			}
-		}
-
-		public AssemblyInventory Inventory {
-			get {
-				return inventory;
 			}
 		}
 
@@ -82,11 +49,11 @@ namespace bsn.ModuleStore.Bootstrapper {
 				bool commit = false;
 				owner.BeginSmoTransaction();
 				try {
-					Module module = owner.ModuleStore.Add(null, assemblyGuid, rxPrefixExtractor.Match(assembly.GetName().Name).Value, assembly.FullName);
+					Module module = owner.ModuleStore.Add(null, assemblyInfo.AssemblyGuid, rxPrefixExtractor.Match(assemblyInfo.Assembly.GetName().Name).Value, assemblyInfo.Assembly.FullName);
 					Debug.Assert(!module.SchemaExists);
 					string moduleSchema = module.Schema;
-					owner.CreateInstanceDatabaseSchema(inventory, moduleSchema);
-					owner.ModuleStore.Update(module.Id, assembly.FullName, inventory.GetInventoryHash(), inventory.UpdateVersion);
+					owner.CreateInstanceDatabaseSchema(assemblyInfo.Inventory, moduleSchema);
+					owner.ModuleStore.Update(module.Id, assemblyInfo.Assembly.FullName, assemblyInfo.Inventory.GetInventoryHash(), assemblyInfo.Inventory.UpdateVersion);
 					instances.Add(moduleSchema, new ModuleInstance(this, module));
 					commit = true;
 					return moduleSchema;
@@ -140,8 +107,8 @@ namespace bsn.ModuleStore.Bootstrapper {
 				try {
 					LoadModules(false);
 					foreach (ModuleInstance instance in instances.Values) {
-						if (force || (inventory.UpdateVersion > instance.Module.UpdateVersion) || (!HashWriter.HashEqual(instance.Module.SetupHash, inventory.GetInventoryHash()))) {
-							owner.UpdateInstanceDatabaseSchema(inventory, instance.Module);
+						if (force || (assemblyInfo.Inventory.UpdateVersion > instance.Module.UpdateVersion) || (!HashWriter.HashEqual(instance.Module.SetupHash, assemblyInfo.Inventory.GetInventoryHash()))) {
+							owner.UpdateInstanceDatabaseSchema(assemblyInfo.Inventory, instance.Module);
 						}
 					}
 					LoadModules(true);
@@ -159,7 +126,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 					try {
 						HashSet<string> toRemove = new HashSet<string>(instances.Keys);
 						lock (owner.ModuleStore) {
-							foreach (Module module in owner.ModuleStore.List(assemblyGuid)) {
+							foreach (Module module in owner.ModuleStore.List(assemblyInfo.AssemblyGuid)) {
 								toRemove.Remove(module.Schema);
 								ModuleInstance instance;
 								if (instances.TryGetValue(module.Schema, out instance)) {
