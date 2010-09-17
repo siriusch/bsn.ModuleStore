@@ -16,7 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private StatementBlock(List<Statement> statements) {
 			Debug.Assert(statements != null);
 			this.statements = statements;
-			if (this.statements.Count == 1) {
+			if ((this.statements.Count == 1) && (Comments.Count == 0)) {
 				StatementBlock innerBlock = this.statements[0] as StatementBlock;
 				if (innerBlock != null) {
 					this.statements = innerBlock.statements;
@@ -31,6 +31,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("BEGIN");
 			writer.IncreaseIndent();
 			writer.WriteScriptSequence(statements, WhitespacePadding.NewlineBefore, ";");

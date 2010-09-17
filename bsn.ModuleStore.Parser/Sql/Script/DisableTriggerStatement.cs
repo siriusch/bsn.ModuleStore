@@ -11,6 +11,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public DisableTriggerStatement(Sequence<Qualified<SchemaName, TriggerName>> triggerNames, TriggerTarget target): base(triggerNames, target) {}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("DISABLE");
 			base.WriteTo(writer);
 		}

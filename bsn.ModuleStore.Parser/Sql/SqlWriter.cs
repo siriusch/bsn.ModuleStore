@@ -10,14 +10,18 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql {
 	public class SqlWriter {
 		private readonly TextWriter writer;
+		private readonly bool emitComments;
 		private string indentation = "    ";
 		private int indentationLevel;
 
-		public SqlWriter(TextWriter writer) {
+		public SqlWriter(TextWriter writer): this(writer, true) {}
+
+		public SqlWriter(TextWriter writer, bool emitComments) {
 			if (writer == null) {
 				throw new ArgumentNullException("writer");
 			}
 			this.writer = writer;
+			this.emitComments = emitComments;
 		}
 
 		public void DecreaseIndent() {
@@ -212,13 +216,24 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
+		public string Indentation {
+			get {
+				return indentation;
+			}
+			set {
+				indentation = value ?? string.Empty;
+			}
+		}
+
 		public void WriteLine(string text) {
 			if (!string.IsNullOrEmpty(text)) {
 				Write(text);
 			}
 			Write(Environment.NewLine);
-			for (int i = 0; i < indentationLevel; i++) {
-				Write(indentation);
+			if (!string.IsNullOrEmpty(indentation)) {
+				for (int i = 0; i < indentationLevel; i++) {
+					Write(indentation);
+				}
 			}
 		}
 
@@ -295,6 +310,12 @@ namespace bsn.ModuleStore.Sql {
 			case WhitespacePadding.SpaceBefore:
 				Write(' ');
 				break;
+			}
+		}
+
+		public void WriteComment(string comment) {
+			if (emitComments) {
+				WriteLine(comment);
 			}
 		}
 	}

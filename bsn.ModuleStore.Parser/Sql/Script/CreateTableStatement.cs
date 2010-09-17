@@ -50,6 +50,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("CREATE TABLE ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.Write(" (");

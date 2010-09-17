@@ -61,6 +61,18 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
+		public void ParseWithComments() {
+			ParseWithRoundtrip(@"-- Line comment
+BEGIN
+/* block comment
+on 2 lines */
+SELECT * -- Comment inside select
+FROM [tbl];
+-- Comment may move
+END;", 1);
+		}
+
+		[Test]
 		public void ParseCreateComplexTableFunction() {
 			ParseWithRoundtrip(
 					@"CREATE FUNCTION SPLIT

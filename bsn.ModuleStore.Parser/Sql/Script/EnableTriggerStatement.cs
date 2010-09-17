@@ -12,6 +12,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public EnableTriggerStatement(Sequence<Qualified<SchemaName, TriggerName>> triggerNames, TriggerTarget target): base(triggerNames, target) {}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("ENABLE");
 			base.WriteTo(writer);
 		}

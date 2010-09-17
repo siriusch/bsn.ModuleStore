@@ -17,6 +17,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("SET ");
 			writer.WriteScript(variableName, WhitespacePadding.None);
 			writer.Write('=');

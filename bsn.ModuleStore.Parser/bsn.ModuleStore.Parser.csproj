@@ -95,6 +95,7 @@
     <Compile Include="Sql\Script\ColumnUniqueConstraintBase.cs" />
     <Compile Include="Sql\Script\ColumnVariableItem.cs" />
     <Compile Include="Sql\Script\ColumnWildcardItem.cs" />
+    <Compile Include="Sql\Script\CommentContainerToken.cs" />
     <Compile Include="Sql\Script\CommonTableExpression.cs" />
     <Compile Include="Sql\Script\CommonTableExpressionScope.cs" />
     <Compile Include="Sql\Script\ComputedColumnDefinition.cs" />
@@ -384,6 +385,8 @@
     <Compile Include="Sql\Script\WhileStatement.cs" />
     <Compile Include="Sql\Script\XmlDirective.cs" />
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
+    <Compile Include="Sql\SqlSemanticProcessor.cs" />
+    <Compile Include="Sql\SqlTokenizer.cs" />
     <Compile Include="Sql\SqlWriter.cs" />
     <Compile Include="Sql\WhitespacePadding.cs" />
   </ItemGroup>

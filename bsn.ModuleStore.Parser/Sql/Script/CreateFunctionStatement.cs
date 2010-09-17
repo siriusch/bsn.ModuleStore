@@ -85,6 +85,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected virtual void WriteToInternal(SqlWriter writer, string command) {
+			WriteCommentsTo(writer);
 			writer.Write(command);
 			writer.Write(" FUNCTION ");
 			writer.WriteScript(functionName, WhitespacePadding.None);

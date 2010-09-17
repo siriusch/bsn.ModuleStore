@@ -91,7 +91,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public static IEnumerable<Statement> Parse(TextReader sql) {
-			SemanticProcessor<SqlToken> processor = new SemanticProcessor<SqlToken>(sql, GetSemanticActions());
+			SqlSemanticProcessor processor = new SqlSemanticProcessor(sql, GetSemanticActions());
 			ParseMessage parseMessage = processor.ParseAll();
 			if (parseMessage != ParseMessage.Accept) {
 				throw new ArgumentException(string.Format("The supplied SQL could not be parsed: {0} at {1}", parseMessage, ((IToken)processor.CurrentToken).Position));

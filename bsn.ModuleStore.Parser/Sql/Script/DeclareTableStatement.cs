@@ -30,6 +30,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("DECLARE ");
 			writer.WriteScript(variableName, WhitespacePadding.None);
 			writer.Write(" TABLE (");

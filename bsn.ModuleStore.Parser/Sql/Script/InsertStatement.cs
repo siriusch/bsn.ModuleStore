@@ -42,6 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.WriteCommonTableExpressions(ctes);
 			writer.Write("INSERT ");
 			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);

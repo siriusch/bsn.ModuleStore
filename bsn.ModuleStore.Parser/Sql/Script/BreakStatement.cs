@@ -8,6 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public BreakStatement() {}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("BREAK");
 		}
 	}

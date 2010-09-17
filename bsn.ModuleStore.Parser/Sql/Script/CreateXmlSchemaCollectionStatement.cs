@@ -45,6 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("CERATE XML SCHEMA COLLECTION ");
 			writer.WriteScript(xmlSchemaCollectionName, WhitespacePadding.None);
 			writer.Write(" AS ");

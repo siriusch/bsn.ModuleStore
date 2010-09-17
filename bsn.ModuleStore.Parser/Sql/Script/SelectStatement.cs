@@ -48,6 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.WriteCommonTableExpressions(ctes);
 			writer.WriteScript(selectQuery, WhitespacePadding.None);
 			writer.WriteScript(forClause, WhitespacePadding.SpaceBefore);

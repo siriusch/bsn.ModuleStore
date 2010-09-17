@@ -50,6 +50,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("EXEC ");
 			writer.WriteScript(resultVariableName, WhitespacePadding.None, null, "=");
 			writer.WriteScript(procedureName, WhitespacePadding.None);

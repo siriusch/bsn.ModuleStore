@@ -8,6 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public DeallocateStatement(CursorName cursorName): base(cursorName) {}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
 			writer.Write("DEALLOCATE ");
 			writer.WriteScript(CursorName, WhitespacePadding.None);
 		}

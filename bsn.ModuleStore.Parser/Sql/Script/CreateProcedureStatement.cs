@@ -87,6 +87,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		private void WriteToInternal(SqlWriter writer, string command) {
+			WriteCommentsTo(writer);
 			writer.Write(command);
 			writer.Write(" PROCEDURE ");
 			writer.WriteScript(procedureName, WhitespacePadding.None);
