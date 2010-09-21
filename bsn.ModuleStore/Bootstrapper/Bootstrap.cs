@@ -69,10 +69,11 @@ namespace bsn.ModuleStore.Bootstrapper {
 		}
 
 		private static void CreateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {
-			database.CreateInstanceDatabaseSchema(cache.AssemblyInfo.Inventory, "ModuleStore");
-			using (SqlConnection connection = database.CreateConnection()) {
-				connection.Open();
-				using (SqlCommand command = connection.CreateCommand()) {
+			database.BeginSmoTransaction();
+			bool commit = false;
+			try {
+				database.CreateInstanceDatabaseSchema(cache.AssemblyInfo.Inventory, "ModuleStore");
+				using (SqlCommand command = database.SmoConnectionProvider.GetConnection().CreateCommand()) {
 					command.CommandType = CommandType.Text;
 					command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
 					command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyInfo.AssemblyGuid);
@@ -81,6 +82,9 @@ namespace bsn.ModuleStore.Bootstrapper {
 					command.Parameters.AddWithValue("@iUpdateVersion", cache.AssemblyInfo.Inventory.UpdateVersion);
 					command.ExecuteNonQuery();
 				}
+				commit = true;
+			} finally {
+				database.EndSmoTransaction(commit);
 			}
 			Trace.WriteLine(string.Format("Installed ModuleStore in database {0}", dbName));
 		}

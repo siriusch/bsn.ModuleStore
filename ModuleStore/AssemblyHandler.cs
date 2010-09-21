@@ -4,9 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
+using System.Xml;
+using System.Xml.Linq;
 
 using bsn.ModuleStore.Sql;
+using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Console {
 	public class AssemblyHandler: IDisposable, IAssemblyHandle {
@@ -23,8 +28,8 @@ namespace bsn.ModuleStore.Console {
 				}
 			}
 
-			public KeyValuePair<CustomAttributeData, string>[] GetAssemblyCustomAttributeData() {
-				return AssemblyHandle.FindCustomAttributes<CustomAttributeData>(assembly, CustomAttributeData.GetCustomAttributes, CustomAttributeData.GetCustomAttributes);
+			public KeyValuePair<CustomAttributeInfo, string>[] GetAssemblyCustomAttributeData() {
+				return AssemblyHandle.FindCustomAttributes<CustomAttributeInfo>(assembly, CustomAssemblyAttributes, CustomMemberAttributes);
 			}
 
 			public string[] GetManifestResourceNames() {
@@ -37,6 +42,22 @@ namespace bsn.ModuleStore.Console {
 				}
 				return assembly.GetManifestResourceStream(streamName);
 			}
+
+			private IEnumerable<CustomAttributeInfo> CustomAssemblyAttributes(Assembly assembly) {
+				return CustomAttributeData.GetCustomAttributes(assembly).Select(x => new CustomAttributeInfo(x));
+			}
+
+			private IEnumerable<CustomAttributeInfo> CustomMemberAttributes(MemberInfo member) {
+				return CustomAttributeData.GetCustomAttributes(member).Select(x => new CustomAttributeInfo(x));
+			}
+		}
+
+		private static readonly XNamespace asmV1 = "urn:schemas-microsoft-com:asm.v1";
+		private static readonly Regex rxAssemblyMatcher = new Regex('^'+Regex.Replace(Regex.Escape(typeof(SqlAssemblyAttribute).Assembly.FullName), @"(?<=\sVersion=)[0-9]+\\\.[0-9]+\\\.[0-9]+\\\.[0-9]+(?=\W)", @"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")+'$');
+
+		private static XElement DefineAssemblyCodeBase(AssemblyName name) {
+			return new XElement(asmV1+"dependentAssembly", new XElement(asmV1+"assemblyIdentity", new XAttribute("name", name.Name), new XAttribute("publicKeyToken", BitConverter.ToString(name.GetPublicKeyToken()).Replace("-", "").ToLowerInvariant()), new XAttribute("culture", "neutral")),
+			                    new XElement(asmV1+"codeBase", new XAttribute("version", name.Version), new XAttribute("href", name.CodeBase)));
 		}
 
 		private readonly AppDomain domain;
@@ -47,7 +68,19 @@ namespace bsn.ModuleStore.Console {
 			if (assemblyFileName == null) {
 				throw new ArgumentNullException("assemblyFileName");
 			}
-			AppDomain newDomain = AppDomain.CreateDomain("ModuleStore Assembly Discovery AppDomain");
+			AppDomainSetup setupInfo = new AppDomainSetup();
+			setupInfo.ApplicationBase = assemblyFileName.DirectoryName;
+			XDocument doc =
+					new XDocument(new XElement("configuration",
+					                           new XElement("runtime", new XElement(asmV1+"assemblyBinding", DefineAssemblyCodeBase(typeof(SqlToken).Assembly.GetName()), DefineAssemblyCodeBase(typeof(SqlAssemblyAttribute).Assembly.GetName()), DefineAssemblyCodeBase(typeof(AssemblyHandler).Assembly.GetName())))));
+			using (MemoryStream stream = new MemoryStream()) {
+				using (XmlWriter writer = XmlWriter.Create(stream)) {
+					doc.WriteTo(writer);
+				}
+				setupInfo.SetConfigurationBytes(stream.GetBuffer());
+				Debug.WriteLine(Encoding.UTF8.GetString(stream.GetBuffer()), "Codebase information");
+			}
+			AppDomain newDomain = AppDomain.CreateDomain("ModuleStore Assembly Discovery AppDomain", null, setupInfo);
 			string typeName = typeof(ReflectionAssemblyHandle).FullName;
 			Debug.Assert(!string.IsNullOrEmpty(typeName));
 			try {
@@ -55,10 +88,11 @@ namespace bsn.ModuleStore.Console {
 				Debug.Assert(!string.IsNullOrEmpty(assemblyReflectionLoaderTypeName));
 				newDomain.CreateInstance(typeof(AssemblyReflectionLoader).Assembly.FullName, assemblyReflectionLoaderTypeName);
 				handle = (ReflectionAssemblyHandle)newDomain.CreateInstanceAndUnwrap(typeof(ReflectionAssemblyHandle).Assembly.FullName, typeName, false, BindingFlags.Default, null, new object[] {assemblyFileName.FullName}, null, null, null);
-			} catch {
+			} catch (Exception ex) {
+				Debug.WriteLine(ex);
 				handle = null;
 				AppDomain.Unload(newDomain);
-				throw;
+				throw new InvalidOperationException("Failed to process assembly: "+ex.Message, ex);
 			}
 			domain = newDomain;
 			Debug.WriteLine(typeName, "Loaded into new AppDomain");
@@ -92,14 +126,8 @@ namespace bsn.ModuleStore.Console {
 			DisposeIfNotDisposed(false);
 		}
 
-		public AssemblyName AssemblyName {
-			get {
-				return handle.AssemblyName;
-			}
-		}
-
 		public KeyValuePair<T, string>[] GetCustomAttributes<T>() where T: Attribute {
-			KeyValuePair<CustomAttributeData, string>[] assemblyCustomAttributeData = handle.GetAssemblyCustomAttributeData();
+			KeyValuePair<CustomAttributeInfo, string>[] assemblyCustomAttributeData = handle.GetAssemblyCustomAttributeData();
 			if (assemblyCustomAttributeData.Length == 0) {
 				return new KeyValuePair<T, string>[0];
 			}
@@ -107,24 +135,25 @@ namespace bsn.ModuleStore.Console {
 			foreach (Assembly execAssembly in AppDomain.CurrentDomain.GetAssemblies()) {
 				execAssemblies.Add(execAssembly.FullName, execAssembly);
 			}
+			string moduleStoreAssemblyName = typeof(SqlAssemblyAttribute).Assembly.FullName;
 			List<KeyValuePair<T, string>> result = new List<KeyValuePair<T, string>>(assemblyCustomAttributeData.Length);
-			foreach (KeyValuePair<CustomAttributeData, string> customAttributeData in assemblyCustomAttributeData) {
+			foreach (KeyValuePair<CustomAttributeInfo, string> customAttributeData in assemblyCustomAttributeData) {
 				Assembly execAssembly;
-				if (execAssemblies.TryGetValue(customAttributeData.Key.Constructor.DeclaringType.Assembly.FullName, out execAssembly)) {
-					Type execAttributeType = execAssembly.GetType(customAttributeData.Key.Constructor.DeclaringType.FullName);
+				if (execAssemblies.TryGetValue(rxAssemblyMatcher.Replace(customAttributeData.Key.AttributeType.AssemblyName, moduleStoreAssemblyName), out execAssembly)) {
+					Type execAttributeType = execAssembly.GetType(customAttributeData.Key.AttributeType.TypeName);
 					if (typeof(T).IsAssignableFrom(execAttributeType)) {
-						ConstructorInfo execConstructor = execAttributeType.GetConstructor(customAttributeData.Key.Constructor.GetParameters().OrderBy(arg => arg.Position).Select(arg => arg.ParameterType).ToArray());
-						T attribute = (T)execConstructor.Invoke(customAttributeData.Key.ConstructorArguments.Select(argument => argument.Value).ToArray());
+						ConstructorInfo execConstructor = execAttributeType.GetConstructor(customAttributeData.Key.ConstructorArguments.Select(a => a.Key.FindType(true)).ToArray());
+						T attribute = (T)execConstructor.Invoke(customAttributeData.Key.ConstructorArguments.Select(a => a.Value).ToArray());
 						if (customAttributeData.Key.NamedArguments != null) {
-							foreach (CustomAttributeNamedArgument namedArgument in customAttributeData.Key.NamedArguments) {
-								MemberInfo execMember = execAttributeType.GetMember(namedArgument.MemberInfo.Name, namedArgument.MemberInfo.MemberType, BindingFlags.Instance|BindingFlags.Public).FirstOrDefault();
+							foreach (KeyValuePair<TypeMemberInfo, object> namedArgument in customAttributeData.Key.NamedArguments) {
+								MemberInfo execMember = execAttributeType.GetMember(namedArgument.Key.MemberName, namedArgument.Key.MemberType, BindingFlags.Instance|BindingFlags.Public).FirstOrDefault();
 								if (execMember != null) {
 									switch (execMember.MemberType) {
 									case MemberTypes.Property:
-										((PropertyInfo)execMember).SetValue(attribute, namedArgument.TypedValue.Value, null);
+										((PropertyInfo)execMember).SetValue(attribute, namedArgument.Value, null);
 										break;
 									case MemberTypes.Field:
-										((FieldInfo)execMember).SetValue(attribute, namedArgument.TypedValue.Value);
+										((FieldInfo)execMember).SetValue(attribute, namedArgument.Value);
 										break;
 									}
 								}
@@ -133,10 +162,16 @@ namespace bsn.ModuleStore.Console {
 						result.Add(new KeyValuePair<T, string>(attribute, customAttributeData.Value));
 					}
 				} else {
-					Debug.WriteLine(customAttributeData.Key.Constructor.DeclaringType, "Skipping custom attribute");
+					Debug.WriteLine(customAttributeData.Key.AttributeType, "Skipping custom attribute");
 				}
 			}
 			return result.ToArray();
+		}
+
+		public AssemblyName AssemblyName {
+			get {
+				return handle.AssemblyName;
+			}
 		}
 
 		public string[] GetManifestResourceNames() {

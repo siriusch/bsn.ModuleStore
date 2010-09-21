@@ -75,11 +75,14 @@
     <Compile Include="Contexts\AssemblyContext.cs" />
     <Compile Include="Contexts\ModuleStoreContext.cs" />
     <Compile Include="Contexts\DatabaseContext.cs" />
+    <Compile Include="CustomAttributeInfo.cs" />
     <Compile Include="Entities\Source.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configurations\SchemaConfiguration.cs" />
+    <Compile Include="QualifiedTypeNameInfo.cs" />
+    <Compile Include="TypeMemberInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
