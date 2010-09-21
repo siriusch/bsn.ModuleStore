@@ -89,7 +89,11 @@ namespace bsn.ModuleStore {
 		}
 
 		public TI Get<TI>() where TI: IStoredProcedures {
-			return Get<TI>(null);
+			return Get<TI>(false);
+		}
+
+		public TI Get<TI>(bool autoCreate) where TI: IStoredProcedures {
+			return GetModuleInstanceCache(typeof(TI).Assembly).GetDefaultInstance(autoCreate).GetProxy<TI>();
 		}
 
 		public TI Get<TI>(string instance) where TI: IStoredProcedures {

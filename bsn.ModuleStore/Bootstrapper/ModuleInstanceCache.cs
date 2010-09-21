@@ -45,31 +45,29 @@ namespace bsn.ModuleStore.Bootstrapper {
 		}
 
 		public string CreateInstance() {
-			lock (instances) {
-				bool commit = false;
-				owner.BeginSmoTransaction();
-				try {
-					Module module = owner.ModuleStore.Add(null, assemblyInfo.AssemblyGuid, rxPrefixExtractor.Match(assemblyInfo.Assembly.GetName().Name).Value, assemblyInfo.Assembly.FullName);
-					Debug.Assert(!module.SchemaExists);
-					string moduleSchema = module.Schema;
-					owner.CreateInstanceDatabaseSchema(assemblyInfo.Inventory, moduleSchema);
-					owner.ModuleStore.Update(module.Id, assemblyInfo.Assembly.FullName, assemblyInfo.Inventory.GetInventoryHash(), assemblyInfo.Inventory.UpdateVersion);
-					instances.Add(moduleSchema, new ModuleInstance(this, module));
-					commit = true;
-					return moduleSchema;
-				} finally {
-					owner.EndSmoTransaction(commit);
-				}
-			}
+			return CreateInstanceInternal().Module.Schema;
 		}
 
 		public ModuleInstance GetInstance(string instance) {
+			return GetInstanceInternal(instance, false);
+		}
+
+		public ModuleInstance GetDefaultInstance(bool autoCreate) {
+			return GetInstanceInternal(null, autoCreate);
+		}
+
+		private ModuleInstance GetInstanceInternal(string instance, bool autoCreateDefaultInstance) {
 			lock (instances) {
 				LoadModules(false);
 				if (string.IsNullOrEmpty(instance)) {
-					if (instances.Count == 1) {
-						foreach (ModuleInstance moduleInstance in instances.Values) {
-							return moduleInstance;
+					using (IEnumerator<ModuleInstance> enumerator = instances.Values.GetEnumerator()) {
+						if (enumerator.MoveNext()) {
+							ModuleInstance firstMatch = enumerator.Current;
+							if (!enumerator.MoveNext()) {
+								return firstMatch;
+							}
+						} else if (autoCreateDefaultInstance) {
+							return CreateInstanceInternal();
 						}
 					}
 					throw new InvalidOperationException(string.Format("There is no single (default) instance available ({0} instances)", instances.Count));
@@ -113,6 +111,26 @@ namespace bsn.ModuleStore.Bootstrapper {
 					}
 					LoadModules(true);
 					commit = true;
+				} finally {
+					owner.EndSmoTransaction(commit);
+				}
+			}
+		}
+
+		private ModuleInstance CreateInstanceInternal() {
+			lock (instances) {
+				bool commit = false;
+				owner.BeginSmoTransaction();
+				try {
+					Module module = owner.ModuleStore.Add(null, assemblyInfo.AssemblyGuid, rxPrefixExtractor.Match(assemblyInfo.Assembly.GetName().Name).Value, assemblyInfo.Assembly.FullName);
+					Debug.Assert(!module.SchemaExists);
+					string moduleSchema = module.Schema;
+					owner.CreateInstanceDatabaseSchema(assemblyInfo.Inventory, moduleSchema);
+					owner.ModuleStore.Update(module.Id, assemblyInfo.Assembly.FullName, assemblyInfo.Inventory.GetInventoryHash(), assemblyInfo.Inventory.UpdateVersion);
+					ModuleInstance instance = new ModuleInstance(this, module);
+					instances.Add(moduleSchema, instance);
+					commit = true;
+					return instance;
 				} finally {
 					owner.EndSmoTransaction(commit);
 				}
