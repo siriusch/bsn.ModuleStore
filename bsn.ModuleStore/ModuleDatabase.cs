@@ -205,7 +205,7 @@ namespace bsn.ModuleStore {
 			lock (instances) {
 				if (!instances.TryGetValue(assembly, out moduleInstances)) {
 					moduleInstances = new ModuleInstanceCache(this, assembly);
-					if (autoUpdate) {
+					if (autoUpdate && (assembly != Assembly.GetExecutingAssembly())) {
 						moduleInstances.UpdateDatabase(false);
 					}
 					instances.Add(assembly, moduleInstances);

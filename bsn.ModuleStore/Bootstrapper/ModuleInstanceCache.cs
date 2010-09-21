@@ -129,6 +129,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 					owner.ModuleStore.Update(module.Id, assemblyInfo.Assembly.FullName, assemblyInfo.Inventory.GetInventoryHash(), assemblyInfo.Inventory.UpdateVersion);
 					ModuleInstance instance = new ModuleInstance(this, module);
 					instances.Add(moduleSchema, instance);
+					LoadModules(true);
 					commit = true;
 					return instance;
 				} finally {
