@@ -36,9 +36,17 @@ namespace bsn.ModuleStore.Sql.Script {
 		internal IEnumerable<IQualifiedName<SchemaName>> GetObjectSchemaQualifiedNames() {
 			if (schemaQualifiedNames.Count == 0) {
 				string schemaName = GetObjectSchema();
-				schemaQualifiedNames.AddRange(GetInnerSchemaQualifiedNames(n => n.Equals(schemaName, StringComparison.OrdinalIgnoreCase)));
+				foreach (IQualifiedName<SchemaName> innerSchemaQualifiedName in GetInnerSchemaQualifiedNames(n => n.Equals(schemaName, StringComparison.OrdinalIgnoreCase))) {
+					if (IsObjectSchemaQualifiedName(innerSchemaQualifiedName)) {
+						schemaQualifiedNames.Add(innerSchemaQualifiedName);
+					}
+				}
 			}
 			return schemaQualifiedNames;
+		}
+
+		protected virtual bool IsObjectSchemaQualifiedName(IQualifiedName<SchemaName> innerSchemaQualifiedName) {
+			return true;
 		}
 	}
 }

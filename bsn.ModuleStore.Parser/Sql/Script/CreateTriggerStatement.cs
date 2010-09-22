@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateTriggerStatement: CreateStatement, ICreateOrAlterStatement {
+		private static readonly Regex rxSpecialTables = new Regex("^(INSERTED|DELETED)$", RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.ExplicitCapture);
+
 		private readonly bool notForReplication;
 		private readonly Statement statement;
 		private readonly Qualified<SchemaName, TableName> tableName;
@@ -28,6 +31,16 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.triggerOperations = triggerOperations.Select(token => token.Operation).ToList();
 			this.notForReplication = notForReplication.HasValue();
 			type = triggerType.TriggerType;
+		}
+
+		protected override bool IsObjectSchemaQualifiedName(IQualifiedName<SchemaName> innerSchemaQualifiedName) {
+			if (base.IsObjectSchemaQualifiedName(innerSchemaQualifiedName)) {
+				if ((innerSchemaQualifiedName.Qualification == null) && (innerSchemaQualifiedName.Name is TableName)) {
+					return !rxSpecialTables.IsMatch(innerSchemaQualifiedName.Name.Value);
+				}
+				return true;
+			}
+			return false;
 		}
 
 		public bool NotForReplication {
