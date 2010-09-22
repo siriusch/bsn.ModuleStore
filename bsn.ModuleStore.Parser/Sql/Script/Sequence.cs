@@ -16,6 +16,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForeignKeyActionList> ::=", typeof(ForeignKeyAction))]
 		[Rule("<ColumnConstraintList> ::=", typeof(ColumnConstraint))]
 		[Rule("<JoinChain> ::=", typeof(Join))]
+		[Rule("<XmlDirectiveList> ::=", typeof(XmlDirective))]
 		public Sequence(): this(null, null) {}
 
 		[Rule("<SetValueList> ::= <SetValue>", typeof(SqlScriptableToken))]
@@ -37,7 +38,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ColumnItemList> ::= <ColumnItem>", typeof(ColumnItem))]
 		[Rule("<OrderList> ::= <Order>", typeof(OrderExpression))]
 		[Rule("<ExpressionList> ::= <Expression>", typeof(Expression))]
-		[Rule("<XmlDirectiveList> ::= <XmlDirective>", typeof(XmlDirective))]
 		[Rule("<UpdateItemList> ::= <UpdateItem>", typeof(UpdateItem))]
 		[Rule("<CaseWhenExpressionList> ::= <CaseWhenExpression>", typeof(CaseWhen<Expression>))]
 		[Rule("<CaseWhenPredicateList> ::= <CaseWhenPredicate>", typeof(CaseWhen<Predicate>))]
@@ -65,7 +65,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ColumnItemList> ::= <ColumnItem> ~',' <ColumnItemList>", typeof(ColumnItem))]
 		[Rule("<OrderList> ::= <Order> ~',' <OrderList>", typeof(OrderExpression))]
 		[Rule("<ExpressionList> ::= <Expression> ~',' <ExpressionList>", typeof(Expression))]
-		[Rule("<XmlDirectiveList> ::= <XmlDirective> ~',' <XmlDirectiveList>", typeof(XmlDirective))]
+		[Rule("<XmlDirectiveList> ::= ~',' <XmlDirective> <XmlDirectiveList>", typeof(XmlDirective))]
 		[Rule("<UpdateItemList> ::= <UpdateItem> ~',' <UpdateItemList>", typeof(UpdateItem))]
 		[Rule("<CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>", typeof(CaseWhen<Expression>))]
 		[Rule("<CaseWhenPredicateList> ::= <CaseWhenPredicate> <CaseWhenPredicateList>", typeof(CaseWhen<Predicate>))]

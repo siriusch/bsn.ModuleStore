@@ -21,7 +21,7 @@ namespace bsn.ModuleStore.Sql {
 			CommentContainerToken commentToken = result as CommentContainerToken;
 			if (commentToken != null) {
 				foreach (IToken token in children) {
-					if (token != null) {
+					if ((token != null) && (token.Position.Line > 0)) {
 						commentToken.AddComments(tokenizer.GetComments(token.Position.Index));
 						break;
 					}

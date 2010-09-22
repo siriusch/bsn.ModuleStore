@@ -11,14 +11,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly StringLiteral elementName;
 		private readonly ForXmlKind kind;
 
-		[Rule("<ForClause> ::= FOR_XML_AUTO")]
-		[Rule("<ForClause> ::= FOR_XML_EXPLICIT")]
-		public ForXmlClause(ForXmlToken xmlToken): this(xmlToken, null, null) {}
-
-		[Rule("<ForClause> ::= FOR_XML_RAW <OptionalElementName>")]
-		[Rule("<ForClause> ::= FOR_XML_PATH <OptionalElementName>")]
-		public ForXmlClause(ForXmlToken xmlToken, Optional<StringLiteral> elementName): this(xmlToken, elementName, null) {}
-
 		[Rule("<ForClause> ::= FOR_XML_AUTO <XmlDirectiveList>")]
 		[Rule("<ForClause> ::= FOR_XML_EXPLICIT <XmlDirectiveList>")]
 		public ForXmlClause(ForXmlToken xmlToken, Sequence<XmlDirective> directives): this(xmlToken, null, directives) {}
@@ -58,9 +50,13 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteEnum(kind, WhitespacePadding.None);
-			writer.WriteScript(elementName, WhitespacePadding.SpaceBefore);
+			if (elementName != null) {
+				writer.Write(" (");
+				writer.WriteScript(elementName, WhitespacePadding.None);
+				writer.Write(")");
+			}
 			if (directives.Count > 0) {
-				writer.Write(' ');
+				writer.Write(", ");
 				writer.WriteScriptSequence(directives, WhitespacePadding.None, ", ");
 			}
 		}

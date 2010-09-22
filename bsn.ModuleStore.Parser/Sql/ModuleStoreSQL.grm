@@ -965,17 +965,25 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! SELECT Statement
 ! =============================================================================
 
-<SelectStatement> ::= WITH <CTEList> <SelectQuery> <ForClause> <QueryHint>
-                    | <SelectQuery> <ForClause> <QueryHint>
+<SelectStatement> ::= WITH <CTEList> <SelectQuery> <QueryHint>
+                    | <SelectQuery> <QueryHint>
 
 <SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
                 | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
                 | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
                 | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
                 | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>
                 | SELECT <Restriction> <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <ForClause>
                 | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>
                 | SELECT <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <ColumnItemList> <IntoClause> <ForClause>
 
 <TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>
               | <Top>
@@ -1049,24 +1057,19 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <UnionClause> ::= UNION <SelectQuery>
                 | UNION ALL <SelectQuery>
-                |
 
 <ForClause> ::= FOR_BROWSE
-              | FOR_XML_AUTO
               | FOR_XML_AUTO <XmlDirectiveList>
-              | FOR_XML_RAW <OptionalElementName>
               | FOR_XML_RAW <OptionalElementName> <XmlDirectiveList>
-              | FOR_XML_EXPLICIT
               | FOR_XML_EXPLICIT <XmlDirectiveList>
-              | FOR_XML_PATH <OptionalElementName>
               | FOR_XML_PATH <OptionalElementName> <XmlDirectiveList>
               |
 
 <OptionalElementName> ::= '(' StringLiteral ')'
                         |
 
-<XmlDirectiveList> ::= <XmlDirective> ',' <XmlDirectiveList>
-                     | <XmlDirective>
+<XmlDirectiveList> ::= ',' <XmlDirective> <XmlDirectiveList>
+                     | 
 
 <XmlDirective> ::= Id <OptionalElementName>
                  | Id Id

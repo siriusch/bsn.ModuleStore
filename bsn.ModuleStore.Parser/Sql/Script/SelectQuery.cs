@@ -11,22 +11,36 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool? restriction;
 		private readonly TopExpression top;
 		private readonly UnionClause unionClause;
+		private readonly ForClause forClause;
 
 		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>")]
-		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(restriction.Distinct, top, columnItems, intoClause, unionClause) {}
+		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(restriction.Distinct, top, columnItems, intoClause, null, unionClause) {}
 
 		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <ColumnItemList> <IntoClause> <UnionClause>")]
-		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(restriction.Distinct, null, columnItems, intoClause, unionClause) {}
+		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(restriction.Distinct, null, columnItems, intoClause, null, unionClause) {}
 
 		[Rule("<SelectQuery> ::= ~SELECT <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>")]
-		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(default(bool?), top, columnItems, intoClause, unionClause) {}
+		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(default(bool?), top, columnItems, intoClause, null, unionClause) {}
 
 		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <UnionClause>")]
-		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(default(bool?), null, columnItems, intoClause, unionClause) {}
+		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(default(bool?), null, columnItems, intoClause, null, unionClause) {}
 
-		protected SelectQuery(bool? restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause) {
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>")]
+		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(restriction.Distinct, top, columnItems, intoClause, forClause, null) {}
+
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <ColumnItemList> <IntoClause> <ForClause>")]
+		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(restriction.Distinct, null, columnItems, intoClause, forClause, null) {}
+
+		[Rule("<SelectQuery> ::= ~SELECT <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>")]
+		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(default(bool?), top, columnItems, intoClause, forClause, null) {}
+
+		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <ForClause>")]
+		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(default(bool?), null, columnItems, intoClause, forClause, null) {}
+
+		protected SelectQuery(bool? restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause, UnionClause unionClause) {
 			this.top = top;
 			this.intoClause = intoClause;
+			this.forClause = forClause;
 			this.unionClause = unionClause;
 			this.columnItems = columnItems.ToList();
 			this.restriction = restriction;
@@ -35,6 +49,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public IEnumerable<ColumnItem> ColumnItems {
 			get {
 				return columnItems;
+			}
+		}
+
+		public ForClause ForClause {
+			get {
+				return forClause;
 			}
 		}
 
@@ -71,6 +91,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 			writer.WriteScript(intoClause, WhitespacePadding.NewlineBefore, "INTO ", null);
 			WriteToInternal(writer);
+			writer.WriteScript(forClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(unionClause, WhitespacePadding.NewlineBefore);
 		}
 

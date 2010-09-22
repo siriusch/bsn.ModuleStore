@@ -30,6 +30,7 @@ namespace bsn.ModuleStore.Sql {
 			if (database.IsSystemObject) {
 				throw new ArgumentException("The connection does not point to a valid user database", "database");
 			}
+			database.Refresh();
 			this.schemaName = schemaName ?? database.DefaultSchema;
 			Schema schema = database.Schemas[schemaName];
 			if (schema != null) {
@@ -68,7 +69,7 @@ namespace bsn.ModuleStore.Sql {
 				options.Statistics = false;
 				options.TargetServerVersion = SqlServerVersion.Version90;
 				options.TimestampToBinary = false;
-				options.Triggers = true;
+				options.Triggers = false;
 				options.WithDependencies = false;
 				options.XmlIndexes = true;
 				foreach (Urn urn in schema.EnumOwnedObjects()) {
