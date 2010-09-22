@@ -75,6 +75,30 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
+		public T Find<T>(string objectName) where T: CreateStatement {
+			T result = FindInternal<T>(objectName);
+			if (result == null) {
+				throw new ArgumentException(string.Format("The {0} object [{1}] does not exist", typeof(T).Name, objectName), "objectName");
+			}
+			return result;
+		}
+
+		private T FindInternal<T>(string objectName) where T: CreateStatement {
+			if (objectName == null) {
+				throw new ArgumentNullException("objectName");
+			}
+			CreateStatement statement;
+			if (objects.TryGetValue(objectName, out statement)) {
+				return statement as T;
+			}
+			return null;
+		}
+
+		public bool TryFind<T>(string objectName, out T result) where T: CreateStatement {
+			result = FindInternal<T>(objectName);
+			return result != null;
+		}
+
 		public ICollection<CreateStatement> Objects {
 			get {
 				return objects.Values;
