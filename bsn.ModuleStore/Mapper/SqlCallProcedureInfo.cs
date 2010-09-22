@@ -33,6 +33,10 @@ namespace bsn.ModuleStore.Mapper {
 		                                                                    			{typeof(Guid), SqlDbType.UniqueIdentifier}
 		                                                                    	};
 
+		internal static bool IsNativeType(Type type) {
+			return dbTypeMapping.ContainsKey(type);
+		}
+
 		public static SqlDbType GetTypeMapping(Type type) {
 			if (type != null) {
 				if (type.IsByRef && type.HasElementType) {

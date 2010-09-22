@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml;
@@ -141,6 +142,7 @@ namespace bsn.ModuleStore.Mapper {
 						throw new NotSupportedException("Only arrays with one dimension are supported by the DbDeserializer");
 					}
 					instanceType = type.GetElementType();
+					Debug.Assert(instanceType != null);
 				} else if (type.IsGenericType && ((type.GetGenericTypeDefinition() == typeof(ICollection<>)) || (type.GetGenericTypeDefinition() == typeof(IList<>)) || (type.GetGenericTypeDefinition() == typeof(List<>)))) {
 					instanceType = type.GetGenericArguments()[0];
 				} else {
@@ -158,7 +160,7 @@ namespace bsn.ModuleStore.Mapper {
 					}
 				}
 				isXmlType = IsXmlType(instanceType);
-				if (isXmlType || IsNullableType(instanceType) || instanceType.IsPrimitive || (instanceType == typeof(string))) {
+				if (isXmlType || IsNullableType(instanceType) || instanceType.IsPrimitive || SqlCallProcedureInfo.IsNativeType(instanceType)) {
 					simpleConverter = MemberConverter.Get(instanceType, 0);
 				}
 			}
