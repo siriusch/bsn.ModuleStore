@@ -3,8 +3,8 @@
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
+	[Terminal("FOR_BROWSE")]
 	public class ForBrowsingClause: ForClause {
-		[Rule("<ForClause> ::= ~FOR ~BROWSE")]
 		public ForBrowsingClause() {}
 
 		public override SelectFor SelectFor {

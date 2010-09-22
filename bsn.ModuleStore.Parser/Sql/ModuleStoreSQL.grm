@@ -239,7 +239,7 @@ FOR_XML_RAW = FOR{Whitespace}+XML{Whitespace}+RAW
 FOR_XML_EXPLICIT = FOR{Whitespace}+XML{Whitespace}+EXPLICIT
 FOR_XML_PATH = FOR{Whitespace}+XML{Whitespace}+PATH
 FOR_PATH = FOR{Whitespace}+PATH
-FOR_UPDATE = FOR{Whitespace}+UPDATE
+FOR_BROWSE = FOR{Whitespace}+BROWSE
 FOR_VALUE = FOR{Whitespace}+VALUE
 FOR_PROPERTY = FOR{Whitespace}+PROPERTY
 FOR_REPLICATION = FOR{Whitespace}+REPLICATION
@@ -519,8 +519,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                         | <CursorName>
                         | Id <CursorName> ! Id should be GLOBAL, but GLOBAL isn't a reserved word
 
-<CursorUpdate> ::= FOR_UPDATE OF <ColumnNameList>
-                 | FOR_UPDATE
+<CursorUpdate> ::= FOR UPDATE OF <ColumnNameList>
+                 | FOR UPDATE
                  | READ_ONLY
 
 ! =============================================================================
@@ -1051,7 +1051,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                 | UNION ALL <SelectQuery>
                 |
 
-<ForClause> ::= FOR BROWSE
+<ForClause> ::= FOR_BROWSE
               | FOR_XML_AUTO
               | FOR_XML_AUTO <XmlDirectiveList>
               | FOR_XML_RAW <OptionalElementName>
@@ -1102,7 +1102,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <PredicateIn> ::= <Expression> IN <Tuple>
                 | <Expression> NOT IN <Tuple>
-                | <PredicateExists>
+                | <PredicateFunction>
 
 ! support for SOME/ANY/ALL comparisons on sets is missing: http://msdn.microsoft.com/en-US/library/ms175064(v=SQL.90).aspx
 
@@ -1112,8 +1112,9 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <ExpressionList> ::= <Expression> ',' <ExpressionList>
                    | <Expression>
 
-<PredicateExists> ::= EXISTS '(' <SelectQuery> ')'
-                    | <PredicateCompare>
+<PredicateFunction> ::= EXISTS '(' <SelectQuery> ')'
+                      | UPDATE '(' <ColumnName> ')'
+                      | <PredicateCompare>
 
 <PredicateCompare> ::= <Expression> '=' <Expression>
                      | <Expression> '<>' <Expression>

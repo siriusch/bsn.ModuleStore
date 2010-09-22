@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class PredicateExists: Predicate {
 		private readonly SelectQuery selectQuery;
 
-		[Rule("<PredicateExists> ::= ~EXISTS ~'(' <SelectQuery> ~')'")]
+		[Rule("<PredicateFunction> ::= ~EXISTS ~'(' <SelectQuery> ~')'")]
 		public PredicateExists(SelectQuery selectQuery) {
 			Debug.Assert(selectQuery != null);
 			this.selectQuery = selectQuery;

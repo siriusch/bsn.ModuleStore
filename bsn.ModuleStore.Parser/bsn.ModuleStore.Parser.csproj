@@ -72,6 +72,7 @@
     <Compile Include="Sql\Script\AnyStatement.cs" />
     <Compile Include="Sql\Script\CrossApply.cs" />
     <Compile Include="Sql\Script\OuterApply.cs" />
+    <Compile Include="Sql\Script\PredicateUpdate.cs" />
     <Compile Include="Sql\Script\RaiserrorStatement.cs" />
     <Compile Include="Sql\Script\SqlAssemblyName.cs" />
     <Compile Include="Sql\Script\BreakStatement.cs" />

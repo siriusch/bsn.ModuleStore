@@ -50,7 +50,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 	[Terminal("EXISTS")]
 	[Terminal("EXTERNAL_NAME")]
 	[Terminal("FOR")]
-	[Terminal("FOR_UPDATE")]
 	[Terminal("FOREIGN")]
 	[Terminal("FROM")]
 	[Terminal("FULL")]
