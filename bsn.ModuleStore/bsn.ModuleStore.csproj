@@ -56,6 +56,7 @@
     <Compile Include="Bootstrapper\ModuleAssemblyInfo.cs" />
     <Compile Include="Mapper\ConnectionProvider.cs" />
     <Compile Include="Mapper\IConnectionProvider.cs" />
+    <Compile Include="Mapper\MetadataExtension.cs" />
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />
     <Compile Include="Bootstrapper\IModules.cs" />
