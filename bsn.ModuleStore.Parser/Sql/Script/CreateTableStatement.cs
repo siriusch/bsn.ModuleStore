@@ -58,7 +58,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScriptSequence(definitions, WhitespacePadding.NewlineBefore, ",");
 			writer.DecreaseIndent();
 			writer.WriteLine();
-			writer.Write(")");
+			writer.Write(')');
 		}
 
 		protected override string GetObjectSchema() {

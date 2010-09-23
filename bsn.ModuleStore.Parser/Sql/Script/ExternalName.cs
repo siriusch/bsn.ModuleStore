@@ -43,9 +43,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("EXTERNAL NAME ");
 			writer.WriteScript(assemblyName, WhitespacePadding.None);
-			writer.Write(".");
+			writer.Write('.');
 			writer.WriteScript(className, WhitespacePadding.None);
-			writer.Write(".");
+			writer.Write('.');
 			writer.WriteScript(methodName, WhitespacePadding.None);
 		}
 	}

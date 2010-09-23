@@ -274,6 +274,7 @@ INSTEAD_OF = INSTEAD{Whitespace}+OF
 INCLUDE_ = INCLUDE{Whitespace}*'('
 COUNT_ = COUNT{Whitespace}*'('
 CAST_ = CAST{Whitespace}*'('
+_NODES_ = '.'{Whitespace}*NODES{Whitespace}*'('
 _RETURNS = ')'{Whitespace}*RETURNS
 LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|(''{String Ch}+'')+)
 OUTPUT = OUT(PUT)?
@@ -1023,6 +1024,10 @@ ALL_SERVER = ALL{Whitespace}+SERVER
          | OUTER_APPLY <Source>
 
 <SourceRowset> ::= <VariableName> <OptionalAlias>
+                 | <VariableName> _NODES_ <StringLiteral> ')' <OptionalAs> <AliasName> '(' <ColumnName> ')' ! XML nodes() function: http://msdn.microsoft.com/en-us/library/ms188282(v=SQL.90).aspx
+                 | <VariableName> '.' <ColumnName> _NODES_ <StringLiteral> ')' <OptionalAs> <AliasName> '(' <ColumnName> ')' ! XML nodes() function on a table variable
+                 | <SchemaName> '.' <TableName> _NODES_ <StringLiteral> ')' <OptionalAs> <AliasName> '(' <ColumnName> ')' ! also XML nodes() function; but with shifted names (SchemaName should be TableName, TableName should be ColumnName)
+                 | <SchemaName> '.' <TableName> '.' <ColumnName> _NODES_ <StringLiteral> ')' <OptionalAs> <AliasName> '(' <ColumnName> ')' ! also XML nodes() function
                  | <TableNameQualified> <OptionalAlias>
                  | <Openxml> <OptionalAlias>
                  | <FunctionCall> <OptionalAlias>

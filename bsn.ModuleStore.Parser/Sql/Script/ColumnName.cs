@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ColumnName> ::= Id")]
 		public ColumnName(Identifier identifier): this(identifier.Value) {}
 
-		private ColumnName(string name): base(name) {}
+		internal ColumnName(string name): base(name) {}
 
 		public bool IsWildcard {
 			get {

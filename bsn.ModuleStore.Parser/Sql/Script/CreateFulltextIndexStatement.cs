@@ -70,7 +70,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (columns.Count > 0) {
 				writer.Write(" (");
 				writer.WriteScriptSequence(columns, WhitespacePadding.None, ", ");
-				writer.Write(")");
+				writer.Write(')');
 			}
 			writer.Write(" KEY INDEX ");
 			writer.WriteScript(indexName, WhitespacePadding.None);

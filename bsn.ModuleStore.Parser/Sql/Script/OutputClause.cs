@@ -51,7 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 					if (destinationColumnNames.Count > 0) {
 						writer.Write(" (");
 						writer.WriteScriptSequence(destinationColumnNames, WhitespacePadding.None, ", ");
-						writer.Write(")");
+						writer.Write(')');
 					}
 				}
 			}

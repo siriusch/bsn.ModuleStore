@@ -25,7 +25,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteCommentsTo(writer);
 			writer.Write("RAISERROR(");
 			writer.WriteScriptSequence(arguments, WhitespacePadding.None, ", ");
-			writer.Write(")");
+			writer.Write(')');
 		}
 	}
 }

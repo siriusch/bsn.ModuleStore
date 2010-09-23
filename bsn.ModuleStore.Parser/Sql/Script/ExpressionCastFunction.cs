@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(expression, WhitespacePadding.None);
 			writer.Write(" AS ");
 			writer.WriteScript(typeName, WhitespacePadding.None);
-			writer.Write(")");
+			writer.Write(')');
 		}
 	}
 }

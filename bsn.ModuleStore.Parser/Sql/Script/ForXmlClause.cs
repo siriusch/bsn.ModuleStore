@@ -53,7 +53,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (elementName != null) {
 				writer.Write(" (");
 				writer.WriteScript(elementName, WhitespacePadding.None);
-				writer.Write(")");
+				writer.Write(')');
 			}
 			if (directives.Count > 0) {
 				writer.Write(", ");

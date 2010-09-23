@@ -77,7 +77,16 @@ namespace bsn.ModuleStore.Sql {
 					if (IsSupportedType(smoObject)) {
 						Debug.Assert(smoObject != null);
 						smoObject.Refresh();
-						StringCollection script = ((IScriptable)smoObject).Script(options);
+						StringCollection script;
+						try {
+							script = ((IScriptable)smoObject).Script(options);
+						} catch (FailedOperationException ex) {
+							Debug.WriteLine(ex.Message, "SMO scripting exception, retrying...");
+							smoObject.Refresh();
+							GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+							GC.WaitForPendingFinalizers();
+							script = ((IScriptable)smoObject).Script(options);
+						}
 						using (StringCollectionReader scriptReader = new StringCollectionReader(script, ";")) {
 							try {
 								ProcessSingleScript(scriptReader, statement => {

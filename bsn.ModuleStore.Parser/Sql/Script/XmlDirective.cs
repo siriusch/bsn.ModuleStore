@@ -46,9 +46,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(key, WhitespacePadding.None);
 			writer.WriteScript(value, WhitespacePadding.SpaceBefore);
 			if (elementName != null) {
-				writer.Write("(");
+				writer.Write('(');
 				writer.WriteScript(elementName, WhitespacePadding.None);
-				writer.Write(")");
+				writer.Write(')');
 			}
 		}
 	}

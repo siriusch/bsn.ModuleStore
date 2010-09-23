@@ -29,13 +29,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("(");
+			writer.Write('(');
 			writer.IncreaseIndent();
 			writer.WriteScript(inner, WhitespacePadding.NewlineBefore);
 			writer.WriteScriptSequence(joins, WhitespacePadding.NewlineBefore, null);
 			writer.DecreaseIndent();
 			writer.WriteLine();
-			writer.Write(")");
+			writer.Write(')');
 		}
 	}
 }
