@@ -5,17 +5,17 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ExpressionCountFunction: ExpressionFunction {
+	public sealed class CountFunction: FunctionCall {
 		private readonly Qualified<SqlName, ColumnName> columnName;
 		private readonly bool? restriction;
 
-		[Rule("<ExpressionCountFunction> ::= ~COUNT_ <Restriction> <ColumnWildNameQualified> ~')'")]
-		public ExpressionCountFunction(DuplicateRestrictionToken restriction, Qualified<SqlName, ColumnName> columnName): this(restriction.Distinct, columnName) {}
+		[Rule("<FunctionCall> ::= ~COUNT_ <Restriction> <ColumnWildNameQualified> ~')'")]
+		public CountFunction(DuplicateRestrictionToken restriction, Qualified<SqlName, ColumnName> columnName): this(restriction.Distinct, columnName) {}
 
-		[Rule("<ExpressionCountFunction> ::= ~COUNT_ <ColumnWildNameQualified> ~')'")]
-		public ExpressionCountFunction(Qualified<SqlName, ColumnName> columnName): this(default(bool?), columnName) {}
+		[Rule("<FunctionCall> ::= ~COUNT_ <ColumnWildNameQualified> ~')'")]
+		public CountFunction(Qualified<SqlName, ColumnName> columnName): this(default(bool?), columnName) {}
 
-		private ExpressionCountFunction(bool? restriction, Qualified<SqlName, ColumnName> columnName) {
+		private CountFunction(bool? restriction, Qualified<SqlName, ColumnName> columnName) {
 			Debug.Assert(columnName != null);
 			this.restriction = restriction;
 			this.columnName = columnName;
@@ -34,7 +34,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
 			writer.Write("COUNT(");
 			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(columnName, WhitespacePadding.None);

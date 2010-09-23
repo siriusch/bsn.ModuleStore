@@ -20,10 +20,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
+		protected override void WriteToInternal(SqlWriter writer) {
+			base.WriteToInternal(writer);
 			writer.WriteScript(executeStatement, WhitespacePadding.None);
-			writer.WriteScript(QueryHint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

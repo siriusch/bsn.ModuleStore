@@ -23,17 +23,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			                      }, null);
 		}
 
-		internal void LockInnerUnqualifiedTableNames(Predicate<string> lockPredicate) {
-			if (lockPredicate == null) {
-				throw new ArgumentNullException("lockPredicate");
-			}
-			foreach (IQualifiedName<SchemaName> schemaQualifiedName in GetInnerSchemaQualifiedNames(s => false)) {
-				if ((schemaQualifiedName.Qualification == null) && (schemaQualifiedName.Name is TableName) && lockPredicate(schemaQualifiedName.Name.Value)) {
-					schemaQualifiedName.LockOverride();
-				}
-			}
-		}
-
 		internal IEnumerable<T> GetInnerTokens<T>(Func<T, CommonTableExpressionScope, bool> predicate, Type skipNestedOfType) where T: class {
 			Queue<KeyValuePair<SqlToken, CommonTableExpressionScope>> itemsToProcess = new Queue<KeyValuePair<SqlToken, CommonTableExpressionScope>>();
 			itemsToProcess.Enqueue(new KeyValuePair<SqlToken, CommonTableExpressionScope>(this, new CommonTableExpressionScope(null)));
@@ -56,6 +45,12 @@ namespace bsn.ModuleStore.Sql.Script {
 					itemsToProcess.Enqueue(new KeyValuePair<SqlToken, CommonTableExpressionScope>(innerToken, scope));
 				}
 			} while (itemsToProcess.Count > 0);
+		}
+
+		internal void LockInnerUnqualifiedTableNames(Predicate<string> lockPredicate) {
+			if (lockPredicate == null) {
+				throw new ArgumentNullException("lockPredicate");
+			}
 		}
 	}
 }

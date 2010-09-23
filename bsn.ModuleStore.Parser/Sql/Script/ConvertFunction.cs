@@ -4,16 +4,16 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ExpressionConvertFunction: ExpressionFunction {
+	public sealed class ConvertFunction: FunctionCall {
 		private readonly IntegerLiteral style;
 		private readonly TypeName typeName;
 		private readonly Expression valueExpression;
 
-		[Rule("<Value> ::= ~CONVERT ~'(' <TypeName> ~',' <Expression> ~')'")]
-		public ExpressionConvertFunction(TypeName typeName, Expression valueExpression): this(typeName, valueExpression, null) {}
+		[Rule("<FunctionCall> ::= ~CONVERT ~'(' <TypeName> ~',' <Expression> ~')'")]
+		public ConvertFunction(TypeName typeName, Expression valueExpression): this(typeName, valueExpression, null) {}
 
-		[Rule("<Value> ::= ~CONVERT ~'(' <TypeName> ~',' <Expression> ~',' IntegerLiteral ~')'")]
-		public ExpressionConvertFunction(TypeName typeName, Expression valueExpression, IntegerLiteral style): base() {
+		[Rule("<FunctionCall> ::= ~CONVERT ~'(' <TypeName> ~',' <Expression> ~',' IntegerLiteral ~')'")]
+		public ConvertFunction(TypeName typeName, Expression valueExpression, IntegerLiteral style): base() {
 			Debug.Assert(typeName != null);
 			Debug.Assert(valueExpression != null);
 			this.typeName = typeName;
@@ -40,7 +40,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
 			writer.Write("CONVERT(");
 			writer.WriteScript(typeName, WhitespacePadding.None);
 			writer.Write(", ");

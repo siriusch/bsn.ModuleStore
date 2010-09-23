@@ -5,12 +5,11 @@ using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName
-	                                                                              where TN: SqlName {
+	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName where TN: SqlName {
 		private readonly TN name;
 		private readonly TQ qualification;
-		private IQualified<TQ> qualificationOverride;
 		private bool lockedOverride;
+		private IQualified<TQ> qualificationOverride;
 
 		[Rule("<ColumnNameQualified> ::= <ColumnName>", typeof(SqlName), typeof(ColumnName))]
 		[Rule("<ColumnWildQualified> ::= <ColumnWild>", typeof(SqlName), typeof(ColumnName))]
@@ -58,18 +57,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool IsOverridden {
-			get {
-				return qualificationOverride != null;
-			}
-		}
-
-		public bool LockedOverride {
-			get {
-				return lockedOverride;
-			}
-		}
-
 		public override int GetHashCode() {
 			int hashCode = name.GetHashCode();
 			if ((qualificationOverride == null) && (qualification != null)) {
@@ -90,6 +77,18 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal void SetPosition(LineInfo position) {
 			Initialize(((IToken)name).Symbol, position);
+		}
+
+		public bool IsOverridden {
+			get {
+				return qualificationOverride != null;
+			}
+		}
+
+		public bool LockedOverride {
+			get {
+				return lockedOverride;
+			}
 		}
 
 		public int CompareTo(IQualifiedName<TQ> other) {
@@ -148,7 +147,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		void IQualifiedName<TQ>.LockOverride() {
+		public void LockOverride() {
 			lockedOverride = true;
 		}
 

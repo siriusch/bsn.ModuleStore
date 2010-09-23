@@ -7,10 +7,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<InsertStatement> ::= <CTEGroup> ~INSERT <OptionalTop> ~<OptionalInto> <DestinationRowset> ~DEFAULT ~VALUES <QueryHint>")]
 		public InsertDefaultsStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, QueryHint queryHint): base(ctes, topExpression, destinationRowset, queryHint) {}
 
-		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
+		protected override void WriteToInternal(SqlWriter writer) {
 			writer.Write(" DEFAULT VALUES");
-			writer.WriteScript(QueryHint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

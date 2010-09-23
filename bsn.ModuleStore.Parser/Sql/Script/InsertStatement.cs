@@ -41,13 +41,20 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
+		public sealed override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.WriteCommonTableExpressions(ctes);
 			writer.Write("INSERT ");
+			writer.IncreaseIndent();
 			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
+			writer.WriteLine();
 			writer.Write("INTO ");
 			writer.WriteScript(destinationRowset, WhitespacePadding.None);
+			WriteToInternal(writer);
+			writer.WriteScript(QueryHint, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
 		}
+
+		protected abstract void WriteToInternal(SqlWriter writer);
 	}
 }

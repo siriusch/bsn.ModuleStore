@@ -4,12 +4,12 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ExpressionCastFunction: ExpressionFunction {
+	public sealed class CastFunction: FunctionCall {
 		private readonly Expression expression;
 		private readonly TypeName typeName;
 
-		[Rule("<Value> ::= ~CAST_ <Expression> ~AS <TypeName> ~')'")]
-		public ExpressionCastFunction(Expression expression, TypeName typeName) {
+		[Rule("<FunctionCall> ::= ~CAST_ <Expression> ~AS <TypeName> ~')'")]
+		public CastFunction(Expression expression, TypeName typeName) {
 			Debug.Assert(expression != null);
 			Debug.Assert(typeName != null);
 			this.expression = expression;
@@ -29,7 +29,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
 			writer.Write("CAST(");
 			writer.WriteScript(expression, WhitespacePadding.None);
 			writer.Write(" AS ");

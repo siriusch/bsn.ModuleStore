@@ -8,11 +8,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly AliasName aliasName;
 		private readonly Expression expression;
 
-		[Rule("<ColumnItem> ::= <Expression> <OptionalAlias>")]
-		public ColumnExpressionItem(Expression expression, Optional<AliasName> aliasName): this(aliasName, expression) {}
+		[Rule("<ColumnItem> ::= <Expression>")]
+		public ColumnExpressionItem(Expression expression): this(expression, null) {}
 
-		[Rule("<ColumnItem> ::= <AliasName> ~'=' <Expression>")]
-		public ColumnExpressionItem(AliasName aliasName, Expression expression) {
+		[Rule("<ColumnItem> ::= <Expression> ~<OptionalAs> <AliasName>")]
+		[Rule("<ColumnItem> ::= 1:<AliasName> ~'=' 0:<Expression>")]
+		public ColumnExpressionItem(Expression expression, AliasName aliasName) {
 			Debug.Assert(expression != null);
 			this.expression = expression;
 			this.aliasName = aliasName;

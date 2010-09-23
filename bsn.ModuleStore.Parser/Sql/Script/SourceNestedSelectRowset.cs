@@ -7,8 +7,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SourceNestedSelectRowset: SourceRowset {
 		private readonly SelectQuery @select;
 
-		[Rule("<SourceRowset> ::= ~'(' <SelectQuery> ~')' <OptionalAlias>")]
-		public SourceNestedSelectRowset(SelectQuery select, Optional<AliasName> aliasName): base(aliasName) {
+		[Rule("<SourceRowset> ::= ~'(' <SelectQuery> ~')' <RowsetAlias>")]
+		public SourceNestedSelectRowset(SelectQuery select, RowsetAlias rowsetAlias): base(rowsetAlias) {
 			Debug.Assert(select != null);
 			this.@select = select;
 		}
@@ -20,8 +20,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteLine("(");
-			writer.WriteScript(select, WhitespacePadding.None);
+			writer.Write('(');
+			writer.IncreaseIndent();
+			writer.WriteScript(select, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
+			writer.WriteLine();
 			writer.Write(')');
 			base.WriteTo(writer);
 		}

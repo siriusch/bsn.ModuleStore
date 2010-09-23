@@ -7,8 +7,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SourceTableRowset: SourceRowset {
 		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<SourceRowset> ::= <TableNameQualified> <OptionalAlias>")]
-		public SourceTableRowset(Qualified<SchemaName, TableName> tableName, Optional<AliasName> aliasName): base(aliasName) {
+		[Rule("<SourceRowset> ::= <TableNameQualified> <RowsetAlias>")]
+		public SourceTableRowset(Qualified<SchemaName, TableName> tableName, RowsetAlias rowsetAlias): base(rowsetAlias) {
 			Debug.Assert(tableName != null);
 			this.tableName = tableName;
 		}

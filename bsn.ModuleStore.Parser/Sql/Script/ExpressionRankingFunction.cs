@@ -4,16 +4,16 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExpressionRankingFunction: ExpressionFunction {
-		private readonly ExpressionFunctionCall functionCall;
+		private readonly FunctionCall functionCall;
 		private readonly RankingArguments rankingArguments;
 
 		[Rule("<Value> ::= <FunctionCall> ~OVER ~'(' <RankingArguments> ~')'")]
-		public ExpressionRankingFunction(ExpressionFunctionCall functionCall, RankingArguments rankingArguments) {
+		public ExpressionRankingFunction(FunctionCall functionCall, RankingArguments rankingArguments) {
 			this.functionCall = functionCall;
 			this.rankingArguments = rankingArguments;
 		}
 
-		public ExpressionFunctionCall FunctionCall {
+		public FunctionCall FunctionCall {
 			get {
 				return functionCall;
 			}

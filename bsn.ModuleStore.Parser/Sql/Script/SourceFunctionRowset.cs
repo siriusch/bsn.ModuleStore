@@ -5,20 +5,18 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SourceFunctionRowset: SourceRowset {
-		private readonly ExpressionFunctionCall function;
+		private readonly NamedFunction function;
 
-		[Rule("<SourceRowset> ::= <SchemaName> ~'.' <FunctionCall> <OptionalAlias>")]
-		public SourceFunctionRowset(SchemaName schemaName, ExpressionFunctionCall function, Optional<AliasName> aliasName): this(function, aliasName) {
-			function.FunctionName = new Qualified<SchemaName, FunctionName>(schemaName, function.FunctionName.Name);
-		}
+		[Rule("<SourceRowset> ::= <SchemaName> ~'.' <NamedFunction> <RowsetAlias>")]
+		public SourceFunctionRowset(SchemaName schemaName, NamedFunction function, RowsetAlias rowsetAlias): this(function.QualifiedWith(schemaName), rowsetAlias) {}
 
-		[Rule("<SourceRowset> ::= <FunctionCall> <OptionalAlias>")]
-		public SourceFunctionRowset(ExpressionFunctionCall function, Optional<AliasName> aliasName): base(aliasName) {
+		[Rule("<SourceRowset> ::= <NamedFunction> <RowsetAlias>")]
+		public SourceFunctionRowset(NamedFunction function, RowsetAlias rowsetAlias): base(rowsetAlias) {
 			Debug.Assert(function != null);
 			this.function = function;
 		}
 
-		public ExpressionFunctionCall Function {
+		public NamedFunction Function {
 			get {
 				return function;
 			}

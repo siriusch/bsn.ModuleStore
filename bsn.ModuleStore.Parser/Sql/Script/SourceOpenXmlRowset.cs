@@ -7,8 +7,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SourceOpenxmlRowset: SourceRowset {
 		private readonly OpenxmlFunction openxml;
 
-		[Rule("<SourceRowset> ::= <Openxml> <OptionalAlias>")]
-		public SourceOpenxmlRowset(OpenxmlFunction openxml, Optional<AliasName> aliasName): base(aliasName) {
+		[Rule("<SourceRowset> ::= <Openxml> <RowsetAlias>")]
+		public SourceOpenxmlRowset(OpenxmlFunction openxml, RowsetAlias rowsetAlias): base(rowsetAlias) {
 			Debug.Assert(openxml != null);
 			this.openxml = openxml;
 		}

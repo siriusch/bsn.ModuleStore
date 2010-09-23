@@ -100,8 +100,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		protected override void Initialize(Symbol symbol, LineInfo position) {
 			base.Initialize(symbol, position);
 			HashSet<string> virtualTableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (SourceTableColumnNodesRowset virtualTable in GetInnerTokens<SourceTableColumnNodesRowset>(null, typeof(SelectQuery))) {
-				virtualTableNames.Add(virtualTable.AliasName.Value);
+			foreach (RowsetTableAlias tableAlias in GetInnerTokens<RowsetTableAlias>(null, typeof(SelectQuery))) {
+				virtualTableNames.Add(tableAlias.AliasName.Value);
 			}
 			if (virtualTableNames.Count > 0) {
 				LockInnerUnqualifiedTableNames(tn => virtualTableNames.Contains(tn));

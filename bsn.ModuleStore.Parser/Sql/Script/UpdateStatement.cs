@@ -82,14 +82,17 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteCommentsTo(writer);
 			writer.WriteCommonTableExpressions(ctes);
 			writer.Write("UPDATE ");
+			writer.IncreaseIndent();
 			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(destinationRowset, WhitespacePadding.None);
-			writer.Write(" SET ");
+			writer.WriteLine();
+			writer.Write("SET ");
 			writer.WriteScriptSequence(updateItems, WhitespacePadding.None, ", ");
 			writer.WriteScript(outputClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(fromClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore, "WHERE ", null);
 			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
+			writer.DecreaseIndent();
 		}
 	}
 }

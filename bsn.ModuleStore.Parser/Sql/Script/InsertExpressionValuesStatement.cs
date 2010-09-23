@@ -19,12 +19,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
+		protected override void WriteToInternal(SqlWriter writer) {
+			base.WriteToInternal(writer);
 			writer.Write("VALUES (");
 			writer.WriteScriptSequence(expressions, WhitespacePadding.None, ", ");
 			writer.Write(')');
-			writer.WriteScript(QueryHint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

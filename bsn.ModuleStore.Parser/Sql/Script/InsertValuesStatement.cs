@@ -25,15 +25,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
+		protected override void WriteToInternal(SqlWriter writer) {
 			if (columnNames.Count > 0) {
 				writer.Write(" (");
 				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, ", ");
-				writer.Write(')');
+				writer.WriteLine(")");
 			}
-			writer.WriteScript(output, WhitespacePadding.SpaceBefore);
-			writer.WriteLine();
+			writer.WriteScript(output, WhitespacePadding.NewlineBefore);
 		}
 	}
 }

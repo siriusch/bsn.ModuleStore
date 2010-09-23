@@ -4,12 +4,12 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ExpressionNullifFunction: ExpressionFunction {
+	public sealed class NullifFunction: FunctionCall {
 		private readonly Expression firstExpression;
 		private readonly Expression secondExpression;
 
-		[Rule("<Value> ::= ~NULLIF ~'(' <Expression> ~',' <Expression> ~')'")]
-		public ExpressionNullifFunction(Expression firstExpression, Expression secondExpression) {
+		[Rule("<FunctionCall> ::= ~NULLIF ~'(' <Expression> ~',' <Expression> ~')'")]
+		public NullifFunction(Expression firstExpression, Expression secondExpression) {
 			Debug.Assert(firstExpression != null);
 			Debug.Assert(secondExpression != null);
 			this.firstExpression = firstExpression;
@@ -29,7 +29,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
 			writer.Write("NULLIF(");
 			writer.WriteScript(firstExpression, WhitespacePadding.None);
 			writer.Write(", ");

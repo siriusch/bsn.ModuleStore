@@ -274,7 +274,6 @@ INSTEAD_OF = INSTEAD{Whitespace}+OF
 INCLUDE_ = INCLUDE{Whitespace}*'('
 COUNT_ = COUNT{Whitespace}*'('
 CAST_ = CAST{Whitespace}*'('
-_NODES_ = '.'{Whitespace}*NODES{Whitespace}*'('
 _RETURNS = ')'{Whitespace}*RETURNS
 LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|(''{String Ch}+'')+)
 OUTPUT = OUT(PUT)?
@@ -884,7 +883,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                       | NONCLUSTERED
                       |
 
-<ConstraintDefaultValue> ::= '(' <ConstraintDefaultValue> ')'
+<ConstraintDefaultValue> ::= <ExpressionParens>
                            | <FunctionCall>
                            | <NumberLiteral>
                            | <StringLiteral>
@@ -993,7 +992,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                    | <ColumnItem>
 
 <ColumnItem> ::= <ColumnWildQualified>
-               | <Expression> <OptionalAlias>
+               | <Expression>
+               | <Expression> <OptionalAs> <AliasName>
                | <AliasName> '=' <Expression>
                | <VariableName> '=' <Expression>
 
@@ -1023,19 +1023,20 @@ ALL_SERVER = ALL{Whitespace}+SERVER
          | CROSS_APPLY <Source>
          | OUTER_APPLY <Source>
 
-<SourceRowset> ::= <VariableName> <OptionalAlias>
-                 | <VariableName> _NODES_ <StringLiteral> ')' <OptionalAs> <AliasName> '(' <ColumnName> ')' ! XML nodes() function: http://msdn.microsoft.com/en-us/library/ms188282(v=SQL.90).aspx
-                 | <VariableName> '.' <ColumnName> _NODES_ <StringLiteral> ')' <OptionalAs> <AliasName> '(' <ColumnName> ')' ! XML nodes() function on a table variable
-                 | <SchemaName> '.' <TableName> _NODES_ <StringLiteral> ')' <OptionalAs> <AliasName> '(' <ColumnName> ')' ! also XML nodes() function; but with shifted names (SchemaName should be TableName, TableName should be ColumnName)
-                 | <SchemaName> '.' <TableName> '.' <ColumnName> _NODES_ <StringLiteral> ')' <OptionalAs> <AliasName> '(' <ColumnName> ')' ! also XML nodes() function
-                 | <TableNameQualified> <OptionalAlias>
-                 | <Openxml> <OptionalAlias>
-                 | <FunctionCall> <OptionalAlias>
-                 | <SchemaName> '.' <FunctionCall> <OptionalAlias>
-                 | '(' <SelectQuery> ')' <OptionalAlias>
+<SourceRowset> ::= <VariableName> <RowsetAlias>
+                 | <VariableName> '.' <NamedFunction> <RowsetAlias> ! XML nodes() function: http://msdn.microsoft.com/en-us/library/ms188282(v=SQL.90).aspx
+                 | <VariableName> '.' <ColumnName> '.' <NamedFunction> <RowsetAlias> ! XML nodes() function on a table variable
+                 | <TableNameQualified> <RowsetAlias>
+                 | <Openxml> <RowsetAlias>
+                 | <NamedFunction> <RowsetAlias>
+                 | <SchemaName> '.' <NamedFunction> <RowsetAlias>
+                 | <SchemaName> '.' <TableName> '.' <NamedFunction> <RowsetAlias> ! also XML nodes() function; but with shifted names (SchemaName should be TableName, TableName should be ColumnName)
+!                 | <SchemaName> '.' <TableName> '.' <ColumnName> '.' <FunctionCall> <RowsetAlias> ! also XML nodes() function
+                 | '(' <SelectQuery> ')' <RowsetAlias>
 
-<OptionalAlias> ::= <OptionalAs> <AliasName>
-                  |
+<RowsetAlias> ::= <OptionalAs> <AliasName> '(' <ColumnNameList> ')'
+                | <OptionalAs> <AliasName>
+                |
 
 <WhereClause> ::= WHERE <Predicate>
                 |
@@ -1156,7 +1157,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                    | CASE <Expression> <CaseWhenExpressionList> END
                    | CASE <CaseWhenPredicateList> ELSE <Expression> END
                    | CASE <CaseWhenPredicateList> END
-                   | <ExpressionCountFunction>
+                   | <CollatedValue>
 
 <CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>
                            | <CaseWhenExpression>
@@ -1168,29 +1169,35 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                            
 <CaseWhenPredicate> ::= WHEN <Predicate> THEN <Expression>
 
-<ExpressionCountFunction> ::= COUNT_ <ColumnWildNameQualified> ')'
-                            | COUNT_ <Restriction> <ColumnWildNameQualified> ')'
-                            | <CollatedValue>
-             
 <CollatedValue> ::= <Value> COLLATE <CollationName>
                   | <Value>
                   | <Literal>
      
-<FunctionCall> ::= <FunctionName> '(' ')'
-                 | <FunctionName> '(' <ExpressionList> ')'
+<FunctionCall> ::= CAST_ <Expression> AS <TypeName> ')'
+                 | COALESCE '(' <ExpressionList> ')'
+                 | NULLIF '(' <Expression> ',' <Expression> ')'
+                 | CONVERT '(' <TypeName> ',' <Expression> ')'
+                 | CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'
+                 | COUNT_ <ColumnWildNameQualified> ')'
+                 | COUNT_ <Restriction> <ColumnWildNameQualified> ')'
+                 | <NamedFunction>
+
+<NamedFunction> ::= <FunctionName> '(' ')'
+                  | <FunctionName> '(' <ExpressionList> ')'
+
+<NamedFunctionList> ::= <NamedFunction> '.' <NamedFunctionList>
+                      | <NamedFunction>
 
 <Value> ::= <SystemVariableName>
           | <ColumnNameQualified>
           | <VariableName> ! CLR UDT property, field and methods are not yet implemented
-          | CAST_ <Expression> AS <TypeName> ')'
-          | COALESCE '(' <ExpressionList> ')'
-          | NULLIF '(' <Expression> ',' <Expression> ')'
-          | CONVERT '(' <TypeName> ',' <Expression> ')'
-          | CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'
-          | <FunctionCall>
-          | <TableName> '.' <FunctionCall> ! should be <SchemaName> '.' <FunctionCall> - but that gives a reduce-reduce error
-          | <FunctionCall> OVER '(' <RankingArguments> ')'
           | <ExpressionParens>
+          | <ExpressionParens> '.' <NamedFunctionList>
+          | <FunctionCall>
+          | <FunctionCall> '.' <NamedFunctionList>
+          | <TableName> '.' <NamedFunctionList> ! should be <SchemaName> '.' <FunctionCall> - but that gives a reduce-reduce error
+          | <TableName> '.' <ColumnName> '.' <NamedFunctionList> ! for functions such as .query() 
+          | <FunctionCall> OVER '(' <RankingArguments> ')'
 
 <ExpressionParens> ::= '(' <SelectQuery> ')'
                      | '(' <Expression> ')'

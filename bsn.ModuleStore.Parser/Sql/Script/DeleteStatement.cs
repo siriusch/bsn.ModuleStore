@@ -72,13 +72,16 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteCommentsTo(writer);
 			writer.WriteCommonTableExpressions(ctes);
 			writer.Write("DELETE");
+			writer.IncreaseIndent();
 			writer.WriteScript(topExpression, WhitespacePadding.SpaceBefore);
-			writer.Write(" FROM ");
+			writer.WriteLine();
+			writer.Write("FROM ");
 			writer.WriteScript(destinationRowset, WhitespacePadding.None);
 			writer.WriteScript(outputClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(fromClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore, "WHERE ", null);
 			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
+			writer.DecreaseIndent();
 		}
 	}
 }

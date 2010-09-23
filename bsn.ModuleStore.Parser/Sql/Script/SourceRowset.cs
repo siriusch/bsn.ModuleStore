@@ -2,20 +2,20 @@
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class SourceRowset: Source {
-		private readonly AliasName aliasName;
+		private readonly RowsetAlias rowsetAlias;
 
-		protected SourceRowset(AliasName aliasName) {
-			this.aliasName = aliasName;
+		protected SourceRowset(RowsetAlias rowsetAlias) {
+			this.rowsetAlias = rowsetAlias;
 		}
 
-		public AliasName AliasName {
+		public RowsetAlias RowsetAlias {
 			get {
-				return aliasName;
+				return rowsetAlias;
 			}
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(aliasName, WhitespacePadding.SpaceBefore, "AS ", null);
+			writer.WriteScript(rowsetAlias, WhitespacePadding.SpaceBefore);
 		}
 	}
 }
