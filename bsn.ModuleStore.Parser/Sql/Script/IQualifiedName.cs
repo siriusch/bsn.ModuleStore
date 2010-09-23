@@ -10,6 +10,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
+		bool LockedOverride {
+			get;
+		}
+
 		void SetOverride(IQualified<TQ> qualificationProvider);
+
+		void LockOverride();
 	}
 }

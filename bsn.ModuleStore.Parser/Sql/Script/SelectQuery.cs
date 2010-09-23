@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using bsn.GoldParser.Grammar;
+using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class SelectQuery: SqlScriptableToken {
 		private readonly List<ColumnItem> columnItems;
+		private readonly ForClause forClause;
 		private readonly DestinationRowset intoClause;
 		private readonly bool? restriction;
 		private readonly TopExpression top;
 		private readonly UnionClause unionClause;
-		private readonly ForClause forClause;
 
 		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>")]
 		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(restriction.Distinct, top, columnItems, intoClause, null, unionClause) {}
@@ -93,6 +95,17 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteToInternal(writer);
 			writer.WriteScript(forClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(unionClause, WhitespacePadding.NewlineBefore);
+		}
+
+		protected override void Initialize(Symbol symbol, LineInfo position) {
+			base.Initialize(symbol, position);
+			HashSet<string> virtualTableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (SourceTableColumnNodesRowset virtualTable in GetInnerTokens<SourceTableColumnNodesRowset>(null, typeof(SelectQuery))) {
+				virtualTableNames.Add(virtualTable.AliasName.Value);
+			}
+			if (virtualTableNames.Count > 0) {
+				LockInnerUnqualifiedTableNames(tn => virtualTableNames.Contains(tn));
+			}
 		}
 
 		protected virtual void WriteToInternal(SqlWriter writer) {}

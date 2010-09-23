@@ -10,6 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly TN name;
 		private readonly TQ qualification;
 		private IQualified<TQ> qualificationOverride;
+		private bool lockedOverride;
 
 		[Rule("<ColumnNameQualified> ::= <ColumnName>", typeof(SqlName), typeof(ColumnName))]
 		[Rule("<ColumnWildQualified> ::= <ColumnWild>", typeof(SqlName), typeof(ColumnName))]
@@ -60,6 +61,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public bool IsOverridden {
 			get {
 				return qualificationOverride != null;
+			}
+		}
+
+		public bool LockedOverride {
+			get {
+				return lockedOverride;
 			}
 		}
 
@@ -133,10 +140,16 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		void IQualifiedName<TQ>.SetOverride(IQualified<TQ> qualificationProvider) {
-			if (ReferenceEquals(this, qualificationProvider)) {
-				throw new ArgumentException("Cannot assign itself as override", "qualificationProvider");
+			if (!lockedOverride) {
+				if (ReferenceEquals(this, qualificationProvider)) {
+					throw new ArgumentException("Cannot assign itself as override", "qualificationProvider");
+				}
+				qualificationOverride = qualificationProvider;
 			}
-			qualificationOverride = qualificationProvider;
+		}
+
+		void IQualifiedName<TQ>.LockOverride() {
+			lockedOverride = true;
 		}
 
 		public TQ Qualification {
@@ -147,5 +160,5 @@ namespace bsn.ModuleStore.Sql.Script {
 				return qualification;
 			}
 		}
-	                                                                              }
+	}
 }

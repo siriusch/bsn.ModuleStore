@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+using bsn.GoldParser.Grammar;
+using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
@@ -31,16 +33,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.triggerOperations = triggerOperations.Select(token => token.Operation).ToList();
 			this.notForReplication = notForReplication.HasValue();
 			type = triggerType.TriggerType;
-		}
-
-		protected override bool IsObjectSchemaQualifiedName(IQualifiedName<SchemaName> innerSchemaQualifiedName) {
-			if (base.IsObjectSchemaQualifiedName(innerSchemaQualifiedName)) {
-				if ((innerSchemaQualifiedName.Qualification == null) && (innerSchemaQualifiedName.Name is TableName)) {
-					return !rxSpecialTables.IsMatch(innerSchemaQualifiedName.Name.Value);
-				}
-				return true;
-			}
-			return false;
 		}
 
 		public bool NotForReplication {
@@ -99,11 +91,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteToInternal(writer, "CREATE");
 		}
 
-		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
-			if (string.IsNullOrEmpty(command)) {
-				throw new ArgumentNullException("command");
-			}
-			WriteToInternal(writer, command);
+		protected override string GetObjectSchema() {
+			return triggerName.IsQualified ? triggerName.Qualification.Value : string.Empty;
+		}
+
+		protected override void Initialize(Symbol symbol, LineInfo position) {
+			base.Initialize(symbol, position);
+			LockInnerUnqualifiedTableNames(tn => rxSpecialTables.IsMatch(tn));
 		}
 
 		private void WriteToInternal(SqlWriter writer, string command) {
@@ -127,8 +121,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 		}
 
-		protected override string GetObjectSchema() {
-			return triggerName.IsQualified ? triggerName.Qualification.Value : string.Empty;
+		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
+			if (string.IsNullOrEmpty(command)) {
+				throw new ArgumentNullException("command");
+			}
+			WriteToInternal(writer, command);
 		}
 	}
 }

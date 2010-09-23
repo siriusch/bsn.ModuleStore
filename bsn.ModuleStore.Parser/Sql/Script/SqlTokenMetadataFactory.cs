@@ -51,7 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				}
 			}
 
-			public abstract IEnumerable<SqlToken> EnumerateTokensUntyped(SqlToken instance);
+			public abstract IEnumerable<SqlToken> EnumerateTokensUntyped(SqlToken instance, Type skipNestedOfType);
 		}
 
 		private class SqlTokenMetadata<TToken, TTokenBase>: SqlTokenMetadata, ISqlTokenMetadata<TToken> where TToken: TTokenBase
@@ -117,8 +117,8 @@ namespace bsn.ModuleStore.Sql.Script {
 				instanceGetters = instances.ToArray();
 			}
 
-			public override IEnumerable<SqlToken> EnumerateTokensUntyped(SqlToken instance) {
-				return EnumerateTokens((TToken)instance);
+			public override IEnumerable<SqlToken> EnumerateTokensUntyped(SqlToken instance, Type skipNestedOfType) {
+				return EnumerateTokens((TToken)instance, skipNestedOfType);
 			}
 
 			private void CheckFieldNames(Dictionary<string, bool> propertyNames, ICollection<string> checkFieldErrors) {
@@ -150,7 +150,14 @@ namespace bsn.ModuleStore.Sql.Script {
 				}
 			}
 
-			public IEnumerable<SqlToken> EnumerateTokens(TToken instance) {
+			private static bool ShouldYieldToken(SqlToken token, Type skipNestedOfType) {
+				if (token != null) {
+					return (skipNestedOfType == null) || skipNestedOfType.IsAssignableFrom(token.GetType());
+				}
+				return false;
+			}
+
+			public IEnumerable<SqlToken> EnumerateTokens(TToken instance, Type skipNestedOfType) {
 				if (instance != null) {
 					using (IEnumerator<ISqlTokenEnumeratorGetter<TToken>> enumerators = enumeratorGetters.GetEnumerator()) {
 						bool hasEnumerator = enumerators.MoveNext();
@@ -159,7 +166,7 @@ namespace bsn.ModuleStore.Sql.Script {
 							Debug.Assert(current != null);
 							if (current.IsPriority) {
 								foreach (SqlToken token in current.GetEnumerator(instance)) {
-									if (token != null) {
+									if (ShouldYieldToken(token, skipNestedOfType)) {
 										yield return token;
 									}
 								}
@@ -169,13 +176,13 @@ namespace bsn.ModuleStore.Sql.Script {
 							hasEnumerator = enumerators.MoveNext();
 						}
 						if (baseMetadata != null) {
-							foreach (SqlToken token in baseMetadata.EnumerateTokens(instance)) {
+							foreach (SqlToken token in baseMetadata.EnumerateTokens(instance, skipNestedOfType)) {
 								yield return token;
 							}
 						}
 						foreach (Func<TToken, SqlToken> instanceGetter in instanceGetters) {
 							SqlToken token = instanceGetter(instance);
-							if (token != null) {
+							if (ShouldYieldToken(token, skipNestedOfType)) {
 								yield return token;
 							}
 						}
@@ -184,7 +191,7 @@ namespace bsn.ModuleStore.Sql.Script {
 								ISqlTokenEnumeratorGetter<TToken> current = enumerators.Current;
 								Debug.Assert(current != null);
 								foreach (SqlToken token in current.GetEnumerator(instance)) {
-									if (token != null) {
+									if (ShouldYieldToken(token, skipNestedOfType)) {
 										yield return token;
 									}
 								}
