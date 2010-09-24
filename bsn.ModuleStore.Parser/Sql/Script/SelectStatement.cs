@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly QueryOptions queryOptions;
 		private readonly SelectQuery selectQuery;
 
-		[Rule("<SelectStatement> ::= <CTEGroup> <SelectQuery> <QueryHint>")]
+		[Rule("<SelectStatement> ::= <QueryOptions> <SelectQuery> <QueryHint>")]
 		public SelectStatement(QueryOptions queryOptions, SelectQuery selectQuery, QueryHint queryHint) {
 			Debug.Assert(selectQuery != null);
 			this.queryOptions = queryOptions;

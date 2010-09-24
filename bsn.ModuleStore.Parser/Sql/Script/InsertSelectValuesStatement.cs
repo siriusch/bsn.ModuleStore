@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class InsertSelectValuesStatement: InsertValuesStatement {
 		private readonly SelectQuery selectQuery;
 
-		[Rule("<InsertStatement> ::= <CTEGroup> ~INSERT <OptionalTop> ~<OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery> <QueryHint>")]
+		[Rule("<InsertStatement> ::= <QueryOptions> ~INSERT <OptionalTop> ~<OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery> <QueryHint>")]
 		public InsertSelectValuesStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, Optional<Sequence<ColumnName>> columnNames, OutputClause output, SelectQuery selectQuery, QueryHint queryHint)
 				: base(queryOptions, topExpression, destinationRowset, columnNames, output, queryHint) {
 			Debug.Assert(selectQuery != null);

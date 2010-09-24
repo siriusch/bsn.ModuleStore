@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly TopExpression topExpression;
 		private readonly Predicate whereClause;
 
-		[Rule("<DeleteStatement> ::= <CTEGroup> ~DELETE <OptionalTop> ~<OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>")]
+		[Rule("<DeleteStatement> ::= <QueryOptions> ~DELETE <OptionalTop> ~<OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>")]
 		public DeleteStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause, QueryHint queryHint) {
 			this.queryOptions = queryOptions;
 			this.topExpression = topExpression;

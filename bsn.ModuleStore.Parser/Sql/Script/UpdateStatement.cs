@@ -17,7 +17,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<UpdateItem> updateItems;
 		private readonly Predicate whereClause;
 
-		[Rule("<UpdateStatement> ::= <CTEGroup> ~UPDATE <OptionalTop> <DestinationRowset> ~SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>")]
+		[Rule("<UpdateStatement> ::= <QueryOptions> ~UPDATE <OptionalTop> <DestinationRowset> ~SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>")]
 		public UpdateStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, Sequence<UpdateItem> updateItems, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause, QueryHint queryHint) {
 			Debug.Assert(destinationRowset != null);
 			this.queryOptions = queryOptions;

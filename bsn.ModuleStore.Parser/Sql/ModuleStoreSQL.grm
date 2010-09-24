@@ -2,9 +2,10 @@
 ! T-SQL Script Analyzer
 ! -----------------------------------------------------------------------------------
 
-"Name"         = 'T-SQL CREATE Statements'
+"Name"         = 'T-SQL 2005 (strict subset)'
 "Version"      = '2005'
-"About"        = 'Parser for T-SQL subset to be supported by ModuleStore'
+"About"        = 'Parser for T-SQL subset to be supported by ModuleStore.'
+               | 'This subset excludes ambiguous and deprecated SQL as well as some features not used by ModuleStore.'
 "Author"       = 'Arsène von Wyss'
 
 "Character Mapping" = 'Unicode'
@@ -899,7 +900,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! Common Table Expressions, TOP and OUTPUT clauses
 ! =============================================================================
 
-<CTEGroup> ::= WITH_XMLNAMESPACES '(' <XmlNamespaceList> ')'
+<QueryOptions> ::= WITH_XMLNAMESPACES '(' <XmlNamespaceList> ')'
              | WITH_XMLNAMESPACES '(' <XmlNamespaceList> ')' ',' <CTEList>
              | WITH <CTEList>
              |
@@ -936,10 +937,10 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! INSERT Statement
 ! =============================================================================
 
-<InsertStatement> ::= <CTEGroup> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')' <QueryHint>
-                    | <CTEGroup> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery> <QueryHint>
-                    | <CTEGroup> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement> <QueryHint>
-                    | <CTEGroup> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> DEFAULT VALUES <QueryHint>
+<InsertStatement> ::= <QueryOptions> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')' <QueryHint>
+                    | <QueryOptions> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery> <QueryHint>
+                    | <QueryOptions> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement> <QueryHint>
+                    | <QueryOptions> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> DEFAULT VALUES <QueryHint>
 
 <OptionalInto> ::= INTO
                  |
@@ -948,7 +949,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! UPDATE Statement
 ! =============================================================================
 
-<UpdateStatement> ::= <CTEGroup> UPDATE <OptionalTop> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>
+<UpdateStatement> ::= <QueryOptions> UPDATE <OptionalTop> <DestinationRowset> SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>
 
 <UpdateItemList> ::= <UpdateItem> ',' <UpdateItemList>
                    | <UpdateItem>
@@ -966,7 +967,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! DELETE Statement
 ! =============================================================================
 
-<DeleteStatement> ::= <CTEGroup> DELETE <OptionalTop> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>
+<DeleteStatement> ::= <QueryOptions> DELETE <OptionalTop> <OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>
 
 <OptionalFrom> ::= FROM
                  |
@@ -975,7 +976,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! SELECT Statement
 ! =============================================================================
 
-<SelectStatement> ::= <CTEGroup> <SelectQuery> <QueryHint>
+<SelectStatement> ::= <QueryOptions> <SelectQuery> <QueryHint>
 
 <SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
                 | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>

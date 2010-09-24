@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class InsertExecuteValuesStatement: InsertValuesStatement {
 		private readonly ExecuteStatement executeStatement;
 
-		[Rule("<InsertStatement> ::= <CTEGroup> ~INSERT <OptionalTop> ~<OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement> <QueryHint>")]
+		[Rule("<InsertStatement> ::= <QueryOptions> ~INSERT <OptionalTop> ~<OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement> <QueryHint>")]
 		public InsertExecuteValuesStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, Optional<Sequence<ColumnName>> columnNames, OutputClause output, ExecuteStatement executeStatement, QueryHint queryHint)
 				: base(queryOptions, topExpression, destinationRowset, columnNames, output, queryHint) {
 			Debug.Assert(executeStatement != null);
