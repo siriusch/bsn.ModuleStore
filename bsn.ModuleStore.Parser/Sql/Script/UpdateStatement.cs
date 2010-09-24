@@ -8,19 +8,19 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	[CommonTableExpressionScope]
 	public class UpdateStatement: Statement {
-		private readonly List<CommonTableExpression> ctes;
 		private readonly DestinationRowset destinationRowset;
 		private readonly FromClause fromClause;
 		private readonly OutputClause outputClause;
+		private readonly QueryHint queryHint;
+		private readonly QueryOptions queryOptions;
 		private readonly TopExpression topExpression;
 		private readonly List<UpdateItem> updateItems;
 		private readonly Predicate whereClause;
-		private readonly QueryHint queryHint;
 
 		[Rule("<UpdateStatement> ::= <CTEGroup> ~UPDATE <OptionalTop> <DestinationRowset> ~SET <UpdateItemList> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>")]
-		public UpdateStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, Sequence<UpdateItem> updateItems, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause, QueryHint queryHint) {
+		public UpdateStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, Sequence<UpdateItem> updateItems, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause, QueryHint queryHint) {
 			Debug.Assert(destinationRowset != null);
-			this.ctes = ctes.ToList();
+			this.queryOptions = queryOptions;
 			this.topExpression = topExpression;
 			this.destinationRowset = destinationRowset;
 			this.updateItems = updateItems.ToList();
@@ -28,12 +28,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.fromClause = fromClause;
 			this.whereClause = whereClause;
 			this.queryHint = queryHint;
-		}
-
-		public IEnumerable<CommonTableExpression> Ctes {
-			get {
-				return ctes;
-			}
 		}
 
 		public DestinationRowset DestinationRowset {
@@ -48,15 +42,21 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public OutputClause OutputClause {
+			get {
+				return outputClause;
+			}
+		}
+
 		public QueryHint QueryHint {
 			get {
 				return queryHint;
 			}
 		}
 
-		public OutputClause OutputClause {
+		public QueryOptions QueryOptions {
 			get {
-				return outputClause;
+				return queryOptions;
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.WriteCommonTableExpressions(ctes);
+			writer.WriteScript(queryOptions, WhitespacePadding.NewlineAfter);
 			writer.Write("UPDATE ");
 			writer.IncreaseIndent();
 			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);

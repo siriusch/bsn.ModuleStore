@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
@@ -6,30 +6,27 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	[CommonTableExpressionScope]
 	public sealed class SelectStatement: Statement {
-		private readonly List<CommonTableExpression> ctes;
 		private readonly QueryHint queryHint;
+		private readonly QueryOptions queryOptions;
 		private readonly SelectQuery selectQuery;
 
-		[Rule("<SelectStatement> ::= <SelectQuery> <QueryHint>")]
-		public SelectStatement(SelectQuery selectQuery, QueryHint queryHint): this(null, selectQuery, queryHint) {}
-
-		[Rule("<SelectStatement> ::= ~WITH <CTEList> <SelectQuery> <QueryHint>")]
-		public SelectStatement(Sequence<CommonTableExpression> ctes, SelectQuery selectQuery, QueryHint queryHint) {
+		[Rule("<SelectStatement> ::= <CTEGroup> <SelectQuery> <QueryHint>")]
+		public SelectStatement(QueryOptions queryOptions, SelectQuery selectQuery, QueryHint queryHint) {
 			Debug.Assert(selectQuery != null);
-			this.ctes = ctes.ToList();
+			this.queryOptions = queryOptions;
 			this.selectQuery = selectQuery;
 			this.queryHint = queryHint;
-		}
-
-		public IEnumerable<CommonTableExpression> Ctes {
-			get {
-				return ctes;
-			}
 		}
 
 		public QueryHint QueryHint {
 			get {
 				return queryHint;
+			}
+		}
+
+		public QueryOptions QueryOptions {
+			get {
+				return queryOptions;
 			}
 		}
 
@@ -41,7 +38,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.WriteCommonTableExpressions(ctes);
+			writer.WriteScript(queryOptions, WhitespacePadding.NewlineAfter);
 			writer.IncreaseIndent();
 			writer.WriteScript(selectQuery, WhitespacePadding.None);
 			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);

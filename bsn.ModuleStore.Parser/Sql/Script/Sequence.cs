@@ -42,6 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<UpdateItemList> ::= <UpdateItem>", typeof(UpdateItem))]
 		[Rule("<CaseWhenExpressionList> ::= <CaseWhenExpression>", typeof(CaseWhen<Expression>))]
 		[Rule("<CaseWhenPredicateList> ::= <CaseWhenPredicate>", typeof(CaseWhen<Predicate>))]
+		[Rule("<XmlNamespaceList> ::= <XmlNamespace>", typeof(XmlNamespace))]
 		public Sequence(T item): this(item, null) {}
 
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
@@ -71,6 +72,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<UpdateItemList> ::= <UpdateItem> ~',' <UpdateItemList>", typeof(UpdateItem))]
 		[Rule("<CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>", typeof(CaseWhen<Expression>))]
 		[Rule("<CaseWhenPredicateList> ::= <CaseWhenPredicate> <CaseWhenPredicateList>", typeof(CaseWhen<Predicate>))]
+		[Rule("<XmlNamespaceList> ::= <XmlNamespace> ~',' <XmlNamespaceList>", typeof(XmlNamespace))]
 		public Sequence(T item, Sequence<T> next) {
 			if (next != null) {
 				if (next.Item != null) {

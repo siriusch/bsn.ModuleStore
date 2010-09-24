@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
 	[CommonTableExpressionScope]
 	public abstract class InsertStatement: Statement {
-		private readonly List<CommonTableExpression> ctes;
 		private readonly DestinationRowset destinationRowset;
 		private readonly QueryHint queryHint;
+		private readonly QueryOptions queryOptions;
 		private readonly TopExpression topExpression;
 
-		protected InsertStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, QueryHint queryHint) {
+		protected InsertStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, QueryHint queryHint) {
+			this.queryOptions = queryOptions;
 			this.topExpression = topExpression;
 			this.destinationRowset = destinationRowset;
 			this.queryHint = queryHint;
-			this.ctes = ctes.ToList();
-		}
-
-		public IEnumerable<CommonTableExpression> Ctes {
-			get {
-				return ctes;
-			}
 		}
 
 		public DestinationRowset DestinationRowset {
@@ -35,15 +28,21 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public QueryOptions QueryOptions {
+			get {
+				return queryOptions;
+			}
+		}
+
 		public TopExpression TopExpression {
 			get {
 				return topExpression;
 			}
 		}
 
-		public sealed override void WriteTo(SqlWriter writer) {
+		public override sealed void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.WriteCommonTableExpressions(ctes);
+			writer.WriteScript(queryOptions, WhitespacePadding.NewlineAfter);
 			writer.Write("INSERT ");
 			writer.IncreaseIndent();
 			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);

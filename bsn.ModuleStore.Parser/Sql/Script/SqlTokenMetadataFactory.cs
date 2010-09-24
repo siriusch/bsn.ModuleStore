@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,18 +6,33 @@ using System.Reflection;
 
 namespace bsn.ModuleStore.Sql.Script {
 	internal static class SqlTokenMetadataFactory {
-		private interface ISqlTokenEnumeratorGetter<TInstance> {
-			IEnumerable<SqlToken> GetEnumerator(TInstance instance);
+		internal abstract class SqlTokenMetadata {
+			private readonly bool isCommonTableExpressionScope;
 
+			protected SqlTokenMetadata(Type type) {
+				isCommonTableExpressionScope = type.GetCustomAttributes(typeof(CommonTableExpressionScopeAttribute), true).Length > 0;
+			}
+
+			public bool IsCommonTableExpressionScope {
+				get {
+					return isCommonTableExpressionScope;
+				}
+			}
+
+			public abstract IEnumerable<SqlToken> EnumerateTokensUntyped(SqlToken instance, Type skipNestedOfType);
+		}
+
+		private interface ISqlTokenEnumeratorGetter<TInstance> {
 			bool IsPriority {
 				get;
 			}
+
+			IEnumerable<SqlToken> GetEnumerator(TInstance instance);
 		}
 
-		private class SqlTokenEnumeratorGetter<TInstance, TItem>: ISqlTokenEnumeratorGetter<TInstance> where TInstance: SqlToken
-		                                                                                               where TItem: SqlToken {
-			private readonly Func<TInstance, IEnumerable<TItem>> propertyGetter;
+		private class SqlTokenEnumeratorGetter<TInstance, TItem>: ISqlTokenEnumeratorGetter<TInstance> where TInstance: SqlToken where TItem: SqlToken {
 			private readonly bool isPriority;
+			private readonly Func<TInstance, IEnumerable<TItem>> propertyGetter;
 
 			public SqlTokenEnumeratorGetter(Func<TInstance, IEnumerable<TItem>> propertyGetter, bool isPriority) {
 				this.propertyGetter = propertyGetter;
@@ -36,26 +50,9 @@ namespace bsn.ModuleStore.Sql.Script {
 					return isPriority;
 				}
 			}
-		                                                                                               }
-
-		internal abstract class SqlTokenMetadata {
-			private readonly bool isCommonTableExpressionScope;
-
-			protected SqlTokenMetadata(Type type) {
-				this.isCommonTableExpressionScope = type.GetCustomAttributes(typeof(CommonTableExpressionScopeAttribute), true).Length > 0;
-			}
-
-			public bool IsCommonTableExpressionScope {
-				get {
-					return isCommonTableExpressionScope;
-				}
-			}
-
-			public abstract IEnumerable<SqlToken> EnumerateTokensUntyped(SqlToken instance, Type skipNestedOfType);
 		}
 
-		private class SqlTokenMetadata<TToken, TTokenBase>: SqlTokenMetadata, ISqlTokenMetadata<TToken> where TToken: TTokenBase
-		                                                                                                where TTokenBase: SqlToken {
+		private class SqlTokenMetadata<TToken, TTokenBase>: SqlTokenMetadata, ISqlTokenMetadata<TToken> where TToken: TTokenBase where TTokenBase: SqlToken {
 			private static IEnumerable<Type> GetInterfaces(Type type) {
 				if (type.IsInterface) {
 					yield return type;
@@ -63,6 +60,13 @@ namespace bsn.ModuleStore.Sql.Script {
 				foreach (Type @interface in type.GetInterfaces()) {
 					yield return @interface;
 				}
+			}
+
+			private static bool ShouldYieldToken(SqlToken token, Type skipNestedOfType) {
+				if (token != null) {
+					return (skipNestedOfType == null) || skipNestedOfType.IsAssignableFrom(token.GetType());
+				}
+				return false;
 			}
 
 			private readonly ISqlTokenMetadata<TTokenBase> baseMetadata;
@@ -85,7 +89,13 @@ namespace bsn.ModuleStore.Sql.Script {
 								propertyNames.Add(property.Name, false);
 							}
 							Type delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), typeof(SqlToken));
-							instances.Add((Func<TToken, SqlToken>)Delegate.CreateDelegate(delegateType, propertyGetter));
+							bool isPriority = typeof(QueryOptions).IsAssignableFrom(property.PropertyType);
+							Func<TToken, SqlToken> getter = (Func<TToken, SqlToken>)Delegate.CreateDelegate(delegateType, propertyGetter);
+							if (isPriority) {
+								instances.Insert(0, getter);
+							} else {
+								instances.Add(getter);
+							}
 						} else {
 							foreach (Type @interface in GetInterfaces(property.PropertyType)) {
 								if (@interface.IsGenericType && (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
@@ -150,13 +160,6 @@ namespace bsn.ModuleStore.Sql.Script {
 				}
 			}
 
-			private static bool ShouldYieldToken(SqlToken token, Type skipNestedOfType) {
-				if (token != null) {
-					return (skipNestedOfType == null) || skipNestedOfType.IsAssignableFrom(token.GetType());
-				}
-				return false;
-			}
-
 			public IEnumerable<SqlToken> EnumerateTokens(TToken instance, Type skipNestedOfType) {
 				if (instance != null) {
 					using (IEnumerator<ISqlTokenEnumeratorGetter<TToken>> enumerators = enumeratorGetters.GetEnumerator()) {
@@ -200,7 +203,7 @@ namespace bsn.ModuleStore.Sql.Script {
 					}
 				}
 			}
-		                                                                                                }
+		}
 
 		private static readonly Dictionary<Type, SqlTokenMetadata> tokenMetadata = new Dictionary<Type, SqlTokenMetadata>();
 

@@ -72,6 +72,7 @@
     <Compile Include="Sql\Script\AnyStatement.cs" />
     <Compile Include="Sql\Script\ConstraintDefaultFunctionValue.cs" />
     <Compile Include="Sql\Script\CrossApply.cs" />
+    <Compile Include="Sql\Script\QueryOptions.cs" />
     <Compile Include="Sql\Script\ExpressionColumnFunctionCalls.cs" />
     <Compile Include="Sql\Script\ExpressionFunctionCalls.cs" />
     <Compile Include="Sql\Script\ExpressionWithFunctionCalls.cs" />
@@ -407,6 +408,8 @@
     <Compile Include="Sql\Script\WaitforStatement.cs" />
     <Compile Include="Sql\Script\WhileStatement.cs" />
     <Compile Include="Sql\Script\XmlDirective.cs" />
+    <Compile Include="Sql\Script\XmlNamespace.cs" />
+    <Compile Include="Sql\Script\XmlNamespaceName.cs" />
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
     <Compile Include="Sql\SqlSemanticProcessor.cs" />
     <Compile Include="Sql\SqlTokenizer.cs" />

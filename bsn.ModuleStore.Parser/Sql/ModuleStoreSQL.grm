@@ -252,6 +252,7 @@ WITH_TIES = WITH{Whitespace}+TIES
 WITH_VIEW_METADATA = WITH{Whitespace}+VIEW_METADATA
 WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 WITH_SCHEMABINDING = WITH{Whitespace}+SCHEMABINDING
+WITH_XMLNAMESPACES = WITH{Whitespace}+XMLNAMESPACES
 ENABLE_TRIGGER = ENABLE{Whitespace}+TRIGGER
 DISABLE_TRIGGER = DISABLE{Whitespace}+TRIGGER
 ADD_PERSISTED = ADD{Whitespace}+PERSISTED
@@ -362,6 +363,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <ViewNameQualified> ::= <ViewName>
                       | <SchemaName> '.' <ViewName>
+
+<XmlNamespaceName> ::= Id
 
 <XmlSchemaCollectionName> ::= Id
 
@@ -896,8 +899,15 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! Common Table Expressions, TOP and OUTPUT clauses
 ! =============================================================================
 
-<CTEGroup> ::= WITH <CTEList>
+<CTEGroup> ::= WITH_XMLNAMESPACES '(' <XmlNamespaceList> ')'
+             | WITH_XMLNAMESPACES '(' <XmlNamespaceList> ')' ',' <CTEList>
+             | WITH <CTEList>
              |
+
+<XmlNamespaceList> ::= <XmlNamespace> ',' <XmlNamespaceList>
+                     | <XmlNamespace>
+
+<XmlNamespace> ::= <StringLiteral> AS <XmlNamespaceName>
 
 <CTEList> ::= <CTE> ',' <CTEList>
             | <CTE>
@@ -965,8 +975,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! SELECT Statement
 ! =============================================================================
 
-<SelectStatement> ::= WITH <CTEList> <SelectQuery> <QueryHint>
-                    | <SelectQuery> <QueryHint>
+<SelectStatement> ::= <CTEGroup> <SelectQuery> <QueryHint>
 
 <SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
                 | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>

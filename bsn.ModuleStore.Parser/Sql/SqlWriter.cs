@@ -43,13 +43,6 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void WriteCommonTableExpressions(ICollection<CommonTableExpression> expressions) {
-			if (expressions.Count > 0) {
-				Write("WITH ");
-				WriteScriptSequence(expressions, WhitespacePadding.NewlineAfter, ",");
-			}
-		}
-
 		public void WriteDuplicateRestriction(bool? distinct, WhitespacePadding padding) {
 			if (distinct.HasValue) {
 				PaddingBefore(padding);

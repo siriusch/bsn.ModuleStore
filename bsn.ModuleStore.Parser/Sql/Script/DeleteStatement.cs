@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using bsn.GoldParser.Semantic;
@@ -7,29 +6,23 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	[CommonTableExpressionScope]
 	public sealed class DeleteStatement: Statement {
-		private readonly List<CommonTableExpression> ctes;
 		private readonly DestinationRowset destinationRowset;
 		private readonly FromClause fromClause;
 		private readonly OutputClause outputClause;
 		private readonly QueryHint queryHint;
+		private readonly QueryOptions queryOptions;
 		private readonly TopExpression topExpression;
 		private readonly Predicate whereClause;
 
 		[Rule("<DeleteStatement> ::= <CTEGroup> ~DELETE <OptionalTop> ~<OptionalFrom> <DestinationRowset> <OutputClause> <OptionalFromClause> <WhereClause> <QueryHint>")]
-		public DeleteStatement(Optional<Sequence<CommonTableExpression>> ctes, TopExpression topExpression, DestinationRowset destinationRowset, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause, QueryHint queryHint) {
-			this.ctes = ctes.ToList();
+		public DeleteStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, OutputClause outputClause, Optional<FromClause> fromClause, Optional<Predicate> whereClause, QueryHint queryHint) {
+			this.queryOptions = queryOptions;
 			this.topExpression = topExpression;
 			this.destinationRowset = destinationRowset;
 			this.outputClause = outputClause;
 			this.fromClause = fromClause;
 			this.whereClause = whereClause;
 			this.queryHint = queryHint;
-		}
-
-		public IEnumerable<CommonTableExpression> Ctes {
-			get {
-				return ctes;
-			}
 		}
 
 		public DestinationRowset DestinationRowset {
@@ -56,6 +49,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public QueryOptions QueryOptions {
+			get {
+				return queryOptions;
+			}
+		}
+
 		public TopExpression TopExpression {
 			get {
 				return topExpression;
@@ -70,7 +69,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.WriteCommonTableExpressions(ctes);
+			writer.WriteScript(queryOptions, WhitespacePadding.NewlineAfter);
 			writer.Write("DELETE");
 			writer.IncreaseIndent();
 			writer.WriteScript(topExpression, WhitespacePadding.SpaceBefore);

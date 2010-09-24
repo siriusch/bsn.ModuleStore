@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
 
@@ -10,6 +11,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public ExpressionWithFunctionCalls(Expression expression, Sequence<NamedFunction> functions): base(functions.Item, functions.Next) {
 			Debug.Assert(expression != null);
 			this.expression = expression;
+		}
+
+		public Expression Expression {
+			get {
+				return expression;
+			}
 		}
 
 		protected override void WriteToInternal(SqlWriter writer) {
