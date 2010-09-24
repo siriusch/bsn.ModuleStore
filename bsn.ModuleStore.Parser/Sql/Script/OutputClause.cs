@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using bsn.GoldParser.Grammar;
+using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -55,6 +57,11 @@ namespace bsn.ModuleStore.Sql.Script {
 					}
 				}
 			}
+		}
+
+		protected override void Initialize(Symbol symbol, LineInfo position) {
+			base.Initialize(symbol, position);
+			LockInnerUnqualifiedTableNames(IsInsertedOrDeletedTableName);
 		}
 
 		public bool HasValue {

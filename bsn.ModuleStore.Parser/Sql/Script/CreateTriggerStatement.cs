@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 using bsn.GoldParser.Grammar;
 using bsn.GoldParser.Parser;
@@ -11,8 +10,6 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateTriggerStatement: CreateStatement, ICreateOrAlterStatement {
-		private static readonly Regex rxSpecialTables = new Regex("^(INSERTED|DELETED)$", RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.ExplicitCapture);
-
 		private readonly bool notForReplication;
 		private readonly Statement statement;
 		private readonly Qualified<SchemaName, TableName> tableName;
@@ -97,7 +94,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override void Initialize(Symbol symbol, LineInfo position) {
 			base.Initialize(symbol, position);
-			LockInnerUnqualifiedTableNames(tn => rxSpecialTables.IsMatch(tn));
+			LockInnerUnqualifiedTableNames(IsInsertedOrDeletedTableName);
 		}
 
 		private void WriteToInternal(SqlWriter writer, string command) {

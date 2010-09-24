@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class SqlToken: SemanticToken {
+		private static readonly Regex rxInsertedDeletedTables = new Regex("^(INSERTED|DELETED)$", RegexOptions.CultureInvariant|RegexOptions.IgnoreCase|RegexOptions.ExplicitCapture);
+
+		internal static bool IsInsertedOrDeletedTableName(string tableName) {
+			return rxInsertedDeletedTables.IsMatch(tableName);
+		}
+
 		internal IEnumerable<IQualifiedName<SchemaName>> GetInnerSchemaQualifiedNames(Predicate<string> checkSchemaName) {
 			return GetInnerTokens(delegate(IQualifiedName<SchemaName> name, CommonTableExpressionScope scope) {
 			                      	SchemaName qualification = name.Qualification;
