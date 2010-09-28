@@ -34,7 +34,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("FREETEXT")]
 	[Terminal("FREETEXTTABLE")]
 	[Terminal("GRANT")]
-	[Terminal("HOLDLOCK")]
 	[Terminal("IDENTITYCOL")]
 	[Terminal("INTERSECT")]
 	[Terminal("KILL")]

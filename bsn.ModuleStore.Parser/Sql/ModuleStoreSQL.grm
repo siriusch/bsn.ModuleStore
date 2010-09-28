@@ -535,7 +535,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                     |
 
 <DestinationRowset> ::= <VariableName>
-                      | <TableNameQualified>
+                      | <TableNameQualified> <TableHintGroup>
 !                      | <Openrowset> -- not supported
 !                      | <Openquery> -- not supported
 
@@ -1036,7 +1036,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <SourceRowset> ::= <VariableName> <RowsetAlias>
                  | <VariableName> '.' <NamedFunction> <RowsetAlias> ! XML nodes() function: http://msdn.microsoft.com/en-us/library/ms188282(v=SQL.90).aspx
                  | <VariableName> '.' <ColumnName> '.' <NamedFunction> <RowsetAlias> ! XML nodes() function on a table variable
-                 | <TableNameQualified> <RowsetAlias>
+                 | <TableNameQualified> <RowsetAlias> <TableHintGroup>
                  | <Openxml> <RowsetAlias>
                  | <NamedFunction> <RowsetAlias>
                  | <SchemaName> '.' <NamedFunction> <RowsetAlias>
@@ -1047,6 +1047,19 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <RowsetAlias> ::= <OptionalAs> <AliasName> '(' <ColumnNameList> ')'
                 | <OptionalAs> <AliasName>
                 |
+
+<TableHintGroup> ::= WITH '(' <TableHintList> ')'
+                   |
+
+<TableHintList> ::= <TableHint> ',' <TableHintList>
+                  | <TableHint>
+
+<TableHint> ::= INDEX '(' <IndexValueList> ')'
+              | HOLDLOCK
+              | Id
+
+<IndexValueList> ::= IntegerLiteral ',' <IndexValueList>
+                   | IntegerLiteral
 
 <WhereClause> ::= WHERE <Predicate>
                 |

@@ -43,6 +43,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CaseWhenExpressionList> ::= <CaseWhenExpression>", typeof(CaseWhen<Expression>))]
 		[Rule("<CaseWhenPredicateList> ::= <CaseWhenPredicate>", typeof(CaseWhen<Predicate>))]
 		[Rule("<XmlNamespaceList> ::= <XmlNamespace>", typeof(XmlNamespace))]
+		[Rule("<TableHintList> ::= <TableHint>", typeof(TableHint))]
+		[Rule("<IndexValueList> ::= IntegerLiteral", typeof(IntegerLiteral))]
 		public Sequence(T item): this(item, null) {}
 
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
@@ -73,6 +75,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CaseWhenExpressionList> ::= <CaseWhenExpression> <CaseWhenExpressionList>", typeof(CaseWhen<Expression>))]
 		[Rule("<CaseWhenPredicateList> ::= <CaseWhenPredicate> <CaseWhenPredicateList>", typeof(CaseWhen<Predicate>))]
 		[Rule("<XmlNamespaceList> ::= <XmlNamespace> ~',' <XmlNamespaceList>", typeof(XmlNamespace))]
+		[Rule("<TableHintList> ::= <TableHint> ~',' <TableHintList>", typeof(TableHint))]
+		[Rule("<IndexValueList> ::= IntegerLiteral ~',' <IndexValueList>", typeof(IntegerLiteral))]
 		public Sequence(T item, Sequence<T> next) {
 			if (next != null) {
 				if (next.Item != null) {

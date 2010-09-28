@@ -9,12 +9,16 @@ namespace bsn.ModuleStore.Sql.Script {
 
 	public sealed class DestinationRowset<T>: DestinationRowset where T: SqlScriptableToken {
 		private readonly T name;
+		private readonly TableHintGroup tableHints;
 
 		[Rule("<DestinationRowset> ::= <VariableName>", typeof(VariableName))]
-		[Rule("<DestinationRowset> ::= <TableNameQualified>", typeof(Qualified<SchemaName, TableName>))]
-		public DestinationRowset(T name) {
+		public DestinationRowset(T name): this(name, null) {}
+
+		[Rule("<DestinationRowset> ::= <TableNameQualified> <TableHintGroup>", typeof(Qualified<SchemaName, TableName>))]
+		public DestinationRowset(T name, TableHintGroup tableHints) {
 			Debug.Assert(name != null);
 			this.name = name;
+			this.tableHints = tableHints;
 		}
 
 		public T Name {
@@ -23,8 +27,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public TableHintGroup TableHints {
+			get {
+				return tableHints;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(name, WhitespacePadding.None);
+			writer.WriteScript(tableHints, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

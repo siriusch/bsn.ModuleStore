@@ -315,8 +315,12 @@
     <Compile Include="Sql\Script\TableConstraint.cs" />
     <Compile Include="Sql\Script\TableDefinition.cs" />
     <Compile Include="Sql\Script\TableForeignKeyConstraint.cs" />
+    <Compile Include="Sql\Script\TableHint.cs" />
+    <Compile Include="Sql\Script\TableHintGroup.cs" />
+    <Compile Include="Sql\Script\TableIndexHint.cs" />
     <Compile Include="Sql\Script\TableName.cs" />
     <Compile Include="Sql\Script\TablePrimaryKeyConstraint.cs" />
+    <Compile Include="Sql\Script\TableSimpleHint.cs" />
     <Compile Include="Sql\Script\TableUniqueConstraint.cs" />
     <Compile Include="Sql\Script\TableUniqueConstraintBase.cs" />
     <Compile Include="Sql\Script\TempTableIdentifier.cs" />
