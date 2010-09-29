@@ -330,6 +330,7 @@
     <Compile Include="Sql\Script\Tokens\ConstraintClusterToken.cs" />
     <Compile Include="Sql\Script\Tokens\ConstraintNonclusteredToken.cs" />
     <Compile Include="Sql\Script\Tokens\CreateToken.cs" />
+    <Compile Include="Sql\Script\Tokens\CustomToken.cs" />
     <Compile Include="Sql\Script\Tokens\DdlOperationToken.cs" />
     <Compile Include="Sql\Script\Tokens\DeleteToken.cs" />
     <Compile Include="Sql\Script\Tokens\DmlOperationToken.cs" />

@@ -266,6 +266,9 @@ EXTERNAL_NAME = EXTERNAL{Whitespace}+NAME
 FULLTEXT_INDEX = FULLTEXT{Whitespace}+INDEX
 WITH_FILLFACTOR = WITH{Whitespace}+FILLFACTOR
 READ_ONLY = READ{Whitespace}+ONLY
+READ_COMMITTED = READ{Whitespace}+COMMITED
+READ_UNCOMMITTED = READ{Whitespace}+UNCOMMITTED
+REPEATABLE_READ= REPEATABLE{Whitespace}+READ
 NO_POPULATION = NO{Whitespace}+POPULATION
 NO_ACTION = NO{Whitespace}+ACTION
 TYPE_COLUMN = TYPE{Whitespace}+COLUMN
@@ -569,12 +572,19 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                          | SET <VariableName> '=' <CursorDefinition>
 
 <SetOptionStatement> ::= SET Id <SetValueList>
+                       | SET TRANSACTION <SetValueList>
+                       | SET OFFSETS <SetValueList>
+                       | SET ROWCOUNT <SetValue>
+                       | SET STATISTICS <SetValueList>
                        | SET IDENTITY_INSERT <TableName> <Toggle>
 
 <SetValueList> ::= <SetValue> <SetValueList>
                  | <SetValue>
 
 <SetValue> ::= Id
+             | READ_UNCOMMITED
+             | READ_COMMITED
+             | REPEATABLE_READ
              | <Toggle>
              | <IntegerLiteral>
              | <StringValue>
