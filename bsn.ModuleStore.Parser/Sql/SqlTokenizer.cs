@@ -6,15 +6,34 @@ using bsn.GoldParser.Grammar;
 using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	internal class SqlTokenizer: Tokenizer<SqlToken> {
 		private readonly SemanticActions<SqlToken> actions;
 		private readonly List<string> pendingComments = new List<string>();
 		private readonly List<KeyValuePair<int, string>> comments = new List<KeyValuePair<int, string>>();
+		private bool repeatToken;
+		private SqlToken lastToken;
 
 		public SqlTokenizer(TextReader textReader, SemanticActions<SqlToken> actions): base(textReader, actions.Grammar) {
 			this.actions = actions;
+		}
+
+		public override ParseMessage NextToken(out SqlToken token) {
+			if (repeatToken) {
+				repeatToken = false;
+				token = lastToken;
+				lastToken = null;
+				return ParseMessage.TokenRead;
+			}
+			ParseMessage parseMessage = base.NextToken(out token);
+			lastToken = (parseMessage == ParseMessage.TokenRead) ? token : null;
+			return parseMessage;
+		}
+
+		internal void RepeatToken() {
+			repeatToken = true;
 		}
 
 		public IList<string> GetComments(int index) {

@@ -1,5 +1,7 @@
 using System;
 
+using bsn.GoldParser.Grammar;
+using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script.Tokens {
@@ -123,5 +125,9 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<OptionalFrom> ::=")]
 		[Rule("<OptionalFrom> ::= ~FROM")]
 		public InsignificantToken() {}
+
+		internal void InitializeInternal(Symbol symbol, LineInfo lineInfo) {
+			base.Initialize(symbol, lineInfo);
+		}
 	}
 }

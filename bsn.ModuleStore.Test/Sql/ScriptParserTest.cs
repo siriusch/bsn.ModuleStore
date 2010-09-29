@@ -61,6 +61,13 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
+		public void ParseWithMissingTerminator() {
+			ParseWithRoundtrip(@"SELECT * FROM [tblA]
+SELECT * FROM [tblB]
+PRINT 'Cool'", 3);
+		}
+
+		[Test]
 		public void ParseWithComments() {
 			ParseWithRoundtrip(@"-- Line comment
 BEGIN
