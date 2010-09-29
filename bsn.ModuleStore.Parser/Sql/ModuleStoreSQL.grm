@@ -582,8 +582,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                  | <SetValue>
 
 <SetValue> ::= Id
-             | READ_UNCOMMITED
-             | READ_COMMITED
+             | READ_UNCOMMITTED
+             | READ_COMMITTED
              | REPEATABLE_READ
              | <Toggle>
              | <IntegerLiteral>
@@ -988,21 +988,21 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <SelectStatement> ::= <QueryOptions> <SelectQuery> <QueryHint>
 
-<SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+<SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>
                 | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
-                | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>
                 | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
-                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>
                 | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
-                | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <UnionClause>
+                | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>
                 | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
-                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <RowsetCombineClause>
                 | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>
-                | SELECT <Restriction> <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <RowsetCombineClause>
                 | SELECT <Restriction> <ColumnItemList> <IntoClause> <ForClause>
-                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <RowsetCombineClause>
                 | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>
-                | SELECT <ColumnItemList> <IntoClause> <UnionClause>
+                | SELECT <ColumnItemList> <IntoClause> <RowsetCombineClause>
                 | SELECT <ColumnItemList> <IntoClause> <ForClause>
 
 <TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>
@@ -1094,8 +1094,10 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <HavingClause> ::= HAVING <Predicate>
                  |
 
-<UnionClause> ::= UNION <SelectQuery>
-                | UNION ALL <SelectQuery>
+<RowsetCombineClause> ::= UNION <SelectQuery>
+                        | UNION ALL <SelectQuery>
+                        | EXCEPT <SelectQuery>
+                        | INTERSECT <SelectQuery>
 
 <ForClause> ::= FOR_BROWSE
               | FOR_XML_AUTO <XmlDirectiveList>

@@ -14,9 +14,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			writer.Write("LEFT ");
-			base.WriteTo(writer);
+		protected override string JoinSpecifier {
+			get {
+				return "LEFT JOIN";
+			}
 		}
 	}
 }

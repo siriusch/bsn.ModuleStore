@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 using bsn.GoldParser.Grammar;
@@ -23,6 +24,7 @@ namespace bsn.ModuleStore.Sql {
 		public override ParseMessage NextToken(out SqlToken token) {
 			if (repeatToken) {
 				repeatToken = false;
+				Debug.Assert(lastToken != null);
 				token = lastToken;
 				lastToken = null;
 				return ParseMessage.TokenRead;
@@ -32,8 +34,9 @@ namespace bsn.ModuleStore.Sql {
 			return parseMessage;
 		}
 
-		internal void RepeatToken() {
-			repeatToken = true;
+		internal bool RepeatToken() {
+			repeatToken = (lastToken != null);
+			return repeatToken;
 		}
 
 		public IList<string> GetComments(int index) {

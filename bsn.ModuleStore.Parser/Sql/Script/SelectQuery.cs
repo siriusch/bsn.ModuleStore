@@ -13,19 +13,19 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly DestinationRowset intoClause;
 		private readonly bool? restriction;
 		private readonly TopExpression top;
-		private readonly UnionClause unionClause;
+		private readonly RowsetCombineClause unionClause;
 
-		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>")]
-		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(restriction.Distinct, top, columnItems, intoClause, null, unionClause) {}
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <RowsetCombineClause>")]
+		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, RowsetCombineClause unionClause): this(restriction.Distinct, top, columnItems, intoClause, null, unionClause) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <ColumnItemList> <IntoClause> <UnionClause>")]
-		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(restriction.Distinct, null, columnItems, intoClause, null, unionClause) {}
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <ColumnItemList> <IntoClause> <RowsetCombineClause>")]
+		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, RowsetCombineClause unionClause): this(restriction.Distinct, null, columnItems, intoClause, null, unionClause) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <TopLegacy> <ColumnItemList> <IntoClause> <UnionClause>")]
-		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(default(bool?), top, columnItems, intoClause, null, unionClause) {}
+		[Rule("<SelectQuery> ::= ~SELECT <TopLegacy> <ColumnItemList> <IntoClause> <RowsetCombineClause>")]
+		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, RowsetCombineClause unionClause): this(default(bool?), top, columnItems, intoClause, null, unionClause) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <UnionClause>")]
-		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, UnionClause unionClause): this(default(bool?), null, columnItems, intoClause, null, unionClause) {}
+		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <RowsetCombineClause>")]
+		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, RowsetCombineClause unionClause): this(default(bool?), null, columnItems, intoClause, null, unionClause) {}
 
 		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>")]
 		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(restriction.Distinct, top, columnItems, intoClause, forClause, null) {}
@@ -39,7 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <ForClause>")]
 		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(default(bool?), null, columnItems, intoClause, forClause, null) {}
 
-		protected SelectQuery(bool? restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause, UnionClause unionClause) {
+		protected SelectQuery(bool? restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause, RowsetCombineClause unionClause) {
 			this.top = top;
 			this.intoClause = intoClause;
 			this.forClause = forClause;
@@ -78,7 +78,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public UnionClause UnionClause {
+		public RowsetCombineClause UnionClause {
 			get {
 				return unionClause;
 			}

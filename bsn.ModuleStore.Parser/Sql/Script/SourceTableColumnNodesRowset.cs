@@ -37,6 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(tableNameQualified, WhitespacePadding.None);
 			writer.Write('.');
 			writer.WriteScript(columnName, WhitespacePadding.None);
+			writer.Write('.');
 			base.WriteTo(writer);
 		}
 	}

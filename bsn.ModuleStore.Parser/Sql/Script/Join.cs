@@ -20,8 +20,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
+		protected abstract string JoinSpecifier {
+			get;
+		}
+
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("JOIN ");
+			writer.Write(JoinSpecifier);
+			writer.Write(' ');
 			writer.WriteScript(joinSource, WhitespacePadding.None);
 		}
 	}

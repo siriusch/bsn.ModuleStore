@@ -72,6 +72,8 @@
     <Compile Include="Sql\Script\AnyStatement.cs" />
     <Compile Include="Sql\Script\ConstraintDefaultFunctionValue.cs" />
     <Compile Include="Sql\Script\CrossApply.cs" />
+    <Compile Include="Sql\Script\ExceptClause.cs" />
+    <Compile Include="Sql\Script\IntersectClause.cs" />
     <Compile Include="Sql\Script\QueryOptions.cs" />
     <Compile Include="Sql\Script\ExpressionColumnFunctionCalls.cs" />
     <Compile Include="Sql\Script\ExpressionFunctionCalls.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="Sql\Script\PredicateUpdate.cs" />
     <Compile Include="Sql\Script\RaiserrorStatement.cs" />
     <Compile Include="Sql\Script\RowsetAlias.cs" />
+    <Compile Include="Sql\Script\RowsetCombineClause.cs" />
     <Compile Include="Sql\Script\RowsetTableAlias.cs" />
     <Compile Include="Sql\Script\RowsetTableColumnsAlias.cs" />
     <Compile Include="Sql\Script\SourceNodesRowset.cs" />

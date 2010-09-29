@@ -13,5 +13,11 @@ namespace bsn.ModuleStore.Sql.Script {
 				return JoinKind.Inner;
 			}
 		}
+
+		protected override string JoinSpecifier {
+			get {
+				return "JOIN";
+			}
+		}
 	}
 }

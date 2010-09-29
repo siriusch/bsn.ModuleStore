@@ -24,11 +24,12 @@ namespace bsn.ModuleStore.Sql {
 
 		protected override bool RetrySyntaxError(ref SqlToken currentToken) {
 			if (((IToken)currentToken).Symbol != terminatorSymbol) {
-				tokenizer.RepeatToken();
-				InsignificantToken terminator = new InsignificantToken();
-				terminator.InitializeInternal(terminatorSymbol, ((IToken)currentToken).Position);
-				currentToken = terminator;
-				return true;
+				if (tokenizer.RepeatToken()) {
+					InsignificantToken terminator = new InsignificantToken();
+					terminator.InitializeInternal(terminatorSymbol, ((IToken)currentToken).Position);
+					currentToken = terminator;
+					return true;
+				}
 			}
 			return false;
 		}
