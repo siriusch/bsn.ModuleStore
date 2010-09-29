@@ -112,6 +112,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 	[Terminal("WITH")]
 	[Terminal("WITH_CHANGE_TRACKING")]
 	[Terminal("WITH_FILLFACTOR")]
+	[Terminal("WITH_MARK")]
 	[Terminal("WITH_XMLNAMESPACES")]
 	[Terminal("XML_INDEX")]
 	[Terminal("XML_SCHEMA_COLLECTION")]

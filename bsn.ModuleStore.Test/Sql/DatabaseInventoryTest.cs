@@ -4,7 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 
 namespace bsn.ModuleStore.Sql {
-	[TestFixture]
+//	[TestFixture]
 	public class DatabaseInventoryTest: AssertionHelper {
 	}
 }

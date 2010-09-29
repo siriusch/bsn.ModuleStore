@@ -71,7 +71,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("TABLESAMPLE")]
 	[Terminal("TEXTSIZE")]
 	[Terminal("TO")]
-	[Terminal("TRAN")]
 	[Terminal("TRANSACTION")]
 	[Terminal("TRUNCATE")]
 	[Terminal("TSEQUAL")]

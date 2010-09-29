@@ -256,6 +256,86 @@ AND    steps.exist('./MI:tool') = 1;", 1);
 		}
 
 		[Test]
+		public void BeginTransaction() {
+			ParseWithRoundtrip(@"BEGIN TRAN", 1);
+		}
+
+		[Test]
+		public void BeginTransactionIdentifierName() {
+			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans", 1);
+		}
+
+		[Test]
+		public void BeginTransactionVariableName() {
+			ParseWithRoundtrip(@"BEGIN TRANSACTION @trans", 1);
+		}
+
+		[Test]
+		public void BeginTransactionWithMark() {
+			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK", 1);
+		}
+
+		[Test]
+		public void BeginTransactionWithMarkNamed() {
+			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK 'My Trans'", 1);
+		}
+
+		[Test]
+		public void CommitTransactionLegacy() {
+			ParseWithRoundtrip(@"COMMIT", 1);
+		}
+
+		[Test]
+		public void CommitTransaction() {
+			ParseWithRoundtrip(@"COMMIT TRAN", 1);
+		}
+
+		[Test]
+		public void CommitTransactionIdentifierName() {
+			ParseWithRoundtrip(@"COMMIT TRANSACTION MyTrans", 1);
+		}
+
+		[Test]
+		public void CommitTransactionVariableName() {
+			ParseWithRoundtrip(@"COMMIT TRANSACTION @trans", 1);
+		}
+
+		[Test]
+		public void RollbackTransactionLegacy() {
+			ParseWithRoundtrip(@"ROLLBACK", 1);
+		}
+
+		[Test]
+		public void RollbackTransaction() {
+			ParseWithRoundtrip(@"ROLLBACK TRAN", 1);
+		}
+
+		[Test]
+		public void RollbackTransactionIdentifierName() {
+			ParseWithRoundtrip(@"ROLLBACK TRANSACTION MyTrans", 1);
+		}
+
+		[Test]
+		public void RollbackTransactionVariableName() {
+			ParseWithRoundtrip(@"ROLLBACK TRANSACTION @trans", 1);
+		}
+
+		[Test]
+		public void SaveTransactionIdentifierName() {
+			ParseWithRoundtrip(@"SAVE TRANSACTION MyTrans", 1);
+		}
+
+		[Test]
+		public void SaveTransactionVariableName() {
+			ParseWithRoundtrip(@"SAVE TRANSACTION @trans", 1);
+		}
+
+		[Test]
+		public void SetTransactionIsolationLevel() {
+			ParseWithRoundtrip(@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE", 1);
+		}
+
+		[Test]
 		public void SyntaxError() {
 			Expect(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1), Throws.ArgumentException.With.Message.ContainsSubstring("SyntaxError"));
 		}

@@ -169,10 +169,9 @@ NOCHECK = NOCHECK
 TOP = TOP
 DATABASE = DATABASE
 NONCLUSTERED = NONCLUSTERED
-TRAN = TRAN
 DBCC = DBCC
 NOT = NOT
-TRANSACTION = TRANSACTION
+TRANSACTION = TRAN(SACTION)?
 DEALLOCATE = DEALLOCATE
 NULL = NULL
 TRIGGER = TRIGGER
@@ -254,6 +253,7 @@ WITH_VIEW_METADATA = WITH{Whitespace}+VIEW_METADATA
 WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 WITH_SCHEMABINDING = WITH{Whitespace}+SCHEMABINDING
 WITH_XMLNAMESPACES = WITH{Whitespace}+XMLNAMESPACES
+WITH_MARK = WITH{Whitespace}+MARK
 ENABLE_TRIGGER = ENABLE{Whitespace}+TRIGGER
 DISABLE_TRIGGER = DISABLE{Whitespace}+TRIGGER
 ADD_PERSISTED = ADD{Whitespace}+PERSISTED
@@ -343,6 +343,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <TableNameQualified> ::= <TableName>
                        | <SchemaName> '.' <TableName>
+
+<TransactionName> ::= Id
 
 <TriggerName> ::= Id
 
@@ -448,8 +450,10 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                  | <DeleteStatement>
 
 <PrgStatement> ::= <AnyStatement>
+                 | <BeginTransactionStatement>
                  | <BreakStatement>
                  | <CloseStatement>
+                 | <CommitTransactionStatement>
                  | <ContinueStatement>
                  | <DeallocateStatement>
                  | <DeclareStatement>
@@ -459,6 +463,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                  | <OpenStatement>
                  | <PrintStatement>
                  | <ReturnStatement>
+                 | <RollbackTransactionStatement>
+                 | <SaveTransactionStatement>
                  | <SetStatement>
                  | <TryCatchStatement>
                  | <WaitforStatement>
@@ -591,6 +597,28 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <StringValue> ::= <StringLiteral>
                 | <VariableName>
+
+! =============================================================================
+! Transaction statements
+! =============================================================================
+
+<BeginTransactionStatement> ::= BEGIN TRANSACTION
+                              | BEGIN TRANSACTION <TransactionIdentifier>
+                              | BEGIN TRANSACTION <TransactionIdentifier> WITH_MARK 
+                              | BEGIN TRANSACTION <TransactionIdentifier> WITH_MARK <StringLiteral>
+
+<CommitTransactionStatement> ::= COMMIT
+                               | COMMIT TRANSACTION
+                               | COMMIT TRANSACTION <TransactionIdentifier>
+
+<RollbackTransactionStatement> ::= ROLLBACK
+                                 | ROLLBACK TRANSACTION
+                                 | ROLLBACK TRANSACTION <TransactionIdentifier>
+
+<SaveTransactionStatement> ::= SAVE TRANSACTION <TransactionIdentifier>
+
+<TransactionIdentifier> ::= <TransactionName>
+                          | <VariableName>
 
 ! =============================================================================
 ! CREATE/DROP FULLTEXT

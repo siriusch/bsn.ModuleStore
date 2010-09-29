@@ -70,6 +70,9 @@
     <Compile Include="Sql\Script\AlterTableNocheckConstraintStatement.cs" />
     <Compile Include="Sql\Script\AlterTableStatement.cs" />
     <Compile Include="Sql\Script\AnyStatement.cs" />
+    <Compile Include="Sql\Script\BeginTransactionStatement.cs" />
+    <Compile Include="Sql\Script\BeginTransactionWithMarkStatement.cs" />
+    <Compile Include="Sql\Script\CommitTransactionStatement.cs" />
     <Compile Include="Sql\Script\ConstraintDefaultFunctionValue.cs" />
     <Compile Include="Sql\Script\CrossApply.cs" />
     <Compile Include="Sql\Script\ExceptClause.cs" />
@@ -81,10 +84,12 @@
     <Compile Include="Sql\Script\OuterApply.cs" />
     <Compile Include="Sql\Script\PredicateUpdate.cs" />
     <Compile Include="Sql\Script\RaiserrorStatement.cs" />
+    <Compile Include="Sql\Script\RollbackTransactionStatement.cs" />
     <Compile Include="Sql\Script\RowsetAlias.cs" />
     <Compile Include="Sql\Script\RowsetCombineClause.cs" />
     <Compile Include="Sql\Script\RowsetTableAlias.cs" />
     <Compile Include="Sql\Script\RowsetTableColumnsAlias.cs" />
+    <Compile Include="Sql\Script\SaveTransactionStatement.cs" />
     <Compile Include="Sql\Script\SourceNodesRowset.cs" />
     <Compile Include="Sql\Script\SourceTableColumnNodesRowset.cs" />
     <Compile Include="Sql\Script\SourceTableVariableNodesRowset.cs" />
@@ -389,6 +394,8 @@
     <Compile Include="Sql\Script\Tokens\WithTiesToken.cs" />
     <Compile Include="Sql\Script\Tokens\WithViewMetadataToken.cs" />
     <Compile Include="Sql\Script\TopExpression.cs" />
+    <Compile Include="Sql\Script\TransactionName.cs" />
+    <Compile Include="Sql\Script\TransactionStatement.cs" />
     <Compile Include="Sql\Script\TriggerAllServerTarget.cs" />
     <Compile Include="Sql\Script\TriggerDatabaseTarget.cs" />
     <Compile Include="Sql\Script\TriggerName.cs" />
