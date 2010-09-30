@@ -38,7 +38,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalPercent> ::=", typeof(PercentToken))]
 		[Rule("<OptionalElementName> ::=", typeof(StringLiteral))]
 		[Rule("<OptionalFromClause> ::=", typeof(FromClause))]
-		public Optional(): this(null) {}
+		[Rule("<OptionalContainsTop> ::=", typeof(IntegerLiteral))]
+		public Optional() : this(null) {
+		}
 
 		[Rule("<FulltextColumnType> ::= ~TYPE ~COLUMN <TypeNameQualified>", typeof(Qualified<SchemaName, TypeName>))]
 		[Rule("<FulltextColumnGroup> ::= ~'(' <FulltextColumnList> ~')'", typeof(Sequence<FulltextColumn>))]
@@ -66,6 +68,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalPercent> ::= PERCENT", typeof(PercentToken))]
 		[Rule("<OptionalElementName> ::= ~'(' StringLiteral ~')'", typeof(StringLiteral))]
 		[Rule("<OptionalFromClause> ::= <FromClause>", typeof(FromClause))]
+		[Rule("<OptionalContainsTop> ::= ~',' <IntegerLiteral>", typeof(IntegerLiteral))]
 		public Optional(T value) {
 			this.value = value;
 		}

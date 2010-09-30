@@ -85,6 +85,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("LOAD")]
 	[Terminal("NATIONAL")]
 	[Terminal("NOCHECK")]
+	[Terminal("NULLIF")]
 	[Terminal("OF")]
 	[Terminal("OFFSETS")]
 	[Terminal("OPEN")]

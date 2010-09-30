@@ -84,10 +84,17 @@
     <Compile Include="Sql\Script\ForXmlRawClause.cs" />
     <Compile Include="Sql\Script\FulltextChangeTrackingAuto.cs" />
     <Compile Include="Sql\Script\FulltextChangeTrackingManual.cs" />
+    <Compile Include="Sql\Script\FulltextMultipleFunction.cs" />
+    <Compile Include="Sql\Script\FulltextMultipleTableFunction.cs" />
+    <Compile Include="Sql\Script\FulltextSingleFunction.cs" />
+    <Compile Include="Sql\Script\FulltextSingleTableFunction.cs" />
+    <Compile Include="Sql\Script\FulltextTableFunction.cs" />
+    <Compile Include="Sql\Script\IdentityFunction.cs" />
     <Compile Include="Sql\Script\IndexUsingPath.cs" />
     <Compile Include="Sql\Script\IndexUsingProperty.cs" />
     <Compile Include="Sql\Script\IndexUsingValue.cs" />
     <Compile Include="Sql\Script\IntersectClause.cs" />
+    <Compile Include="Sql\Script\KeywordFunction.cs" />
     <Compile Include="Sql\Script\QueryOptions.cs" />
     <Compile Include="Sql\Script\ExpressionColumnFunctionCalls.cs" />
     <Compile Include="Sql\Script\ExpressionFunctionCalls.cs" />
@@ -201,7 +208,7 @@
     <Compile Include="Sql\Script\ExpressionFunction.cs" />
     <Compile Include="Sql\Script\NamedFunction.cs" />
     <Compile Include="Sql\Script\ExpressionNegate.cs" />
-    <Compile Include="Sql\Script\NullifFunction.cs" />
+    <Compile Include="Sql\Script\KeywordWithArgumentPairFunction.cs" />
     <Compile Include="Sql\Script\ExpressionParens.cs" />
     <Compile Include="Sql\Script\ExpressionRankingFunction.cs" />
     <Compile Include="Sql\Script\ExpressionSearchedCase.cs" />
@@ -312,7 +319,7 @@
     <Compile Include="Sql\Script\Source.cs" />
     <Compile Include="Sql\Script\SourceFunctionRowset.cs" />
     <Compile Include="Sql\Script\SourceNestedSelectRowset.cs" />
-    <Compile Include="Sql\Script\SourceOpenXmlRowset.cs" />
+    <Compile Include="Sql\Script\SourceSystemFunctionRowset.cs" />
     <Compile Include="Sql\Script\SourceParens.cs" />
     <Compile Include="Sql\Script\SourceRowset.cs" />
     <Compile Include="Sql\Script\SourceTableRowset.cs" />
@@ -346,6 +353,7 @@
     <Compile Include="Sql\Script\TableUniqueConstraint.cs" />
     <Compile Include="Sql\Script\TableUniqueConstraintBase.cs" />
     <Compile Include="Sql\Script\TempTableIdentifier.cs" />
+    <Compile Include="Sql\Script\FulltextFunction.cs" />
     <Compile Include="Sql\Script\Tokens\Add.cs" />
     <Compile Include="Sql\Script\Tokens\AlterToken.cs" />
     <Compile Include="Sql\Script\Tokens\ConstraintClusteredToken.cs" />

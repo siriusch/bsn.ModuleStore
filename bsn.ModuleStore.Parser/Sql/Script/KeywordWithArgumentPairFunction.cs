@@ -4,12 +4,14 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class NullifFunction: FunctionCall {
+	public sealed class KeywordWithArgumentPairFunction: KeywordFunction {
 		private readonly Expression firstExpression;
 		private readonly Expression secondExpression;
 
-		[Rule("<FunctionCall> ::= ~NULLIF ~'(' <Expression> ~',' <Expression> ~')'")]
-		public NullifFunction(Expression firstExpression, Expression secondExpression) {
+		[Rule("<FunctionCall> ::= LEFT ~'(' <Expression> ~',' <Expression> ~')'")]
+		[Rule("<FunctionCall> ::= RIGHT ~'(' <Expression> ~',' <Expression> ~')'")]
+		[Rule("<FunctionCall> ::= NULLIF ~'(' <Expression> ~',' <Expression> ~')'")]
+		public KeywordWithArgumentPairFunction(ReservedKeyword keyword, Expression firstExpression, Expression secondExpression): base(keyword) {
 			Debug.Assert(firstExpression != null);
 			Debug.Assert(secondExpression != null);
 			this.firstExpression = firstExpression;
@@ -29,7 +31,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("NULLIF(");
+			base.WriteTo(writer);
+			writer.Write('(');
 			writer.WriteScript(firstExpression, WhitespacePadding.None);
 			writer.Write(", ");
 			writer.WriteScript(secondExpression, WhitespacePadding.None);

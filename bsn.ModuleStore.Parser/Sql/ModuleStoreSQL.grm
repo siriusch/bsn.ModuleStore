@@ -301,6 +301,9 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 <ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>
                    | <ColumnName>
 
+<ColumnNameQualifiedList> ::= <ColumnNameQualified> ',' <ColumnNameQualifiedList>
+                            | <ColumnNameQualified>
+
 <ColumnWild> ::= '*'
 
 <ColumnWildQualified> ::= <ColumnWild>
@@ -1071,6 +1074,7 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                  | <VariableName> '.' <ColumnName> '.' <NamedFunction> <RowsetAlias> ! XML nodes() function on a table variable
                  | <TableNameQualified> <RowsetAlias> <TableHintGroup>
                  | <Openxml> <RowsetAlias>
+                 | <TextTableFunction> <RowsetAlias>
                  | <NamedFunction> <RowsetAlias>
                  | <SchemaName> '.' <NamedFunction> <RowsetAlias>
                  | <SchemaName> '.' <TableName> '.' <NamedFunction> <RowsetAlias> ! also XML nodes() function; but with shifted names (SchemaName should be TableName, TableName should be ColumnName)
@@ -1082,6 +1086,22 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 <RowsetAlias> ::= <OptionalAs> <AliasName> '(' <ColumnNameList> ')'
                 | <OptionalAs> <AliasName>
                 |
+
+<TextTableFunction> ::= CONTAINSTABLE '(' <TableNameQualified> ',' <ColumnName> ',' <Expression> ',' LANGUAGE <Literal> <OptionalContainsTop> ')'
+                      | CONTAINSTABLE '(' <TableNameQualified> ',' <ColumnName> ',' <Expression> <OptionalContainsTop> ')'
+                      | CONTAINSTABLE '(' <TableNameQualified> ',' <ColumnWild> ',' <Expression> ',' LANGUAGE <Literal> <OptionalContainsTop> ')'
+                      | CONTAINSTABLE '(' <TableNameQualified> ',' <ColumnWild> ',' <Expression> <OptionalContainsTop> ')'
+                      | CONTAINSTABLE '(' <TableNameQualified> ',' '(' <ColumnNameList> ')' ',' <Expression> ',' LANGUAGE <Literal> <OptionalContainsTop> ')'
+                      | CONTAINSTABLE '(' <TableNameQualified> ',' '(' <ColumnNameList> ')' ',' <Expression> <OptionalContainsTop> ')'
+                      | FREETEXTTABLE '(' <TableNameQualified> ',' <ColumnName> ',' <Expression> ',' LANGUAGE <Literal> <OptionalContainsTop> ')'
+                      | FREETEXTTABLE '(' <TableNameQualified> ',' <ColumnName> ',' <Expression> <OptionalContainsTop> ')'
+                      | FREETEXTTABLE '(' <TableNameQualified> ',' <ColumnWild> ',' <Expression> ',' LANGUAGE <Literal> <OptionalContainsTop> ')'
+                      | FREETEXTTABLE '(' <TableNameQualified> ',' <ColumnWild> ',' <Expression> <OptionalContainsTop> ')'
+                      | FREETEXTTABLE '(' <TableNameQualified> ',' '(' <ColumnNameList> ')' ',' <Expression> ',' LANGUAGE <Literal> <OptionalContainsTop> ')'
+                      | FREETEXTTABLE '(' <TableNameQualified> ',' '(' <ColumnNameList> ')' ',' <Expression> <OptionalContainsTop> ')'
+
+<OptionalContainsTop> ::= ',' <IntegerLiteral>
+                        |
 
 <TableHintGroup> ::= WITH '(' <TableHintList> ')'
                    |
@@ -1183,6 +1203,14 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 
 <PredicateFunction> ::= EXISTS '(' <SelectQuery> ')'
                       | UPDATE '(' <ColumnName> ')'
+                      | CONTAINS '(' <ColumnWildNameQualified> ',' <Expression> ',' LANGUAGE <Literal> ')'
+                      | CONTAINS '(' <ColumnWildNameQualified> ',' <Expression> ')'
+                      | CONTAINS '(' '(' <ColumnNameQualifiedList> ')' ',' <Expression> ',' LANGUAGE <Literal> ')'
+                      | CONTAINS '(' '(' <ColumnNameQualifiedList> ')' ',' <Expression> ')'
+                      | FREETEXT '(' <ColumnWildNameQualified> ',' <Expression> ',' LANGUAGE <Literal> ')'
+                      | FREETEXT '(' <ColumnWildNameQualified> ',' <Expression> ')'
+                      | FREETEXT '(' '(' <ColumnNameQualifiedList> ')' ',' <Expression> ',' LANGUAGE <Literal> ')'
+                      | FREETEXT '(' '(' <ColumnNameQualifiedList> ')' ',' <Expression> ')'
                       | <PredicateCompare>
 
 <PredicateCompare> ::= <Expression> '=' <Expression>
@@ -1239,10 +1267,19 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 <FunctionCall> ::= CAST '(' <Expression> AS <TypeName> ')'
                  | COALESCE '(' <ExpressionList> ')'
                  | NULLIF '(' <Expression> ',' <Expression> ')'
+                 | LEFT '(' <Expression> ',' <Expression> ')'
+                 | RIGHT '(' <Expression> ',' <Expression> ')'
                  | CONVERT '(' <TypeName> ',' <Expression> ')'
                  | CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'
                  | COUNT '(' <ColumnWildNameQualified> ')'
                  | COUNT '(' <Restriction> <ColumnWildNameQualified> ')'
+                 | IDENTITY '(' <TypeName> ')'
+                 | IDENTITY '(' <TypeName> ',' <IntegerLiteral> ',' <IntegerLiteral> ')'
+                 | CURRENT_TIMESTAMP
+                 | CURRENT_USER
+                 | SESSION_USER
+                 | SYSTEM_USER
+                 | USER
                  | <NamedFunction>
 
 <NamedFunction> ::= <FunctionName> '(' ')'
