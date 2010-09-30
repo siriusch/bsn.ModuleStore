@@ -7,10 +7,8 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<TriggerType> ::= ~FOR")]
 		public TriggerTypeForToken() {}
 
-		public override TriggerType TriggerType {
-			get {
-				return TriggerType.For;
-			}
+		public override void WriteTo(SqlWriter writer) {
+			writer.Write("FOR");
 		}
 	}
 }

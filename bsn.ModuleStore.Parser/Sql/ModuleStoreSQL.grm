@@ -51,239 +51,234 @@ TempTableId  = '#'{Letter}{Id Ch Standard}* | '[#'{Id Ch Delimited Bracket}+']' 
 ! The reserved keywords as per MSDN: http://msdn.microsoft.com/en-us/library/ms189822.aspx
 ! By specifying them explicitly here, we should not see those in the log as implicit when generating the grammar tables, and the unsed ones are still reserved keywords
 ADD = ADD
-EXISTS = EXISTS
-PRECISION = PRECISION
 ALL = ALL
-EXIT = EXIT
-PRIMARY = PRIMARY
 ALTER = ALTER
-EXTERNAL = EXTERNAL
-PRINT = PRINT
 AND = AND
-FETCH = FETCH
-! PROC = PROC -- is covered by PROCEDURE
 ANY = ANY
-FILE = FILE
-PROCEDURE = PROC(EDURE)?
 AS = AS
-FILLFACTOR = FILLFACTOR
-PUBLIC = PUBLIC
 ASC = ASC
-FOR = FOR
-RAISERROR = RAISERROR
 AUTHORIZATION = AUTHORIZATION
-FOREIGN = FOREIGN
-READ = READ
 BACKUP = BACKUP
-FREETEXT = FREETEXT
-READTEXT = READTEXT
 BEGIN = BEGIN
-FREETEXTTABLE = FREETEXTTABLE
-RECONFIGURE = RECONFIGURE
 BETWEEN = BETWEEN
-FROM = FROM
-REFERENCES = REFERENCES
 BREAK = BREAK
-FULL = FULL
-REPLICATION = REPLICATION
 BROWSE = BROWSE
-FUNCTION = FUNCTION
-RESTORE = RESTORE
 BULK = BULK
-GOTO = GOTO
-RESTRICT = RESTRICT
 BY = BY
-GRANT = GRANT
-RETURN = RETURN
 CASCADE = CASCADE
-GROUP = GROUP
-REVERT = REVERT
 CASE = CASE
-HAVING = HAVING
-REVOKE = REVOKE
 CHECK = CHECK
-HOLDLOCK = HOLDLOCK
-RIGHT = RIGHT
 CHECKPOINT = CHECKPOINT
-IDENTITY = IDENTITY
-ROLLBACK = ROLLBACK
 CLOSE = CLOSE
-IDENTITY_INSERT = IDENTITY_INSERT
-ROWCOUNT = ROWCOUNT
 CLUSTERED = CLUSTERED
-IDENTITYCOL = IDENTITYCOL
-ROWGUIDCOL = ROWGUIDCOL
 COALESCE = COALESCE
-IF = IF
-RULE = RULE
 COLLATE = COLLATE
-IN = IN
-SAVE = SAVE
 COLUMN = COLUMN
-INDEX = INDEX
-SCHEMA = SCHEMA
 COMMIT = COMMIT
-INNER = INNER
-SECURITYAUDIT = SECURITYAUDIT
 COMPUTE = COMPUTE
-INSERT = INSERT
-SELECT = SELECT
 CONSTRAINT = CONSTRAINT
-INTERSECT = INTERSECT
-SESSION_USER = SESSION_USER
 CONTAINS = CONTAINS
-INTO = INTO
-SET = SET
 CONTAINSTABLE = CONTAINSTABLE
-IS = IS
-SETUSER = SETUSER
 CONTINUE = CONTINUE
-JOIN = JOIN
-SHUTDOWN = SHUTDOWN
 CONVERT = CONVERT
-KEY = KEY
-SOME = SOME
 CREATE = CREATE
-KILL = KILL
-STATISTICS = STATISTICS
 CROSS = CROSS
-LEFT = LEFT
-SYSTEM_USER = SYSTEM_USER
 CURRENT = CURRENT
-LIKE = LIKE
-TABLE = TABLE
 CURRENT_DATE = CURRENT_DATE
-LINENO = LINENO
-TABLESAMPLE = TABLESAMPLE
 CURRENT_TIME = CURRENT_TIME
-LOAD = LOAD
-TEXTSIZE = TEXTSIZE
 CURRENT_TIMESTAMP = CURRENT_TIMESTAMP
-MERGE = MERGE
-THEN = THEN
 CURRENT_USER = CURRENT_USER
-NATIONAL = NATIONAL
-TO = TO
 CURSOR = CURSOR
-NOCHECK = NOCHECK
-TOP = TOP
 DATABASE = DATABASE
-NONCLUSTERED = NONCLUSTERED
 DBCC = DBCC
-NOT = NOT
-TRANSACTION = TRAN(SACTION)?
 DEALLOCATE = DEALLOCATE
-NULL = NULL
-TRIGGER = TRIGGER
 DECLARE = DECLARE
-NULLIF = NULLIF
-TRUNCATE = TRUNCATE
 DEFAULT = DEFAULT
-OF = OF
-TSEQUAL = TSEQUAL
 DELETE = DELETE
-OFF = OFF
-UNION = UNION
 DENY = DENY
-OFFSETS = OFFSETS
-UNIQUE = UNIQUE
 DESC = DESC
-ON = ON
-UNPIVOT = UNPIVOT
 DISK = DISK
-OPEN = OPEN
-UPDATE = UPDATE
 DISTINCT = DISTINCT
-OPENDATASOURCE = OPENDATASOURCE
-UPDATETEXT = UPDATETEXT
 DISTRIBUTED = DISTRIBUTED
-OPENQUERY = OPENQUERY
-USE = USE
 DOUBLE = DOUBLE
-OPENROWSET = OPENROWSET
-USER = USER
 DROP = DROP
-OPENXML = OPENXML
-VALUES = VALUES
+DUMMY = DUMMY
 DUMP = DUMP
-OPTION = OPTION
-VARYING = VARYING
 ELSE = ELSE
-OR = OR
-VIEW = VIEW
 END = END
-ORDER = ORDER
-WAITFOR = WAITFOR
 ERRLVL = ERRLVL
-OUTER = OUTER
-WHEN = WHEN
 ESCAPE = ESCAPE
-OVER = OVER
-WHERE = WHERE
 EXCEPT = EXCEPT
-PERCENT = PERCENT
-WHILE = WHILE
-! EXEC = EXEC -- is covered by EXECUTE
-PIVOT = PIVOT
-WITH = WITH
+! EXEC = EXEC
 EXECUTE = EXEC(UTE)?
+EXISTS = EXISTS
+EXIT = EXIT
+FETCH = FETCH
+FILE = FILE
+FILLFACTOR = FILLFACTOR
+FOR = FOR
+FOREIGN = FOREIGN
+FREETEXT = FREETEXT
+FREETEXTTABLE = FREETEXTTABLE
+FROM = FROM
+FULL = FULL
+FUNCTION = FUNCTION
+GOTO = GOTO
+GRANT = GRANT
+GROUP = GROUP
+HAVING = HAVING
+HOLDLOCK = HOLDLOCK
+IDENTITY = IDENTITY
+IDENTITY_INSERT = IDENTITY_INSERT
+IDENTITYCOL = IDENTITYCOL
+IF = IF
+IN = IN
+INDEX = INDEX
+INNER = INNER
+INSERT = INSERT
+INTERSECT = INTERSECT
+INTO = INTO
+IS = IS
+JOIN = JOIN
+KEY = KEY
+KILL = KILL
+LEFT = LEFT
+LIKE = LIKE
+LINENO = LINENO
+LOAD = LOAD
+NATIONAL = NATIONAL
+NOCHECK = NOCHECK
+NONCLUSTERED = NONCLUSTERED
+NOT = NOT
+NULL = NULL
+NULLIF = NULLIF
+OF = OF
+OFF = OFF
+OFFSETS = OFFSETS
+ON = ON
+OPEN = OPEN
+OPENDATASOURCE = OPENDATASOURCE
+OPENQUERY = OPENQUERY
+OPENROWSET = OPENROWSET
+OPENXML = OPENXML
+OPTION = OPTION
+OR = OR
+ORDER = ORDER
+OUTER = OUTER
+OVER = OVER
+PERCENT = PERCENT
 PLAN = PLAN
+PRECISION = PRECISION
+PRIMARY = PRIMARY
+PRINT = PRINT
+! PROC = PROC
+PROCEDURE = PROC(EDURE)?
+PUBLIC = PUBLIC
+RAISERROR = RAISERROR
+READ = READ
+READTEXT = READTEXT
+RECONFIGURE = RECONFIGURE
+REFERENCES = REFERENCES
+REPLICATION = REPLICATION
+RESTORE = RESTORE
+RESTRICT = RESTRICT
+RETURN = RETURN
+REVOKE = REVOKE
+RIGHT = RIGHT
+ROLLBACK = ROLLBACK
+ROWCOUNT = ROWCOUNT
+ROWGUIDCOL = ROWGUIDCOL
+RULE = RULE
+SAVE = SAVE
+SCHEMA = SCHEMA
+SELECT = SELECT
+SESSION_USER = SESSION_USER
+SET = SET
+SETUSER = SETUSER
+SHUTDOWN = SHUTDOWN
+SOME = SOME
+STATISTICS = STATISTICS
+SYSTEM_USER = SYSTEM_USER
+TABLE = TABLE
+TEXTSIZE = TEXTSIZE
+THEN = THEN
+TO = TO
+TOP = TOP
+! TRAN = TRAN
+TRANSACTION = TRAN(SACTION)?
+TRIGGER = TRIGGER
+TRUNCATE = TRUNCATE
+TSEQUAL = TSEQUAL
+UNION = UNION
+UNIQUE = UNIQUE
+UPDATE = UPDATE
+UPDATETEXT = UPDATETEXT
+USE = USE
+USER = USER
+VALUES = VALUES
+VARYING = VARYING
+VIEW = VIEW
+WAITFOR = WAITFOR
+WHEN = WHEN
+WHERE = WHERE
+WHILE = WHILE
+WITH = WITH
 WRITETEXT = WRITETEXT
 
-! Compound reserved words to keep the grammar context-free
-RETURNS_NULL_ON_NULL_INPUT = RETURNS{Whitespace}+NULL{Whitespace}+ON{Whitespace}+NULL{Whitespace}+INPUT
-CALLED_ON_NULL_INPUT = CALLED{Whitespace}+ON{Whitespace}+NULL{Whitespace}+INPUT
-EXECUTE_AS_CALLER = EXECUTE{Whitespace}+AS{Whitespace}+CALLER
-FOR_XML_AUTO = FOR{Whitespace}+XML{Whitespace}+AUTO
-FOR_XML_RAW = FOR{Whitespace}+XML{Whitespace}+RAW
-FOR_XML_EXPLICIT = FOR{Whitespace}+XML{Whitespace}+EXPLICIT
-FOR_XML_PATH = FOR{Whitespace}+XML{Whitespace}+PATH
-FOR_PATH = FOR{Whitespace}+PATH
-FOR_BROWSE = FOR{Whitespace}+BROWSE
-FOR_VALUE = FOR{Whitespace}+VALUE
-FOR_PROPERTY = FOR{Whitespace}+PROPERTY
-FOR_REPLICATION = FOR{Whitespace}+REPLICATION
-XML_INDEX = XML{Whitespace}+INDEX
-XML_SCHEMA_COLLECTION = XML{Whitespace}+SCHEMA{Whitespace}+COLLECTION
-USING_XML_INDEX = USING{Whitespace}+XML{Whitespace}+INDEX
-WITH_CHANGE_TRACKING = WITH{Whitespace}+CHANGE_TRACKING
-WITH_RECOMPILE = WITH{Whitespace}+RECOMPILE
-WITH_TIES = WITH{Whitespace}+TIES
-WITH_VIEW_METADATA = WITH{Whitespace}+VIEW_METADATA
-WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
-WITH_SCHEMABINDING = WITH{Whitespace}+SCHEMABINDING
-WITH_XMLNAMESPACES = WITH{Whitespace}+XMLNAMESPACES
-WITH_MARK = WITH{Whitespace}+MARK
-ENABLE_TRIGGER = ENABLE{Whitespace}+TRIGGER
-DISABLE_TRIGGER = DISABLE{Whitespace}+TRIGGER
-ADD_PERSISTED = ADD{Whitespace}+PERSISTED
-DROP_PERSISTED = DROP{Whitespace}+PERSISTED
-BEGIN_TRY = BEGIN{Whitespace}+TRY
-END_TRY = END{Whitespace}+TRY
-BEGIN_CATCH = BEGIN{Whitespace}+CATCH
-END_CATCH = END{Whitespace}+CATCH
-EXTERNAL_NAME = EXTERNAL{Whitespace}+NAME
-FULLTEXT_INDEX = FULLTEXT{Whitespace}+INDEX
-WITH_FILLFACTOR = WITH{Whitespace}+FILLFACTOR
-READ_ONLY = READ{Whitespace}+ONLY
-READ_COMMITTED = READ{Whitespace}+COMMITED
-READ_UNCOMMITTED = READ{Whitespace}+UNCOMMITTED
-REPEATABLE_READ= REPEATABLE{Whitespace}+READ
-NO_POPULATION = NO{Whitespace}+POPULATION
-NO_ACTION = NO{Whitespace}+ACTION
-TYPE_COLUMN = TYPE{Whitespace}+COLUMN
-CROSS_APPLY = CROSS{Whitespace}+APPLY
-OUTER_APPLY = OUTER{Whitespace}+APPLY
-PARTITION_BY = PARTITION{Whitespace}+BY
-INSTEAD_OF = INSTEAD{Whitespace}+OF
-INCLUDE_ = INCLUDE{Whitespace}*'('
-COUNT_ = COUNT{Whitespace}*'('
-CAST_ = CAST{Whitespace}*'('
-_RETURNS = ')'{Whitespace}*RETURNS
-LANGUAGE_LCID = LANGUAGE{Whitespace}+(0x{Hex Ch}+|{Digit}+|(''{String Ch}+'')+)
+! Unreserved keywords, to be re-tried as identifier if a syntax error occurs
+ACTION = ACTION
+AFTER = AFTER
+APPLY = APPLY
+AUTO = AUTO
+CALLED = CALLED
+CALLER = CALLER
+CAST = CAST
+CATCH = CATCH
+CHANGE_TRACKING = CHANGE_TRACKING
+COLLECTION = COLLECTION
+COMMITTED = COMMITTED
+COUNT = COUNT
+DISABLE = DISABLE
+ENABLE = ENABLE
+EXPLICIT = EXPLICIT
+EXTERNAL = EXTERNAL
+FULLTEXT = FULLTEXT
+INCLUDE = INCLUDE
+INPUT = INPUT
+INSTEAD = INSTEAD
+LANGUAGE = LANGUAGE
+MANUAL = MANUAL
+MARK = MARK
+MAXRECURSION = MAXRECURSION
+NAME = NAME
+NO = NO
+ONLY = ONLY
 OUTPUT = OUT(PUT)?
-OPTION_MAXRECURSION = OPTION{Whitespace}*'('{Whitespace}*MAXRECURSION
-ALL_SERVER = ALL{Whitespace}+SERVER
+PARTITION = PARTITION
+PATH = PATH
+PERSISTED = PERSISTED
+POPULATION = POPULATION
+PROPERTY = PROPERTY
+RAW = RAW
+RECOMPILE = RECOMPILE
+REPEATABLE = REPEATABLE
+RETURNS = RETURNS
+SCHEMABINDING = SCHEMABINDING
+SERVER = SERVER
+TIES = TIES
+TRY = TRY
+TYPE = TYPE
+UNCOMMITTED = UNCOMMITTED
+USING = USING
+VALUE = VALUE
+VIEW_METADATA = VIEW_METADATA
+WORK = WORK
+XML = XML
+XMLNAMESPACES = XMLNAMESPACES
+
+! Special terminal tokens to resolve ambiguities
+FOR_UPDATE = FOR{Whitespace}+UPDATE
+WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 
 ! =============================================================================
 ! Common Terminals (Names, Literals, ...)
@@ -377,7 +372,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <XmlSchemaCollectionNameQualified> ::= <XmlSchemaCollectionName>
                                      | <SchemaName> '.' <XmlSchemaCollectionName>
 
-<ExternalName> ::= EXTERNAL_NAME <AssemblyName> '.' <ClassName> '.' <MethodName>
+<ExternalName> ::= EXTERNAL NAME <AssemblyName> '.' <ClassName> '.' <MethodName>
 
 <OptionalAs> ::= AS
                |
@@ -488,7 +483,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <ReturnStatement> ::= RETURN
                     | RETURN <Expression>
 
-<TryCatchStatement> ::= BEGIN_TRY <StatementList> END_TRY BEGIN_CATCH <StatementList> END_CATCH
+<TryCatchStatement> ::= BEGIN TRY <StatementList> END TRY BEGIN CATCH <StatementList> END CATCH
 
 <WhileStatement> ::= WHILE <Predicate> <StatementGroup>
 
@@ -532,9 +527,9 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                         | <CursorName>
                         | Id <CursorName> ! Id should be GLOBAL, but GLOBAL isn't a reserved word
 
-<CursorUpdate> ::= FOR UPDATE OF <ColumnNameList>
-                 | FOR UPDATE
-                 | READ_ONLY
+<CursorUpdate> ::= FOR_UPDATE OF <ColumnNameList>
+                 | FOR_UPDATE
+                 | READ ONLY
 
 ! =============================================================================
 ! Common helper constructs
@@ -588,9 +583,9 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                  | <SetValue>
 
 <SetValue> ::= Id
-             | READ_UNCOMMITTED
-             | READ_COMMITTED
-             | REPEATABLE_READ
+             | READ UNCOMMITTED
+             | READ COMMITTED
+             | REPEATABLE READ
              | <Toggle>
              | <IntegerLiteral>
              | <StringValue>
@@ -604,8 +599,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <BeginTransactionStatement> ::= BEGIN TRANSACTION
                               | BEGIN TRANSACTION <TransactionIdentifier>
-                              | BEGIN TRANSACTION <TransactionIdentifier> WITH_MARK 
-                              | BEGIN TRANSACTION <TransactionIdentifier> WITH_MARK <StringLiteral>
+                              | BEGIN TRANSACTION <TransactionIdentifier> WITH MARK 
+                              | BEGIN TRANSACTION <TransactionIdentifier> WITH MARK <StringLiteral>
 
 <CommitTransactionStatement> ::= COMMIT
                                | COMMIT TRANSACTION
@@ -626,7 +621,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 ! We don't allow to specify the catalog name, since the catalog is automatically assigned (module name)
 
-<CreateFulltextStatement> ::= CREATE FULLTEXT_INDEX ON TABLE <TableNameQualified> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
+<CreateFulltextStatement> ::= CREATE FULLTEXT INDEX ON TABLE <TableNameQualified> <FulltextColumnGroup> KEY INDEX <IndexName> <FulltextChangeTracking>
 
 <FulltextColumnGroup> ::= '(' <FulltextColumnList> ')'
                         |
@@ -636,18 +631,20 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 <FulltextColumn> ::= <ColumnName> <FulltextColumnType> <OptionalLanguage>
 
-<FulltextColumnType> ::= TYPE_COLUMN <TypeNameQualified>
+<FulltextColumnType> ::= TYPE COLUMN <TypeNameQualified>
                        |
 
-<OptionalLanguage> ::= LANGUAGE_LCID
+<OptionalLanguage> ::= LANGUAGE <IntegerLiteral>
+                     | LANGUAGE <StringLiteral>
                      |
 
-<FulltextChangeTracking> ::= WITH_CHANGE_TRACKING Id
-                           | WITH_CHANGE_TRACKING OFF
-                           | WITH_CHANGE_TRACKING OFF ',' NO_POPULATION
+<FulltextChangeTracking> ::= WITH CHANGE_TRACKING AUTO
+                           | WITH CHANGE_TRACKING MANUAL
+                           | WITH CHANGE_TRACKING OFF
+                           | WITH CHANGE_TRACKING OFF ',' NO POPULATION
                            |
 
-<DropFulltextStatement> ::= DROP FULLTEXT_INDEX ON <TableNameQualified>
+<DropFulltextStatement> ::= DROP FULLTEXT INDEX ON <TableNameQualified>
 
 ! =============================================================================
 ! CREATE/DROP FUNCTION
@@ -655,11 +652,11 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 ! We don't allow to specify the schema name, it is implicit (module name)
 
-<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS <TypeNameQualified> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
-                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>
-                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS <VariableName> TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
-                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS <TypeNameQualified> <OptionalFunctionOption> <OptionalAs> <ExternalName>
-                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> _RETURNS TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <ExternalName>
+<CreateFunctionStatement> ::= CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> ')' RETURNS <TypeNameQualified> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
+                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> ')' RETURNS TABLE <OptionalFunctionOption> <OptionalAs> RETURN <FunctionInlineSelect>
+                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> ')' RETURNS <VariableName> TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <StatementBlock>
+                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> ')' RETURNS <TypeNameQualified> <OptionalFunctionOption> <OptionalAs> <ExternalName>
+                            | CREATE FUNCTION <FunctionNameQualified> '(' <OptionalFunctionParameterList> ')' RETURNS TABLE <TableDefinitionGroup> <OptionalFunctionOption> <OptionalAs> <ExternalName>
 
 <OptionalFunctionParameterList> ::= <FunctionParameterList>
                                   |
@@ -672,11 +669,11 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <FunctionInlineSelect> ::= <SelectStatement>
                          | '(' <FunctionInlineSelect> ')'
 
-! The options ENCRYPTION and SCHEMABINDING are handled by the module and therefore not allowed
-<OptionalFunctionOption> ::= WITH RETURNS_NULL_ON_NULL_INPUT
-                           | WITH CALLED_ON_NULL_INPUT
-                           | WITH EXECUTE_AS_CALLER
-                           | WITH_SCHEMABINDING
+! The option ENCRYPTION is handled by the module and therefore not allowed
+<OptionalFunctionOption> ::= WITH RETURNS NULL ON NULL INPUT
+                           | WITH CALLED ON NULL INPUT
+                           | WITH EXECUTE AS CALLER
+                           | WITH SCHEMABINDING
                            |
 
 <DropFunctionStatement> ::= DROP FUNCTION <FunctionNameQualified>
@@ -704,10 +701,10 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <OptionalReadonly> ::= Id
                      |
 
-<ProcedureOptionGroup> ::= WITH_RECOMPILE
+<ProcedureOptionGroup> ::= WITH RECOMPILE
                          |
 
-<ProcedureFor> ::= FOR_REPLICATION
+<ProcedureFor> ::= FOR REPLICATION
                  |
 
 <DropProcedureStatement> ::= DROP PROCEDURE <ProcedureNameQualified>
@@ -740,10 +737,10 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <AlterTableStatement> ::= ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> <ColumnDefinition>
                         | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD ROWGUIDCOL
                         | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP ROWGUIDCOL
-                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD_PERSISTED
-                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP_PERSISTED
-                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD NOT FOR_REPLICATION
-                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP NOT FOR_REPLICATION
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD PERSISTED
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP PERSISTED
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD NOT FOR REPLICATION
+                        | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP NOT FOR REPLICATION
                         | ALTER TABLE <TableNameQualified> <TableCheck> ADD <TableDefinitionList>
                         | ALTER TABLE <TableNameQualified> <TableCheck> NOCHECK CONSTRAINT <ConstraintName>
                         | ALTER TABLE <TableNameQualified> <TableCheck> NOCHECK CONSTRAINT ALL
@@ -768,7 +765,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <ColumnNameGroup> ::= '(' <ColumnNameList> ')'
                     |
 
-<ViewOptionalAttribute> ::= WITH_VIEW_METADATA
+<ViewOptionalAttribute> ::= WITH VIEW_METADATA
                           |
 
 <ViewOptionalCheckOption> ::= WITH_CHECK_OPTION
@@ -782,9 +779,10 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 
 ! We don't support the ON option, filegroup is managed by module manager
 
-<CreateIndexStatement> ::= CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' INCLUDE_ <ColumnNameList> ')' <IndexOptionGroup>
+<CreateIndexStatement> ::= CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' INCLUDE '(' <ColumnNameList> ')' <IndexOptionGroup>
                          | CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' <IndexOptionGroup>
-                         | CREATE <IndexPrimary> XML_INDEX <IndexName> ON <TableNameQualified> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
+                         | CREATE PRIMARY XML INDEX <IndexName> ON <TableNameQualified> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
+                         | CREATE XML INDEX <IndexName> ON <TableNameQualified> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
 
 <IndexColumnList> ::= <IndexColumn> ',' <IndexColumnList>
                     | <IndexColumn>
@@ -793,9 +791,6 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                         |
 
 <IndexColumn> ::= <ColumnName> <OrderType> 
-
-<IndexPrimary> ::= PRIMARY
-                 |
 
 <IndexOptionGroup> ::= WITH '(' <IndexOptionList> ')'
                      |
@@ -806,9 +801,9 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <IndexOption> ::= Id '=' <IntegerLiteral>
                 | Id '=' <Toggle>
 
-<IndexUsing> ::= USING_XML_INDEX <IndexName> FOR_VALUE
-               | USING_XML_INDEX <IndexName> FOR_PATH
-               | USING_XML_INDEX <IndexName> FOR_PROPERTY
+<IndexUsing> ::= USING XML INDEX <IndexName> FOR VALUE
+               | USING XML INDEX <IndexName> FOR PATH
+               | USING XML INDEX <IndexName> FOR PROPERTY
                |
 
 <DropIndexStatement> ::= DROP INDEX <IndexName> ON <TableNameQualified> <IndexOptionGroup>
@@ -822,8 +817,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <CreateTriggerStatement> ::= CREATE TRIGGER <TriggerNameQualified> ON <TableNameQualified> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> AS <StatementGroup>
 
 <TriggerType> ::= FOR
-                | INSTEAD_OF
-                | Id ! AFTER is not a keyword
+                | INSTEAD OF
+                | AFTER
 
 <TriggerOperationList> ::= <TriggerOperation> ',' <TriggerOperationList>
                          | <TriggerOperation>
@@ -832,18 +827,18 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                      | UPDATE
                      | DELETE
 
-<OptionalNotForReplication> ::= NOT FOR_REPLICATION
+<OptionalNotForReplication> ::= NOT FOR REPLICATION
                               |
 
 <TriggerTarget> ::= <TableNameQualified>
                   | DATABASE
-                  | ALL_SERVER
+                  | ALL SERVER
 
-<EnableTriggerStatement> ::= ENABLE_TRIGGER ALL ON <TriggerTarget>
-                           | ENABLE_TRIGGER <TriggerNameQualifiedList> ON <TriggerTarget>
+<EnableTriggerStatement> ::= ENABLE TRIGGER ALL ON <TriggerTarget>
+                           | ENABLE TRIGGER <TriggerNameQualifiedList> ON <TriggerTarget>
 
-<DisableTriggerStatement> ::= DISABLE_TRIGGER ALL ON <TriggerTarget>
-                            | DISABLE_TRIGGER <TriggerNameQualifiedList> ON <TriggerTarget>
+<DisableTriggerStatement> ::= DISABLE TRIGGER ALL ON <TriggerTarget>
+                            | DISABLE TRIGGER <TriggerNameQualifiedList> ON <TriggerTarget>
 
 <TriggerNameQualifiedList> ::= <TriggerNameQualified> ',' <TriggerNameQualifiedList>
                              | <TriggerNameQualified>
@@ -854,9 +849,9 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 ! CREATE/DROP XML SCHEMA COLLECTION
 ! =============================================================================
 
-<CreateXmlSchemaCollectionStatement> ::= CREATE XML_SCHEMA_COLLECTION <XmlSchemaCollectionNameQualified> AS <Expression>
+<CreateXmlSchemaCollectionStatement> ::= CREATE XML SCHEMA COLLECTION <XmlSchemaCollectionNameQualified> AS <Expression>
 
-<DropXmlSchemaCollectionStatement> ::= DROP XML_SCHEMA_COLLECTION <XmlSchemaCollectionNameQualified>
+<DropXmlSchemaCollectionStatement> ::= DROP XML SCHEMA COLLECTION <XmlSchemaCollectionNameQualified>
 
 ! =============================================================================
 ! Table/Column Type Definitions
@@ -882,11 +877,11 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <ForeignKeyActionList> ::= <ForeignKeyAction> <ForeignKeyActionList>
                          |
 
-<ForeignKeyAction> ::= ON DELETE NO_ACTION
+<ForeignKeyAction> ::= ON DELETE NO ACTION
                      | ON DELETE CASCADE
                      | ON DELETE SET NULL
                      | ON DELETE SET DEFAULT
-                     | ON UPDATE NO_ACTION
+                     | ON UPDATE NO ACTION
                      | ON UPDATE CASCADE
                      | ON UPDATE SET NULL
                      | ON UPDATE SET DEFAULT
@@ -931,15 +926,15 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                            | <StringLiteral>
                            | <NullLiteral>
 
-<ConstraintIndex> ::= WITH_FILLFACTOR '=' <IntegerLiteral>
+<ConstraintIndex> ::= WITH FILLFACTOR '=' <IntegerLiteral>
                     | <IndexOptionGroup>
 
 ! =============================================================================
 ! Common Table Expressions, TOP and OUTPUT clauses
 ! =============================================================================
 
-<QueryOptions> ::= WITH_XMLNAMESPACES '(' <XmlNamespaceList> ')'
-             | WITH_XMLNAMESPACES '(' <XmlNamespaceList> ')' ',' <CTEList>
+<QueryOptions> ::= WITH XMLNAMESPACES '(' <XmlNamespaceList> ')'
+             | WITH XMLNAMESPACES '(' <XmlNamespaceList> ')' ',' <CTEList>
              | WITH <CTEList>
              |
 
@@ -961,14 +956,14 @@ ALL_SERVER = ALL{Whitespace}+SERVER
 <OptionalPercent> ::= PERCENT
                     |
 
-<OptionalWithTies> ::= WITH_TIES
+<OptionalWithTies> ::= WITH TIES
                      |
 
 <OutputClause> ::= OUTPUT <ColumnItemList>
                  | OUTPUT <ColumnItemList> INTO <DestinationRowset> <ColumnNameGroup>
                  |
 
-<QueryHint> ::= OPTION_MAXRECURSION IntegerLiteral ')'
+<QueryHint> ::= OPTION '(' MAXRECURSION IntegerLiteral ')'
               |
 
 ! =============================================================================
@@ -1068,8 +1063,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
          | FULL JOIN <Source> ON <Predicate>
          | FULL OUTER JOIN <Source> ON <Predicate>
          | CROSS JOIN <Source>
-         | CROSS_APPLY <Source>
-         | OUTER_APPLY <Source>
+         | CROSS APPLY <Source>
+         | OUTER APPLY <Source>
 
 <SourceRowset> ::= <VariableName> <RowsetAlias>
                  | <VariableName> '.' <NamedFunction> <RowsetAlias> ! XML nodes() function: http://msdn.microsoft.com/en-us/library/ms188282(v=SQL.90).aspx
@@ -1080,6 +1075,8 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                  | <SchemaName> '.' <NamedFunction> <RowsetAlias>
                  | <SchemaName> '.' <TableName> '.' <NamedFunction> <RowsetAlias> ! also XML nodes() function; but with shifted names (SchemaName should be TableName, TableName should be ColumnName)
 !                 | <SchemaName> '.' <TableName> '.' <ColumnName> '.' <FunctionCall> <RowsetAlias> ! also XML nodes() function
+                 | <SchemaName> '.' <TableName> '.' <TableName> <RowsetAlias> !Table in a different DB
+                 | <SchemaName> '.' <TableName> '.' <SchemaName> '.' <TableName> <RowsetAlias> !Table in a different DB on a different server
                  | '(' <SelectQuery> ')' <RowsetAlias>
 
 <RowsetAlias> ::= <OptionalAs> <AliasName> '(' <ColumnNameList> ')'
@@ -1127,11 +1124,11 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                         | EXCEPT <SelectQuery>
                         | INTERSECT <SelectQuery>
 
-<ForClause> ::= FOR_BROWSE
-              | FOR_XML_AUTO <XmlDirectiveList>
-              | FOR_XML_RAW <OptionalElementName> <XmlDirectiveList>
-              | FOR_XML_EXPLICIT <XmlDirectiveList>
-              | FOR_XML_PATH <OptionalElementName> <XmlDirectiveList>
+<ForClause> ::= FOR BROWSE
+              | FOR XML AUTO <XmlDirectiveList>
+              | FOR XML RAW <OptionalElementName> <XmlDirectiveList>
+              | FOR XML EXPLICIT <XmlDirectiveList>
+              | FOR XML PATH <OptionalElementName> <XmlDirectiveList>
               |
 
 <OptionalElementName> ::= '(' StringLiteral ')'
@@ -1189,11 +1186,14 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                       | <PredicateCompare>
 
 <PredicateCompare> ::= <Expression> '=' <Expression>
-                     | <Expression> '<>' <Expression>
                      | <Expression> '>' <Expression>
-                     | <Expression> '>=' <Expression>
                      | <Expression> '<' <Expression>
+                     | <Expression> '>=' <Expression>
                      | <Expression> '<=' <Expression>
+                     | <Expression> '<>' <Expression>
+                     | <Expression> '!=' <Expression>
+                     | <Expression> '!<' <Expression>
+                     | <Expression> '!>' <Expression>
                      | <PredicateParens>
 
 <PredicateParens> ::= '(' <Predicate> ')'
@@ -1213,7 +1213,7 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                      | '+' <ExpressionCase> ! the "unary plus" also belongs somewhere here
                      | <ExpressionCase>
 
-<RankingArguments> ::= PARTITION_BY <ExpressionList> <OptionalOrderClause>
+<RankingArguments> ::= PARTITION BY <ExpressionList> <OptionalOrderClause>
                      | <OrderClause>
 
 <ExpressionCase> ::= CASE <Expression> <CaseWhenExpressionList> ELSE <Expression> END
@@ -1236,13 +1236,13 @@ ALL_SERVER = ALL{Whitespace}+SERVER
                   | <Value>
                   | <Literal>
      
-<FunctionCall> ::= CAST_ <Expression> AS <TypeName> ')'
+<FunctionCall> ::= CAST '(' <Expression> AS <TypeName> ')'
                  | COALESCE '(' <ExpressionList> ')'
                  | NULLIF '(' <Expression> ',' <Expression> ')'
                  | CONVERT '(' <TypeName> ',' <Expression> ')'
                  | CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'
-                 | COUNT_ <ColumnWildNameQualified> ')'
-                 | COUNT_ <Restriction> <ColumnWildNameQualified> ')'
+                 | COUNT '(' <ColumnWildNameQualified> ')'
+                 | COUNT '(' <Restriction> <ColumnWildNameQualified> ')'
                  | <NamedFunction>
 
 <NamedFunction> ::= <FunctionName> '(' ')'

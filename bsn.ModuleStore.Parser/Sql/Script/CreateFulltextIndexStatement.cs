@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
-using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateFulltextIndexStatement: CreateStatement {
@@ -12,15 +11,15 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly IndexName indexName;
 		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<CreateFulltextStatement> ::= ~CREATE ~FULLTEXT_INDEX ~ON ~TABLE <TableNameQualified> <FulltextColumnGroup> ~KEY ~INDEX <IndexName> <FulltextChangeTracking>")]
-		public CreateFulltextIndexStatement(Qualified<SchemaName, TableName> tableName, Optional<Sequence<FulltextColumn>> columns, IndexName indexName, FulltextChangeTrackingToken changeTracking) {
+		[Rule("<CreateFulltextStatement> ::= ~CREATE ~FULLTEXT ~INDEX ~ON ~TABLE <TableNameQualified> <FulltextColumnGroup> ~KEY ~INDEX <IndexName> <FulltextChangeTracking>")]
+		public CreateFulltextIndexStatement(Qualified<SchemaName, TableName> tableName, Optional<Sequence<FulltextColumn>> columns, IndexName indexName, FulltextChangeTracking changeTracking) {
 			Debug.Assert(tableName != null);
 			Debug.Assert(indexName != null);
 			Debug.Assert(changeTracking != null);
 			this.tableName = tableName;
 			this.columns = columns.ToList();
 			this.indexName = indexName;
-			this.changeTracking = changeTracking.FulltextChangeTracking;
+			this.changeTracking = changeTracking;
 		}
 
 		public FulltextChangeTracking ChangeTracking {
@@ -74,7 +73,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			writer.Write(" KEY INDEX ");
 			writer.WriteScript(indexName, WhitespacePadding.None);
-			writer.WriteEnum(changeTracking, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(changeTracking, WhitespacePadding.SpaceBefore);
 		}
 
 		protected override string GetObjectSchema() {

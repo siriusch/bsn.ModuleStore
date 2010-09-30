@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<Statement> catchStatements;
 		private readonly List<Statement> tryStatements;
 
-		[Rule("<TryCatchStatement> ::= ~BEGIN_TRY <StatementList> ~END_TRY ~BEGIN_CATCH <StatementList> ~END_CATCH")]
+		[Rule("<TryCatchStatement> ::= ~BEGIN ~TRY <StatementList> ~END ~TRY ~BEGIN ~CATCH <StatementList> ~END ~CATCH")]
 		public TryCatchStatement(Sequence<Statement> tryStatements, Sequence<Statement> catchStatements) {
 			this.tryStatements = tryStatements.ToList();
 			this.catchStatements = catchStatements.ToList();

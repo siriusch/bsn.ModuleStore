@@ -3,8 +3,8 @@
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	[Terminal("READ_ONLY")]
 	public sealed class UpdateModeReadOnly: UpdateMode {
+		[Rule("<CursorUpdate> ::= ~READ ~ONLY")]
 		public UpdateModeReadOnly() {}
 
 		public override UpdateModeKind Kind {

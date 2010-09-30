@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
-using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class ExecuteParameter: SqlScriptableToken {}
@@ -15,12 +14,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExecuteParameter> ::= <VariableName> <OptionalOutput>", typeof(VariableName))]
 		[Rule("<ExecuteParameter> ::= <SystemVariableName> <OptionalOutput>", typeof(VariableName))]
 		[Rule("<ExecuteParameter> ::= <Literal> <OptionalOutput>", typeof(Literal))]
-		public ExecuteParameter(T value, Optional<OutputToken> output): this(null, value, output) {}
+		public ExecuteParameter(T value, Optional<UnreservedKeyword> output): this(null, value, output) {}
 
 		[Rule("<ExecuteParameter> ::= <ParameterName> ~'=' <VariableName> <OptionalOutput>", typeof(VariableName))]
 		[Rule("<ExecuteParameter> ::= <ParameterName> ~'=' <SystemVariableName> <OptionalOutput>", typeof(VariableName))]
 		[Rule("<ExecuteParameter> ::= <ParameterName> ~'=' <Literal> <OptionalOutput>", typeof(Literal))]
-		public ExecuteParameter(ParameterName parameterName, T value, Optional<OutputToken> output): base() {
+		public ExecuteParameter(ParameterName parameterName, T value, Optional<UnreservedKeyword> output): base() {
 			Debug.Assert(value != null);
 			this.parameterName = parameterName;
 			this.value = value;

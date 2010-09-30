@@ -1,27 +1,21 @@
 ﻿using System;
 
 using bsn.GoldParser.Semantic;
-using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class IndexUsing: SqlScriptableToken, IOptional {
-		private readonly IndexFor indexFor;
+	public class IndexUsing: SqlScriptableToken, IOptional {
 		private readonly IndexName indexName;
 
 		[Rule("<IndexUsing> ::=")]
-		public IndexUsing(): this(null, null) {}
+		public IndexUsing(): this(null) {}
 
-		[Rule("<IndexUsing> ::= ~USING_XML_INDEX <IndexName> FOR_VALUE")]
-		[Rule("<IndexUsing> ::= ~USING_XML_INDEX <IndexName> FOR_PATH")]
-		[Rule("<IndexUsing> ::= ~USING_XML_INDEX <IndexName> FOR_PROPERTY")]
-		public IndexUsing(IndexName indexName, IndexForToken indexFor) {
+		protected IndexUsing(IndexName indexName) {
 			this.indexName = indexName;
-			this.indexFor = indexFor.IndexFor;
 		}
 
-		public IndexFor IndexFor {
+		public virtual IndexFor IndexFor {
 			get {
-				return indexFor;
+				return IndexFor.None;
 			}
 		}
 
@@ -31,17 +25,24 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected virtual string IndexForSpecifier {
+			get {
+				return string.Empty;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("USING XML INDEX ");
 				writer.WriteScript(indexName, WhitespacePadding.None);
-				writer.WriteEnum(indexFor, WhitespacePadding.SpaceBefore);
+				writer.Write(" FOR ");
+				writer.Write(IndexForSpecifier);
 			}
 		}
 
 		public bool HasValue {
 			get {
-				return indexName != null;
+				return IndexFor != IndexFor.None;
 			}
 		}
 	}

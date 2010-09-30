@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression expression;
 		private readonly TypeName typeName;
 
-		[Rule("<FunctionCall> ::= ~CAST_ <Expression> ~AS <TypeName> ~')'")]
+		[Rule("<FunctionCall> ::= ~CAST ~'(' <Expression> ~AS <TypeName> ~')'")]
 		public CastFunction(Expression expression, TypeName typeName) {
 			Debug.Assert(expression != null);
 			Debug.Assert(typeName != null);

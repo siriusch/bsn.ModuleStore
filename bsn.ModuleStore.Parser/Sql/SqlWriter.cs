@@ -9,8 +9,8 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public class SqlWriter {
-		private readonly TextWriter writer;
 		private readonly bool emitComments;
+		private readonly TextWriter writer;
 		private string indentation = "    ";
 		private int indentationLevel;
 
@@ -22,6 +22,15 @@ namespace bsn.ModuleStore.Sql {
 			}
 			this.writer = writer;
 			this.emitComments = emitComments;
+		}
+
+		public string Indentation {
+			get {
+				return indentation;
+			}
+			set {
+				indentation = value ?? string.Empty;
+			}
 		}
 
 		public void DecreaseIndent() {
@@ -40,6 +49,12 @@ namespace bsn.ModuleStore.Sql {
 		public void Write(string data) {
 			if (!string.IsNullOrEmpty(data)) {
 				writer.Write(data);
+			}
+		}
+
+		public void WriteComment(string comment) {
+			if (emitComments) {
+				WriteLine(comment);
 			}
 		}
 
@@ -66,46 +81,6 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void WriteEnum(IndexFor indexFor, WhitespacePadding padding) {
-			if (indexFor != IndexFor.None) {
-				PaddingBefore(padding);
-				switch (indexFor) {
-				case IndexFor.Value:
-					Write("FOR VALUE");
-					break;
-				case IndexFor.Path:
-					Write("FOR PATH");
-					break;
-				case IndexFor.Property:
-					Write("FOR PROPERTY");
-					break;
-				}
-				PaddingAfter(padding);
-			}
-		}
-
-		public void WriteEnum(ForXmlKind forXml, WhitespacePadding padding) {
-			if (forXml != ForXmlKind.None) {
-				PaddingBefore(padding);
-				Write("FOR XML ");
-				switch (forXml) {
-				case ForXmlKind.Auto:
-					Write("AUTO");
-					break;
-				case ForXmlKind.Path:
-					Write("PATH");
-					break;
-				case ForXmlKind.Raw:
-					Write("RAW");
-					break;
-				case ForXmlKind.Explicit:
-					Write("EXPLICIT");
-					break;
-				}
-				PaddingAfter(padding);
-			}
-		}
-
 		public void WriteEnum(SortOrder order, WhitespacePadding padding) {
 			if (order != SortOrder.Unspecified) {
 				PaddingBefore(padding);
@@ -121,19 +96,6 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void WriteEnum(FulltextChangeTracking changeTracking, WhitespacePadding padding) {
-			if (changeTracking != FulltextChangeTracking.Unspecified) {
-				PaddingBefore(padding);
-				Write("WITH CHANGE TRACKING ");
-				if (changeTracking == FulltextChangeTracking.OffNoPopulation) {
-					Write("OFF, NO POPULATION");
-				} else {
-					Write(changeTracking.ToString().ToUpperInvariant());
-				}
-				PaddingAfter(padding);
-			}
-		}
-
 		public void WriteEnum(TableCheck tableCheck, WhitespacePadding padding) {
 			if (tableCheck != TableCheck.Unspecified) {
 				PaddingBefore(padding);
@@ -143,40 +105,6 @@ namespace bsn.ModuleStore.Sql {
 					break;
 				case TableCheck.Nocheck:
 					Write("NOCHECK");
-					break;
-				}
-				PaddingAfter(padding);
-			}
-		}
-
-		public void WriteEnum(FunctionOption functionOption, WhitespacePadding padding) {
-			if (functionOption != FunctionOption.None) {
-				PaddingBefore(padding);
-				Write("WITH ");
-				switch (functionOption) {
-				case FunctionOption.CalledOnNullInput:
-					Write("CALLED ON NULL INPUT");
-					break;
-				case FunctionOption.ReturnsNullOnNullInput:
-					Write("RETURNS NULL ON NULL INPUT");
-					break;
-				}
-				PaddingAfter(padding);
-			}
-		}
-
-		public void WriteEnum(TriggerType triggerType, WhitespacePadding padding) {
-			if (triggerType != TriggerType.None) {
-				PaddingBefore(padding);
-				switch (triggerType) {
-				case TriggerType.After:
-					Write("AFTER");
-					break;
-				case TriggerType.InsteadOf:
-					Write("INSTEAD OF");
-					break;
-				case TriggerType.For:
-					Write("FOR");
 					break;
 				}
 				PaddingAfter(padding);
@@ -199,25 +127,6 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void WriteIndexOptions(IEnumerable<IndexOption> indexOptions) {
-			using (IEnumerator<IndexOption> enumerator = indexOptions.GetEnumerator()) {
-				if (enumerator.MoveNext()) {
-					Write(" WITH (");
-					WriteScriptSequence(indexOptions, WhitespacePadding.None, ", ");
-					Write(')');
-				}
-			}
-		}
-
-		public string Indentation {
-			get {
-				return indentation;
-			}
-			set {
-				indentation = value ?? string.Empty;
-			}
-		}
-
 		public void WriteLine(string text) {
 			if (!string.IsNullOrEmpty(text)) {
 				Write(text);
@@ -232,14 +141,6 @@ namespace bsn.ModuleStore.Sql {
 
 		public void WriteLine() {
 			WriteLine(string.Empty);
-		}
-
-		public void WriteNotForReplication(bool notForReplication, WhitespacePadding padding) {
-			if (notForReplication) {
-				PaddingBefore(padding);
-				Write("NOT FOR REPLICATION");
-				PaddingAfter(padding);
-			}
 		}
 
 		public void WriteScript<T>(T value, WhitespacePadding padding) where T: SqlScriptableToken {
@@ -284,6 +185,16 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
+		internal void WriteIndexOptions(IEnumerable<IndexOption> indexOptions) {
+			using (IEnumerator<IndexOption> enumerator = indexOptions.GetEnumerator()) {
+				if (enumerator.MoveNext()) {
+					Write(" WITH (");
+					WriteScriptSequence(indexOptions, WhitespacePadding.None, ", ");
+					Write(')');
+				}
+			}
+		}
+
 		private void PaddingAfter(WhitespacePadding padding) {
 			switch (padding) {
 			case WhitespacePadding.NewlineAfter:
@@ -303,12 +214,6 @@ namespace bsn.ModuleStore.Sql {
 			case WhitespacePadding.SpaceBefore:
 				Write(' ');
 				break;
-			}
-		}
-
-		public void WriteComment(string comment) {
-			if (emitComments) {
-				WriteLine(comment);
 			}
 		}
 	}

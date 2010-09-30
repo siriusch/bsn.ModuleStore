@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropXmlSchemaCollectionStatement: DropStatement {
 		private readonly Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName;
 
-		[Rule("<DropXmlSchemaCollectionStatement> ::= ~DROP ~XML_SCHEMA_COLLECTION <XmlSchemaCollectionNameQualified>")]
+		[Rule("<DropXmlSchemaCollectionStatement> ::= ~DROP ~XML ~SCHEMA ~COLLECTION <XmlSchemaCollectionNameQualified>")]
 		public DropXmlSchemaCollectionStatement(Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName) {
 			Debug.Assert(xmlSchemaCollectionName != null);
 			this.xmlSchemaCollectionName = xmlSchemaCollectionName;

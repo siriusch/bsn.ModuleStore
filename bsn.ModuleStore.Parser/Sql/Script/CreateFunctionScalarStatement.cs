@@ -8,10 +8,9 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateFunctionScalarStatement<T>: CreateFunctionStatement<T> where T: SqlScriptableToken {
 		private readonly Qualified<SchemaName, TypeName> returnTypeName;
 
-		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~_RETURNS <TypeNameQualified> <OptionalFunctionOption> ~<OptionalAs> <StatementBlock>", typeof(StatementBlock))]
-		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~_RETURNS <TypeNameQualified> <OptionalFunctionOption> ~<OptionalAs> <ExternalName>", typeof(ExternalName))]
-		public CreateFunctionScalarStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, Qualified<SchemaName, TypeName> returnTypeName, FunctionOptionToken options, T body)
-			: base(functionName, parameters, options, body) {
+		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~')' ~RETURNS <TypeNameQualified> <OptionalFunctionOption> ~<OptionalAs> <StatementBlock>", typeof(StatementBlock))]
+		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~')' ~RETURNS <TypeNameQualified> <OptionalFunctionOption> ~<OptionalAs> <ExternalName>", typeof(ExternalName))]
+		public CreateFunctionScalarStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, Qualified<SchemaName, TypeName> returnTypeName, OptionToken option, T body): base(functionName, parameters, option, body) {
 			Debug.Assert(returnTypeName != null);
 			this.returnTypeName = returnTypeName;
 		}
@@ -25,7 +24,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		protected override void WriteToInternal(SqlWriter writer, string command) {
 			base.WriteToInternal(writer, command);
 			writer.WriteScript(returnTypeName, WhitespacePadding.None);
-			writer.WriteEnum(Option, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(Option, WhitespacePadding.SpaceBefore);
 			writer.WriteLine();
 			writer.Write("AS");
 			writer.IncreaseIndent();

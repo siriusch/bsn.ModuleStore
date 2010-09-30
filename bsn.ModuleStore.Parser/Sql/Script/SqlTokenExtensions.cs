@@ -2,8 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using bsn.GoldParser.Grammar;
+using bsn.GoldParser.Parser;
+
 namespace bsn.ModuleStore.Sql.Script {
 	public static class SqlTokenExtensions {
+		internal static Identifier CreateIdentifier(this IToken token, Symbol identifierSymbol, string text) {
+			return new Identifier(text, identifierSymbol, token.Position);
+		}
+
 		public static T[] ToArray<T>(this Optional<Sequence<T>> sequence) where T: SqlToken {
 			if (!sequence.HasValue()) {
 				return new T[0];

@@ -14,7 +14,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool varying;
 
 		[Rule("<ProcedureParameter> ::= <ParameterName> <TypeNameQualified> <OptionalVarying> <OptionalDefault> <OptionalOutput> <OptionalReadonly>")]
-		public ProcedureParameter(ParameterName parameterName, Qualified<SchemaName, TypeName> parameterTypeName, Optional<VaryingToken> varying, Optional<Literal> defaultValue, Optional<OutputToken> output, Optional<Identifier> readonlyIdentifier) {
+		public ProcedureParameter(ParameterName parameterName, Qualified<SchemaName, TypeName> parameterTypeName, Optional<VaryingToken> varying, Optional<Literal> defaultValue, Optional<UnreservedKeyword> output, Optional<Identifier> readonlyIdentifier) {
 			Debug.Assert(parameterName != null);
 			Debug.Assert(parameterTypeName != null);
 			this.parameterName = parameterName;

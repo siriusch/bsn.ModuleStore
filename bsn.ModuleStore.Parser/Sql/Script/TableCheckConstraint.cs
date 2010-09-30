@@ -7,15 +7,15 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class TableCheckConstraint: TableConstraint {
 		private readonly Expression expression;
-		private readonly bool notForReplication;
+		private readonly ReplicationToken replication;
 
 		[Rule("<TableConstraint> ::= ~CHECK <OptionalNotForReplication> ~'(' <Expression> ~')'")]
-		public TableCheckConstraint(Optional<ForReplicationToken> notForReplication, Expression expression): this(null, notForReplication, expression) {}
+		public TableCheckConstraint(ReplicationToken replication, Expression expression): this(null, replication, expression) {}
 
 		[Rule("<TableConstraint> ::= ~CONSTRAINT <ConstraintName> ~CHECK <OptionalNotForReplication> ~'(' <Expression> ~')'")]
-		public TableCheckConstraint(ConstraintName constraintName, Optional<ForReplicationToken> notForReplication, Expression expression): base(constraintName) {
+		public TableCheckConstraint(ConstraintName constraintName, ReplicationToken replication, Expression expression): base(constraintName) {
 			Debug.Assert(expression != null);
-			this.notForReplication = notForReplication.HasValue();
+			this.replication = replication;
 			this.expression = expression;
 		}
 
@@ -25,16 +25,16 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool NotForReplication {
+		public ReplicationToken Replication {
 			get {
-				return notForReplication;
+				return replication;
 			}
 		}
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write("CHECK ");
-			writer.WriteNotForReplication(notForReplication, WhitespacePadding.SpaceAfter);
+			writer.WriteScript(replication, WhitespacePadding.SpaceAfter);
 			writer.Write('(');
 			writer.WriteScript(expression, WhitespacePadding.None);
 			writer.Write(')');

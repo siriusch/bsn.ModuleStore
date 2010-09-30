@@ -13,15 +13,15 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateFunctionStatement<TBody>: CreateStatement, ICreateOrAlterStatement where TBody: SqlScriptableToken {
 		private readonly TBody body;
 		private readonly Qualified<SchemaName, FunctionName> functionName;
-		private readonly FunctionOption option;
+		private readonly OptionToken option;
 		private readonly List<FunctionParameter> parameters;
 
-		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<FunctionParameter> parameters, FunctionOptionToken option, TBody body) {
+		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<FunctionParameter> parameters, OptionToken option, TBody body) {
 			Debug.Assert(functionName != null);
 			Debug.Assert(body != null);
 			this.functionName = functionName;
 			this.parameters = parameters.ToList();
-			this.option = option.FunctionOption;
+			this.option = option;
 			this.body = body;
 		}
 
@@ -49,7 +49,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public FunctionOption Option {
+		public OptionToken Option {
 			get {
 				return option;
 			}
@@ -69,19 +69,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			return new DropFunctionStatement(functionName);
 		}
 
-		protected override sealed string GetObjectSchema() {
-			return functionName.IsQualified ? functionName.Qualification.Value : string.Empty;
-		}
-
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteToInternal(writer, "CREATE");
 		}
 
-		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
-			if (string.IsNullOrEmpty(command)) {
-				throw new ArgumentNullException("command");
-			}
-			WriteToInternal(writer, command);
+		protected override sealed string GetObjectSchema() {
+			return functionName.IsQualified ? functionName.Qualification.Value : string.Empty;
 		}
 
 		protected virtual void WriteToInternal(SqlWriter writer, string command) {
@@ -96,6 +89,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteLine();
 			writer.WriteLine(")");
 			writer.Write("RETURNS ");
+		}
+
+		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
+			if (string.IsNullOrEmpty(command)) {
+				throw new ArgumentNullException("command");
+			}
+			WriteToInternal(writer, command);
 		}
 	}
 }

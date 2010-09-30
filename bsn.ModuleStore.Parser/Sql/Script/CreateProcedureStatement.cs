@@ -9,31 +9,25 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateProcedureStatement: CreateStatement, ICreateOrAlterStatement {
 		private readonly StatementBlock body;
-		private readonly bool forReplication;
+		private readonly OptionToken option;
 		private readonly List<ProcedureParameter> parameters;
 		private readonly Qualified<SchemaName, ProcedureName> procedureName;
-		private readonly bool recompile;
+		private readonly ReplicationToken replication;
 
 		[Rule("<CreateProcedureStatement> ::= ~CREATE ~PROCEDURE <ProcedureNameQualified> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> ~AS <StatementBlock>")]
-		public CreateProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ProcedureParameter>> parameters, Optional<WithRecompileToken> recompile, Optional<ForReplicationToken> forReplication, StatementBlock body) {
+		public CreateProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ProcedureParameter>> parameters, OptionToken option, ReplicationToken replication, StatementBlock body) {
 			Debug.Assert(procedureName != null);
 			Debug.Assert(body != null);
 			this.procedureName = procedureName;
+			this.option = option;
+			this.replication = replication;
 			this.parameters = parameters.ToList();
-			this.recompile = recompile.HasValue();
-			this.forReplication = forReplication.HasValue();
 			this.body = body;
 		}
 
 		public StatementBlock Body {
 			get {
 				return body;
-			}
-		}
-
-		public bool ForReplication {
-			get {
-				return forReplication;
 			}
 		}
 
@@ -49,6 +43,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public OptionToken Option {
+			get {
+				return option;
+			}
+		}
+
 		public ReadOnlyCollection<ProcedureParameter> Parameters {
 			get {
 				return parameters.AsReadOnly();
@@ -61,9 +61,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool Recompile {
+		public ReplicationToken Replication {
 			get {
-				return recompile;
+				return replication;
 			}
 		}
 
@@ -79,11 +79,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteToInternal(writer, "CREATE");
 		}
 
-		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
-			if (string.IsNullOrEmpty(command)) {
-				throw new ArgumentNullException("command");
-			}
-			WriteToInternal(writer, command);
+		protected override string GetObjectSchema() {
+			return procedureName.IsQualified ? procedureName.Qualification.Value : string.Empty;
 		}
 
 		private void WriteToInternal(SqlWriter writer, string command) {
@@ -93,12 +90,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(procedureName, WhitespacePadding.None);
 			writer.IncreaseIndent();
 			writer.WriteScriptSequence(parameters, WhitespacePadding.NewlineBefore, ",");
-			if (recompile) {
-				writer.WriteLine("WITH RECOMPILE");
-			}
-			if (forReplication) {
-				writer.WriteLine("FOR REPLICATION");
-			}
+			writer.WriteScript(option, WhitespacePadding.NewlineAfter);
+			writer.WriteScript(replication, WhitespacePadding.NewlineAfter);
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write("AS");
@@ -107,8 +100,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 		}
 
-		protected override string GetObjectSchema() {
-			return procedureName.IsQualified ? procedureName.Qualification.Value : string.Empty;
+		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
+			if (string.IsNullOrEmpty(command)) {
+				throw new ArgumentNullException("command");
+			}
+			WriteToInternal(writer, command);
 		}
 	}
 }

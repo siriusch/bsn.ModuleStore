@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 using bsn.GoldParser.Semantic;
 
@@ -12,7 +10,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly ClassName className;
 		private readonly MethodName methodName;
 
-		[Rule("<ExternalName> ::= ~EXTERNAL_NAME <AssemblyName> ~'.' <ClassName> ~'.' <MethodName>")]
+		[Rule("<ExternalName> ::= ~EXTERNAL ~NAME <AssemblyName> ~'.' <ClassName> ~'.' <MethodName>")]
 		public ExternalName(SqlAssemblyName assemblyName, ClassName className, MethodName methodName) {
 			Debug.Assert(assemblyName != null);
 			Debug.Assert(className != null);

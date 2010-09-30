@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ConstraintIndexFillfactor: ConstraintIndex {
 		private readonly IntegerLiteral fillfactor;
 
-		[Rule("<ConstraintIndex> ::= ~WITH_FILLFACTOR ~'=' <IntegerLiteral>")]
+		[Rule("<ConstraintIndex> ::= ~WITH ~FILLFACTOR ~'=' <IntegerLiteral>")]
 		public ConstraintIndexFillfactor(IntegerLiteral fillfactor) {
 			this.fillfactor = fillfactor;
 		}

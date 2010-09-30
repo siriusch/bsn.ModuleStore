@@ -16,10 +16,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		public TopExpression(IntegerLiteral integerLiteral, Optional<PercentToken> percent): this(integerLiteral, percent, null) {}
 
 		[Rule("<Top> ::= ~TOP ~'(' <Expression> ~')' <OptionalPercent> <OptionalWithTies>")]
-		public TopExpression(Expression expression, Optional<PercentToken> percent, Optional<WithTiesToken> withTies) {
+		public TopExpression(Expression expression, Optional<PercentToken> percent, OptionToken option) {
 			this.expression = expression;
 			this.percent = percent.HasValue();
-			this.withTies = withTies.HasValue();
+			withTies = option is OptionTiesToken;
 		}
 
 		public Expression Expression {

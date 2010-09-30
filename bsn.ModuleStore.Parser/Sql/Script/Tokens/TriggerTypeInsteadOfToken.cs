@@ -4,13 +4,11 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script.Tokens {
 	public class TriggerTypeInsteadOfToken: TriggerTypeToken {
-		[Rule("<TriggerType> ::= ~INSTEAD_OF")]
+		[Rule("<TriggerType> ::= ~INSTEAD ~OF")]
 		public TriggerTypeInsteadOfToken() {}
 
-		public override TriggerType TriggerType {
-			get {
-				return TriggerType.InsteadOf;
-			}
+		public override void WriteTo(SqlWriter writer) {
+			writer.Write("INSTEAD OF");
 		}
 	}
 }

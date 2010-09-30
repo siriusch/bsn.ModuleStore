@@ -1,13 +1,15 @@
-﻿using bsn.GoldParser.Semantic;
+﻿using System;
+
+using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class BeginTransactionWithMarkStatement: BeginTransactionStatement {
 		private readonly StringLiteral markName;
 
-		[Rule("<BeginTransactionStatement> ::= ~BEGIN ~TRANSACTION <TransactionIdentifier> ~WITH_MARK")]
+		[Rule("<BeginTransactionStatement> ::= ~BEGIN ~TRANSACTION <TransactionIdentifier> ~WITH ~MARK")]
 		public BeginTransactionWithMarkStatement(SqlName transactionIdentifier): this(transactionIdentifier, null) {}
 
-		[Rule("<BeginTransactionStatement> ::= ~BEGIN ~TRANSACTION <TransactionIdentifier> ~WITH_MARK <StringLiteral>")]
+		[Rule("<BeginTransactionStatement> ::= ~BEGIN ~TRANSACTION <TransactionIdentifier> ~WITH ~MARK <StringLiteral>")]
 		public BeginTransactionWithMarkStatement(SqlName transactionIdentifier, StringLiteral markName): base(transactionIdentifier) {
 			this.markName = markName;
 		}

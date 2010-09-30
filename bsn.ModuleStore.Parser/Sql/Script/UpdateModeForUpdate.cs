@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class UpdateModeForUpdate: UpdateMode {
-		private readonly List<ColumnName> columns = new List<ColumnName>();
+		private readonly List<ColumnName> columns;
 
-		[Rule("<CursorUpdate> ::= ~FOR ~UPDATE")]
-		public UpdateModeForUpdate() {}
+		[Rule("<CursorUpdate> ::= ~FOR_UPDATE")]
+		public UpdateModeForUpdate(): this(null) {}
 
-		[Rule("<CursorUpdate> ::= ~FOR ~UPDATE ~OF <ColumnNameList>")]
+		[Rule("<CursorUpdate> ::= ~FOR_UPDATE ~OF <ColumnNameList>")]
 		public UpdateModeForUpdate(Sequence<ColumnName> columns): base() {
-			Debug.Assert(columns != null);
-			this.columns.AddRange(columns);
+			this.columns = columns.ToList();
 		}
 
 		public IEnumerable<ColumnName> Columns {

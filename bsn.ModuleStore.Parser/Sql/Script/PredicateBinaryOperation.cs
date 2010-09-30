@@ -12,11 +12,14 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<PredicateOr> ::= <PredicateAnd> OR <PredicateOr>", typeof(Predicate))]
 		[Rule("<PredicateAnd> ::= <PredicateNot> AND <PredicateAnd>", typeof(Predicate))]
 		[Rule("<PredicateCompare> ::= <Expression> '=' <Expression>", typeof(Expression))]
-		[Rule("<PredicateCompare> ::= <Expression> '<>' <Expression>", typeof(Expression))]
 		[Rule("<PredicateCompare> ::= <Expression> '>' <Expression>", typeof(Expression))]
-		[Rule("<PredicateCompare> ::= <Expression> '>=' <Expression>", typeof(Expression))]
 		[Rule("<PredicateCompare> ::= <Expression> '<' <Expression>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '>=' <Expression>", typeof(Expression))]
 		[Rule("<PredicateCompare> ::= <Expression> '<=' <Expression>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '<>' <Expression>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '!=' <Expression>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '!<' <Expression>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '!>' <Expression>", typeof(Expression))]
 		public PredicateBinaryOperation(T left, OperationToken operation, T right) {
 			Debug.Assert(left != null);
 			Debug.Assert(operation != null);

@@ -10,13 +10,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<CommonTableExpression> commonTableExpressions;
 		private readonly List<XmlNamespace> namespaces;
 
-		[Rule("<QueryOptions> ::= ~WITH_XMLNAMESPACES ~'(' <XmlNamespaceList> ~')'")]
+		[Rule("<QueryOptions> ::= ~WITH ~XMLNAMESPACES ~'(' <XmlNamespaceList> ~')'")]
 		public QueryOptions(Sequence<XmlNamespace> namespaces): this(namespaces, null) {}
 
 		[Rule("<QueryOptions> ::= ~WITH <CTEList>")]
 		public QueryOptions(Sequence<CommonTableExpression> commonTableExpressions): this(null, commonTableExpressions) {}
 
-		[Rule("<QueryOptions> ::= ~WITH_XMLNAMESPACES ~'(' <XmlNamespaceList> ~')' ~',' <CTEList>")]
+		[Rule("<QueryOptions> ::= ~WITH ~XMLNAMESPACES ~'(' <XmlNamespaceList> ~')' ~',' <CTEList>")]
 		public QueryOptions(Sequence<XmlNamespace> namespaces, Sequence<CommonTableExpression> commonTableExpressions) {
 			this.namespaces = namespaces.ToList();
 			this.commonTableExpressions = commonTableExpressions.ToList();

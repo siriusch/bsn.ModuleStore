@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<OrderExpression> orders;
 		private readonly List<Expression> partitions;
 
-		[Rule("<RankingArguments> ::= ~PARTITION_BY <ExpressionList> <OptionalOrderClause>")]
+		[Rule("<RankingArguments> ::= ~PARTITION ~BY <ExpressionList> <OptionalOrderClause>")]
 		public RankingArguments(Sequence<Expression> partitions, Optional<Sequence<OrderExpression>> orders): this(partitions, orders.Value) {}
 
 		[Rule("<RankingArguments> ::= <OrderClause>")]

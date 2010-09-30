@@ -10,16 +10,16 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<ColumnName> columnNames;
 		private readonly SelectStatement selectStatement;
 		private readonly Qualified<SchemaName, ViewName> viewName;
+		private readonly OptionToken viewOption;
 		private readonly bool withCheckOption;
-		private readonly bool withViewMetadata;
 
 		[Rule("<CreateViewStatement> ::= ~CREATE ~VIEW <ViewNameQualified> <ColumnNameGroup> <ViewOptionalAttribute> ~AS <SelectStatement> <ViewOptionalCheckOption>")]
-		public CreateViewStatement(Qualified<SchemaName, ViewName> viewName, Optional<Sequence<ColumnName>> columnNames, Optional<WithViewMetadataToken> withViewMetadata, SelectStatement selectStatement, Optional<WithCheckOptionToken> withCheckOption) {
+		public CreateViewStatement(Qualified<SchemaName, ViewName> viewName, Optional<Sequence<ColumnName>> columnNames, OptionToken viewOption, SelectStatement selectStatement, Optional<WithCheckOptionToken> withCheckOption) {
 			Debug.Assert(viewName != null);
 			Debug.Assert(selectStatement != null);
 			this.viewName = viewName;
+			this.viewOption = viewOption;
 			this.columnNames = columnNames.ToList();
-			this.withViewMetadata = withViewMetadata.HasValue();
 			this.selectStatement = selectStatement;
 			this.withCheckOption = withCheckOption.HasValue();
 		}
@@ -54,15 +54,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool WithCheckOption {
+		public OptionToken ViewOption {
 			get {
-				return withCheckOption;
+				return viewOption;
 			}
 		}
 
-		public bool WithViewMetadata {
+		public bool WithCheckOption {
 			get {
-				return withViewMetadata;
+				return withCheckOption;
 			}
 		}
 
@@ -78,11 +78,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteToInternal(writer, "CREATE");
 		}
 
-		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
-			if (string.IsNullOrEmpty(command)) {
-				throw new ArgumentNullException("command");
-			}
-			WriteToInternal(writer, command);
+		protected override string GetObjectSchema() {
+			return viewName.IsQualified ? viewName.Qualification.Value : string.Empty;
 		}
 
 		private void WriteToInternal(SqlWriter writer, string command) {
@@ -95,9 +92,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, ", ");
 				writer.Write(')');
 			}
-			if (withViewMetadata) {
-				writer.Write(" WITH VIEW_METADATA");
-			}
+			writer.WriteScript(viewOption, WhitespacePadding.SpaceBefore);
 			writer.IncreaseIndent();
 			writer.WriteLine(" AS");
 			writer.WriteScript(selectStatement, WhitespacePadding.None);
@@ -107,8 +102,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 		}
 
-		protected override string GetObjectSchema() {
-			return viewName.IsQualified ? viewName.Qualification.Value : string.Empty;
+		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
+			if (string.IsNullOrEmpty(command)) {
+				throw new ArgumentNullException("command");
+			}
+			WriteToInternal(writer, command);
 		}
 	}
 }

@@ -3,13 +3,13 @@
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script.Tokens {
-	public sealed class FunctionOptionReturnsNullOnNullInputToken: FunctionOptionToken {
-		[Rule("<OptionalFunctionOption> ::= ~WITH ~RETURNS_NULL_ON_NULL_INPUT")]
+	public sealed class FunctionOptionReturnsNullOnNullInputToken: OptionToken {
+		[Rule("<OptionalFunctionOption> ::= ~WITH ~RETURNS ~NULL ~ON ~NULL ~INPUT")]
 		public FunctionOptionReturnsNullOnNullInputToken() {}
 
-		public override FunctionOption FunctionOption {
+		protected override string OptionSpecifier {
 			get {
-				return FunctionOption.ReturnsNullOnNullInput;
+				return "RETURNS NULL ON NULL INPUT";
 			}
 		}
 	}

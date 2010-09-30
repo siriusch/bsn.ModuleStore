@@ -10,15 +10,15 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateTriggerStatement: CreateStatement, ICreateOrAlterStatement {
-		private readonly bool notForReplication;
+		private readonly ReplicationToken replication;
 		private readonly Statement statement;
 		private readonly Qualified<SchemaName, TableName> tableName;
 		private readonly Qualified<SchemaName, TriggerName> triggerName;
 		private readonly List<DmlOperation> triggerOperations;
-		private readonly TriggerType type;
+		private readonly TriggerTypeToken type;
 
 		[Rule("<CreateTriggerStatement> ::= ~CREATE ~TRIGGER <TriggerNameQualified> ~ON <TableNameQualified> <TriggerType> <TriggerOperationList> <OptionalNotForReplication> ~AS <StatementGroup>")]
-		public CreateTriggerStatement(Qualified<SchemaName, TriggerName> triggerName, Qualified<SchemaName, TableName> tableName, TriggerTypeToken triggerType, Sequence<DmlOperationToken> triggerOperations, Optional<ForReplicationToken> notForReplication, Statement statement) {
+		public CreateTriggerStatement(Qualified<SchemaName, TriggerName> triggerName, Qualified<SchemaName, TableName> tableName, TriggerTypeToken triggerType, Sequence<DmlOperationToken> triggerOperations, ReplicationToken replication, Statement statement) {
 			Debug.Assert(triggerName != null);
 			Debug.Assert(triggerOperations != null);
 			Debug.Assert(triggerType != null);
@@ -28,14 +28,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableName = tableName;
 			this.statement = statement;
 			this.triggerOperations = triggerOperations.Select(token => token.Operation).ToList();
-			this.notForReplication = notForReplication.HasValue();
-			type = triggerType.TriggerType;
-		}
-
-		public bool NotForReplication {
-			get {
-				return notForReplication;
-			}
+			this.replication = replication;
+			type = triggerType;
 		}
 
 		public override ObjectCategory ObjectCategory {
@@ -47,6 +41,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override string ObjectName {
 			get {
 				return triggerName.Name.Value;
+			}
+		}
+
+		public ReplicationToken Replication {
+			get {
+				return replication;
 			}
 		}
 
@@ -74,7 +74,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TriggerType Type {
+		public TriggerTypeToken Type {
 			get {
 				return type;
 			}
@@ -104,14 +104,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(triggerName, WhitespacePadding.None);
 			writer.Write(" ON ");
 			writer.WriteScript(tableName, WhitespacePadding.SpaceAfter);
-			writer.WriteEnum(type, WhitespacePadding.SpaceAfter);
+			writer.WriteScript(type, WhitespacePadding.SpaceAfter);
 			string prefix = null;
 			foreach (DmlOperation operation in triggerOperations) {
 				writer.Write(prefix);
 				writer.WriteEnum(operation, WhitespacePadding.None);
 				prefix = ", ";
 			}
-			writer.WriteNotForReplication(notForReplication, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(replication, WhitespacePadding.SpaceBefore);
 			writer.Write(" AS");
 			writer.IncreaseIndent();
 			writer.WriteScript(statement, WhitespacePadding.NewlineBefore);

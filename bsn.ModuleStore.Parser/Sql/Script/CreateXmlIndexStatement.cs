@@ -1,17 +1,14 @@
 ﻿using System;
 
 using bsn.GoldParser.Semantic;
-using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateXmlIndexStatement: CreateIndexStatement {
+	public class CreateXmlIndexStatement: CreateIndexStatement {
 		private readonly ColumnName columnName;
 		private readonly IndexUsing indexUsing;
-		private readonly bool primary;
 
-		[Rule("<CreateIndexStatement> ::= ~CREATE <IndexPrimary> ~XML_INDEX <IndexName> ~ON <TableNameQualified> ~'(' <ColumnName> ~')' <IndexUsing> <IndexOptionGroup>")]
-		public CreateXmlIndexStatement(Optional<PrimaryToken> primary, IndexName indexName, Qualified<SchemaName, TableName> tableName, ColumnName columnName, IndexUsing indexUsing, Optional<Sequence<IndexOption>> indexOptions): base(indexName, tableName, indexOptions) {
-			this.primary = primary.HasValue();
+		[Rule("<CreateIndexStatement> ::= ~CREATE ~XML ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <ColumnName> ~')' <IndexUsing> <IndexOptionGroup>")]
+		public CreateXmlIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, ColumnName columnName, IndexUsing indexUsing, Optional<Sequence<IndexOption>> indexOptions): base(indexName, tableName, indexOptions) {
 			this.columnName = columnName;
 			this.indexUsing = indexUsing;
 		}
@@ -28,16 +25,16 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool Primary {
+		public virtual bool Primary {
 			get {
-				return primary;
+				return false;
 			}
 		}
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("CREATE ");
-			if (primary) {
+			if (Primary) {
 				writer.Write("PRIMARY ");
 			}
 			writer.Write("XML INDEX ");

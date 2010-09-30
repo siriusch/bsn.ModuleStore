@@ -7,7 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class QueryMaxrecursionHint: QueryHint {
 		private readonly long maxRecursion;
 
-		[Rule("<QueryHint> ::= ~OPTION_MAXRECURSION IntegerLiteral ~')'")]
+		[Rule("<QueryHint> ::= ~OPTION ~'(' ~MAXRECURSION IntegerLiteral ~')'")]
 		public QueryMaxrecursionHint(IntegerLiteral maxRecursion) {
 			this.maxRecursion = maxRecursion.Value;
 		}

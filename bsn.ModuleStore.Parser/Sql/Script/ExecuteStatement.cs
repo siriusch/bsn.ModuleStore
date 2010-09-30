@@ -8,22 +8,28 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExecuteStatement: Statement {
+		private readonly OptionToken option;
 		private readonly List<ExecuteParameter> parameters;
 		private readonly Qualified<SchemaName, ProcedureName> procedureName;
-		private readonly bool recompile;
 		private readonly VariableName resultVariableName;
 
 		[Rule("<ExecuteStatement> ::= ~EXECUTE <VariableName> ~'=' <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>")]
-		public ExecuteStatement(VariableName resultVariableName, Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, Optional<WithRecompileToken> recompile) {
+		public ExecuteStatement(VariableName resultVariableName, Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, OptionToken option) {
 			Debug.Assert(procedureName != null);
 			this.resultVariableName = resultVariableName;
 			this.procedureName = procedureName;
 			this.parameters = parameters.ToList();
-			this.recompile = recompile.HasValue();
+			this.option = option;
 		}
 
 		[Rule("<ExecuteStatement> ::= ~EXECUTE <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>")]
-		public ExecuteStatement(Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, Optional<WithRecompileToken> recompile): this(null, procedureName, parameters, recompile) {}
+		public ExecuteStatement(Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, OptionToken option): this(null, procedureName, parameters, option) {}
+
+		public OptionToken Option {
+			get {
+				return option;
+			}
+		}
 
 		public IEnumerable<ExecuteParameter> Parameters {
 			get {
@@ -34,12 +40,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		public Qualified<SchemaName, ProcedureName> ProcedureName {
 			get {
 				return procedureName;
-			}
-		}
-
-		public bool Recompile {
-			get {
-				return recompile;
 			}
 		}
 
@@ -55,9 +55,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(resultVariableName, WhitespacePadding.None, null, "=");
 			writer.WriteScript(procedureName, WhitespacePadding.None);
 			writer.WriteScriptSequence(parameters, WhitespacePadding.SpaceBefore, null);
-			if (recompile) {
-				writer.Write(" WITH RECOMPILE");
-			}
+			writer.WriteScript(option, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

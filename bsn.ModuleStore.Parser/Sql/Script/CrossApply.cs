@@ -4,7 +4,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CrossApply: Join {
-		[Rule("<Join> ::= ~CROSS_APPLY <Source>")]
+		[Rule("<Join> ::= ~CROSS ~APPLY <Source>")]
 		public CrossApply(Source joinSource): base(joinSource) {}
 
 		public override JoinKind Kind {

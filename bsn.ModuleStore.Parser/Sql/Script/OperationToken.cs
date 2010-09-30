@@ -10,11 +10,14 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("*")]
 	[Terminal("%")]
 	[Terminal("=")]
-	[Terminal("<>")]
 	[Terminal(">")]
-	[Terminal(">=")]
 	[Terminal("<")]
+	[Terminal(">=")]
 	[Terminal("<=")]
+	[Terminal("<>")]
+	[Terminal("!=")]
+	[Terminal("!<")]
+	[Terminal("!>")]
 	public class OperationToken: SqlScriptableToken {
 		private readonly string operation;
 

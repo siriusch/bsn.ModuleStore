@@ -4,7 +4,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class OuterApply: Join {
-		[Rule("<Join> ::= ~OUTER_APPLY <Source>")]
+		[Rule("<Join> ::= ~OUTER ~APPLY <Source>")]
 		public OuterApply(Source joinSource): base(joinSource) {}
 
 		public override JoinKind Kind {

@@ -3,13 +3,13 @@ using System;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script.Tokens {
-	public sealed class FunctionOptionSchemabindingToken: FunctionOptionToken {
-		[Rule("<OptionalFunctionOption> ::= ~WITH_SCHEMABINDING")]
+	public sealed class FunctionOptionSchemabindingToken: OptionToken {
+		[Rule("<OptionalFunctionOption> ::= ~WITH ~SCHEMABINDING")]
 		public FunctionOptionSchemabindingToken() {}
 
-		public override FunctionOption FunctionOption {
+		protected override string OptionSpecifier {
 			get {
-				return FunctionOption.Schemabinding;
+				return "SCHEMABINDING";
 			}
 		}
 	}

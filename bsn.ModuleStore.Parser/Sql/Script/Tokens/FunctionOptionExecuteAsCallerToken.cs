@@ -2,16 +2,14 @@ using System;
 
 using bsn.GoldParser.Semantic;
 
-[assembly: RuleTrim("<OptionalFunctionOption> ::= WITH EXECUTE_AS_CALLER", "EXECUTE_AS_CALLER")]
-
 namespace bsn.ModuleStore.Sql.Script.Tokens {
-	[Terminal("EXECUTE_AS_CALLER")]
-	public sealed class FunctionOptionExecuteAsCallerToken: FunctionOptionToken {
+	public sealed class FunctionOptionExecuteAsCallerToken: OptionToken {
+		[Rule("<OptionalFunctionOption> ::= ~WITH ~EXECUTE ~AS ~CALLER")]
 		public FunctionOptionExecuteAsCallerToken() {}
 
-		public override FunctionOption FunctionOption {
+		protected override string OptionSpecifier {
 			get {
-				return FunctionOption.ExecuteAsCaller;
+				return "EXECUTE AS CALLER";
 			}
 		}
 	}

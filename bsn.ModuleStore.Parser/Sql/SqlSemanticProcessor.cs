@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,27 +12,17 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	internal class SqlSemanticProcessor: SemanticProcessor<SqlToken> {
-		private readonly SqlTokenizer tokenizer;
+		private readonly Symbol identifierSymbol;
 		private readonly Symbol terminatorSymbol;
+		private readonly SqlTokenizer tokenizer;
 
 		public SqlSemanticProcessor(TextReader reader, SemanticActions<SqlToken> actions): this(new SqlTokenizer(reader, actions), actions) {}
 
 		public SqlSemanticProcessor(SqlTokenizer tokenizer, SemanticActions<SqlToken> actions): base(tokenizer, actions) {
 			terminatorSymbol = actions.Grammar.GetSymbolByName("';'");
+			identifierSymbol = actions.Grammar.GetSymbolByName("Id");
 			Debug.Assert(terminatorSymbol != null);
 			this.tokenizer = tokenizer;
-		}
-
-		protected override bool RetrySyntaxError(ref SqlToken currentToken) {
-			if (((IToken)currentToken).Symbol != terminatorSymbol) {
-				if (tokenizer.RepeatToken()) {
-					InsignificantToken terminator = new InsignificantToken();
-					terminator.InitializeInternal(terminatorSymbol, ((IToken)currentToken).Position);
-					currentToken = terminator;
-					return true;
-				}
-			}
-			return false;
 		}
 
 		protected override SqlToken CreateReduction(Rule rule, IList<SqlToken> children) {
@@ -46,6 +37,23 @@ namespace bsn.ModuleStore.Sql {
 				}
 			}
 			return result;
+		}
+
+		protected override bool RetrySyntaxError(ref SqlToken currentToken) {
+			UnreservedKeyword unreservedKeyword = currentToken as UnreservedKeyword;
+			if (unreservedKeyword != null) {
+				currentToken = unreservedKeyword.AsIdentifier(identifierSymbol);
+				return true;
+			}
+			if (((IToken)currentToken).Symbol != terminatorSymbol) {
+				if (tokenizer.RepeatToken()) {
+					InsignificantToken terminator = new InsignificantToken();
+					terminator.InitializeInternal(terminatorSymbol, ((IToken)currentToken).Position);
+					currentToken = terminator;
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
