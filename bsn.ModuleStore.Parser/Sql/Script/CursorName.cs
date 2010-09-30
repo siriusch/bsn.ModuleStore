@@ -8,6 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool global;
 
 		[Rule("<CursorName> ::= Id")]
+		[Rule("<CursorName> ::= QuotedId")]
 		public CursorName(Identifier identifier): this(identifier.Value, false) {}
 
 		[Rule("<GlobalOrLocalCursor> ::= <VariableName>")]

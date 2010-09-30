@@ -6,11 +6,11 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("Id")]
-	public sealed class Identifier: SqlIdentifier {
+	public class Identifier: SqlIdentifier {
 		public Identifier(string id): base(id) {}
 
 		internal Identifier(string id, Symbol symbol, LineInfo lineInfo): base(id) {
-			Initialize(symbol, lineInfo);
+			base.Initialize(symbol, lineInfo);
 		}
 	}
 }

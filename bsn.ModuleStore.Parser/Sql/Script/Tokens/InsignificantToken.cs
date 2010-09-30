@@ -14,6 +14,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 	[Terminal("(")]
 	[Terminal(")")]
 	[Terminal(".")]
+	[Terminal(":")]
 	[Terminal(",")]
 	[Terminal(";")]
 	public class InsignificantToken: SqlToken {

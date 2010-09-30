@@ -5,6 +5,7 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CommitTransactionStatement: TransactionStatement {
 		[Rule("<CommitTransactionStatement> ::= ~COMMIT")]
+		[Rule("<CommitTransactionStatement> ::= ~COMMIT ~WORK")]
 		[Rule("<CommitTransactionStatement> ::= ~COMMIT ~TRANSACTION")]
 		public CommitTransactionStatement(): this(null) {}
 

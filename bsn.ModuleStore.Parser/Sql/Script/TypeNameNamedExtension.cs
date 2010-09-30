@@ -8,6 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly SqlIdentifier extension;
 
 		[Rule("<TypeName> ::= Id ~'(' Id ~')'")]
+		[Rule("<TypeName> ::= QuotedId ~'(' Id ~')'")]
 		public TypeNameNamedExtension(SqlIdentifier identifier, SqlIdentifier extension): base(identifier) {
 			Debug.Assert(extension != null);
 			this.extension = extension;

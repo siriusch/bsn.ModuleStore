@@ -42,7 +42,8 @@ RealLiteral    = {Digit}+'.'{Digit}+
 HexLiteral     = 0x{Hex Ch}+
 
 ! We use a simplified name convention, which does not allow user/schema, database or server to be specified
-Id           = {Letter}{Id Ch Standard}* | '['{Id Ch Delimited Bracket Start}{Id Ch Delimited Bracket}*']' | '"'{Id Ch Delimited Quote Start}{Id Ch Delimited Quote}*'"'
+Id           = {Letter}{Id Ch Standard}*
+QuotedId     = '['{Id Ch Delimited Bracket Start}{Id Ch Delimited Bracket}*']' | '"'{Id Ch Delimited Quote Start}{Id Ch Delimited Quote}*'"'
 LocalId      = '@'{Letter}{Id Ch Standard}*
 SystemVarId  = '@@'{Letter}{Id Ch Standard}*
 SystemFuncId = '::'{Letter}{Id Ch Standard}*
@@ -285,14 +286,18 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 ! =============================================================================
 
 <AliasName> ::= Id
+              | QuotedId
 
 <AssemblyName> ::= Id
+                 | QuotedId
 
 <ClassName> ::= Id
+              | QuotedId
 
 <CollationName> ::= Id
 
 <ColumnName> ::= Id
+               | QuotedId
 
 <ColumnNameQualified> ::= <ColumnName>
                         | <TableName> '.' <ColumnName>
@@ -314,63 +319,81 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                             | <ColumnWildQualified>
 
 <ConstraintName> ::= Id
+                   | QuotedId
 
 <CursorName> ::= Id
+               | QuotedId
 
 <FunctionName> ::= Id
+                 | QuotedId
                  | SystemFuncId
 
 <FunctionNameQualified> ::= <FunctionName>
                           | <SchemaName> '.' <FunctionName>
 
 <IndexName> ::= Id
+              | QuotedId
 
 <LabelName> ::= Id
+              | QuotedId
 
 <MethodName> ::= Id
+               | QuotedId
 
 <ParameterName> ::= LocalId
 
 <ProcedureName> ::= Id
+                  | QuotedId
 
 <ProcedureNameQualified> ::= <ProcedureName>
                            | <SchemaName> '.' <ProcedureName>
 
 <TableName> ::= Id
+              | QuotedId
               | TempTableId
 
 <TableNameQualified> ::= <TableName>
                        | <SchemaName> '.' <TableName>
 
 <TransactionName> ::= Id
+                    | QuotedId
 
 <TriggerName> ::= Id
+                | QuotedId
 
 <TriggerNameQualified> ::= <TriggerName>
                          | <SchemaName> '.' <TriggerName>
 
 <TypeName> ::= Id
+             | QuotedId
              | Id '(' Id ')' ! e.g. VARCHAR(MAX)
+             | QuotedId '(' Id ')' ! e.g. VARCHAR(MAX)
              | Id '(' <IntegerLiteral> ')' ! e.g. VARCHAR(20)
+             | QuotedId '(' <IntegerLiteral> ')' ! e.g. VARCHAR(20)
              | Id '(' <IntegerLiteral> ',' <IntegerLiteral> ')' ! e.g. DECIMAL(10,5)
+             | QuotedId '(' <IntegerLiteral> ',' <IntegerLiteral> ')' ! e.g. DECIMAL(10,5)
 
 <TypeNameQualified> ::= <TypeName>
                       | <SchemaName> '.' <TypeName>
 
 <SchemaName> ::= Id
+               | QuotedId
 
 <SystemVariableName> ::= SystemVarId
 
 <VariableName> ::= LocalId
 
 <ViewName> ::= Id
+             | QuotedId
 
 <ViewNameQualified> ::= <ViewName>
                       | <SchemaName> '.' <ViewName>
 
 <XmlNamespaceName> ::= Id
+                     | QuotedId
 
 <XmlSchemaCollectionName> ::= Id
+                            | QuotedId
 
 <XmlSchemaCollectionNameQualified> ::= <XmlSchemaCollectionName>
                                      | <SchemaName> '.' <XmlSchemaCollectionName>
@@ -414,6 +437,10 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 <StatementList> ::= <StatementGroup>
                   | <StatementGroup> <Terminator>
                   | <StatementGroup> <Terminator> <StatementList>
+                  | <Label>
+                  | <Label> <StatementList>
+                  | <Label> <Terminator>
+                  | <Label> <Terminator> <StatementList>
 
 <Terminator> ::= <Terminator> ';'
                | ';'
@@ -498,6 +525,8 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 <AnyStatement> ::= Id <ExpressionList>
 
 <RaiserrorStatement> ::= RAISERROR '(' <ExpressionList> ')'
+
+<Label> ::= Id ':'
 
 ! =============================================================================
 ! DECLARE and Cursor statements
@@ -606,10 +635,12 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                               | BEGIN TRANSACTION <TransactionIdentifier> WITH MARK <StringLiteral>
 
 <CommitTransactionStatement> ::= COMMIT
+                               | COMMIT WORK
                                | COMMIT TRANSACTION
                                | COMMIT TRANSACTION <TransactionIdentifier>
 
 <RollbackTransactionStatement> ::= ROLLBACK
+                                 | ROLLBACK WORK
                                  | ROLLBACK TRANSACTION
                                  | ROLLBACK TRANSACTION <TransactionIdentifier>
 

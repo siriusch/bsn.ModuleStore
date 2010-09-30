@@ -9,6 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly long scale;
 
 		[Rule("<TypeName> ::= Id ~'(' <IntegerLiteral> ~',' <IntegerLiteral> ~')'")]
+		[Rule("<TypeName> ::= QuotedId ~'(' <IntegerLiteral> ~',' <IntegerLiteral> ~')'")]
 		public TypeNameWithScale(SqlIdentifier identifier, IntegerLiteral precision, IntegerLiteral scale): base(identifier, precision) {
 			Debug.Assert(scale != null);
 			this.scale = scale.Value;

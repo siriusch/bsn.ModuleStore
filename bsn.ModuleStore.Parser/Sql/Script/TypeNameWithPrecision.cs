@@ -9,6 +9,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly long precision;
 
 		[Rule("<TypeName> ::= Id ~'(' <IntegerLiteral> ~')'")]
+		[Rule("<TypeName> ::= QuotedId ~'(' <IntegerLiteral> ~')'")]
 		public TypeNameWithPrecision(SqlIdentifier identifier, IntegerLiteral precision): base(identifier) {
 			Debug.Assert(precision != null);
 			this.precision = precision.Value;

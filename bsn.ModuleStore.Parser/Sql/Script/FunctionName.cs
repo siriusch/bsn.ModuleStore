@@ -23,7 +23,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		[Rule("<FunctionName> ::= Id")]
-		public FunctionName(SqlIdentifier identifier): this(identifier.Value) {}
+		[Rule("<FunctionName> ::= QuotedId")]
+		public FunctionName(Identifier identifier): this(identifier.Value) {}
 
 		public bool IsBuiltinFunction {
 			get {

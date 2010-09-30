@@ -17,6 +17,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public List<Statement> ParseWithRoundtrip(string sql, int expectedStatementCount) {
+			GenerateSql(ScriptParser.Parse(sql)); // warm-up
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
 			IEnumerable<Statement> parsedStatements = ScriptParser.Parse(sql);

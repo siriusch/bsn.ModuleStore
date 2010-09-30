@@ -58,6 +58,20 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
+		public void WriteDelimitedIdentifier(string value) {
+			if (!string.IsNullOrEmpty(value)) {
+				if (value.IndexOf('[') >= 0) {
+					writer.Write('"');
+					writer.Write(value.Replace(@"""", @""""""));
+					writer.Write('"');
+				} else {
+					writer.Write('[');
+					writer.Write(value);
+					writer.Write(']');
+				}
+			}
+		}
+
 		public void WriteDuplicateRestriction(bool? distinct, WhitespacePadding padding) {
 			if (distinct.HasValue) {
 				PaddingBefore(padding);

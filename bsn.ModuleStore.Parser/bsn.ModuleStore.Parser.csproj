@@ -95,12 +95,14 @@
     <Compile Include="Sql\Script\IndexUsingValue.cs" />
     <Compile Include="Sql\Script\IntersectClause.cs" />
     <Compile Include="Sql\Script\KeywordFunction.cs" />
+    <Compile Include="Sql\Script\Label.cs" />
     <Compile Include="Sql\Script\QueryOptions.cs" />
     <Compile Include="Sql\Script\ExpressionColumnFunctionCalls.cs" />
     <Compile Include="Sql\Script\ExpressionFunctionCalls.cs" />
     <Compile Include="Sql\Script\ExpressionWithFunctionCalls.cs" />
     <Compile Include="Sql\Script\OuterApply.cs" />
     <Compile Include="Sql\Script\PredicateUpdate.cs" />
+    <Compile Include="Sql\Script\QuotedIdentifier.cs" />
     <Compile Include="Sql\Script\RaiserrorStatement.cs" />
     <Compile Include="Sql\Script\RollbackTransactionStatement.cs" />
     <Compile Include="Sql\Script\RowsetAlias.cs" />

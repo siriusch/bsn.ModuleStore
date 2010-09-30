@@ -8,6 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public ColumnName(): this("*") {}
 
 		[Rule("<ColumnName> ::= Id")]
+		[Rule("<ColumnName> ::= QuotedId")]
 		public ColumnName(Identifier identifier): this(identifier.Value) {}
 
 		internal ColumnName(string name): base(name) {}
