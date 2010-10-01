@@ -338,7 +338,7 @@ AND    steps.exist('./MI:tool') = 1;", 1);
 
 		[Test]
 		public void SyntaxError() {
-			Expect(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1), Throws.ArgumentException.With.Message.ContainsSubstring("SyntaxError"));
+			Expect(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1), Throws.InstanceOf<ParseException>().With.Message.ContainsSubstring("SyntaxError"));
 		}
 
 		[Test]
