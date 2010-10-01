@@ -21,6 +21,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override void WriteToInternal(SqlWriter writer) {
 			base.WriteToInternal(writer);
+			writer.WriteLine();
 			writer.Write("VALUES (");
 			writer.WriteScriptSequence(expressions, WhitespacePadding.None, ", ");
 			writer.Write(')');
