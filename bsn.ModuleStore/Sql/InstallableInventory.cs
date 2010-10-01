@@ -44,10 +44,10 @@ namespace bsn.ModuleStore.Sql {
 				UnsetQualification();
 				SetQualification(schemaName);
 				foreach (Statement statement in resolver.GetInOrder(true)) {
-					yield return WriteStatement(statement, builder);
+					yield return WriteStatement(statement, true, builder);
 				}
 				foreach (Statement additionalSetupStatement in AdditionalSetupStatements) {
-					yield return WriteStatement(additionalSetupStatement, builder);
+					yield return WriteStatement(additionalSetupStatement, false, builder);
 				}
 			} finally {
 				UnsetQualification();

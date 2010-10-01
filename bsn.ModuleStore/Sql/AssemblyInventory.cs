@@ -109,12 +109,12 @@ namespace bsn.ModuleStore.Sql {
 				StringBuilder builder = new StringBuilder(4096);
 				// first perform all possible actions which do not rely on tables which are altered
 				foreach (Statement statement in resolver.GetInOrder(false)) {
-					yield return WriteStatement(statement, builder);
+					yield return WriteStatement(statement, true, builder);
 				}
 				// then perform updates (if any)
 				foreach (KeyValuePair<int, Statement[]> update in updateStatements.Where(u => u.Key > currentVersion)) {
 					foreach (Statement statement in update.Value) {
-						yield return WriteStatement(statement, builder);
+						yield return WriteStatement(statement, false, builder);
 					}
 				}
 				// now that the update scripts have updated the tables, mark the tables in the dependency resolver
@@ -123,11 +123,11 @@ namespace bsn.ModuleStore.Sql {
 				}
 				// try to perform the remaining actions
 				foreach (Statement statement in resolver.GetInOrder(true)) {
-					yield return WriteStatement(statement, builder);
+					yield return WriteStatement(statement, true, builder);
 				}
 				// finally drop objects which are no longer used
 				foreach (DropStatement dropStatement in dropStatements) {
-					yield return WriteStatement(dropStatement, builder);
+					yield return WriteStatement(dropStatement, false, builder);
 				}
 			} finally {
 				UnsetQualification();

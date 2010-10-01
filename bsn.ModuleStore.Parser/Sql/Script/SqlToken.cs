@@ -15,16 +15,18 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal IEnumerable<IQualifiedName<SchemaName>> GetInnerSchemaQualifiedNames(Predicate<string> checkSchemaName) {
 			return GetInnerTokens(delegate(IQualifiedName<SchemaName> name, CommonTableExpressionScope scope) {
-			                      	SchemaName qualification = name.Qualification;
-			                      	if (qualification != null) {
-			                      		return checkSchemaName(qualification.Value);
-			                      	}
-			                      	if (((name.Name is TableName) || (name.Name is ViewName)) && (!scope.ContainsName(name.Name.Value))) {
-			                      		return true;
-			                      	}
-			                      	FunctionName functionName = name.Name as FunctionName;
-			                      	if ((functionName != null) && (!functionName.IsBuiltinFunction)) {
-			                      		return true;
+			                      	if (!name.LockedOverride) {
+			                      		SchemaName qualification = name.Qualification;
+			                      		if (qualification != null) {
+			                      			return checkSchemaName(qualification.Value);
+			                      		}
+			                      		if (((name.Name is TableName) || (name.Name is ViewName)) && (!scope.ContainsName(name.Name.Value))) {
+			                      			return true;
+			                      		}
+			                      		FunctionName functionName = name.Name as FunctionName;
+			                      		if ((functionName != null) && (!functionName.IsBuiltinFunction)) {
+			                      			return true;
+			                      		}
 			                      	}
 			                      	return false;
 			                      }, null);
@@ -57,6 +59,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		internal void LockInnerUnqualifiedTableNames(Predicate<string> lockPredicate) {
 			if (lockPredicate == null) {
 				throw new ArgumentNullException("lockPredicate");
+			}
+			foreach (IQualifiedName<SchemaName> schemaQualifiedName in GetInnerSchemaQualifiedNames(s => false)) {
+				if (lockPredicate(schemaQualifiedName.Name.Value)) {
+					schemaQualifiedName.LockOverride();
+				}
 			}
 		}
 	}

@@ -53,10 +53,10 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		protected static string WriteStatement(Statement statement, StringBuilder buffer) {
+		protected static string WriteStatement(Statement statement, bool emitComments, StringBuilder buffer) {
 			buffer.Length = 0;
 			using (StringWriter writer = new StringWriter(buffer)) {
-				statement.WriteTo(new SqlWriter(writer));
+				statement.WriteTo(new SqlWriter(writer, emitComments));
 			}
 			return buffer.ToString();
 		}

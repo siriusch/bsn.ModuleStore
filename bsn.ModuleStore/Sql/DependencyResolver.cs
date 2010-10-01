@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -15,6 +17,9 @@ namespace bsn.ModuleStore.Sql {
 				this.objectName = objectName;
 				this.statement = statement;
 				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames().Where(n => !n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase))) {
+					if (referencedObjectName is FunctionName) {
+						Debugger.Break();
+					}
 					edges.Add(referencedObjectName.Value);
 				}
 			}
@@ -108,6 +113,19 @@ namespace bsn.ModuleStore.Sql {
 					nodes.Enqueue(node);
 					if (skipCount++ > nodes.Count) {
 						if (throwOnCycle) {
+							StringBuilder unresolvedMsg = new StringBuilder();
+							foreach (DependencyNode unresolvedNode in nodes) {
+								unresolvedMsg.Length = 0;
+								unresolvedMsg.Append(unresolvedNode.ObjectName);
+								unresolvedMsg.Append(" seems to depend on ");
+								string separator = string.Empty;
+								foreach (string edge in unresolvedNode.Edges) {
+									unresolvedMsg.Append(separator);
+									unresolvedMsg.Append(edge);
+									separator = ", ";
+								}
+								Trace.WriteLine(unresolvedMsg.ToString());
+							}
 							throw new InvalidOperationException("Cycle or missing dependency detected");
 						}
 						yield break;

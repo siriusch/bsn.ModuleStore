@@ -7,6 +7,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected SourceNodesRowset(NamedFunction functionCall, RowsetAlias rowsetAlias): base(rowsetAlias) {
 			Debug.Assert(functionCall != null);
+			functionCall.FunctionName.LockOverride();
 			this.functionCall = functionCall;
 		}
 

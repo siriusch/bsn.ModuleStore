@@ -122,7 +122,7 @@ namespace bsn.ModuleStore.Sql {
 					resolver.Add(statement);
 				}
 				foreach (CreateStatement statement in resolver.GetInOrder(true).Reverse()) {
-					yield return WriteStatement(statement.CreateDropStatement(), buffer);
+					yield return WriteStatement(statement.CreateDropStatement(), false, buffer);
 				}
 				buffer.Length = 0;
 				using (TextWriter writer = new StringWriter(buffer)) {
