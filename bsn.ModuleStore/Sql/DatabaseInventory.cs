@@ -89,9 +89,14 @@ namespace bsn.ModuleStore.Sql {
 						}
 						using (StringCollectionReader scriptReader = new StringCollectionReader(script, ";")) {
 							try {
-								ProcessSingleScript(scriptReader, statement => {
-								                                  	throw CreateException("Cannot process statement:", statement);
-								                                  });
+								try {
+									ProcessSingleScript(scriptReader, statement => {
+										throw CreateException("Cannot process statement:", statement);
+									});
+								} catch (ParseException ex) {
+									ex.FileName = smoObject.Name;
+									throw;
+								}
 							} catch {
 								Trace.WriteLine(string.Join(";\r\n", script.Cast<string>().ToArray()));
 								throw;

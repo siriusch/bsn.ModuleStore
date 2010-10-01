@@ -19,7 +19,12 @@ namespace bsn.ModuleStore.Sql {
 			foreach (string fileName in Directory.GetFiles(this.scriptPath, "*.sql", SearchOption.AllDirectories)) {
 				unsupportedStatements.Clear();
 				using (TextReader reader = new StreamReader(fileName, true)) {
-					ProcessSingleScript(reader, unsupportedStatements.Add);
+					try {
+						ProcessSingleScript(reader, unsupportedStatements.Add);
+					} catch (ParseException ex) {
+						ex.FileName = fileName;
+						throw;
+					}
 				}
 				if (unsupportedStatements.Count > 0) {
 					// only files which have insert statements only as "unsupported statements" are assumed to be setup scripts

@@ -91,10 +91,15 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public static IEnumerable<Statement> Parse(TextReader sql) {
+			ParseMessage parseMessage = ParseMessage.None;
 			SqlSemanticProcessor processor = new SqlSemanticProcessor(sql, GetSemanticActions());
-			ParseMessage parseMessage = processor.ParseAll();
+			try {
+				parseMessage = processor.ParseAll();
+			} catch (Exception ex) {
+				throw new ParseException(ex.Message, parseMessage, ((IToken)processor.CurrentToken).Position, ex);
+			}
 			if (parseMessage != ParseMessage.Accept) {
-				throw new ArgumentException(string.Format("The supplied SQL could not be parsed: {0} at {1}", parseMessage, ((IToken)processor.CurrentToken).Position));
+				throw new ParseException("The supplied SQL could not be parsed", parseMessage, ((IToken)processor.CurrentToken).Position);
 			}
 			return (IEnumerable<Statement>)processor.CurrentToken;
 		}

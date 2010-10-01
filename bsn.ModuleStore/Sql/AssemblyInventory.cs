@@ -26,7 +26,12 @@ namespace bsn.ModuleStore.Sql {
 				SqlSetupScriptAttributeBase setupScriptAttribute = attribute.Key as SqlSetupScriptAttributeBase;
 				if (setupScriptAttribute != null) {
 					using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value)) {
-						ProcessSingleScript(reader, AddAdditionalSetupStatement);
+						try {
+							ProcessSingleScript(reader, AddAdditionalSetupStatement);
+						} catch (ParseException ex) {
+							ex.FileName = setupScriptAttribute.ManifestResourceName;
+							throw;
+						}
 					}
 				} else {
 					SqlUpdateScriptAttribute updateScriptAttribute = attribute.Key as SqlUpdateScriptAttribute;
