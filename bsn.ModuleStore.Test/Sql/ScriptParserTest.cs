@@ -186,6 +186,11 @@ PRINT 'Cool'", 3);
 		}
 
 		[Test]
+		public void ParseExecWithMultipleArguments() {
+			ParseWithRoundtrip(@"EXEC spMyProc 'a', 24, @b = 10, @@rownumber, @c, @d = @e", 1);
+		}
+
+		[Test]
 		public void StatementsWithXmlFunctions() {
 			ParseWithRoundtrip(@"DECLARE @tbl TABLE (id xml);
 INSERT @tbl (id) SELECT t.x FROM (SELECT NEWID() x FOR XML RAW) t(x);

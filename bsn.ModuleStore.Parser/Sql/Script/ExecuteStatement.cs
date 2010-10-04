@@ -54,7 +54,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("EXEC ");
 			writer.WriteScript(resultVariableName, WhitespacePadding.None, null, "=");
 			writer.WriteScript(procedureName, WhitespacePadding.None);
-			writer.WriteScriptSequence(parameters, WhitespacePadding.SpaceBefore, null);
+			writer.WriteScriptSequence(parameters, WhitespacePadding.SpaceBefore, ", ");
 			writer.WriteScript(option, WhitespacePadding.SpaceBefore);
 		}
 	}
