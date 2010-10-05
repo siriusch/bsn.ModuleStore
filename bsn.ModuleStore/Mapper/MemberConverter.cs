@@ -19,6 +19,38 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
+		private class DateTimeMemberConverter: MemberConverter {
+			private readonly DateTimeKind dateTimeKind;
+
+			public DateTimeMemberConverter(Type type, int memberIndex, DateTimeKind dateTimeKind): base(type, memberIndex) {
+				this.dateTimeKind = dateTimeKind;
+			}
+
+			public override object Process(SqlDeserializer.DeserializerContext context, int column) {
+				object result = base.Process(context, column);
+				if (result != null) {
+					result = DateTime.SpecifyKind(Convert.ToDateTime(result), dateTimeKind);
+				}
+				return result;
+			}
+		}
+
+		private class DateTimeOffsetMemberConverter: MemberConverter {
+			private readonly DateTimeKind dateTimeKind;
+
+			public DateTimeOffsetMemberConverter(Type type, int memberIndex, DateTimeKind dateTimeKind): base(type, memberIndex) {
+				this.dateTimeKind = dateTimeKind;
+			}
+
+			public override object Process(SqlDeserializer.DeserializerContext context, int column) {
+				object result = base.Process(context, column);
+				if ((result != null) && (!(result is DateTimeOffset))) {
+					result = new DateTimeOffset(DateTime.SpecifyKind(Convert.ToDateTime(result), dateTimeKind));
+				}
+				return result;
+			}
+		}
+
 		private class XDocumentMemberConverter: XmlReaderMemberConverterBase {
 			public XDocumentMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
 
@@ -98,7 +130,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public static MemberConverter Get(Type type, int memberIndex) {
+		public static MemberConverter Get(Type type, int memberIndex, DateTimeKind dateTimeKind) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
@@ -119,6 +151,12 @@ namespace bsn.ModuleStore.Mapper {
 			}
 			if (typeof(XPathDocument).Equals(type)) {
 				return new XPathDocumentMemberConverter(type, memberIndex);
+			}
+			if (typeof(DateTime).Equals(type)) {
+				return new DateTimeMemberConverter(type, memberIndex, dateTimeKind);
+			}
+			if (typeof(DateTimeOffset).Equals(type)) {
+				return new DateTimeOffsetMemberConverter(type, memberIndex, dateTimeKind);
 			}
 			if (typeof(IConvertible).IsAssignableFrom(type)) {
 				return new ConvertibleMemberConverter(type, memberIndex);

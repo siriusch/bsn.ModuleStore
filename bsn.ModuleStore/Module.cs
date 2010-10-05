@@ -16,13 +16,13 @@ namespace bsn.ModuleStore {
 		[SqlColumn("fSchemaExists")]
 		private bool schemaExists;
 
-		[SqlColumn("dtSetup")]
+		[SqlColumn("dtSetup", DateTimeKind=DateTimeKind.Utc)]
 		private DateTime setupDate;
 
 		[SqlColumn("binSetupHash")]
 		private byte[] setupHash;
 
-		[SqlColumn("dtUpdate")]
+		[SqlColumn("dtUpdate", DateTimeKind = DateTimeKind.Utc)]
 		private DateTime updateDate;
 
 		[SqlColumn("iUpdateVersion")]

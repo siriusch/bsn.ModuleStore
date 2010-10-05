@@ -31,6 +31,7 @@ namespace bsn.ModuleStore.Mapper {
 			return null;
 		}
 
+		private DateTimeKind dateTimeKind = DateTimeKind.Unspecified;
 		private string name;
 
 		/// <summary>
@@ -44,6 +45,19 @@ namespace bsn.ModuleStore.Mapper {
 		/// <param name="name">The DB column name to bind to.</param>
 		public SqlColumnAttribute(string name): base() {
 			this.name = name;
+		}
+
+		/// <summary>
+		/// Gets or sets the kind of the DateTime, if the instance is one.
+		/// </summary>
+		/// <value>The kind of the date time.</value>
+		public DateTimeKind DateTimeKind {
+			get {
+				return dateTimeKind;
+			}
+			set {
+				dateTimeKind = value;
+			}
 		}
 
 		/// <summary>

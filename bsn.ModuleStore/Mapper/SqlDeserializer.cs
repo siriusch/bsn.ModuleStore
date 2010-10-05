@@ -161,7 +161,7 @@ namespace bsn.ModuleStore.Mapper {
 				}
 				isXmlType = IsXmlType(instanceType);
 				if (isXmlType || IsNullableType(instanceType) || instanceType.IsPrimitive || SqlCallProcedureInfo.IsNativeType(instanceType)) {
-					simpleConverter = MemberConverter.Get(instanceType, 0);
+					simpleConverter = MemberConverter.Get(instanceType, 0, DateTimeKind.Unspecified);
 				}
 			}
 
@@ -264,7 +264,7 @@ namespace bsn.ModuleStore.Mapper {
 					foreach (FieldInfo field in GetAllFields(type)) {
 						SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetColumnAttribute(field, false);
 						if (columnAttribute != null) {
-							converters.Add(new KeyValuePair<string, MemberConverter>(columnAttribute.Name, MemberConverter.Get(field.FieldType, memberInfos.Count)));
+							converters.Add(new KeyValuePair<string, MemberConverter>(columnAttribute.Name, MemberConverter.Get(field.FieldType, memberInfos.Count, columnAttribute.DateTimeKind)));
 							memberInfos.Add(field);
 						} else if (field.GetCustomAttributes(typeof(SqlDeserializeAttribute), true).Length > 0) {
 							converters.Add(new KeyValuePair<string, MemberConverter>(null, new NestedMemberConverter(field.FieldType, memberInfos.Count)));
