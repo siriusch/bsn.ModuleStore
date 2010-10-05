@@ -186,6 +186,14 @@ PRINT 'Cool'", 3);
 		}
 
 		[Test]
+		public void ParseMultilineStringLiteral() {
+			ParseWithRoundtrip(@"SELECT N'This
+is
+on
+several lines!'", 1);
+		}
+
+		[Test]
 		public void ParseExecWithMultipleArguments() {
 			ParseWithRoundtrip(@"EXEC spMyProc 'a', 24, @b = 10, @@rownumber, @c, @d = @e", 1);
 		}

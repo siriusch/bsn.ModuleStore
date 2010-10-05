@@ -20,13 +20,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			                      		if (qualification != null) {
 			                      			return checkSchemaName(qualification.Value);
 			                      		}
-			                      		if (((name.Name is TableName) || (name.Name is ViewName)) && (!scope.ContainsName(name.Name.Value))) {
-			                      			return true;
+			                      		if (((name.Name is TableName) || (name.Name is ViewName)) && scope.ContainsName(name.Name.Value)) {
+			                      			return false;
 			                      		}
-			                      		FunctionName functionName = name.Name as FunctionName;
-			                      		if ((functionName != null) && (!functionName.IsBuiltinFunction)) {
-			                      			return true;
+																TypeName typeName = name.Name as TypeName;
+																if ((typeName != null) && typeName.IsBuiltinType) {
+																	return false;
+																}
+																FunctionName functionName = name.Name as FunctionName;
+			                      		if ((functionName != null) && functionName.IsBuiltinFunction) {
+			                      			return false;
 			                      		}
+			                      		return true;
 			                      	}
 			                      	return false;
 			                      }, null);
