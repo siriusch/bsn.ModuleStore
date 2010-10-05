@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 
+using bsn.ModuleStore.Bootstrapper;
 using bsn.ModuleStore.Mapper;
+using bsn.ModuleStore.Sql;
+
+using Microsoft.SqlServer.Management.Smo;
 
 namespace bsn.ModuleStore {
 	public class Module {
@@ -10,13 +15,15 @@ namespace bsn.ModuleStore {
 		[SqlColumn("uidModule")]
 		private Guid id;
 
+		private ModuleInstanceCache owner;
+
 		[SqlColumn("sSchema")]
 		private string schema;
 
 		[SqlColumn("fSchemaExists")]
 		private bool schemaExists;
 
-		[SqlColumn("dtSetup", DateTimeKind=DateTimeKind.Utc)]
+		[SqlColumn("dtSetup", DateTimeKind = DateTimeKind.Utc)]
 		private DateTime setupDate;
 
 		[SqlColumn("binSetupHash")]
@@ -31,6 +38,12 @@ namespace bsn.ModuleStore {
 		public Guid AssemblyGuid {
 			get {
 				return assemblyGuid;
+			}
+		}
+
+		public ModuleDatabase Database {
+			get {
+				return owner.Owner;
 			}
 		}
 
@@ -74,6 +87,25 @@ namespace bsn.ModuleStore {
 			get {
 				return updateVersion;
 			}
+		}
+
+		public DatabaseInventory GetInventory() {
+			ModuleDatabase database = owner.Owner;
+			database.BeginSmoTransaction();
+			try {
+				Server server = new Server(database.SmoConnectionProvider.ServerConnection);
+				return new DatabaseInventory(server.Databases[database.SmoConnectionProvider.DatabaseName], schema);
+			} finally {
+				database.EndSmoTransaction(false);
+			}
+		}
+
+		internal void SetOwner(ModuleInstanceCache owner) {
+			if (owner == null) {
+				throw new ArgumentNullException("owner");
+			}
+			this.owner = owner;
+			Debug.Assert(owner.AssemblyInfo.AssemblyGuid == assemblyGuid);
 		}
 	}
 }

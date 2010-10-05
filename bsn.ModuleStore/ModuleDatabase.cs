@@ -104,6 +104,10 @@ namespace bsn.ModuleStore {
 			return GetModuleInstanceCache(assembly).CreateInstance();
 		}
 
+		public AssemblyInventory GetInventory(Assembly assembly) {
+			return GetModuleInstanceCache(assembly).AssemblyInfo.Inventory;
+		}
+
 		public TI Get<TI>() where TI: IStoredProcedures {
 			return Get<TI>(false);
 		}

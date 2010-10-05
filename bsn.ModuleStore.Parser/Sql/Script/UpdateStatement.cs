@@ -88,9 +88,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteLine();
 			writer.Write("SET ");
 			writer.WriteScriptSequence(updateItems, WhitespacePadding.None, ", ");
-			writer.WriteScript(outputClause, WhitespacePadding.SpaceBefore);
-			writer.WriteScript(fromClause, WhitespacePadding.SpaceBefore);
-			writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore, "WHERE ", null);
+			writer.WriteScript(outputClause, WhitespacePadding.NewlineBefore);
+			writer.WriteScript(fromClause, WhitespacePadding.NewlineBefore);
+			writer.WriteScript(whereClause, WhitespacePadding.NewlineBefore, "WHERE ", null);
 			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
 			writer.DecreaseIndent();
 		}

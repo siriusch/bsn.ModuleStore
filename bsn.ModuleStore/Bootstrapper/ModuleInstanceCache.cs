@@ -146,6 +146,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 						HashSet<string> toRemove = new HashSet<string>(instances.Keys);
 						lock (owner.ModuleStore) {
 							foreach (Module module in owner.ModuleStore.List(assemblyInfo.AssemblyGuid)) {
+								module.SetOwner(this);
 								toRemove.Remove(module.Schema);
 								ModuleInstance instance;
 								if (instances.TryGetValue(module.Schema, out instance)) {
