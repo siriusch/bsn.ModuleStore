@@ -90,7 +90,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 		}
 
 		private static void UpdateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {
-			database.GetModuleInstanceCache(cache.AssemblyInfo.Assembly).UpdateDatabase(false);
+			database.GetModuleInstanceCache(cache.AssemblyInfo.Assembly).UpdateDatabase(database.ForceUpdateCheck);
 		}
 	}
 }

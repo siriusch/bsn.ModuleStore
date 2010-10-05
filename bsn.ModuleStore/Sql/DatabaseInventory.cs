@@ -23,14 +23,21 @@ namespace bsn.ModuleStore.Sql {
 
 		private readonly string schemaName;
 
-		public DatabaseInventory(Microsoft.SqlServer.Management.Smo.Database database, string schemaName) {
+		public DatabaseInventory(Database database, string schemaName) {
 			if (database == null) {
 				throw new ArgumentNullException("database");
 			}
 			if (database.IsSystemObject) {
 				throw new ArgumentException("The connection does not point to a valid user database", "database");
 			}
+			database.Parent.Refresh();
 			database.Refresh();
+			database.Tables.Refresh();
+			database.Views.Refresh();
+			database.Triggers.Refresh();
+			database.UserDefinedFunctions.Refresh();
+			database.StoredProcedures.Refresh();
+			database.XmlSchemaCollections.Refresh();
 			this.schemaName = schemaName ?? database.DefaultSchema;
 			Schema schema = database.Schemas[schemaName];
 			if (schema != null) {
@@ -72,7 +79,9 @@ namespace bsn.ModuleStore.Sql {
 				options.Triggers = false;
 				options.WithDependencies = false;
 				options.XmlIndexes = true;
+				schema.Refresh();
 				foreach (Urn urn in schema.EnumOwnedObjects()) {
+//					Debug.WriteLine(urn, "Processing DB Object");
 					NamedSmoObject smoObject = database.Parent.GetSmoObject(urn) as NamedSmoObject;
 					if (IsSupportedType(smoObject)) {
 						Debug.Assert(smoObject != null);
@@ -91,8 +100,8 @@ namespace bsn.ModuleStore.Sql {
 							try {
 								try {
 									ProcessSingleScript(scriptReader, statement => {
-										throw CreateException("Cannot process statement:", statement);
-									});
+									                                  	throw CreateException("Cannot process statement:", statement);
+									                                  });
 								} catch (ParseException ex) {
 									ex.FileName = smoObject.Name;
 									throw;

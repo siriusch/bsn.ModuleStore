@@ -23,11 +23,38 @@ namespace bsn.ModuleStore {
 			return Bootstrap.GetDatabaseType(connectionString, out dummy);
 		}
 
+		[Conditional("DEBUG")]
+		private static void DebugWriteFirstLines(string sql) {
+			StringBuilder result = new StringBuilder();
+			bool hasMore;
+			using (StringReader reader = new StringReader(sql)) {
+				for (int i = 0; i < 3; i++) {
+					string line = reader.ReadLine();
+					if (line == null) {
+						break;
+					}
+					line = line.Trim();
+					if (line.Length > 0) {
+						result.Append(line);
+						result.Append(' ');
+					}
+				}
+				hasMore = (reader.ReadLine() != null);
+			}
+			if (result.Length > 0) {
+				if (hasMore) {
+					result.Append("...");
+				}
+				Debug.WriteLine(result, "Executing SQL");
+			}
+		}
+
 		private readonly bool autoUpdate;
 		private readonly string connectionString;
 		private readonly Dictionary<Assembly, ModuleInstanceCache> instances = new Dictionary<Assembly, ModuleInstanceCache>();
 		private readonly IModules moduleStore;
 		private readonly SmoConnectionProvider smoConnectionProvider;
+		private bool forceUpdateCheck = Debugger.IsAttached;
 
 		public ModuleDatabase(string connectionString): this(connectionString, false) {}
 
@@ -43,6 +70,15 @@ namespace bsn.ModuleStore {
 		public bool AutoUpdate {
 			get {
 				return autoUpdate;
+			}
+		}
+
+		public bool ForceUpdateCheck {
+			get {
+				return forceUpdateCheck;
+			}
+			set {
+				forceUpdateCheck = value;
 			}
 		}
 
@@ -155,7 +191,7 @@ namespace bsn.ModuleStore {
 			DatabaseInventory databaseInventory = new DatabaseInventory(database, module.Schema);
 			bool hasChanges = !HashWriter.HashEqual(databaseInventory.GetInventoryHash(), inventory.GetInventoryHash());
 			foreach (string sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
-				DebugWriteFirstLine(sql);
+				DebugWriteFirstLines(sql);
 				hasChanges = true;
 				using (SqlCommand command = smoConnectionProvider.GetConnection().CreateCommand()) {
 					command.CommandType = CommandType.Text;
@@ -206,22 +242,12 @@ namespace bsn.ModuleStore {
 				if (!instances.TryGetValue(assembly, out moduleInstances)) {
 					moduleInstances = new ModuleInstanceCache(this, assembly);
 					if (autoUpdate && (assembly != Assembly.GetExecutingAssembly())) {
-						moduleInstances.UpdateDatabase(false);
+						moduleInstances.UpdateDatabase(ForceUpdateCheck);
 					}
 					instances.Add(assembly, moduleInstances);
 				}
 			}
 			return moduleInstances;
-		}
-
-		[Conditional("DEBUG")]
-		private void DebugWriteFirstLine(string sql) {
-			using (StringReader reader = new StringReader(sql)) {
-				string line = reader.ReadLine();
-				if (!string.IsNullOrEmpty(line)) {
-					Debug.WriteLine(line);
-				}
-			}
 		}
 
 		public void Dispose() {

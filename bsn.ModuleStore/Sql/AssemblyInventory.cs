@@ -85,6 +85,7 @@ namespace bsn.ModuleStore.Sql {
 				DependencyResolver resolver = new DependencyResolver();
 				List<CreateTableStatement> tables = new List<CreateTableStatement>();
 				List<DropStatement> dropStatements = new List<DropStatement>();
+				HashSet<string> newObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> pair in Compare(inventory, this)) {
 					switch (pair.Value) {
 					case InventoryObjectDifference.None:
@@ -103,6 +104,12 @@ namespace bsn.ModuleStore.Sql {
 						break;
 					case InventoryObjectDifference.TargetOnly:
 						resolver.Add(pair.Key);
+						switch (pair.Key.ObjectCategory) {
+						case ObjectCategory.Table:
+						case ObjectCategory.View:
+							newObjectNames.Add(pair.Key.ObjectName);
+							break;
+						}
 						break;
 					}
 				}
@@ -124,6 +131,16 @@ namespace bsn.ModuleStore.Sql {
 				// try to perform the remaining actions
 				foreach (Statement statement in resolver.GetInOrder(true)) {
 					yield return WriteStatement(statement, true, builder);
+				}
+				// execute insert statements for table setup data
+				foreach (InsertStatement insertStatement in AdditionalSetupStatements.OfType<InsertStatement>()) {
+					DestinationRowset<Qualified<SchemaName, TableName>> targetTable = insertStatement.DestinationRowset as DestinationRowset<Qualified<SchemaName, TableName>>;
+					if (targetTable != null) {
+						Qualified<SchemaName, TableName> name = targetTable.Name;
+						if (name.IsQualified && string.Equals(name.Qualification.Value, inventory.SchemaName, StringComparison.OrdinalIgnoreCase) && newObjectNames.Contains(name.Name.Value)) {
+							yield return WriteStatement(insertStatement, false, builder);
+						}
+					}
 				}
 				// finally drop objects which are no longer used
 				foreach (DropStatement dropStatement in dropStatements) {
