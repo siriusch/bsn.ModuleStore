@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
-	public interface IIdentifiable<T> where T: struct, IEquatable<T>, IConvertible {
+	public interface IIdentifiable<T> where T: struct, IEquatable<T> {
 		T Id {
 			get;
 		}
