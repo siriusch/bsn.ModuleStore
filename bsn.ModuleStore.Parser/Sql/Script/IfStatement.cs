@@ -42,7 +42,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("IF ");
+			writer.IncreaseIndent();
 			writer.WriteScript(condition, WhitespacePadding.SpaceAfter);
+			writer.DecreaseIndent();
 			writer.WriteScript(thenStatement, WhitespacePadding.None);
 			writer.WriteScript(elseStatement, WhitespacePadding.None, " ELSE ", null);
 		}

@@ -119,11 +119,18 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public void Dump(string schemaName, TextWriter writer) {
-			writer.WriteLine("-- Inventory hash: {0}", BitConverter.ToString(GetInventoryHash()).Replace("-", ""));
+			writer.WriteLine("-- Inventory hash: {0}", BitConverter.ToString(GetInventoryHash()));
 			SqlWriter sqlWriter = new SqlWriter(writer);
 			SetQualification(schemaName);
 			try {
 				foreach (CreateStatement statement in objects.Values) {
+					writer.WriteLine();
+					SetQualification(null);
+					try {
+						writer.WriteLine("-- Object hash: {0}", BitConverter.ToString(statement.GetHash()));
+					} finally {
+						UnsetQualification();
+					}
 					statement.WriteTo(sqlWriter);
 					writer.WriteLine(";");
 				}

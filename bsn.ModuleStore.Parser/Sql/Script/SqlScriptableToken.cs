@@ -12,12 +12,16 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public byte[] GetHash() {
 			if (hash == null) {
-				using (HashWriter writer = new HashWriter()) {
-					WriteTo(new SqlWriter(writer, false));
-					hash = writer.ToArray();
-				}
+				hash = GetHashInternal();
 			}
 			return hash;
+		}
+
+		protected virtual byte[] GetHashInternal() {
+			using (HashWriter writer = new HashWriter()) {
+				WriteTo(new SqlWriter(writer, false));
+				return writer.ToArray();
+			}
 		}
 
 		public override int GetHashCode() {
