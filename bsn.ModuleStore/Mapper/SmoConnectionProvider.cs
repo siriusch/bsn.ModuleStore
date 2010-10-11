@@ -1,4 +1,33 @@
-﻿using System;
+﻿// bsn ModuleStore database versioning
+// -----------------------------------
+// 
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// 
+// Development has been supported by Sirius Technologies AG, Basel
+// 
+// Source:
+// 
+// https://bsn-modulestore.googlecode.com/hg/
+// 
+// License:
+// 
+// The library is distributed under the GNU Lesser General Public License:
+// http://www.gnu.org/licenses/lgpl.html
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  
+using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -6,9 +35,9 @@ using Microsoft.SqlServer.Management.Common;
 
 namespace bsn.ModuleStore.Mapper {
 	public sealed class SmoConnectionProvider: IConnectionProvider, IDisposable {
+		private readonly SqlConnection connection;
 		private readonly string schemaName;
 		private readonly ServerConnection serverConnection;
-		private readonly SqlConnection connection;
 
 		public SmoConnectionProvider(string connectionString, string schemaName): this(new SqlConnection(connectionString), schemaName) {}
 
@@ -33,12 +62,6 @@ namespace bsn.ModuleStore.Mapper {
 			this.connection = connection;
 		}
 
-		public string SchemaName {
-			get {
-				return schemaName;
-			}
-		}
-
 		public string DatabaseName {
 			get {
 				return connection.Database;
@@ -48,6 +71,11 @@ namespace bsn.ModuleStore.Mapper {
 		public ServerConnection ServerConnection {
 			get {
 				return serverConnection;
+			}
+		}
+		public string SchemaName {
+			get {
+				return schemaName;
 			}
 		}
 

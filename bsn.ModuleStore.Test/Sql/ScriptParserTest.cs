@@ -1,4 +1,33 @@
-﻿using System;
+﻿// bsn ModuleStore database versioning
+// -----------------------------------
+// 
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// 
+// Development has been supported by Sirius Technologies AG, Basel
+// 
+// Source:
+// 
+// https://bsn-modulestore.googlecode.com/hg/
+// 
+// License:
+// 
+// The library is distributed under the GNU Lesser General Public License:
+// http://www.gnu.org/licenses/lgpl.html
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -49,6 +78,51 @@ namespace bsn.ModuleStore.Sql {
 				}
 				return stringWriter.ToString();
 			}
+		}
+
+		[Test]
+		public void BeginTransaction() {
+			ParseWithRoundtrip(@"BEGIN TRAN", 1);
+		}
+
+		[Test]
+		public void BeginTransactionIdentifierName() {
+			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans", 1);
+		}
+
+		[Test]
+		public void BeginTransactionVariableName() {
+			ParseWithRoundtrip(@"BEGIN TRANSACTION @trans", 1);
+		}
+
+		[Test]
+		public void BeginTransactionWithMark() {
+			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK", 1);
+		}
+
+		[Test]
+		public void BeginTransactionWithMarkNamed() {
+			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK 'My Trans'", 1);
+		}
+
+		[Test]
+		public void CommitTransaction() {
+			ParseWithRoundtrip(@"COMMIT TRAN", 1);
+		}
+
+		[Test]
+		public void CommitTransactionIdentifierName() {
+			ParseWithRoundtrip(@"COMMIT TRANSACTION MyTrans", 1);
+		}
+
+		[Test]
+		public void CommitTransactionLegacy() {
+			ParseWithRoundtrip(@"COMMIT", 1);
+		}
+
+		[Test]
+		public void CommitTransactionVariableName() {
+			ParseWithRoundtrip(@"COMMIT TRANSACTION @trans", 1);
 		}
 
 		[Test]
@@ -155,6 +229,19 @@ AS
 		}
 
 		[Test]
+		public void ParseExecWithMultipleArguments() {
+			ParseWithRoundtrip(@"EXEC spMyProc 'a', 24, @b = 10, @@rownumber, @c, @d = @e", 1);
+		}
+
+		[Test]
+		public void ParseMultilineStringLiteral() {
+			ParseWithRoundtrip(@"SELECT N'This
+is
+on
+several lines!'", 1);
+		}
+
+		[Test]
 		public void ParseSimpleCTESelect() {
 			ParseWithRoundtrip(@"with MyCTE(x)
 as
@@ -186,140 +273,6 @@ PRINT 'Cool'", 3);
 		}
 
 		[Test]
-		public void ParseMultilineStringLiteral() {
-			ParseWithRoundtrip(@"SELECT N'This
-is
-on
-several lines!'", 1);
-		}
-
-		[Test]
-		public void ParseExecWithMultipleArguments() {
-			ParseWithRoundtrip(@"EXEC spMyProc 'a', 24, @b = 10, @@rownumber, @c, @d = @e", 1);
-		}
-
-		[Test]
-		public void StatementsWithXmlFunctions() {
-			ParseWithRoundtrip(@"DECLARE @tbl TABLE (id xml);
-INSERT @tbl (id) SELECT t.x FROM (SELECT NEWID() x FOR XML RAW) t(x);
-SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
-		}
-
-		[Test]
-		public void SelectWithCrossApplyAndXmlFunctions() {
-			ParseWithRoundtrip(@"SELECT ProductModelID, Locations.value('./@LocationID','int') as LocID,
-steps.query('.') as Step       
-FROM Production.ProductModel       
-CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)       
-CROSS APPLY T1.Locations.nodes('/MI:step ') as T2(steps)       
-WHERE ProductModelID=7;", 1);
-		}
-
-		[Test]
-		public void SelectExcept() {
-			ParseWithRoundtrip(@"SELECT * FROM TableA EXCEPT SELECT * FROM TableB", 1);
-		}
-
-		[Test]
-		public void SelectWithNestedQueryWithXmlFunctions() {
-			ParseWithRoundtrip(@"SELECT Fname, count(Fname) FROM    
-  (SELECT nref.value('(author/first-name)[1]', 'nvarchar(max)') Fname
-   FROM   docs CROSS APPLY xCol.nodes('/book') T(nref)
-   WHERE  nref.exist ('author/first-name') = 1) Result
-GROUP BY FName
-ORDER BY Fname;", 1);
-		}
-
-		[Test]
-		public void SelectWithXmlnamespaces() {
-			ParseWithRoundtrip(@"WITH XMLNAMESPACES (
-   'http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelManuInstructions' AS MI)
-SELECT ProductModelID, 
-       Locations.value('./@LocationID','int') as LocID,
-       steps.query('.') as Steps
-FROM   Production.ProductModel
-CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)
-CROSS APPLY T1.Locations.nodes('./MI:step') as T2(steps)
-WHERE  ProductModelID=7
-AND    steps.exist('./MI:tool') = 1;", 1);
-		}
-
-		[Test]
-		public void SelectWithXmlnamespacesAndCte() {
-			ParseWithRoundtrip(@"WITH XMLNAMESPACES (
-   'http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelManuInstructions' AS MI),
-cteModel AS (SELECt * FROM Production.ProductModel)
-SELECT ProductModelID, 
-       Locations.value('./@LocationID','int') as LocID,
-       steps.query('.') as Steps
-FROM   cteModel
-CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)
-CROSS APPLY T1.Locations.nodes('./MI:step') as T2(steps)
-WHERE  ProductModelID=7
-AND    steps.exist('./MI:tool') = 1;", 1);
-		}
-
-		[Test]
-		public void SelectExceptIntersect() {
-			ParseWithRoundtrip(@"SELECT * FROM TableA EXCEPT SELECT * FROM TableB INTERSECT SELECT * FROM TableC", 1);
-		}
-
-		[Test]
-		public void SelectIntersect() {
-			ParseWithRoundtrip(@"SELECT * FROM TableA INTERSECT SELECT * FROM TableB", 1);
-		}
-
-		[Test]
-		public void BeginTransaction() {
-			ParseWithRoundtrip(@"BEGIN TRAN", 1);
-		}
-
-		[Test]
-		public void BeginTransactionIdentifierName() {
-			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans", 1);
-		}
-
-		[Test]
-		public void BeginTransactionVariableName() {
-			ParseWithRoundtrip(@"BEGIN TRANSACTION @trans", 1);
-		}
-
-		[Test]
-		public void BeginTransactionWithMark() {
-			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK", 1);
-		}
-
-		[Test]
-		public void BeginTransactionWithMarkNamed() {
-			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK 'My Trans'", 1);
-		}
-
-		[Test]
-		public void CommitTransactionLegacy() {
-			ParseWithRoundtrip(@"COMMIT", 1);
-		}
-
-		[Test]
-		public void CommitTransaction() {
-			ParseWithRoundtrip(@"COMMIT TRAN", 1);
-		}
-
-		[Test]
-		public void CommitTransactionIdentifierName() {
-			ParseWithRoundtrip(@"COMMIT TRANSACTION MyTrans", 1);
-		}
-
-		[Test]
-		public void CommitTransactionVariableName() {
-			ParseWithRoundtrip(@"COMMIT TRANSACTION @trans", 1);
-		}
-
-		[Test]
-		public void RollbackTransactionLegacy() {
-			ParseWithRoundtrip(@"ROLLBACK", 1);
-		}
-
-		[Test]
 		public void RollbackTransaction() {
 			ParseWithRoundtrip(@"ROLLBACK TRAN", 1);
 		}
@@ -327,6 +280,11 @@ AND    steps.exist('./MI:tool') = 1;", 1);
 		[Test]
 		public void RollbackTransactionIdentifierName() {
 			ParseWithRoundtrip(@"ROLLBACK TRANSACTION MyTrans", 1);
+		}
+
+		[Test]
+		public void RollbackTransactionLegacy() {
+			ParseWithRoundtrip(@"ROLLBACK", 1);
 		}
 
 		[Test]
@@ -345,8 +303,85 @@ AND    steps.exist('./MI:tool') = 1;", 1);
 		}
 
 		[Test]
+		public void SelectExcept() {
+			ParseWithRoundtrip(@"SELECT * FROM TableA EXCEPT SELECT * FROM TableB", 1);
+		}
+
+		[Test]
+		public void SelectExceptIntersect() {
+			ParseWithRoundtrip(@"SELECT * FROM TableA EXCEPT SELECT * FROM TableB INTERSECT SELECT * FROM TableC", 1);
+		}
+
+		[Test]
+		public void SelectIntersect() {
+			ParseWithRoundtrip(@"SELECT * FROM TableA INTERSECT SELECT * FROM TableB", 1);
+		}
+
+		[Test]
+		public void SelectWithCrossApplyAndXmlFunctions() {
+			ParseWithRoundtrip(
+					@"SELECT ProductModelID, Locations.value('./@LocationID','int') as LocID,
+steps.query('.') as Step       
+FROM Production.ProductModel       
+CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)       
+CROSS APPLY T1.Locations.nodes('/MI:step ') as T2(steps)       
+WHERE ProductModelID=7;",
+					1);
+		}
+
+		[Test]
+		public void SelectWithNestedQueryWithXmlFunctions() {
+			ParseWithRoundtrip(@"SELECT Fname, count(Fname) FROM    
+  (SELECT nref.value('(author/first-name)[1]', 'nvarchar(max)') Fname
+   FROM   docs CROSS APPLY xCol.nodes('/book') T(nref)
+   WHERE  nref.exist ('author/first-name') = 1) Result
+GROUP BY FName
+ORDER BY Fname;", 1);
+		}
+
+		[Test]
+		public void SelectWithXmlnamespaces() {
+			ParseWithRoundtrip(
+					@"WITH XMLNAMESPACES (
+   'http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelManuInstructions' AS MI)
+SELECT ProductModelID, 
+       Locations.value('./@LocationID','int') as LocID,
+       steps.query('.') as Steps
+FROM   Production.ProductModel
+CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)
+CROSS APPLY T1.Locations.nodes('./MI:step') as T2(steps)
+WHERE  ProductModelID=7
+AND    steps.exist('./MI:tool') = 1;",
+					1);
+		}
+
+		[Test]
+		public void SelectWithXmlnamespacesAndCte() {
+			ParseWithRoundtrip(
+					@"WITH XMLNAMESPACES (
+   'http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelManuInstructions' AS MI),
+cteModel AS (SELECt * FROM Production.ProductModel)
+SELECT ProductModelID, 
+       Locations.value('./@LocationID','int') as LocID,
+       steps.query('.') as Steps
+FROM   cteModel
+CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)
+CROSS APPLY T1.Locations.nodes('./MI:step') as T2(steps)
+WHERE  ProductModelID=7
+AND    steps.exist('./MI:tool') = 1;",
+					1);
+		}
+
+		[Test]
 		public void SetTransactionIsolationLevel() {
 			ParseWithRoundtrip(@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE", 1);
+		}
+
+		[Test]
+		public void StatementsWithXmlFunctions() {
+			ParseWithRoundtrip(@"DECLARE @tbl TABLE (id xml);
+INSERT @tbl (id) SELECT t.x FROM (SELECT NEWID() x FOR XML RAW) t(x);
+SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
 		}
 
 		[Test]
