@@ -35,22 +35,22 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class TableCheckConstraint: TableConstraint {
-		private readonly Expression expression;
+		private readonly Predicate predicate;
 		private readonly ReplicationToken replication;
 
-		[Rule("<TableConstraint> ::= ~CHECK <OptionalNotForReplication> ~'(' <Expression> ~')'")]
-		public TableCheckConstraint(ReplicationToken replication, Expression expression): this(null, replication, expression) {}
+		[Rule("<TableConstraint> ::= ~CHECK <OptionalNotForReplication> ~'(' <Predicate> ~')'")]
+		public TableCheckConstraint(ReplicationToken replication, Predicate predicate): this(null, replication, predicate) {}
 
-		[Rule("<TableConstraint> ::= ~CONSTRAINT <ConstraintName> ~CHECK <OptionalNotForReplication> ~'(' <Expression> ~')'")]
-		public TableCheckConstraint(ConstraintName constraintName, ReplicationToken replication, Expression expression): base(constraintName) {
-			Debug.Assert(expression != null);
+		[Rule("<TableConstraint> ::= ~CONSTRAINT <ConstraintName> ~CHECK <OptionalNotForReplication> ~'(' <Predicate> ~')'")]
+		public TableCheckConstraint(ConstraintName constraintName, ReplicationToken replication, Predicate predicate): base(constraintName) {
+			Debug.Assert(predicate != null);
 			this.replication = replication;
-			this.expression = expression;
+			this.predicate = predicate;
 		}
 
-		public Expression Expression {
+		public Predicate Predicate {
 			get {
-				return expression;
+				return predicate;
 			}
 		}
 
@@ -65,7 +65,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("CHECK ");
 			writer.WriteScript(replication, WhitespacePadding.SpaceAfter);
 			writer.Write('(');
-			writer.WriteScript(expression, WhitespacePadding.None);
+			writer.WriteScript(predicate, WhitespacePadding.None);
 			writer.Write(')');
 		}
 	}

@@ -776,6 +776,7 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                         | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> ADD NOT FOR REPLICATION
                         | ALTER TABLE <TableNameQualified> ALTER COLUMN <ColumnName> DROP NOT FOR REPLICATION
                         | ALTER TABLE <TableNameQualified> <TableCheck> ADD <TableDefinitionList>
+                        | ALTER TABLE <TableNameQualified> <TableCheck> ADD <ColumnConstraint> FOR <ColumnName>
                         | ALTER TABLE <TableNameQualified> <TableCheck> NOCHECK CONSTRAINT <ConstraintName>
                         | ALTER TABLE <TableNameQualified> <TableCheck> NOCHECK CONSTRAINT ALL
                         | ALTER TABLE <TableNameQualified> <TableCheck> CHECK CONSTRAINT <ConstraintName>
@@ -902,11 +903,11 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 <TableConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
                     | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
                     | CONSTRAINT <ConstraintName> FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>
-                    | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Expression> ')'
+                    | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Predicate> ')'
                     | PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
                     | UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
                     | FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>
-                    | CHECK <OptionalNotForReplication> '(' <Expression> ')'
+                    | CHECK <OptionalNotForReplication> '(' <Predicate> ')'
 
 <ForeignKeyActionList> ::= <ForeignKeyAction> <ForeignKeyActionList>
                          |
@@ -941,13 +942,13 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                           | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> <ConstraintIndex>
                           | CONSTRAINT <ConstraintName> FOREIGN KEY REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | CONSTRAINT <ConstraintName> REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
-                          | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Expression> ')'
+                          | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Predicate> ')'
                           | CONSTRAINT <ConstraintName> DEFAULT <ConstraintDefaultValue>
                           | PRIMARY KEY <ConstraintCluster> <ConstraintIndex>
                           | UNIQUE <ConstraintCluster> <ConstraintIndex>
                           | FOREIGN KEY REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
-                          | CHECK <OptionalNotForReplication> '(' <Expression> ')'
+                          | CHECK <OptionalNotForReplication> '(' <Predicate> ')'
                           | DEFAULT <ConstraintDefaultValue>
 
 <ConstraintCluster> ::= CLUSTERED

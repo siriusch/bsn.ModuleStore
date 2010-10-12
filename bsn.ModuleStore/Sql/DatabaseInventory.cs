@@ -37,6 +37,7 @@ using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
 
+using Microsoft.SqlServer.Management.Sdk.Sfc;
 using Microsoft.SqlServer.Management.Smo;
 
 namespace bsn.ModuleStore.Sql {

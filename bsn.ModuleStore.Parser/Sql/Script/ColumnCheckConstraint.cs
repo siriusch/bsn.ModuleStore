@@ -35,22 +35,22 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ColumnCheckConstraint: ColumnNamedConstraintBase {
-		private readonly Expression expression;
+		private readonly Predicate predicate;
 		private readonly ReplicationToken replication;
 
-		[Rule("<NamedColumnConstraint> ::= ~CHECK <OptionalNotForReplication> ~'(' <Expression> ~')'")]
-		public ColumnCheckConstraint(ReplicationToken replication, Expression expression): this(null, replication, expression) {}
+		[Rule("<NamedColumnConstraint> ::= ~CHECK <OptionalNotForReplication> ~'(' <Predicate> ~')'")]
+		public ColumnCheckConstraint(ReplicationToken replication, Predicate predicate): this(null, replication, predicate) {}
 
-		[Rule("<NamedColumnConstraint> ::= ~CONSTRAINT <ConstraintName> ~CHECK <OptionalNotForReplication> ~'(' <Expression> ~')'")]
-		public ColumnCheckConstraint(ConstraintName constraintName, ReplicationToken replication, Expression expression): base(constraintName) {
-			Debug.Assert(expression != null);
+		[Rule("<NamedColumnConstraint> ::= ~CONSTRAINT <ConstraintName> ~CHECK <OptionalNotForReplication> ~'(' <Predicate> ~')'")]
+		public ColumnCheckConstraint(ConstraintName constraintName, ReplicationToken replication, Predicate predicate): base(constraintName) {
+			Debug.Assert(predicate != null);
 			this.replication = replication;
-			this.expression = expression;
+			this.predicate = predicate;
 		}
 
-		public Expression Expression {
+		public Predicate Predicate {
 			get {
-				return expression;
+				return predicate;
 			}
 		}
 
@@ -64,7 +64,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			base.WriteTo(writer);
 			writer.Write("CHECK ");
 			writer.WriteScript(replication, WhitespacePadding.SpaceAfter);
-			writer.WriteScript(expression, WhitespacePadding.None);
+			writer.WriteScript(predicate, WhitespacePadding.None);
 			writer.Write(')');
 		}
 	}

@@ -41,12 +41,6 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -57,6 +51,7 @@
     <Compile Include="Sql\ScriptParser.cs" />
     <Compile Include="Sql\Script\AliasName.cs" />
     <Compile Include="Sql\Script\AlterOfCreateStatement.cs" />
+    <Compile Include="Sql\Script\AlterTableAddColumnConstraintStatement.cs" />
     <Compile Include="Sql\Script\AlterTableAddStatement.cs" />
     <Compile Include="Sql\Script\AlterTableCheckConstraintStatement.cs" />
     <Compile Include="Sql\Script\AlterTableCheckConstraintStatementBase.cs" />
@@ -90,6 +85,7 @@
     <Compile Include="Sql\Script\FulltextSingleFunction.cs" />
     <Compile Include="Sql\Script\FulltextSingleTableFunction.cs" />
     <Compile Include="Sql\Script\FulltextTableFunction.cs" />
+    <Compile Include="Sql\Script\IApplicableTo.cs" />
     <Compile Include="Sql\Script\IdentityFunction.cs" />
     <Compile Include="Sql\Script\IndexUsingPath.cs" />
     <Compile Include="Sql\Script\IndexUsingProperty.cs" />

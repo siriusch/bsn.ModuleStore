@@ -207,12 +207,12 @@ namespace bsn.ModuleStore.Sql {
 			CreateTableStatement createTable = null;
 			foreach (Statement statement in ScriptParser.Parse(scriptReader)) {
 				if (!((statement is SetOptionStatement) || (statement is AlterTableCheckConstraintStatementBase))) {
-					AlterTableAddStatement addToTable = statement as AlterTableAddStatement;
+					IApplicableTo<CreateTableStatement> addToTable = statement as IApplicableTo<CreateTableStatement>;
 					if (addToTable != null) {
-						if ((createTable == null) || (!createTable.TableName.Name.Equals(addToTable.TableName.Name))) {
+						if ((createTable == null) || (!createTable.TableName.Name.Equals(addToTable.QualifiedName.Name))) {
 							throw DatabaseInventory.CreateException("Statement tries to modify another table:", statement);
 						}
-						createTable.Definitions.AddRange(addToTable.Definitions);
+						addToTable.ApplyTo(createTable);
 					} else {
 						CreateStatement createStatement = statement as CreateStatement;
 						if (createStatement == null) {

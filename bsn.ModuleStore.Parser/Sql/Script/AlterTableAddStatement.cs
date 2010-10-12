@@ -35,7 +35,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class AlterTableAddStatement: AlterTableStatement {
+	public class AlterTableAddStatement: AlterTableStatement, IApplicableTo<CreateTableStatement> {
 		private readonly TableCheck check;
 		private readonly List<TableDefinition> definitions;
 
@@ -58,6 +58,16 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteEnum(check, WhitespacePadding.SpaceAfter);
 			writer.Write("ADD ");
 			writer.WriteScriptSequence(definitions, WhitespacePadding.None, ", ");
+		}
+
+		IQualifiedName<SchemaName> IApplicableTo<CreateTableStatement>.QualifiedName {
+			get {
+				return TableName;
+			}
+		}
+
+		public void ApplyTo(CreateTableStatement instance) {
+			instance.Definitions.AddRange(definitions);
 		}
 	}
 }
