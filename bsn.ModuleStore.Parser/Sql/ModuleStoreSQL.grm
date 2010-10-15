@@ -801,6 +801,7 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                     |
 
 <ViewOptionalAttribute> ::= WITH VIEW_METADATA
+                          | WITH SCHEMABINDING
                           |
 
 <ViewOptionalCheckOption> ::= WITH_CHECK_OPTION

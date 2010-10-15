@@ -32,9 +32,11 @@ using System;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script.Tokens {
-	public sealed class FunctionOptionSchemabindingToken: OptionToken {
+	public sealed class OptionSchemabindingToken: OptionToken {
 		[Rule("<OptionalFunctionOption> ::= ~WITH ~SCHEMABINDING")]
-		public FunctionOptionSchemabindingToken() {}
+		[Rule("<ViewOptionalAttribute> ::= ~WITH ~SCHEMABINDING")]
+		public OptionSchemabindingToken() {
+		}
 
 		protected override string OptionSpecifier {
 			get {

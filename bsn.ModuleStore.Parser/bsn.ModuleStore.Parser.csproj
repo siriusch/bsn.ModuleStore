@@ -376,7 +376,7 @@
     <Compile Include="Sql\Script\Tokens\OptionCalledOnNullInputToken.cs" />
     <Compile Include="Sql\Script\Tokens\FunctionOptionExecuteAsCallerToken.cs" />
     <Compile Include="Sql\Script\Tokens\FunctionOptionReturnsNullOnNullInputToken.cs" />
-    <Compile Include="Sql\Script\Tokens\FunctionOptionSchemabindingToken.cs" />
+    <Compile Include="Sql\Script\Tokens\OptionSchemabindingToken.cs" />
     <Compile Include="Sql\Script\Tokens\InsertToken.cs" />
     <Compile Include="Sql\Script\Tokens\InsignificantToken.cs" />
     <Compile Include="Sql\Script\Tokens\NotToken.cs" />
