@@ -168,6 +168,23 @@ namespace bsn.ModuleStore.Mapper {
 										returnValue = command.ExecuteXmlReader();
 									}
 									connection = null;
+								} else if (typeof(ResultSet).IsAssignableFrom(returnType)) {
+									reader = command.ExecuteReader(CommandBehavior.Default);
+									try {
+										returnValue = Activator.CreateInstance(returnType);
+										((ResultSet)returnValue).Load(reader);
+										if (reader.NextResult()) {
+											throw new InvalidOperationException("The reader contains mroe result sets than expected");
+										}
+										ISqlDeserializationHook hook = returnValue as ISqlDeserializationHook;
+										if (hook != null) {
+											hook.AfterDeserialization();
+										}
+									} catch {
+										reader.Dispose();
+										reader = null;
+										throw;
+									}
 								} else {
 									bool isTypedDataReader = typeof(ITypedDataReader).IsAssignableFrom(returnType);
 									if (isTypedDataReader || typeof(IDataReader).IsAssignableFrom(returnType)) {

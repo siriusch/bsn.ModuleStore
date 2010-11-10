@@ -353,7 +353,7 @@ namespace bsn.ModuleStore.Mapper {
 			if (reader == null) {
 				throw new ArgumentNullException("reader");
 			}
-			if (type.IsAbstract || type.IsInterface || type.IsPrimitive || type.IsPointer) {
+			if (type.IsAbstract || type.IsInterface || type.IsPrimitive || type.IsPointer || typeof(ResultSet).IsAssignableFrom(type)) {
 				throw new NotSupportedException("Deserialization only supports normal classes and structs.");
 			}
 			this.reader = reader;
