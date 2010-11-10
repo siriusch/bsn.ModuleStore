@@ -132,14 +132,7 @@ namespace bsn.ModuleStore.Mapper {
 				if (context.DataReader.IsDBNull(column)) {
 					return null;
 				}
-				XmlReader xmlReader;
-				SqlDataReader sqlDataReader = context.DataReader as SqlDataReader;
-				if (sqlDataReader != null) {
-					xmlReader = sqlDataReader.GetSqlXml(column).CreateReader();
-				} else {
-					xmlReader = new XmlTextReader(new StringReader(context.DataReader.GetString(column)));
-				}
-				return ProcessXmlReader(context, xmlReader);
+				return ProcessXmlReader(context, context.DataReader.GetSqlXml(column).CreateReader());
 			}
 
 			protected virtual object ProcessXmlReader(SqlDeserializer.DeserializerContext context, XmlReader xmlReader) {

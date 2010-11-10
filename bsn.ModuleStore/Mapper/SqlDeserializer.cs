@@ -30,11 +30,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper {
@@ -56,19 +57,19 @@ namespace bsn.ModuleStore.Mapper {
 		/// <summary>
 		/// Creates a new database Deserializer which will read from the given reader.
 		/// </summary>
-		/// <remarks>Disposing the DbDeserializer will also dispose the reader. Also, you must not continue to use the Deserializer afterwards if you call <see cref="IDataReader.NextResult"/>.</remarks>
-		/// <param name="reader">The IDataReader to read data from. The DbDeserializer will take ownership of the reader.</param>
+		/// <remarks>Disposing the DbDeserializer will also dispose the reader. Also, you must not continue to use the Deserializer afterwards if you call <see cref="SqlDataReader.NextResult"/>.</remarks>
+		/// <param name="reader">The SqlDataReader to read data from. The DbDeserializer will take ownership of the reader.</param>
 		/// <param name="callConstructor">If true, the normal default constructor is called instead of creating empty instances. Empty instances, however, are much faster.</param>
-		public SqlDeserializer(IDataReader reader, bool callConstructor): base(reader, typeof(T)) {
+		public SqlDeserializer(SqlDataReader reader, bool callConstructor): base(reader, typeof(T)) {
 			this.callConstructor = callConstructor;
 		}
 
 		/// <summary>
 		/// Creates a new database Deserializer which will read from the given reader. Object instances will be created without calling the condtructor.
 		/// </summary>
-		/// <remarks>Disposing the DbDeserializer will also dispose the reader. Also, you must not continue to use the Deserializer afterwards if you call <see cref="IDataReader.NextResult"/>.</remarks>
-		/// <param name="reader">The IDataReader to read data from. The DbDeserializer will take ownership of the reader.</param>
-		public SqlDeserializer(IDataReader reader): this(reader, false) {}
+		/// <remarks>Disposing the DbDeserializer will also dispose the reader. Also, you must not continue to use the Deserializer afterwards if you call <see cref="SqlDataReader.NextResult"/>.</remarks>
+		/// <param name="reader">The SqlDataReader to read data from. The DbDeserializer will take ownership of the reader.</param>
+		public SqlDeserializer(SqlDataReader reader): this(reader, false) {}
 
 		/// <summary>
 		/// Deserialize one row into a new instance, or all available rows for lists. If <typeparamref name="T"/> is not a list (supported types for lists: <see cref="List{T}"/>, <see cref="IList{T}"/>, <see cref="ICollection{T}"/> or <typeparamref name="T"/>[].
@@ -96,12 +97,12 @@ namespace bsn.ModuleStore.Mapper {
 		internal class DeserializerContext {
 			public readonly object[] Buffer;
 			public readonly bool CallConstructor;
-			public readonly IDataReader DataReader;
+			public readonly SqlDataReader DataReader;
 			public readonly SqlDeserializer Deserializer;
 			private XmlNameTable nameTable;
 			private XmlDocument xmlDocument;
 
-			public DeserializerContext(IDataReader dataReader, XmlNameTable nameTable) {
+			public DeserializerContext(SqlDataReader dataReader, XmlNameTable nameTable) {
 				DataReader = dataReader;
 				this.nameTable = nameTable;
 			}
@@ -338,16 +339,17 @@ namespace bsn.ModuleStore.Mapper {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
-			return typeof(XmlReader).IsAssignableFrom(type) || typeof(XPathNavigator).IsAssignableFrom(type) || typeof(IXPathNavigable).IsAssignableFrom(type);
+			return typeof(XContainer).IsAssignableFrom(type) || typeof(XmlReader).IsAssignableFrom(type) || typeof(XPathNavigator).IsAssignableFrom(type) || typeof(IXPathNavigable).IsAssignableFrom(type);
 		}
 
 		private readonly SortedList<int, MemberConverter> columnConverters;
 		private readonly List<NestedMemberConverter> nestedConverters;
-		private readonly IDataReader reader;
+		private readonly SqlDataReader reader;
 		private readonly TypeInfo typeInfo;
 		private Dictionary<MemberConverter, SqlDeserializer> nestedDeserializers;
+		private bool disposeReader = true;
 
-		internal SqlDeserializer(IDataReader reader, Type type) {
+		internal SqlDeserializer(SqlDataReader reader, Type type) {
 			if (reader == null) {
 				throw new ArgumentNullException("reader");
 			}
@@ -372,10 +374,23 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		/// <summary>
-		/// The <see cref="IDataReader"/> which was passed into the constructor.
+		/// Gets or sets a value indicating whether to dispose the reader when the deserializer is disposed.
 		/// </summary>
-		/// <remarks>As long as the DbDeserializer is in use, do not alter the state of the Reader. Especially, do not call <see cref="IDataReader.NextResult"/>.</remarks>
-		public IDataReader Reader {
+		/// <value><c>true</c> if the reader shall be disposed; otherwise, <c>false</c>.</value>
+		public bool DisposeReader {
+			get {
+				return disposeReader;
+			}
+			set {
+				disposeReader = value;
+			}
+		}
+
+		/// <summary>
+		/// The <see cref="SqlDataReader"/> which was passed into the constructor.
+		/// </summary>
+		/// <remarks>As long as the DbDeserializer is in use, do not alter the state of the Reader. Especially, do not call <see cref="SqlDataReader.NextResult"/>.</remarks>
+		public SqlDataReader Reader {
 			get {
 				return reader;
 			}
@@ -450,7 +465,9 @@ namespace bsn.ModuleStore.Mapper {
 		/// Dispose the <see cref="Reader"/> associated to this DbDeserializer.
 		/// </summary>
 		public void Dispose() {
-			reader.Dispose();
+			if (disposeReader) {
+				reader.Dispose();
+			}
 		}
 	}
 }
