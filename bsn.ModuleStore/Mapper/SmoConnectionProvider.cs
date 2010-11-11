@@ -73,6 +73,7 @@ namespace bsn.ModuleStore.Mapper {
 				return serverConnection;
 			}
 		}
+
 		public string SchemaName {
 			get {
 				return schemaName;

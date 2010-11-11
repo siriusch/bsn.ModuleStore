@@ -139,7 +139,7 @@ namespace bsn.ModuleStore.Mapper {
 					}
 					SqlParameter returnParameter;
 					KeyValuePair<SqlParameter, Type>[] outParameters;
-					SqlDeserializer.TypeInfo returnTypeInfo;
+					SqlDeserializerTypeInfo returnTypeInfo;
 					SqlProcedureAttribute procInfo;
 					IList<IDisposable> disposeList = new List<IDisposable>(0);
 					XmlNameTable xmlNameTable;

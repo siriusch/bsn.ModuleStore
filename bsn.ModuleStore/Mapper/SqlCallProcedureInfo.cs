@@ -43,23 +43,24 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
 	internal class SqlCallProcedureInfo {
-		private static readonly Dictionary<Type, SqlDbType> dbTypeMapping = new Dictionary<Type, SqlDbType> {
-		                                                                                                    		{typeof(long), SqlDbType.BigInt},
-		                                                                                                    		{typeof(byte[]), SqlDbType.VarBinary},
-		                                                                                                    		{typeof(bool), SqlDbType.Bit},
-		                                                                                                    		{typeof(char), SqlDbType.NChar},
-		                                                                                                    		{typeof(char[]), SqlDbType.NVarChar},
-		                                                                                                    		{typeof(string), SqlDbType.NVarChar},
-		                                                                                                    		{typeof(DateTime), SqlDbType.DateTime},
-		                                                                                                    		{typeof(DateTimeOffset), SqlDbType.DateTimeOffset}, // not supported in SQL 2005!
-		                                                                                                    		{typeof(decimal), SqlDbType.Decimal},
-		                                                                                                    		{typeof(float), SqlDbType.Real},
-		                                                                                                    		{typeof(double), SqlDbType.Float},
-		                                                                                                    		{typeof(int), SqlDbType.Int},
-		                                                                                                    		{typeof(short), SqlDbType.SmallInt},
-		                                                                                                    		{typeof(sbyte), SqlDbType.TinyInt},
-		                                                                                                    		{typeof(Guid), SqlDbType.UniqueIdentifier}
-		                                                                                                    };
+		private static readonly Dictionary<Type, SqlDbType> dbTypeMapping = new Dictionary<Type, SqlDbType>
+		                                                                    	{
+		                                                                    			{typeof(long), SqlDbType.BigInt},
+		                                                                    			{typeof(byte[]), SqlDbType.VarBinary},
+		                                                                    			{typeof(bool), SqlDbType.Bit},
+		                                                                    			{typeof(char), SqlDbType.NChar},
+		                                                                    			{typeof(char[]), SqlDbType.NVarChar},
+		                                                                    			{typeof(string), SqlDbType.NVarChar},
+		                                                                    			{typeof(DateTime), SqlDbType.DateTime},
+		                                                                    			{typeof(DateTimeOffset), SqlDbType.DateTimeOffset}, // not supported in SQL 2005!
+		                                                                    			{typeof(decimal), SqlDbType.Decimal},
+		                                                                    			{typeof(float), SqlDbType.Real},
+		                                                                    			{typeof(double), SqlDbType.Float},
+		                                                                    			{typeof(int), SqlDbType.Int},
+		                                                                    			{typeof(short), SqlDbType.SmallInt},
+		                                                                    			{typeof(sbyte), SqlDbType.TinyInt},
+		                                                                    			{typeof(Guid), SqlDbType.UniqueIdentifier}
+		                                                                    	};
 
 		internal static bool IsNativeType(Type type) {
 			return dbTypeMapping.ContainsKey(type);
@@ -88,7 +89,7 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly SqlProcedureAttribute proc;
 		private readonly string procedureName;
 		private readonly SqlDbType returnType;
-		private readonly SqlDeserializer.TypeInfo returnTypeInfo;
+		private readonly SqlDeserializerTypeInfo returnTypeInfo;
 		private readonly bool useReturnValue;
 		private readonly string xmlNameTableParameter;
 
@@ -144,13 +145,13 @@ namespace bsn.ModuleStore.Mapper {
 				throw new InvalidOperationException(String.Format("The method {0}.{1} has less parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
 			}
 			outArgCount = (hasOutArg) ? sortedParams.Count : 0;
-			returnTypeInfo = SqlDeserializer.TypeInfo.Get(method.ReturnType);
+			returnTypeInfo = SqlDeserializerTypeInfo.Get(method.ReturnType);
 			if ((proc.UseReturnValue != SqlReturnValue.Auto) || (method.ReturnType != typeof(void))) {
 				useReturnValue = (proc.UseReturnValue == SqlReturnValue.ReturnValue) || ((proc.UseReturnValue == SqlReturnValue.Auto) && (GetTypeMapping(method.ReturnType) == SqlDbType.Int));
 			}
 		}
 
-		public SqlCommand GetCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out KeyValuePair<SqlParameter, Type>[] outArgs, out SqlDeserializer.TypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
+		public SqlCommand GetCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out KeyValuePair<SqlParameter, Type>[] outArgs, out SqlDeserializerTypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
 		                             IList<IDisposable> disposeList) {
 			if (String.IsNullOrEmpty(schemaName)) {
 				throw new ArgumentNullException("schemaName");

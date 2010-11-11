@@ -68,6 +68,8 @@
     <Compile Include="Mapper\IIdentifiable.cs" />
     <Compile Include="Mapper\MetadataExtension.cs" />
     <Compile Include="Mapper\ResultSet.cs" />
+    <Compile Include="Mapper\ResultSetBase.cs" />
+    <Compile Include="Mapper\SqlDeserializerTypeInfo.cs" />
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />
     <Compile Include="Bootstrapper\IModules.cs" />

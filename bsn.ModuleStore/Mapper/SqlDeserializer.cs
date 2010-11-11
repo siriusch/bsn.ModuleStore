@@ -87,6 +87,26 @@ namespace bsn.ModuleStore.Mapper {
 		public T Deserialize(int maxRows) {
 			return (T)DeserializeInternal(maxRows, false, callConstructor, null);
 		}
+
+		/// <summary>
+		/// Deserialize all rows as enumeration of instances.
+		/// </summary>
+		/// <returns>An enumeration of instances of <typeparamref name="T"/></returns>
+		public IEnumerable<T> DeserializeInstances() {
+			return DeserializeInstances(Int32.MaxValue);
+		}
+
+		/// <summary>
+		/// Deserialize the given number of rows as enumeration of instances.
+		/// </summary>
+		/// <param name="maxRows">The maximal number of rows to read.</param>
+		/// <returns>An enumeration of instances of <typeparamref name="T"/></returns>
+		public IEnumerable<T> DeserializeInstances(int maxRows) {
+			if (TypeInfo.IsCollection) {
+				throw new NotSupportedException("Collections cannot be deserialized as instances");
+			}
+			return DeserializeInstancesInternal<T>(maxRows, false, callConstructor, null);
+		}
 	}
 
 	/// <summary>
@@ -94,7 +114,7 @@ namespace bsn.ModuleStore.Mapper {
 	/// </summary>
 	/// <seealso cref="SqlDeserializer{T}"/>
 	public class SqlDeserializer: IDisposable {
-		internal class DeserializerContext {
+		protected internal class DeserializerContext {
 			public readonly object[] Buffer;
 			public readonly bool CallConstructor;
 			public readonly SqlDataReader DataReader;
@@ -139,119 +159,6 @@ namespace bsn.ModuleStore.Mapper {
 
 			public override object Process(DeserializerContext context, int column) {
 				return context.Deserializer.GetNestedDeserializer(this).DeserializeInternal(1, true, context.CallConstructor, context.NameTable);
-			}
-		}
-
-		internal class TypeInfo {
-			private static readonly Dictionary<Type, TypeInfo> infos = new Dictionary<Type, TypeInfo>();
-
-			public static TypeInfo Get(Type type) {
-				TypeInfo result;
-				lock (infos) {
-					if (!infos.TryGetValue(type, out result)) {
-						result = new TypeInfo(type);
-						infos.Add(type, result);
-					}
-				}
-				return result;
-			}
-
-			private readonly Type instanceType;
-			private readonly bool isXmlType;
-			private readonly MethodInfo listToArray;
-			private readonly Type listType;
-			private readonly TypeMapping mapping;
-			private readonly bool requiresNotification;
-			private readonly MemberConverter simpleConverter;
-			private readonly Type type;
-
-			private TypeInfo(Type type) {
-				this.type = type;
-				if (type.IsArray) {
-					if (type.GetArrayRank() != 1) {
-						throw new NotSupportedException("Only arrays with one dimension are supported by the DbDeserializer");
-					}
-					instanceType = type.GetElementType();
-					Debug.Assert(instanceType != null);
-				} else if (type.IsGenericType && ((type.GetGenericTypeDefinition() == typeof(ICollection<>)) || (type.GetGenericTypeDefinition() == typeof(IList<>)) || (type.GetGenericTypeDefinition() == typeof(List<>)))) {
-					instanceType = type.GetGenericArguments()[0];
-				} else {
-					instanceType = type;
-				}
-				if (instanceType.IsArray) {
-					throw new NotSupportedException("Nested arrays cannot be deserialized by the DbDeserializer");
-				}
-				requiresNotification = typeof(ISqlDeserializationHook).IsAssignableFrom(instanceType);
-				mapping = TypeMapping.Get(instanceType);
-				if (IsCollection) {
-					listType = typeof(List<>).MakeGenericType(instanceType);
-					if (type.IsArray) {
-						listToArray = listType.GetMethod("ToArray");
-					}
-				}
-				isXmlType = IsXmlType(instanceType);
-				if (isXmlType || IsNullableType(instanceType) || instanceType.IsPrimitive || SqlCallProcedureInfo.IsNativeType(instanceType)) {
-					simpleConverter = MemberConverter.Get(instanceType, 0, DateTimeKind.Unspecified);
-				}
-			}
-
-			public Type InstanceType {
-				get {
-					return instanceType;
-				}
-			}
-
-			public bool IsCollection {
-				get {
-					return type != instanceType;
-				}
-			}
-
-			public bool IsXmlInstanceType {
-				get {
-					return isXmlType;
-				}
-			}
-
-			public Type ListType {
-				get {
-					return listType;
-				}
-			}
-
-			public bool RequiresNotification {
-				get {
-					return requiresNotification;
-				}
-			}
-
-			public MemberConverter SimpleConverter {
-				get {
-					return simpleConverter;
-				}
-			}
-
-			public Type Type {
-				get {
-					return type;
-				}
-			}
-
-			internal TypeMapping Mapping {
-				get {
-					return mapping;
-				}
-			}
-
-			public IList CreateList() {
-				return (IList)Activator.CreateInstance(listType);
-			}
-
-			public object FinalizeList(IList list) {
-				if ((list != null) && (listToArray != null)) {
-					return listToArray.Invoke(list, null);
-				}
-				return list;
 			}
 		}
 
@@ -345,9 +252,9 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly SortedList<int, MemberConverter> columnConverters;
 		private readonly List<NestedMemberConverter> nestedConverters;
 		private readonly SqlDataReader reader;
-		private readonly TypeInfo typeInfo;
-		private Dictionary<MemberConverter, SqlDeserializer> nestedDeserializers;
+		private readonly SqlDeserializerTypeInfo typeInfo;
 		private bool disposeReader = true;
+		private Dictionary<MemberConverter, SqlDeserializer> nestedDeserializers;
 
 		internal SqlDeserializer(SqlDataReader reader, Type type) {
 			if (reader == null) {
@@ -357,7 +264,7 @@ namespace bsn.ModuleStore.Mapper {
 				throw new NotSupportedException("Deserialization only supports normal classes and structs.");
 			}
 			this.reader = reader;
-			typeInfo = TypeInfo.Get(type);
+			typeInfo = SqlDeserializerTypeInfo.Get(type);
 			foreach (KeyValuePair<string, MemberConverter> column in typeInfo.Mapping.Converters) {
 				if (column.Key == null) {
 					if (nestedConverters == null) {
@@ -396,53 +303,17 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		internal TypeInfo Info {
+		/// <summary>
+		/// Gets the type information used for deserialization.
+		/// </summary>
+		/// <value>The type info.</value>
+		public SqlDeserializerTypeInfo TypeInfo {
 			get {
 				return typeInfo;
 			}
 		}
 
-		internal object DeserializeInternal(int maxRows, bool skipFirstRead, bool callConstructor, XmlNameTable nameTable) {
-			if (maxRows < 0) {
-				throw new ArgumentOutOfRangeException("maxRows");
-			}
-			DeserializerContext context = new DeserializerContext(this, callConstructor, nameTable);
-			if (typeInfo.IsCollection) {
-				IList list = typeInfo.CreateList();
-				while (maxRows > 0) {
-					if (skipFirstRead) {
-						skipFirstRead = false;
-					} else {
-						if (!reader.Read()) {
-							break;
-						}
-					}
-					list.Add(CreateInstance(context));
-					maxRows--;
-				}
-				return typeInfo.FinalizeList(list);
-			}
-			if (!skipFirstRead) {
-				if (!reader.Read()) {
-					throw new InvalidOperationException("No more rows");
-				}
-			}
-			return CreateInstance(context);
-		}
-
-		internal SqlDeserializer GetNestedDeserializer(MemberConverter memberConverter) {
-			if (nestedDeserializers == null) {
-				nestedDeserializers = new Dictionary<MemberConverter, SqlDeserializer>();
-			}
-			SqlDeserializer result;
-			if (!nestedDeserializers.TryGetValue(memberConverter, out result)) {
-				result = new SqlDeserializer(reader, memberConverter.Type);
-				nestedDeserializers.Add(memberConverter, result);
-			}
-			return result;
-		}
-
-		private object CreateInstance(DeserializerContext context) {
+		protected object CreateInstance(DeserializerContext context) {
 			if (columnConverters != null) {
 				foreach (KeyValuePair<int, MemberConverter> converter in columnConverters) {
 					context.Buffer[converter.Value.MemberIndex] = converter.Value.Process(context, converter.Key);
@@ -459,6 +330,57 @@ namespace bsn.ModuleStore.Mapper {
 				((ISqlDeserializationHook)result).AfterDeserialization();
 			}
 			return result;
+		}
+
+		internal IEnumerable<T> DeserializeInstancesInternal<T>(int maxRows, bool skipFirstRead, bool callConstructor, XmlNameTable nameTable) {
+			Debug.Assert(typeof(T).IsAssignableFrom(TypeInfo.InstanceType));
+			DeserializerContext context = CreateDeserializerContext(callConstructor, nameTable);
+			while (maxRows > 0) {
+				if (skipFirstRead) {
+					skipFirstRead = false;
+				} else {
+					if (!reader.Read()) {
+						break;
+					}
+				}
+				yield return (T)CreateInstance(context);
+				maxRows--;
+			}
+		}
+
+		internal object DeserializeInternal(int maxRows, bool skipFirstRead, bool callConstructor, XmlNameTable nameTable) {
+			if (maxRows < 0) {
+				throw new ArgumentOutOfRangeException("maxRows");
+			}
+			if (typeInfo.IsCollection) {
+				IList list = typeInfo.CreateList();
+				foreach (object instance in DeserializeInstancesInternal<object>(maxRows, skipFirstRead, callConstructor, nameTable)) {
+					list.Add(instance);
+				}
+				return typeInfo.FinalizeList(list);
+			}
+			if (!skipFirstRead) {
+				if (!reader.Read()) {
+					throw new InvalidOperationException("No more rows");
+				}
+			}
+			return CreateInstance(CreateDeserializerContext(callConstructor, nameTable));
+		}
+
+		internal SqlDeserializer GetNestedDeserializer(MemberConverter memberConverter) {
+			if (nestedDeserializers == null) {
+				nestedDeserializers = new Dictionary<MemberConverter, SqlDeserializer>();
+			}
+			SqlDeserializer result;
+			if (!nestedDeserializers.TryGetValue(memberConverter, out result)) {
+				result = new SqlDeserializer(reader, memberConverter.Type);
+				nestedDeserializers.Add(memberConverter, result);
+			}
+			return result;
+		}
+
+		private DeserializerContext CreateDeserializerContext(bool callConstructor, XmlNameTable nameTable) {
+			return new DeserializerContext(this, callConstructor, nameTable);
 		}
 
 		/// <summary>
