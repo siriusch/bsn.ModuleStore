@@ -65,7 +65,7 @@ namespace bsn.ModuleStore.Mapper {
 				}
 				instanceType = type.GetElementType();
 				Debug.Assert(instanceType != null);
-			} else if (type.IsGenericType && ((type.GetGenericTypeDefinition() == typeof(ICollection<>)) || (type.GetGenericTypeDefinition() == typeof(IList<>)) || (type.GetGenericTypeDefinition() == typeof(List<>)))) {
+			} else if (type.IsGenericType && ((type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) || (type.GetGenericTypeDefinition() == typeof(ICollection<>)) || (type.GetGenericTypeDefinition() == typeof(IList<>)) || (type.GetGenericTypeDefinition() == typeof(List<>)))) {
 				instanceType = type.GetGenericArguments()[0];
 			} else {
 				instanceType = type;

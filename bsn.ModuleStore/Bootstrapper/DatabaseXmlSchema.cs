@@ -28,24 +28,44 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Linq;
+using System.Xml.Linq;
 
 using bsn.ModuleStore.Mapper;
 
 namespace bsn.ModuleStore.Bootstrapper {
-	internal interface IModules: IStoredProcedures {
-		[SqlProcedure("spModuleAdd.sql")]
-		Module Add(Guid? id, Guid assemblyId, string schemaPrefix, string assemblyName);
+	internal class DatabaseXmlSchema {
+		[SqlColumn("sSchema")]
+		private string schemaName;
 
-		[SqlProcedure("spModuleDelete.sql", UseReturnValue = SqlReturnValue.ReturnValue)]
-		bool Delete(Guid id);
+		[SqlColumn("sXmlSchemaCollectionName")]
+		private string xmlSchemaCollectionName;
 
-		[SqlProcedure("spModuleList.sql")]
-		ResultSet<Module> List(Guid assemblyGuid);
+		[SqlColumn("xDefinition")]
+		private XDocument definition;
 
-		[SqlProcedure("spModuleUpdate.sql", UseReturnValue = SqlReturnValue.ReturnValue)]
-		bool Update(Guid id, string assemblyName, byte[] setupHash, int updateVersion);
+		internal DatabaseXmlSchema(string schemaName, string xmlSchemaCollectionName, XDocument definition) {
+			this.schemaName = schemaName;
+			this.xmlSchemaCollectionName = xmlSchemaCollectionName;
+			this.definition = definition;
+		}
 
-		[SqlProcedure("spUserObjectList.sql")]
-		ResultSet<DatabaseObject, ResultSet<DatabaseIndex, ResultSet<DatabaseXmlSchema>>> UserObjectList(string schemaName);
+		public string SchemaName {
+			get {
+				return schemaName;
+			}
+		}
+
+		public string XmlSchemaCollectionName {
+			get {
+				return xmlSchemaCollectionName;
+			}
+		}
+
+		public XDocument Definition {
+			get {
+				return definition;
+			}
+		}
 	}
 }

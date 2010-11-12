@@ -62,6 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper\Bootstrap.cs" />
+    <Compile Include="Bootstrapper\DatabaseIndex.cs" />
+    <Compile Include="Bootstrapper\DatabaseIndexType.cs" />
+    <Compile Include="Bootstrapper\DatabaseObject.cs" />
+    <Compile Include="Bootstrapper\DatabaseXmlSchema.cs" />
     <Compile Include="Bootstrapper\ModuleAssemblyInfo.cs" />
     <Compile Include="Mapper\ConnectionProvider.cs" />
     <Compile Include="Mapper\IConnectionProvider.cs" />
@@ -127,6 +131,9 @@
       <Project>{CE71AB0F-0241-400A-82A1-F385A2D8B985}</Project>
       <Name>bsn.ModuleStore.Parser</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Bootstrapper\spUserObjectList.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

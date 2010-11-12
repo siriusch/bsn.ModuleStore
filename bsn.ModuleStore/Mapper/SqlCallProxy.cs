@@ -180,20 +180,16 @@ namespace bsn.ModuleStore.Mapper {
 									connection = null;
 								} else if (typeof(ResultSet).IsAssignableFrom(returnType)) {
 									reader = command.ExecuteReader(CommandBehavior.Default);
-									try {
-										returnValue = Activator.CreateInstance(returnType);
-										((ResultSet)returnValue).Load(reader, provider);
-										if (reader.NextResult()) {
-											throw new InvalidOperationException("The reader contains mroe result sets than expected");
-										}
-										ISqlDeserializationHook hook = returnValue as ISqlDeserializationHook;
-										if (hook != null) {
-											hook.AfterDeserialization();
-										}
-									} catch {
-										reader.Dispose();
-										reader = null;
-										throw;
+									returnValue = Activator.CreateInstance(returnType);
+									((ResultSet)returnValue).Load(reader, provider);
+									if (reader.NextResult()) {
+										throw new InvalidOperationException("The reader contains mroe result sets than expected");
+									}
+									reader.Dispose();
+									reader = null;
+									ISqlDeserializationHook hook = returnValue as ISqlDeserializationHook;
+									if (hook != null) {
+										hook.AfterDeserialization();
 									}
 								} else {
 									bool isTypedDataReader = typeof(ITypedDataReader).IsAssignableFrom(returnType);
@@ -216,8 +212,7 @@ namespace bsn.ModuleStore.Mapper {
 										}
 									} else if (returnParameter == null) {
 										reader = command.ExecuteReader(CommandBehavior.SingleResult); // no using() or try...finally required, since the "reader" is already handled below
-										bool hasData = reader.Read();
-										if (!hasData) {
+										if (!reader.HasRows) {
 											if (procInfo.DeserializeReturnNullOnEmptyReader) {
 												returnValue = null;
 											} else if (returnTypeInfo.Type.IsArray) {
@@ -229,18 +224,17 @@ namespace bsn.ModuleStore.Mapper {
 											}
 										} else {
 											if (returnTypeInfo.SimpleConverter != null) {
-												SqlDeserializer.DeserializerContext context = new SqlDeserializer.DeserializerContext(reader, provider, xmlNameTable);
-												if (returnTypeInfo.IsCollection) {
-													IList list = returnTypeInfo.CreateList();
-													for (int row = procInfo.DeserializeRowLimit; row > 0; row--) {
-														list.Add(returnTypeInfo.SimpleConverter.Process(context, 0));
-														if (!reader.Read()) {
-															break;
+												using (SqlDeserializer.DeserializerContext context = new SqlDeserializer.DeserializerContext(reader, provider, xmlNameTable)) {
+													if (returnTypeInfo.IsCollection) {
+														IList list = returnTypeInfo.CreateList();
+														for (int row = procInfo.DeserializeRowLimit; reader.Read() && (row > 0); row--) {
+															list.Add(returnTypeInfo.SimpleConverter.Process(context, 0));
 														}
+														returnValue = returnTypeInfo.FinalizeList(list);
+													} else {
+														reader.Read();
+														returnValue = returnTypeInfo.SimpleConverter.Process(context, 0);
 													}
-													returnValue = returnTypeInfo.FinalizeList(list);
-												} else {
-													returnValue = returnTypeInfo.SimpleConverter.Process(context, 0);
 												}
 											} else {
 												returnValue = new SqlDeserializer(reader, returnType).DeserializeInternal(procInfo.DeserializeRowLimit, provider, procInfo.DeserializeCallConstructor, xmlNameTable);

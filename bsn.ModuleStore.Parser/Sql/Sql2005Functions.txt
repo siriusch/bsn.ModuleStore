@@ -113,6 +113,7 @@ NEWID
 nodes
 NTILE
 NULLIF
+OBJECT_DEFINITION
 OBJECT_ID
 OBJECT_NAME
 OBJECTPROPERTY
@@ -186,4 +187,5 @@ VARP
 VerifySignedByAsmKey
 VerifySignedByCert
 XACT_STATE
+xml_schema_namespace
 YEAR

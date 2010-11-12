@@ -28,24 +28,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-
-using bsn.ModuleStore.Mapper;
+using System.Linq;
 
 namespace bsn.ModuleStore.Bootstrapper {
-	internal interface IModules: IStoredProcedures {
-		[SqlProcedure("spModuleAdd.sql")]
-		Module Add(Guid? id, Guid assemblyId, string schemaPrefix, string assemblyName);
-
-		[SqlProcedure("spModuleDelete.sql", UseReturnValue = SqlReturnValue.ReturnValue)]
-		bool Delete(Guid id);
-
-		[SqlProcedure("spModuleList.sql")]
-		ResultSet<Module> List(Guid assemblyGuid);
-
-		[SqlProcedure("spModuleUpdate.sql", UseReturnValue = SqlReturnValue.ReturnValue)]
-		bool Update(Guid id, string assemblyName, byte[] setupHash, int updateVersion);
-
-		[SqlProcedure("spUserObjectList.sql")]
-		ResultSet<DatabaseObject, ResultSet<DatabaseIndex, ResultSet<DatabaseXmlSchema>>> UserObjectList(string schemaName);
+	public enum DatabaseIndexType {
+		Heap = 0,
+		Clustered = 1,
+		NonClustered = 2,
+		Xml = 3,
+		Spatial = 4
 	}
 }
