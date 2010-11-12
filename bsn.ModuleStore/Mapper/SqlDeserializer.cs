@@ -371,15 +371,13 @@ namespace bsn.ModuleStore.Mapper {
 
 		internal IEnumerable<T> DeserializeInstancesInternal<T>(int maxRows, IInstanceProvider provider, bool callConstructor, XmlNameTable nameTable) {
 			Debug.Assert(typeof(T).IsAssignableFrom(TypeInfo.InstanceType));
-			if (maxRows > 0) {
-				using (DeserializerContext context = new DeserializerContext(this, provider, callConstructor, nameTable)) {
-					while (maxRows > 0) {
-						if (!reader.Read()) {
-							break;
-						}
-						yield return (T)CreateInstance(context);
-						maxRows--;
+			using (DeserializerContext context = new DeserializerContext(this, provider, callConstructor, nameTable)) {
+				while (maxRows > 0) {
+					if (!reader.Read()) {
+						break;
 					}
+					yield return (T)CreateInstance(context);
+					maxRows--;
 				}
 			}
 		}
@@ -395,10 +393,10 @@ namespace bsn.ModuleStore.Mapper {
 				}
 				return typeInfo.FinalizeList(list);
 			}
-			if (!reader.Read()) {
-				throw new InvalidOperationException("No more rows");
-			}
 			using (DeserializerContext deserializerContext = new DeserializerContext(this, provider, callConstructor, nameTable)) {
+				if (!reader.Read()) {
+					throw new InvalidOperationException("No more rows");
+				}
 				return CreateInstance(deserializerContext);
 			}
 		}

@@ -41,7 +41,7 @@ namespace bsn.ModuleStore {
 		[SqlColumn("uidAssemblyGuid")]
 		private Guid assemblyGuid;
 
-		[SqlColumn("uidModule")]
+		[SqlColumn("uidModule", Identity = true)]
 		private Guid id;
 
 		private ModuleInstanceCache owner;
