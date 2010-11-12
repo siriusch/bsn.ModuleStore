@@ -28,6 +28,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Diagnostics;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -41,6 +42,46 @@ namespace bsn.ModuleStore.Mapper {
 				object result = base.Process(context, column);
 				if ((result != null) && (!type.IsAssignableFrom(result.GetType()))) {
 					result = Convert.ChangeType(result, Type);
+				}
+				return result;
+			}
+		}
+
+		private class EnumMemberConverter: MemberConverter {
+			private readonly Type underlyingType;
+
+			public EnumMemberConverter(Type type, int memberIndex) : base(type, memberIndex) {
+				underlyingType = Enum.GetUnderlyingType(type);
+				Debug.Assert(underlyingType != null);
+			}
+
+			public override object Process(SqlDeserializer.DeserializerContext context, int column) {
+				object result = base.Process(context, column);
+				if (result != null) {
+					switch (Type.GetTypeCode(result.GetType())) {
+					case TypeCode.String:
+						return Enum.Parse(Type, (string)result);
+					case TypeCode.Byte:
+						return Enum.ToObject(Type, (byte)result);
+					case TypeCode.SByte:
+						return Enum.ToObject(Type, (sbyte)result);
+					case TypeCode.UInt16:
+						return Enum.ToObject(Type, (ushort)result);
+					case TypeCode.Int16:
+						return Enum.ToObject(Type, (short)result);
+					case TypeCode.UInt32:
+						return Enum.ToObject(Type, (uint)result);
+					case TypeCode.Int32:
+						return Enum.ToObject(Type, (int)result);
+					case TypeCode.UInt64:
+						return Enum.ToObject(Type, (ulong)result);
+					case TypeCode.Int64:
+						return Enum.ToObject(Type, (long)result);
+					default:
+						result = Convert.ChangeType(result, underlyingType);
+						Debug.Assert(result != null);
+						return Enum.ToObject(Type, result);
+					}
 				}
 				return result;
 			}
@@ -153,6 +194,9 @@ namespace bsn.ModuleStore.Mapper {
 		public static MemberConverter Get(Type type, int memberIndex, DateTimeKind dateTimeKind) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
+			}
+			if (type.IsEnum) {
+				return new EnumMemberConverter(type, memberIndex);
 			}
 			if (typeof(XmlReader).Equals(type)) {
 				return new XmlReaderMemberConverter(type, memberIndex);
