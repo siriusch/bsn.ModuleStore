@@ -28,21 +28,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Reflection;
+using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
-	public interface IStoredProcedures {
-		Assembly Assembly {
-			get;
-		}
-
-		string InstanceName {
-			get;
-		}
-
-		IInstanceProvider Provider {
-			get;
-			set;
-		}
+	public interface IInstanceProvider {
+		void BeginDeserialize(Guid callId);
+		void EndDeserialize(Guid callId);
+		bool TryGetInstance(Type instanceType, object identity, out object instance);
 	}
 }

@@ -62,6 +62,8 @@ namespace bsn.ModuleStore.Mapper {
 	public class SqlCallProxy: RealProxy {
 		private static readonly MethodInfo getAssembly = typeof(IStoredProcedures).GetProperty("Assembly").GetGetMethod();
 		private static readonly MethodInfo getInstanceName = typeof(IStoredProcedures).GetProperty("InstanceName").GetGetMethod();
+		private static readonly MethodInfo getProvider = typeof(IStoredProcedures).GetProperty("Provider").GetGetMethod();
+		private static readonly MethodInfo setProvider = typeof(IStoredProcedures).GetProperty("Provider").GetSetMethod();
 
 		/// <summary>
 		/// Create a new proxy to be used for stored procedure calls, which can be called through the interface specified by <typeparamref name="I"/>.
@@ -94,6 +96,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		private readonly SqlCallInfo callInfo;
 		private readonly IConnectionProvider connectionProvider;
+		private IInstanceProvider provider;
 
 		private SqlCallProxy(IConnectionProvider connectionProvider, Type interfaceToProxy): base(interfaceToProxy) {
 			if (connectionProvider == null) {
@@ -114,6 +117,13 @@ namespace bsn.ModuleStore.Mapper {
 				}
 				if (mcm.MethodBase == getAssembly) {
 					return new ReturnMessage(callInfo.InterfaceType.Assembly, null, 0, mcm.LogicalCallContext, mcm);
+				}
+				if (mcm.MethodBase == getProvider) {
+					return new ReturnMessage(provider, null, 0, mcm.LogicalCallContext, mcm);
+				}
+				if (mcm.MethodBase == setProvider) {
+					provider = (IInstanceProvider)mcm.Args[0];
+					return new ReturnMessage(null, null, 0, mcm.LogicalCallContext, mcm);
 				}
 				bool ownsConnection = false;
 				SqlConnection connection;
@@ -172,7 +182,7 @@ namespace bsn.ModuleStore.Mapper {
 									reader = command.ExecuteReader(CommandBehavior.Default);
 									try {
 										returnValue = Activator.CreateInstance(returnType);
-										((ResultSet)returnValue).Load(reader);
+										((ResultSet)returnValue).Load(reader, provider);
 										if (reader.NextResult()) {
 											throw new InvalidOperationException("The reader contains mroe result sets than expected");
 										}
@@ -219,7 +229,7 @@ namespace bsn.ModuleStore.Mapper {
 											}
 										} else {
 											if (returnTypeInfo.SimpleConverter != null) {
-												SqlDeserializer.DeserializerContext context = new SqlDeserializer.DeserializerContext(reader, xmlNameTable);
+												SqlDeserializer.DeserializerContext context = new SqlDeserializer.DeserializerContext(reader, provider, xmlNameTable);
 												if (returnTypeInfo.IsCollection) {
 													IList list = returnTypeInfo.CreateList();
 													for (int row = procInfo.DeserializeRowLimit; row > 0; row--) {
@@ -233,7 +243,7 @@ namespace bsn.ModuleStore.Mapper {
 													returnValue = returnTypeInfo.SimpleConverter.Process(context, 0);
 												}
 											} else {
-												returnValue = new SqlDeserializer(reader, returnType).DeserializeInternal(procInfo.DeserializeRowLimit, true, procInfo.DeserializeCallConstructor, xmlNameTable);
+												returnValue = new SqlDeserializer(reader, returnType).DeserializeInternal(procInfo.DeserializeRowLimit, provider, procInfo.DeserializeCallConstructor, xmlNameTable);
 											}
 										}
 										reader.Dispose();

@@ -50,16 +50,16 @@ namespace bsn.ModuleStore.Mapper {
 			get;
 		}
 
-		protected internal abstract void Load(SqlDataReader reader);
+		protected internal abstract void Load(SqlDataReader reader, IInstanceProvider provider);
 	}
 
 	public class ResultSet<T>: ResultSetBase<T> {
-		protected internal override void Load(SqlDataReader reader) {
+		protected internal override void Load(SqlDataReader reader, IInstanceProvider provider) {
 			if (reader.HasRows) {
 				List<T> result = new List<T>(512);
 				using (SqlDeserializer<T> deserializer = new SqlDeserializer<T>(reader)) {
 					deserializer.DisposeReader = false;
-					result.AddRange(deserializer.DeserializeInstances());
+					result.AddRange(deserializer.DeserializeInstances(provider));
 				}
 				if (result.Capacity >= (result.Count*2)) {
 					result.Capacity = result.Count;
@@ -84,12 +84,12 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		protected internal override void Load(SqlDataReader reader) {
-			base.Load(reader);
+		protected internal override void Load(SqlDataReader reader, IInstanceProvider provider) {
+			base.Load(reader, provider);
 			if (!reader.NextResult()) {
 				throw new InvalidOperationException("An additional result set is expected, but the reader contains no more result sets");
 			}
-			inner.Load(reader);
+			inner.Load(reader, provider);
 		}
 	}
 }

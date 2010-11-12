@@ -124,7 +124,7 @@ namespace bsn.ModuleStore.Mapper {
 						}
 						Debug.Assert(column.Value != null);
 						returnValue = reader.IsDBNull(column.Key) ? null : reader.GetValue(column.Key);
-						if ((returnValue != null) && (returnValue.GetType() != column.Value) && (!SqlDeserializer.IsNullableType(returnValue.GetType())) && typeof(IConvertible).IsAssignableFrom(returnValue.GetType())) {
+						if ((returnValue != null) && (returnValue.GetType() != column.Value) && (Nullable.GetUnderlyingType(returnValue.GetType()) == null) && typeof(IConvertible).IsAssignableFrom(returnValue.GetType())) {
 							returnValue = Convert.ChangeType(returnValue, column.Value);
 						}
 					}

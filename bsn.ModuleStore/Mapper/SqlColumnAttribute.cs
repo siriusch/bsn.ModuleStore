@@ -62,6 +62,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		private DateTimeKind dateTimeKind = DateTimeKind.Unspecified;
 		private string name;
+		private bool identity;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlColumnAttribute"/> class.
@@ -95,6 +96,18 @@ namespace bsn.ModuleStore.Mapper {
 		public string Name {
 			get {
 				return name;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the column <see cref="SqlColumnAttribute"/> is an identity column for this data type.
+		/// </summary>
+		public bool Identity {
+			get {
+				return identity;
+			}
+			set {
+				identity = value;
 			}
 		}
 

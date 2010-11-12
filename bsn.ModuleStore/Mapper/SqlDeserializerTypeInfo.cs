@@ -82,7 +82,7 @@ namespace bsn.ModuleStore.Mapper {
 				}
 			}
 			isXmlType = SqlDeserializer.IsXmlType(instanceType);
-			if (isXmlType || SqlDeserializer.IsNullableType(instanceType) || instanceType.IsPrimitive || SqlCallProcedureInfo.IsNativeType(instanceType)) {
+			if (isXmlType || (Nullable.GetUnderlyingType(instanceType) != null) || instanceType.IsPrimitive || SqlCallProcedureInfo.IsNativeType(instanceType)) {
 				simpleConverter = MemberConverter.Get(instanceType, 0, DateTimeKind.Unspecified);
 			}
 		}
