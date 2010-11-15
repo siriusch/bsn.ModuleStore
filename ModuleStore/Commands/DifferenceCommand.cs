@@ -50,7 +50,7 @@ namespace bsn.ModuleStore.Console.Commands {
 
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
 			yield return new Tag<ExecutionContext, Entities.Source>("source", "The source for the comparison.").SetDefault(context => context.Assembly != null ? Entities.Source.Assembly : Entities.Source.Files);
-			yield return new Tag<ExecutionContext, Entities.Source>("target", "The target for the comparison.").SetDefault(context => context.DatabaseInstance != null ? Entities.Source.Database : Entities.Source.Files);
+			yield return new Tag<ExecutionContext, Entities.Source>("target", "The target for the comparison.").SetDefault(context => context.Connected ? Entities.Source.Database : Entities.Source.Files);
 		}
 	}
 }

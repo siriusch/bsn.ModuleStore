@@ -66,6 +66,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("PATH")]
 	[Terminal("PERSISTED")]
 	[Terminal("POPULATION")]
+	[Terminal("PRECISION")]
 	[Terminal("PROPERTY")]
 	[Terminal("RAW")]
 	[Terminal("RECOMPILE")]

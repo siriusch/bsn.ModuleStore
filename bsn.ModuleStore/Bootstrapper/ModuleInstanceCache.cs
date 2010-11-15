@@ -106,7 +106,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 		public void UpdateDatabase(bool force) {
 			lock (instances) {
 				bool commit = false;
-				owner.BeginSmoTransaction();
+				owner.ManagementConnectionProvider.BeginTransaction();
 				try {
 					LoadModules(false);
 					foreach (ModuleInstance instance in instances.Values) {
@@ -117,7 +117,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 					LoadModules(true);
 					commit = true;
 				} finally {
-					owner.EndSmoTransaction(commit);
+					owner.ManagementConnectionProvider.EndTransaction(commit);
 				}
 			}
 		}
@@ -125,7 +125,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 		private ModuleInstance CreateInstanceInternal() {
 			lock (instances) {
 				bool commit = false;
-				owner.BeginSmoTransaction();
+				owner.ManagementConnectionProvider.BeginTransaction();
 				try {
 					Module module = owner.ModuleStore.Add(null, assemblyInfo.AssemblyGuid, rxPrefixExtractor.Match(assemblyInfo.Assembly.GetName().Name).Value, assemblyInfo.Assembly.FullName);
 					Debug.Assert(!module.SchemaExists);
@@ -138,7 +138,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 					commit = true;
 					return instance;
 				} finally {
-					owner.EndSmoTransaction(commit);
+					owner.ManagementConnectionProvider.EndTransaction(commit);
 				}
 			}
 		}

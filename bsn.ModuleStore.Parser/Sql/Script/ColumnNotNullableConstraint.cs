@@ -34,6 +34,7 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ColumnNotNullableConstraint: ColumnConstraint {
 		[Rule("<ColumnConstraint> ::= ~NOT ~NULL")]
+		[Rule("<ComputedColumnConstraint> ::= ~NOT ~NULL")]
 		public ColumnNotNullableConstraint() {}
 
 		public override void WriteTo(SqlWriter writer) {

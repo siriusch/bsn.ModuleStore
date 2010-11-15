@@ -43,8 +43,6 @@ using bsn.ModuleStore.Mapper;
 using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
 
-using Microsoft.SqlServer.Management.Smo;
-
 namespace bsn.ModuleStore {
 	public class ModuleDatabase: IDisposable {
 		public static DatabaseType GetDatabaseType(string connectionString) {
@@ -82,7 +80,7 @@ namespace bsn.ModuleStore {
 		private readonly string connectionString;
 		private readonly Dictionary<Assembly, ModuleInstanceCache> instances = new Dictionary<Assembly, ModuleInstanceCache>();
 		private readonly IModules moduleStore;
-		private readonly SmoConnectionProvider smoConnectionProvider;
+		private readonly ManagementConnectionProvider managementConnectionProvider;
 		private bool forceUpdateCheck = Debugger.IsAttached;
 
 		public ModuleDatabase(string connectionString): this(connectionString, false) {}
@@ -91,8 +89,8 @@ namespace bsn.ModuleStore {
 			Debug.WriteLine(DateTime.Now, "Start DB initialization");
 			this.connectionString = connectionString;
 			this.autoUpdate = autoUpdate;
-			smoConnectionProvider = new SmoConnectionProvider(connectionString, "ModuleStore");
-			moduleStore = SqlCallProxy.Create<IModules>(smoConnectionProvider);
+			managementConnectionProvider = new ManagementConnectionProvider(connectionString, "ModuleStore");
+			moduleStore = SqlCallProxy.Create<IModules>(managementConnectionProvider);
 			Bootstrap.InitializeModuleStore(this);
 		}
 
@@ -117,9 +115,9 @@ namespace bsn.ModuleStore {
 			}
 		}
 
-		protected internal SmoConnectionProvider SmoConnectionProvider {
+		protected internal ManagementConnectionProvider ManagementConnectionProvider {
 			get {
-				return smoConnectionProvider;
+				return managementConnectionProvider;
 			}
 		}
 
@@ -165,17 +163,6 @@ namespace bsn.ModuleStore {
 			}
 		}
 
-		protected internal void BeginSmoTransaction() {
-			Monitor.Enter(moduleStore);
-			try {
-				smoConnectionProvider.ServerConnection.BeginTransaction();
-				Debug.WriteLine(DateTime.Now, "Beginning SMO transaction");
-			} catch {
-				Monitor.Exit(moduleStore);
-				throw;
-			}
-		}
-
 		protected internal virtual IConnectionProvider CreateConnectionProvider(string schema) {
 			return new ConnectionProvider(ConnectionString, schema);
 		}
@@ -189,25 +176,11 @@ namespace bsn.ModuleStore {
 			}
 			AssertSmoTransaction();
 			foreach (string sql in inventory.GenerateInstallSql(moduleSchema)) {
-				using (SqlCommand command = smoConnectionProvider.GetConnection().CreateCommand()) {
+				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
 					command.CommandType = CommandType.Text;
 					command.CommandText = sql;
 					command.ExecuteNonQuery();
 				}
-			}
-		}
-
-		protected internal void EndSmoTransaction(bool commit) {
-			try {
-				if (commit) {
-					smoConnectionProvider.ServerConnection.CommitTransaction();
-					Debug.WriteLine(DateTime.Now, "Commited SMO transaction");
-				} else {
-					smoConnectionProvider.ServerConnection.RollBackTransaction();
-					Debug.WriteLine(DateTime.Now, "Rolled back SMO transaction");
-				}
-			} finally {
-				Monitor.Exit(moduleStore);
 			}
 		}
 
@@ -219,21 +192,19 @@ namespace bsn.ModuleStore {
 				throw new ArgumentNullException("module");
 			}
 			AssertSmoTransaction();
-			Server server = new Server(smoConnectionProvider.ServerConnection);
-			Database database = server.Databases[smoConnectionProvider.DatabaseName];
-			DatabaseInventory databaseInventory = new DatabaseInventory(database, module.Schema);
+			DatabaseInventory databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
 			bool hasChanges = !HashWriter.HashEqual(databaseInventory.GetInventoryHash(), inventory.GetInventoryHash());
 			foreach (string sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
 				DebugWriteFirstLines(sql);
 				hasChanges = true;
-				using (SqlCommand command = smoConnectionProvider.GetConnection().CreateCommand()) {
+				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
 					command.CommandType = CommandType.Text;
 					command.CommandText = sql;
 					command.ExecuteNonQuery();
 				}
 			}
 			if (hasChanges) {
-				databaseInventory = new DatabaseInventory(database, module.Schema);
+				databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
 				IEnumerable<KeyValuePair<CreateStatement, InventoryObjectDifference>> differences = Inventory.Compare(inventory, databaseInventory).Where(pair => pair.Value != InventoryObjectDifference.None);
 				using (IEnumerator<KeyValuePair<CreateStatement, InventoryObjectDifference>> enumerator = differences.GetEnumerator()) {
 					if (enumerator.MoveNext()) {
@@ -253,15 +224,15 @@ namespace bsn.ModuleStore {
 		}
 
 		protected void AssertSmoTransaction() {
-			if (smoConnectionProvider.ServerConnection.TransactionDepth == 0) {
-				throw new InvalidOperationException("SMO operations must be in a transaction");
+			if (managementConnectionProvider.GetTransaction() == null) {
+				throw new InvalidOperationException("Management operations must be in a transaction");
 			}
 		}
 
 		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
-				if (smoConnectionProvider != null) {
-					smoConnectionProvider.Dispose();
+				if (managementConnectionProvider != null) {
+					managementConnectionProvider.Dispose();
 				}
 			}
 		}

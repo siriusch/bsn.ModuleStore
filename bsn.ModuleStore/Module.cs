@@ -34,8 +34,6 @@ using bsn.ModuleStore.Bootstrapper;
 using bsn.ModuleStore.Mapper;
 using bsn.ModuleStore.Sql;
 
-using Microsoft.SqlServer.Management.Smo;
-
 namespace bsn.ModuleStore {
 	public class Module {
 		[SqlColumn("uidAssemblyGuid")]
@@ -120,12 +118,11 @@ namespace bsn.ModuleStore {
 
 		public DatabaseInventory GetInventory() {
 			ModuleDatabase database = owner.Owner;
-			database.BeginSmoTransaction();
+			database.ManagementConnectionProvider.BeginTransaction();
 			try {
-				Server server = new Server(database.SmoConnectionProvider.ServerConnection);
-				return new DatabaseInventory(server.Databases[database.SmoConnectionProvider.DatabaseName], schema);
+				return new DatabaseInventory(database.ManagementConnectionProvider, schema);
 			} finally {
-				database.EndSmoTransaction(false);
+				database.ManagementConnectionProvider.EndTransaction(false);
 			}
 		}
 

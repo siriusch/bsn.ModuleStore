@@ -29,20 +29,46 @@
 //  
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Data;
+using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
+using System.Xml.XPath;
+using System.Xml.Xsl;
 
+using bsn.ModuleStore.Mapper;
 using bsn.ModuleStore.Sql.Script;
-
-using Microsoft.SqlServer.Management.Sdk.Sfc;
-using Microsoft.SqlServer.Management.Smo;
 
 namespace bsn.ModuleStore.Sql {
 	public class DatabaseInventory: Inventory {
-		private static readonly ICollection<Type> supportedTypes = new[] {typeof(Index), typeof(FullTextIndex), typeof(UserDefinedFunction), typeof(StoredProcedure), typeof(Table), typeof(Trigger), typeof(View), typeof(XmlSchemaCollection)};
+		public class XsltUtils {
+			public string AsText(XPathNavigator nav) {
+				return nav.InnerXml;
+			}
+		}
+
+		private static readonly XslCompiledTransform scripter;
+		private static readonly string userObjectList;
+
+		static DatabaseInventory() {
+			using (Stream stream = typeof(DatabaseInventory).Assembly.GetManifestResourceStream(typeof(DatabaseInventory), "UserObjectList.sql")) {
+				Debug.Assert(stream != null);
+				using (StreamReader reader = new StreamReader(stream)) {
+					userObjectList = reader.ReadToEnd();
+				}
+			}
+			scripter = new XslCompiledTransform(Debugger.IsAttached);
+			using (Stream stream = typeof(DatabaseInventory).Assembly.GetManifestResourceStream(typeof(DatabaseInventory), "UserObjectScripter.xslt")) {
+				Debug.Assert(stream != null);
+				using (XmlReader reader = XmlReader.Create(stream)) {
+					scripter.Load(reader, new XsltSettings(false, false), null);
+				}
+			}
+		}
 
 		public static Exception CreateException(string message, SqlScriptableToken token) {
 			StringWriter writer = new StringWriter();
@@ -53,93 +79,41 @@ namespace bsn.ModuleStore.Sql {
 
 		private readonly string schemaName;
 
-		public DatabaseInventory(Database database, string schemaName) {
+		public DatabaseInventory(ManagementConnectionProvider database, string schemaName) {
 			if (database == null) {
 				throw new ArgumentNullException("database");
 			}
-			if (database.IsSystemObject) {
-				throw new ArgumentException("The connection does not point to a valid user database", "database");
-			}
-			database.Parent.Refresh();
-			database.Refresh();
-			database.Tables.Refresh();
-			database.Views.Refresh();
-			database.Triggers.Refresh();
-			database.UserDefinedFunctions.Refresh();
-			database.StoredProcedures.Refresh();
-			database.XmlSchemaCollections.Refresh();
-			this.schemaName = schemaName ?? database.DefaultSchema;
-			Schema schema = database.Schemas[schemaName];
-			if (schema != null) {
-				ScriptingOptions options = new ScriptingOptions();
-				options.AgentJobId = false;
-				options.AllowSystemObjects = false;
-				options.AnsiPadding = false;
-				options.ClusteredIndexes = true;
-				options.ConvertUserDefinedDataTypesToBaseType = false;
-				options.ContinueScriptingOnError = false;
-				options.DriAll = true;
-				options.EnforceScriptingOptions = true;
-				options.ExtendedProperties = false;
-				options.FullTextIndexes = true;
-				options.IncludeDatabaseContext = false;
-				options.IncludeDatabaseRoleMemberships = false;
-				options.IncludeHeaders = false;
-				options.IncludeIfNotExists = false;
-				options.Indexes = true;
-				options.LoginSid = false;
-				options.NoCommandTerminator = false;
-				options.NoFileGroup = true;
-				options.NoIdentities = false;
-				options.NoAssemblies = false;
-				options.NoIndexPartitioningSchemes = true;
-				options.NonClusteredIndexes = true;
-				options.NoTablePartitioningSchemes = true;
-				options.OptimizerData = false;
-				options.Permissions = false;
-				options.PrimaryObject = true;
-				options.SchemaQualify = true;
-				options.SchemaQualifyForeignKeysReferences = true;
-				options.Bindings = false;
-				options.DriIncludeSystemNames = false;
-				options.ScriptDrops = false;
-				options.Statistics = false;
-				options.TargetServerVersion = SqlServerVersion.Version90;
-				options.TimestampToBinary = false;
-				options.Triggers = false;
-				options.WithDependencies = false;
-				options.XmlIndexes = true;
-				schema.Refresh();
-				foreach (Urn urn in schema.EnumOwnedObjects()) {
-					//					Debug.WriteLine(urn, "Processing DB Object");
-					NamedSmoObject smoObject = database.Parent.GetSmoObject(urn) as NamedSmoObject;
-					if (IsSupportedType(smoObject)) {
-						Debug.Assert(smoObject != null);
-						smoObject.Refresh();
-						StringCollection script;
-						try {
-							script = ((IScriptable)smoObject).Script(options);
-						} catch (FailedOperationException ex) {
-							Debug.WriteLine(ex.Message, "SMO scripting exception, retrying...");
-							smoObject.Refresh();
-							GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
-							GC.WaitForPendingFinalizers();
-							script = ((IScriptable)smoObject).Script(options);
+			using (SqlCommand command = database.GetConnection().CreateCommand()) {
+				command.Transaction = database.GetTransaction();
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@sSchema", schemaName);
+				command.CommandText = userObjectList;
+				using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleResult)) {
+					int definitionColumn = reader.GetOrdinal("xDefinition");
+					XsltArgumentList arguments = new XsltArgumentList();
+					arguments.AddExtensionObject("urn:utils", new XsltUtils());
+					StringBuilder builder = new StringBuilder(65520);
+					while (reader.Read()) {
+						builder.Length = 0;
+						using (StringWriter writer = new StringWriter(builder)) {
+							SqlXml xml = reader.GetSqlXml(definitionColumn);
+							scripter.Transform(xml.CreateReader(), arguments, writer);
+							TraceXmlToSql(xml, writer);
 						}
-						using (StringCollectionReader scriptReader = new StringCollectionReader(script, ";")) {
+						try {
 							try {
-								try {
+								using (StringReader scriptReader = new StringReader(builder.ToString())) {
 									ProcessSingleScript(scriptReader, statement => {
 									                                  	throw CreateException("Cannot process statement:", statement);
 									                                  });
-								} catch (ParseException ex) {
-									ex.FileName = smoObject.Name;
-									throw;
 								}
-							} catch {
-								Trace.WriteLine(string.Join(";\r\n", script.Cast<string>().ToArray()));
+							} catch (ParseException ex) {
+								ex.FileName = reader.GetString(reader.GetOrdinal("sName"));
 								throw;
 							}
+						} catch {
+							Trace.WriteLine(builder.ToString());
+							throw;
 						}
 					}
 				}
@@ -175,16 +149,10 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		internal bool IsSupportedType(NamedSmoObject smoInstance) {
-			if (smoInstance is IScriptable) {
-				Type type = smoInstance.GetType();
-				foreach (Type supportedType in supportedTypes) {
-					if (supportedType.IsAssignableFrom(type)) {
-						return !true.Equals(smoInstance.Properties["IsSystemObject"].Value);
-					}
-				}
-			}
-			return false;
+		[Conditional("DEBUG")]
+		private void TraceXmlToSql(SqlXml xml, StringWriter writer) {
+			Trace.WriteLine(xml.Value, "Input XML");
+			Trace.WriteLine(writer.ToString(), "Output SQL");
 		}
 	}
 }

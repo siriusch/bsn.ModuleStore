@@ -43,6 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CursorOptionList> ::=", typeof(Identifier))]
 		[Rule("<ForeignKeyActionList> ::=", typeof(ForeignKeyAction))]
 		[Rule("<ColumnConstraintList> ::=", typeof(ColumnConstraint))]
+		[Rule("<ComputedColumnConstraintList> ::=", typeof(ColumnConstraint))]
 		[Rule("<JoinChain> ::=", typeof(Join))]
 		[Rule("<XmlDirectiveList> ::=", typeof(XmlDirective))]
 		public Sequence(): this(null, null) {}
@@ -81,6 +82,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
 		[Rule("<ForeignKeyActionList> ::= <ForeignKeyAction> <ForeignKeyActionList>", typeof(ForeignKeyAction))]
 		[Rule("<ColumnConstraintList> ::= <ColumnConstraint> <ColumnConstraintList>", typeof(ColumnConstraint))]
+		[Rule("<ComputedColumnConstraintList> ::= <ComputedColumnConstraint> <ComputedColumnConstraintList>", typeof(ColumnConstraint))]
 		[Rule("<JoinChain> ::= <Join> <JoinChain>", typeof(Join))]
 		[Rule("<SetValueList> ::= <SetValue> <SetValueList>", typeof(SqlScriptableToken))]
 		[Rule("<ColumnNameList> ::= <ColumnName> ~',' <ColumnNameList>", typeof(ColumnName))]

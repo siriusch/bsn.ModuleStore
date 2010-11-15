@@ -1,8 +1,9 @@
-﻿CREATE PROCEDURE [schema].[spModuleDelete]
-    @uidModule [uniqueidentifier]
+﻿CREATE PROCEDURE [dbo].[spModuleDelete]
+    @uidModule uniqueidentifier
 AS
     BEGIN
         SET NOCOUNT ON;
-        DELETE FROM [schema].[tblModule] WHERE [tblModule].[uidModule]=@uidModule;
-        RETURN CAST(@@ROWCOUNT AS [int]);
+        DELETE
+            FROM [dbo].[tblModule] WHERE [tblModule].[uidModule]=@uidModule;
+        RETURN CAST(@@ROWCOUNT AS int);
     END;

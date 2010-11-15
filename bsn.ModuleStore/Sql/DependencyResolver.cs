@@ -46,9 +46,6 @@ namespace bsn.ModuleStore.Sql {
 				this.objectName = objectName;
 				this.statement = statement;
 				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames().Where(n => !n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase))) {
-					if (referencedObjectName is FunctionName) {
-						Debugger.Break();
-					}
 					edges.Add(referencedObjectName.Value);
 				}
 			}

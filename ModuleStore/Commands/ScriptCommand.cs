@@ -35,6 +35,7 @@ using System.Text;
 
 using bsn.CommandLine;
 using bsn.CommandLine.Context;
+using bsn.ModuleStore.Mapper;
 using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
 
@@ -47,7 +48,10 @@ namespace bsn.ModuleStore.Console.Commands {
 			Encoding encoding = Encoding.GetEncoding((string)tags["encoding"]);
 			DirectoryInfo baseDirectory = Directory.CreateDirectory(Path.Combine(executionContext.ScriptPath, (string)tags["path"]));
 			executionContext.Output.WriteLine("Scripting to {0} (Encoding: {1})...", baseDirectory.FullName, encoding.WebName);
-			DatabaseInventory inventory = new DatabaseInventory(executionContext.DatabaseInstance, executionContext.Schema);
+			DatabaseInventory inventory;
+			using (ManagementConnectionProvider provider = new ManagementConnectionProvider(executionContext.Connection, executionContext.Schema)) {
+				inventory = new DatabaseInventory(provider, executionContext.Schema);
+			}
 			HashSet<string> filesToDelete = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if ((bool)tags["delete"]) {
 				foreach (FileInfo fileInfo in baseDirectory.GetFiles("*.sql", SearchOption.AllDirectories)) {

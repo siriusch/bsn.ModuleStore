@@ -28,7 +28,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class ColumnDefinition: SqlScriptableToken {}
+	public abstract class ColumnDefinition: SqlScriptableToken {
+		private readonly List<ColumnConstraint> constraints;
+
+		protected ColumnDefinition(Sequence<ColumnConstraint> constraints) {
+			Debug.Assert(constraints != null);
+			this.constraints = constraints.ToList();
+		}
+
+		public List<ColumnConstraint> Constraints {
+			get {
+				return constraints;
+			}
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			writer.WriteScriptSequence(constraints, WhitespacePadding.SpaceBefore, null);
+		}
+	}
 }

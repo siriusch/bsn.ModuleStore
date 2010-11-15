@@ -31,7 +31,7 @@ using System;
 using System.Data.SqlClient;
 
 namespace bsn.ModuleStore.Mapper {
-	internal sealed class ConnectionProvider: IConnectionProvider {
+	public sealed class ConnectionProvider: IConnectionProvider {
 		private readonly string connectionString;
 		private readonly string schemaName;
 

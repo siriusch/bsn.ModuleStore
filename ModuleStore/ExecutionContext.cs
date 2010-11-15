@@ -28,6 +28,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -35,22 +37,20 @@ using System.Threading;
 using bsn.CommandLine;
 using bsn.ModuleStore.Console.Contexts;
 using bsn.ModuleStore.Console.Entities;
+using bsn.ModuleStore.Mapper;
 using bsn.ModuleStore.Sql;
-
-using Microsoft.SqlServer.Management.Smo;
 
 namespace bsn.ModuleStore.Console {
 	internal class ExecutionContext: CommandLineContext<ExecutionContext, ModuleStoreContext>, IDisposable {
 		private AssemblyHandler assembly;
-		private Database database;
-		private string databaseName;
+		private SqlConnection connection;
 		private string schemaName;
-		private Server server;
 		private string serverName = ".";
 
 		public ExecutionContext(TextReader input, TextWriter output): base(new ModuleStoreContext(), input, output) {
 			// trigger async initialization on app start
 			ThreadPool.QueueUserWorkItem(state => ScriptParser.GetSemanticActions());
+			connection = new SqlConnection();
 		}
 
 		public AssemblyHandler Assembly {
@@ -67,30 +67,25 @@ namespace bsn.ModuleStore.Console {
 
 		public bool Connected {
 			get {
-				return server != null;
+				return (connection.State == ConnectionState.Open);
 			}
 		}
 
 		public string Database {
 			get {
-				return databaseName;
+				return connection.Database;
 			}
 			set {
 				if (string.IsNullOrEmpty(value)) {
 					throw new ArgumentNullException();
 				}
-				databaseName = value;
-				if (string.IsNullOrEmpty(databaseName)) {
-					database = null;
-				} else if (server != null) {
-					database = server.Databases[value];
-				}
+				connection.ChangeDatabase(value);
 			}
 		}
 
-		public Microsoft.SqlServer.Management.Smo.Database DatabaseInstance {
+		public SqlConnection Connection {
 			get {
-				return database;
+				return connection;
 			}
 		}
 
@@ -98,7 +93,11 @@ namespace bsn.ModuleStore.Console {
 			get {
 				if (string.IsNullOrEmpty(schemaName)) {
 					if (Connected) {
-						return database.DefaultSchema;
+						using (SqlCommand command = connection.CreateCommand()) {
+							command.CommandType = CommandType.Text;
+							command.CommandText = "SELECT COALESCE(default_schema_name, (SELECT TOP (1) [name] FROM [sys].[schemas] ORDER BY schema_id)) sSchema FROM sys.database_principals WHERE [name] = USER_NAME()";
+							return (string)command.ExecuteScalar();
+						}
 					}
 					return string.Empty;
 				}
@@ -140,29 +139,27 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public void Connect() {
-			if (server == null) {
-				server = new Server(serverName);
-				server.ConnectionContext.Connect();
-				if (!string.IsNullOrEmpty(databaseName)) {
-					database = server.Databases[databaseName];
-				}
-			}
+		public void Connect(string server, string database) {
+			Disconnect();
+			connection.ConnectionString = BuildConnectionString(server, database);
+			connection.Open();
 		}
 
 		public void Disconnect() {
-			if (server != null) {
-				server.ConnectionContext.Disconnect();
-				server = null;
-				database = null;
+			if (connection.State != ConnectionState.Closed) {
+				connection.Close();
 			}
 		}
 
 		public string GetConnectionString() {
+			return BuildConnectionString(Server, Database);
+		}
+
+		public static string BuildConnectionString(string server, string database) {
 			StringBuilder connectionString = new StringBuilder();
-			connectionString.AppendFormat("Data Source={0};", Server);
-			if (!string.IsNullOrEmpty(Database)) {
-				connectionString.AppendFormat("Initial Catalog={0};", Database);
+			connectionString.AppendFormat("Data Source={0};", server);
+			if (!string.IsNullOrEmpty(database)) {
+				connectionString.AppendFormat("Initial Catalog={0};", database);
 			}
 			connectionString.Append("Integrated Security=SSPI;");
 			return connectionString.ToString();
@@ -172,7 +169,9 @@ namespace bsn.ModuleStore.Console {
 			Inventory inventory;
 			switch (inventorySource) {
 			case Source.Database:
-				inventory = new DatabaseInventory(DatabaseInstance, Schema);
+				using (ManagementConnectionProvider provider = new ManagementConnectionProvider(connection, Schema)) {
+					inventory = new DatabaseInventory(provider, Schema);
+				}
 				break;
 			case Source.Files:
 				inventory = new ScriptInventory(ScriptPath);
@@ -190,6 +189,7 @@ namespace bsn.ModuleStore.Console {
 			if (disposing) {
 				Assembly = null;
 				Disconnect();
+				connection.Dispose();
 			}
 		}
 

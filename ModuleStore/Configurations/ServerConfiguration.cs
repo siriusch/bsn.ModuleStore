@@ -41,13 +41,14 @@ namespace bsn.ModuleStore.Console.Configurations {
 		}
 
 		public void ShowConfiguration(ExecutionContext executionContext, IDictionary<string, object> parameters) {
-			executionContext.Output.WriteLine("Server: {0}", executionContext.Server);
-			executionContext.Output.WriteLine("Database: {0} (exists: {1})", executionContext.Database, executionContext.DatabaseInstance != null);
-			executionContext.Output.WriteLine("Connected: {0}", executionContext.Connected);
-			string connectionString = executionContext.GetConnectionString();
-			executionContext.Output.WriteLine("Connection string: {0}", connectionString);
-			if (executionContext.DatabaseInstance != null) {
+			if (executionContext.Connected) {
+				executionContext.Output.WriteLine("Server: {0}", executionContext.Server);
+				executionContext.Output.WriteLine("Database: {0}", executionContext.Database);
+				string connectionString = executionContext.GetConnectionString();
+				executionContext.Output.WriteLine("Connection string: {0}", connectionString);
 				executionContext.Output.WriteLine("Database Type: {0}", ModuleDatabase.GetDatabaseType(connectionString));
+			} else {
+				executionContext.Output.WriteLine("Not Connected");
 			}
 		}
 

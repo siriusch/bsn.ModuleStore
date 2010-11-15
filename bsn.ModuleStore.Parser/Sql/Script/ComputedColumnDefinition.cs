@@ -36,8 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ComputedColumnDefinition: ColumnDefinition {
 		private readonly Expression expression;
 
-		[Rule("<ColumnDefinition> ::= ~AS <Expression>")]
-		public ComputedColumnDefinition(Expression expression) {
+		[Rule("<ColumnDefinition> ::= ~AS <Expression> <ComputedColumnConstraintList>")]
+		public ComputedColumnDefinition(Expression expression, Sequence<ColumnConstraint> constraints): base(constraints) {
 			Debug.Assert(expression != null);
 			this.expression = expression;
 		}
@@ -51,6 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("AS ");
 			writer.WriteScript(expression, WhitespacePadding.None);
+			base.WriteTo(writer);
 		}
 	}
 }

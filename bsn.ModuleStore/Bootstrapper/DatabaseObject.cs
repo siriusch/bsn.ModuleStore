@@ -27,43 +27,32 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
+using System;
+using System.Xml.Linq;
+
 using bsn.ModuleStore.Mapper;
-using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Bootstrapper {
 	internal class DatabaseObject {
-		[SqlColumn("iObject", Identity = true)]
-		private int id;
+		[SqlColumn("xDefinition")]
+		private readonly XDocument definition;
+
+		[SqlColumn("sName")]
+		private readonly string objectName;
 
 		[SqlColumn("sSchema")]
-		private string schemaName;
+		private readonly string schemaName;
 
-		[SqlColumn("sObject")]
-		private string objectName;
-
-		[SqlColumn("sType")]
-		private string type;
-
-		[SqlColumn("sDefinition")]
-		private string definition;
-
-		internal DatabaseObject(int id, string schemaName, string objectName, string type, string definition) {
-			this.id = id;
+		internal DatabaseObject(string schemaName, string objectName, XDocument definition) {
 			this.schemaName = schemaName;
 			this.objectName = objectName;
-			this.type = type;
 			this.definition = definition;
 		}
 
-		public int Id {
+		public XDocument Definition {
 			get {
-				return id;
-			}
-		}
-
-		public string SchemaName {
-			get {
-				return schemaName;
+				return definition;
 			}
 		}
 
@@ -73,40 +62,9 @@ namespace bsn.ModuleStore.Bootstrapper {
 			}
 		}
 
-		public ObjectCategory Category {
+		public string SchemaName {
 			get {
-				switch (type) {
-				case "U":
-					return ObjectCategory.Table;
-				case "V":
-					return ObjectCategory.View;
-				case "TR":
-					return ObjectCategory.Trigger;
-				case "P":
-					//				case "PC":
-					return ObjectCategory.Procedure;
-				case "FN":
-				case "IF":
-				case "TF":
-					//				case "FS":
-					//				case "FT":
-					//				case "AF":
-					return ObjectCategory.Function;
-				default:
-					return ObjectCategory.None;
-				}
-			}
-		}
-
-		public string Type {
-			get {
-				return type;
-			}
-		}
-
-		public string Definition {
-			get {
-				return definition;
+				return schemaName;
 			}
 		}
 	}

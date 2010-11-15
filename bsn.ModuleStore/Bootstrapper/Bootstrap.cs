@@ -68,7 +68,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public static void InitializeModuleStore(ModuleDatabase database) {
 			bool commit = false;
-			database.BeginSmoTransaction();
+			database.ManagementConnectionProvider.BeginTransaction();
 			try {
 				Debug.WriteLine(DateTime.Now, "Got ModuleStore proxy");
 				string dbName;
@@ -91,17 +91,17 @@ namespace bsn.ModuleStore.Bootstrapper {
 				}
 				commit = true;
 			} finally {
-				database.EndSmoTransaction(commit);
+				database.ManagementConnectionProvider.EndTransaction(commit);
 			}
 			Debug.WriteLine(DateTime.Now, "End DB initialization");
 		}
 
 		private static void CreateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {
-			database.BeginSmoTransaction();
+			database.ManagementConnectionProvider.BeginTransaction();
 			bool commit = false;
 			try {
 				database.CreateInstanceDatabaseSchema(cache.AssemblyInfo.Inventory, "ModuleStore");
-				using (SqlCommand command = database.SmoConnectionProvider.GetConnection().CreateCommand()) {
+				using (SqlCommand command = database.ManagementConnectionProvider.GetConnection().CreateCommand()) {
 					command.CommandType = CommandType.Text;
 					command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
 					command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyInfo.AssemblyGuid);
@@ -112,7 +112,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 				}
 				commit = true;
 			} finally {
-				database.EndSmoTransaction(commit);
+				database.ManagementConnectionProvider.EndTransaction(commit);
 			}
 			Trace.WriteLine(string.Format("Installed ModuleStore in database {0}", dbName));
 		}

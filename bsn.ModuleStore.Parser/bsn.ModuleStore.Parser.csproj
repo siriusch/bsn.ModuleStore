@@ -68,6 +68,7 @@
     <Compile Include="Sql\Script\AnyStatement.cs" />
     <Compile Include="Sql\Script\BeginTransactionStatement.cs" />
     <Compile Include="Sql\Script\BeginTransactionWithMarkStatement.cs" />
+    <Compile Include="Sql\Script\ColumnPersistedConstraint.cs" />
     <Compile Include="Sql\Script\CombinedKeyword.cs" />
     <Compile Include="Sql\Script\CommitTransactionStatement.cs" />
     <Compile Include="Sql\Script\ConstraintDefaultFunctionValue.cs" />

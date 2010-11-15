@@ -44,8 +44,5 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		[SqlProcedure("spModuleUpdate.sql", UseReturnValue = SqlReturnValue.ReturnValue)]
 		bool Update(Guid id, string assemblyName, byte[] setupHash, int updateVersion);
-
-		[SqlProcedure("spUserObjectList.sql")]
-		ResultSet<DatabaseObject, ResultSet<DatabaseIndex, ResultSet<DatabaseXmlSchema>>> UserObjectList(string schemaName);
 	}
 }

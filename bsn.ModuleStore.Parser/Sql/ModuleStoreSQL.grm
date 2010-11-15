@@ -926,7 +926,7 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                              |
 
 <ColumnDefinition> ::= <TypeNameQualified> <ColumnConstraintList>
-                     | AS <Expression>
+                     | AS <Expression> <ComputedColumnConstraintList>
 
 <ColumnConstraintList> ::= <ColumnConstraint> <ColumnConstraintList>
                          | 
@@ -938,6 +938,13 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                      | ROWGUIDCOL
                      | NOT NULL
                      | NULL
+
+<ComputedColumnConstraintList> ::= <ComputedColumnConstraint> <ComputedColumnConstraintList>
+                                 | 
+
+<ComputedColumnConstraint> ::= <NamedColumnConstraint>
+                             | PERSISTED
+                             | NOT NULL
 
 <NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> <ConstraintIndex>
                           | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> <ConstraintIndex>

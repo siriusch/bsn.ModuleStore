@@ -38,18 +38,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\bsn.GoldParser.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Smo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\Microsoft.SqlServer.Smo.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -62,10 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper\Bootstrap.cs" />
-    <Compile Include="Bootstrapper\DatabaseIndex.cs" />
-    <Compile Include="Bootstrapper\DatabaseIndexType.cs" />
     <Compile Include="Bootstrapper\DatabaseObject.cs" />
-    <Compile Include="Bootstrapper\DatabaseXmlSchema.cs" />
     <Compile Include="Bootstrapper\ModuleAssemblyInfo.cs" />
     <Compile Include="Mapper\ConnectionProvider.cs" />
     <Compile Include="Mapper\IConnectionProvider.cs" />
@@ -74,6 +59,7 @@
     <Compile Include="Mapper\MetadataExtension.cs" />
     <Compile Include="Mapper\ResultSet.cs" />
     <Compile Include="Mapper\ResultSetBase.cs" />
+    <Compile Include="Mapper\ManagementConnectionProvider.cs" />
     <Compile Include="Mapper\SqlDeserializerTypeInfo.cs" />
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />
@@ -87,7 +73,6 @@
     <Compile Include="Mapper\SqlCallParameterInfo.cs" />
     <Compile Include="Mapper\SqlCallProcedureInfo.cs" />
     <Compile Include="Mapper\SqlCallProxy.cs" />
-    <Compile Include="Mapper\SmoConnectionProvider.cs" />
     <Compile Include="SqlAssemblyAttribute.cs" />
     <Compile Include="Mapper\SqlColumnAttribute.cs" />
     <Compile Include="Mapper\SqlDeserializeAttribute.cs" />
@@ -133,7 +118,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Bootstrapper\spUserObjectList.sql" />
+    <EmbeddedResource Include="Sql\UserObjectList.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\UserObjectScripter.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -127,7 +127,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("OUTER")]
 	[Terminal("OVER")]
 	[Terminal("PLAN")]
-	[Terminal("PRECISION")]
 	[Terminal("PRINT")]
 	[Terminal("PROCEDURE")]
 	[Terminal("PUBLIC")]
