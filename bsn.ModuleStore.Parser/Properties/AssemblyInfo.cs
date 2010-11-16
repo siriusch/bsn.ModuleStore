@@ -38,7 +38,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("bsn.ModuleStore.Parser")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("bsn.ModuleStore.Parser")]
 [assembly: AssemblyCopyright("Copyright © Arsène von Wyss 2010")]
 [assembly: AssemblyTrademark("")]
@@ -77,4 +77,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.1.*")]
