@@ -37,8 +37,8 @@ using System.Text.RegularExpressions;
 namespace bsn.ModuleStore.Bootstrapper {
 	internal class ModuleInstanceCache {
 		private static readonly Regex rxPrefixExtractor = new Regex(@"[^#@\.\s]+$", RegexOptions.CultureInvariant|RegexOptions.RightToLeft);
-		private readonly ModuleAssemblyInfo assemblyInfo;
 
+		private readonly ModuleAssemblyInfo assemblyInfo;
 		private readonly SortedList<string, ModuleInstance> instances = new SortedList<string, ModuleInstance>(StringComparer.OrdinalIgnoreCase);
 		private readonly ModuleDatabase owner;
 		private bool dirty;

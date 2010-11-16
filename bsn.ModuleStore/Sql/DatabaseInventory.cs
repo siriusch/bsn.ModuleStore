@@ -83,6 +83,7 @@ namespace bsn.ModuleStore.Sql {
 			if (database == null) {
 				throw new ArgumentNullException("database");
 			}
+			this.schemaName = schemaName;
 			using (SqlCommand command = database.GetConnection().CreateCommand()) {
 				command.Transaction = database.GetTransaction();
 				command.CommandType = CommandType.Text;

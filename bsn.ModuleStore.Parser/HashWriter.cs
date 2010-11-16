@@ -36,9 +36,20 @@ using System.Text;
 namespace bsn.ModuleStore {
 	public class HashWriter: TextWriter, IEquatable<HashWriter> {
 		public static bool HashEqual(byte[] x, byte[] y) {
-			if ((x != null) && (y != null) && (x.Length == y.Length)) {
-				for (int i = 0; i < x.Length; i++) {
+			if ((x != null) && (y != null)) {
+				int commonLength = Math.Min(x.Length, y.Length);
+				for (int i = 0; i < commonLength; i++) {
 					if (x[i] != y[i]) {
+						return false;
+					}
+				}
+				for (int i = commonLength; i < x.Length; i++) {
+					if (x[i] != 0) {
+						return false;
+					}
+				}
+				for (int i = commonLength; i < y.Length; i++) {
+					if (y[i] != 0) {
 						return false;
 					}
 				}

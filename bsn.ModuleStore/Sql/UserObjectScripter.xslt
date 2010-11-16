@@ -132,7 +132,7 @@
 					<xsl:text xml:space="preserve"> </xsl:text>
 					<xsl:value-of select="@Type"/>
 					<xsl:call-template name="IndexColumns">
-						<xsl:with-param name="indent" select="'    '" />
+						<xsl:with-param name="indent" select="'  '" />
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:when test="self::ForeignKeyConstraint">
@@ -186,31 +186,27 @@
 			<xsl:value-of select="@Name"/>
 			<xsl:text xml:space="preserve"> ON </xsl:text>
 			<xsl:value-of select="../@Name"/>
-			<xsl:call-template name="IndexColumns">
-				<xsl:with-param name="indent" select="'    '" />
-			</xsl:call-template>
+			<xsl:call-template name="IndexColumns" />
 		</xsl:for-each>
 	</xsl:template>
 
 	<xsl:template name="IndexColumns">
-		<xsl:param name="indent" select="'  '" />
+		<xsl:param name="indent" select="''" />
 		<xsl:text xml:space="preserve"> (
 </xsl:text>
-		<xsl:value-of select="$indent"/>
 		<xsl:for-each select="Column">
+			<xsl:value-of select="$indent"/>
 			<xsl:text xml:space="preserve">  </xsl:text>
 			<xsl:value-of select="@Name" />
 			<xsl:if test="@Order">
 				<xsl:text xml:space="preserve"> </xsl:text>
 				<xsl:value-of select="@Order"/>
 			</xsl:if>
-			<xsl:if test="position()!=last()">
-				<xsl:text xml:space="preserve">,</xsl:text>
-			</xsl:if>
+			<xsl:if test="position()!=last()">,</xsl:if>
 			<xsl:text xml:space="preserve">
 </xsl:text>
-			<xsl:value-of select="$indent"/>
 		</xsl:for-each>
+		<xsl:value-of select="$indent"/>
 		<xsl:text xml:space="preserve">) WITH </xsl:text>
 		<xsl:choose>
 			<xsl:when test="@FillFactor">
@@ -255,10 +251,5 @@
 		<xsl:text xml:space="preserve">';
 
 </xsl:text>
-	</xsl:template>
-
-	<xsl:template match="*" mode="text">
-		<xsl:text>&lt;</xsl:text>
-		
 	</xsl:template>
 </xsl:stylesheet>
