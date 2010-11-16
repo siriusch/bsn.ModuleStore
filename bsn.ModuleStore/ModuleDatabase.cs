@@ -177,6 +177,7 @@ namespace bsn.ModuleStore {
 			AssertSmoTransaction();
 			foreach (string sql in inventory.GenerateInstallSql(moduleSchema)) {
 				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
+					command.Transaction = managementConnectionProvider.GetTransaction();
 					command.CommandType = CommandType.Text;
 					command.CommandText = sql;
 					command.ExecuteNonQuery();
@@ -198,6 +199,7 @@ namespace bsn.ModuleStore {
 				DebugWriteFirstLines(sql);
 				hasChanges = true;
 				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
+					command.Transaction = managementConnectionProvider.GetTransaction();
 					command.CommandType = CommandType.Text;
 					command.CommandText = sql;
 					command.ExecuteNonQuery();

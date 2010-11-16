@@ -102,6 +102,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 			try {
 				database.CreateInstanceDatabaseSchema(cache.AssemblyInfo.Inventory, "ModuleStore");
 				using (SqlCommand command = database.ManagementConnectionProvider.GetConnection().CreateCommand()) {
+					command.Transaction = database.ManagementConnectionProvider.GetTransaction();
 					command.CommandType = CommandType.Text;
 					command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
 					command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyInfo.AssemblyGuid);
