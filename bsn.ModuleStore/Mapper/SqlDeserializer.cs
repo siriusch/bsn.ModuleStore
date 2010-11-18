@@ -141,7 +141,7 @@ namespace bsn.ModuleStore.Mapper {
 				dataReader = deserializer.reader;
 				IDeserializationStateProvider stateProvider = provider as IDeserializationStateProvider;
 				if (stateProvider != null) {
-					state = new SortedDictionary<string, object>();
+					state = new SortedDictionary<string, object>(StringComparer.Ordinal);
 					stateProvider.BeginDeserialize(state);
 				}
 			}

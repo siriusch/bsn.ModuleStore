@@ -57,6 +57,7 @@
     <Compile Include="Mapper\IDeserializationStateProvider.cs" />
     <Compile Include="Mapper\IIdentifiable.cs" />
     <Compile Include="Mapper\IInstanceProvider.cs" />
+    <Compile Include="Mapper\SingleInstanceProvider.cs" />
     <Compile Include="Mapper\MetadataExtension.cs" />
     <Compile Include="Mapper\ResultSet.cs" />
     <Compile Include="Mapper\ResultSetBase.cs" />
