@@ -123,6 +123,7 @@ namespace bsn.ModuleStore.Mapper {
 			private readonly Guid contextId = Guid.NewGuid();
 			private readonly SqlDataReader dataReader;
 			private readonly IDictionary<SqlDeserializer, object[]> buffers = new Dictionary<SqlDeserializer, object[]>();
+			private readonly IDictionary<string, object> state;
 			private readonly IInstanceProvider provider;
 			private XmlNameTable nameTable;
 			private XmlDocument xmlDocument;
@@ -138,8 +139,10 @@ namespace bsn.ModuleStore.Mapper {
 				this.callConstructor = callConstructor;
 				this.nameTable = nameTable;
 				dataReader = deserializer.reader;
-				if (provider != null) {
-					provider.BeginDeserialize(contextId);
+				IDeserializationStateProvider stateProvider = provider as IDeserializationStateProvider;
+				if (stateProvider != null) {
+					state = new SortedDictionary<string, object>();
+					stateProvider.BeginDeserialize(state);
 				}
 			}
 
@@ -187,8 +190,9 @@ namespace bsn.ModuleStore.Mapper {
 			}
 
 			public void Dispose() {
-				if (provider != null) {
-					provider.EndDeserialize(contextId);
+				IDeserializationStateProvider stateProvider = provider as IDeserializationStateProvider;
+				if (stateProvider != null) {
+					stateProvider.EndDeserialize(state);
 				}
 			}
 		}

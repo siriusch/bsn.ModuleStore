@@ -28,10 +28,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace bsn.ModuleStore.Mapper {
-	public interface IInstanceProvider {
-		bool TryGetInstance(Type instanceType, object identity, out object instance);
+	public interface IDeserializationStateProvider {
+		void BeginDeserialize(IDictionary<string, object> state);
+		void EndDeserialize(IDictionary<string, object> state);
 	}
 }
