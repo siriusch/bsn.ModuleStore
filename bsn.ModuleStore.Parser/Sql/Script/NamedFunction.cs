@@ -49,6 +49,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		private NamedFunction(Qualified<SchemaName, FunctionName> functionName, List<Expression> arguments) {
 			Debug.Assert(functionName != null);
 			this.functionName = functionName;
+			if ((!functionName.IsQualified) && (functionName.Name.IsBuiltinFunction)) {
+				functionName.LockOverride();
+			}
 			this.arguments = arguments;
 		}
 

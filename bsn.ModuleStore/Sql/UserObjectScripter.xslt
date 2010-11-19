@@ -36,7 +36,8 @@
 	</xsl:template>
 
 	<xsl:template match="Function|Procedure|View|Trigger" mode="script">
-		<xsl:copy-of select="." />
+		<xsl:value-of select="SQL" />
+		<xsl:call-template name="Indexes" />
 	</xsl:template>
 
 	<xsl:template match="Table" mode="script">
@@ -173,6 +174,10 @@
 		</xsl:for-each>
 		<xsl:text xml:space="preserve">
 )</xsl:text>
+		<xsl:call-template name="Indexes" />
+	</xsl:template>
+
+	<xsl:template name="Indexes">
 		<xsl:for-each select="Index[not((@PrimaryKey=1) or (@UniqueConstraint=1))]">
 			<xsl:text xml:space="preserve">;
 
@@ -189,7 +194,7 @@
 			<xsl:call-template name="IndexColumns" />
 		</xsl:for-each>
 	</xsl:template>
-
+	
 	<xsl:template name="IndexColumns">
 		<xsl:param name="indent" select="''" />
 		<xsl:text xml:space="preserve"> (

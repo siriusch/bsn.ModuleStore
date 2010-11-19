@@ -30,9 +30,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class InstallableInventory: Inventory {
@@ -58,10 +60,18 @@ namespace bsn.ModuleStore.Sql {
 					sqlWriter.IncreaseIndent();
 					sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
 					foreach (CreateStatement statement in Objects) {
-						if ((statement is CreateTableStatement) || (statement is CreateViewStatement)) {
+						CreateTableStatement createTable = statement as CreateTableStatement;
+						if (createTable != null) {
 							resolver.AddExistingObject(statement.ObjectName);
 							sqlWriter.WriteLine();
-							statement.WriteTo(sqlWriter);
+							createTable.WriteTo(sqlWriter, delegate(TableDefinition definition) {
+							                               	AlterTableAddStatement alterTableStatement = new AlterTableAddStatement(createTable.TableName, new TableWithNocheckToken(), new Sequence<TableDefinition>(definition));
+							                               	if (alterTableStatement.GetReferencedObjectNames<FunctionName>().Any()) {
+							                               		resolver.Add(alterTableStatement);
+							                               		return null;
+							                               	}
+							                               	return definition;
+							                               });
 						} else {
 							resolver.Add(statement);
 						}

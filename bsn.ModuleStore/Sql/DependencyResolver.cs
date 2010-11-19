@@ -45,7 +45,7 @@ namespace bsn.ModuleStore.Sql {
 			public DependencyNode(string objectName, Statement statement) {
 				this.objectName = objectName;
 				this.statement = statement;
-				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames().Where(n => !n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase))) {
+				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames<SqlName>().Where(n => !n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase))) {
 					edges.Add(referencedObjectName.Value);
 				}
 			}
@@ -69,7 +69,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		private readonly SortedList<string, DependencyNode> dependencies = new SortedList<string, DependencyNode>(StringComparer.OrdinalIgnoreCase);
+		private readonly SortedList<string, List<DependencyNode>> dependencies = new SortedList<string, List<DependencyNode>>(StringComparer.OrdinalIgnoreCase);
 		private readonly HashSet<string> existingObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public int State {
@@ -78,7 +78,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void Add(CreateStatement statement) {
+		public void Add<T>(T statement) where T: Statement, IObjectBoundStatement {
 			if (statement == null) {
 				throw new ArgumentNullException("statement");
 			}
@@ -86,13 +86,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public void Add(string objectName, Statement statement) {
-			if (statement == null) {
-				throw new ArgumentNullException("statement");
-			}
-			if (string.IsNullOrEmpty(objectName)) {
-				throw new ArgumentNullException("objectName");
-			}
-			dependencies.Add(objectName, new DependencyNode(objectName, statement));
+			AddDependency(objectName, statement);
 		}
 
 		public void AddExistingObject(string objectName) {
@@ -100,13 +94,14 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public IEnumerable<Statement> GetInOrder(bool throwOnCycle) {
-			Queue<DependencyNode> nodes = new Queue<DependencyNode>(dependencies.Values);
+			Queue<DependencyNode> nodes = new Queue<DependencyNode>(dependencies.Values.SelectMany(n => n));
+			// we start with obvious "direct dependencies"
+			HashSet<DependencyNode> directDependencies = GetDirectDependencies(nodes, n => existingObjectNames.Contains(n.Value));
 			int skipCount = 0;
 			while (nodes.Count > 0) {
 				DependencyNode node = nodes.Dequeue();
-				if (existingObjectNames.IsSupersetOf(node.Edges)) {
-					existingObjectNames.Add(node.ObjectName);
-					dependencies.Remove(node.ObjectName);
+				if (((directDependencies.Count == 0) || (directDependencies.Contains(node))) && CheckDependenciesExist(node)) {
+					RemoveDependency(node);
 					skipCount = 0;
 					StatementBlock block = node.Statement as StatementBlock;
 					if (block != null) {
@@ -133,8 +128,13 @@ namespace bsn.ModuleStore.Sql {
 							}
 						}
 					} else {
+						CreateStatement createStatement = node.Statement as CreateStatement;
+						if ((createStatement is CreateViewStatement) || (createStatement is CreateTableStatement)) {
+							directDependencies.UnionWith(GetDirectDependencies(nodes, n => n.Value.Equals(node.ObjectName, StringComparison.OrdinalIgnoreCase)));
+						}
 						yield return node.Statement;
 					}
+					directDependencies.IntersectWith(nodes);
 				} else {
 					nodes.Enqueue(node);
 					if (skipCount++ > nodes.Count) {
@@ -157,6 +157,73 @@ namespace bsn.ModuleStore.Sql {
 						yield break;
 					}
 				}
+			}
+		}
+
+		private void AddDependency(string objectName, Statement statement) {
+			if (statement == null) {
+				throw new ArgumentNullException("statement");
+			}
+			if (string.IsNullOrEmpty(objectName)) {
+				throw new ArgumentNullException("objectName");
+			}
+			List<DependencyNode> dependencyNodes;
+			if (!dependencies.TryGetValue(objectName, out dependencyNodes)) {
+				dependencyNodes = new List<DependencyNode>();
+				dependencies.Add(objectName, dependencyNodes);
+			}
+			dependencyNodes.Add(new DependencyNode(objectName, statement));
+		}
+
+		private bool CheckDependenciesExist(DependencyNode node) {
+			HashSet<string> effectiveExistingObjectNames = new HashSet<string>(existingObjectNames, existingObjectNames.Comparer);
+			effectiveExistingObjectNames.ExceptWith(dependencies.Keys);
+			return effectiveExistingObjectNames.IsSupersetOf(node.Edges);
+		}
+
+		private IEnumerable<DependencyNode> GetAllDependencies(DependencyNode node) {
+			HashSet<DependencyNode> result = new HashSet<DependencyNode>();
+			Queue<DependencyNode> queue = new Queue<DependencyNode>();
+			queue.Enqueue(node);
+			do {
+				DependencyNode dependencyNode = queue.Dequeue();
+				if (result.Add(dependencyNode)) {
+					foreach (string edge in dependencyNode.Edges) {
+						List<DependencyNode> dependencyNodes;
+						if (dependencies.TryGetValue(edge, out dependencyNodes)) {
+							foreach (DependencyNode innerDependency in dependencyNodes) {
+								queue.Enqueue(innerDependency);
+							}
+						}
+					}
+				}
+			} while (queue.Count > 0);
+			return result;
+		}
+
+		private HashSet<DependencyNode> GetDirectDependencies(IEnumerable<DependencyNode> nodes, Func<SqlName, bool> isNameMatch) {
+			// in order to avoid trouble with indexes in queries (such as with the (NOEXPAND) hint) we process indexes and table modifiations in a prioritized manner
+			HashSet<DependencyNode> result = new HashSet<DependencyNode>();
+			foreach (DependencyNode dependencyNode in nodes) {
+				CreateIndexStatement createIndex = dependencyNode.Statement as CreateIndexStatement;
+				if ((createIndex != null) && isNameMatch(createIndex.TableName.Name)) {
+					result.UnionWith(GetAllDependencies(dependencyNode));
+				} else {
+					AlterTableStatement alterTable = dependencyNode.Statement as AlterTableStatement;
+					if ((alterTable != null) && isNameMatch(alterTable.TableName.Name)) {
+						result.UnionWith(GetAllDependencies(dependencyNode));
+					}
+				}
+			}
+			return result;
+		}
+
+		private void RemoveDependency(DependencyNode node) {
+			List<DependencyNode> dependencyNodes = dependencies[node.ObjectName];
+			dependencyNodes.Remove(node);
+			if (dependencyNodes.Count == 0) {
+				dependencies.Remove(node.ObjectName);
+				existingObjectNames.Add(node.ObjectName);
 			}
 		}
 	}

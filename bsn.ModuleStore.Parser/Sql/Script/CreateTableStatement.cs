@@ -29,6 +29,7 @@
 //  
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script;
@@ -79,12 +80,19 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			WriteTo(writer, definition => definition);
+		}
+
+		public void WriteTo(SqlWriter writer, Func<TableDefinition, TableDefinition> definitionRewriter) {
+			if (definitionRewriter == null) {
+				throw new ArgumentNullException("definitionRewriter");
+			}
 			WriteCommentsTo(writer);
 			writer.Write("CREATE TABLE ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.Write(" (");
 			writer.IncreaseIndent();
-			writer.WriteScriptSequence(definitions, WhitespacePadding.NewlineBefore, ",");
+			writer.WriteScriptSequence(definitions.Select(definitionRewriter), WhitespacePadding.NewlineBefore, ",");
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');

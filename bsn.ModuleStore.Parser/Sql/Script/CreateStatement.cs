@@ -29,16 +29,13 @@
 //  
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateStatement: DdlStatement {
+	public abstract class CreateStatement: DdlStatement, IObjectBoundStatement {
 		private readonly List<IQualifiedName<SchemaName>> schemaQualifiedNames = new List<IQualifiedName<SchemaName>>();
 
 		public abstract ObjectCategory ObjectCategory {
-			get;
-		}
-
-		public abstract string ObjectName {
 			get;
 		}
 
@@ -64,11 +61,18 @@ namespace bsn.ModuleStore.Sql.Script {
 		internal IEnumerable<IQualifiedName<SchemaName>> GetObjectSchemaQualifiedNames() {
 			if (schemaQualifiedNames.Count == 0) {
 				string schemaName = GetObjectSchema();
-				foreach (IQualifiedName<SchemaName> innerSchemaQualifiedName in GetInnerSchemaQualifiedNames(n => n.Equals(schemaName, StringComparison.OrdinalIgnoreCase))) {
-					schemaQualifiedNames.Add(innerSchemaQualifiedName);
+				foreach (IQualifiedName<SchemaName> innerSchemaQualifiedName in GetInnerSchemaQualifiedNames(n => n.Equals(schemaName, StringComparison.OrdinalIgnoreCase)).Where(qn => !qn.LockedOverride)) {
+					FunctionName functionName = innerSchemaQualifiedName.Name as FunctionName;
+					if ((functionName == null) || (!functionName.IsBuiltinFunction)) {
+						schemaQualifiedNames.Add(innerSchemaQualifiedName);
+					}
 				}
 			}
 			return schemaQualifiedNames;
+		}
+
+		public abstract string ObjectName {
+			get;
 		}
 	}
 }

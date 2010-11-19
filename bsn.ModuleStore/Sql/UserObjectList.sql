@@ -2,17 +2,44 @@
     -- Types 'AF', 'FS', 'FT', 'PC', 'TA' are not yet implemented!
 		CASE [o].[type] 
     WHEN 'FN' THEN
-			CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('Function'), TYPE))
+			CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
+					SELECT 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('SQL'), TYPE
+			) FOR XML PATH ('Function'), TYPE))
     WHEN 'IF' THEN
-      CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('Function'), TYPE))
+      CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
+					SELECT 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('SQL'), TYPE
+			) FOR XML PATH ('Function'), TYPE))
     WHEN 'TF' THEN
-      CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('Function'), TYPE))
+      CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
+					SELECT 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('SQL'), TYPE
+			) FOR XML PATH ('Function'), TYPE))
 	  WHEN 'P' THEN
-      CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('Procedure'), TYPE))
+      CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
+					SELECT 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('SQL'), TYPE
+			) FOR XML PATH ('Procedure'), TYPE))
     WHEN 'V' THEN
-			CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('View'), TYPE))
+			CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
+					SELECT 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('SQL'), TYPE
+			), (
+                    SELECT '['+[i].[name]+']' AS [@Name], [i].[type_desc] AS [@Type], NULLIF(CONVERT(bit, [i].[is_unique]), 0) AS [@Unique], NULLIF(CONVERT(bit, [i].[ignore_dup_key]), 0) AS [@IgnoreDuplicateKeys], NULLIF(CONVERT(bit, [i].[is_primary_key]), 0) AS [@PrimaryKey], NULLIF(CONVERT(bit, [i].[is_unique_constraint]), 0) AS [@UniqueConstraint], NULLIF(CONVERT(bit, [i].[allow_page_locks]), 0) AS [@AllowPageLocks], NULLIF(CONVERT(bit, [i].[allow_row_locks]), 0) AS [@AllowRowLocks], NULLIF(CONVERT(bit, [i].[is_padded]), 0) AS [@Padded], NULLIF([i].[fill_factor], 0) AS [@FillFactor], (
+                            SELECT '['+[c].[name]+']' AS [@Name], CASE [ic].[is_descending_key]
+                                WHEN 0 THEN 'ASC'
+                                WHEN 1 THEN 'DESC'
+                                END AS [@Order], NULLIF([ic].[is_included_column], 0) AS [@IsIncludedColumn]
+                            FROM [sys].[index_columns] AS [ic]
+                            JOIN [sys].[columns] AS [c] ON ([ic].[column_id]=[c].[column_id]) AND ([i].[object_id]=[c].[object_id])
+                            WHERE ([ic].[object_id]=[i].[object_id]) AND ([ic].[index_id]=[i].[index_id])
+                            ORDER BY [ic].[key_ordinal] FOR XML PATH ('Column'), TYPE
+                        )
+                    FROM [sys].[indexes] AS [i]
+                    WHERE ([i].[object_id]=[o].[object_id]) AND ([i].[type]>0)
+                    ORDER BY [i].[is_primary_key], [i].[name] FOR XML PATH ('Index'), TYPE
+                ) FOR XML PATH ('View'), TYPE
+          ))
     WHEN 'TR' THEN
-      CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('Trigger'), TYPE))
+      CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
+					SELECT 'preserve' AS [@xml:space], OBJECT_DEFINITION([o].[object_id]) FOR XML PATH ('SQL'), TYPE
+			) FOR XML PATH ('Trigger'), TYPE))
     WHEN 'U' THEN
 			CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
                     SELECT '['+[c].[name]+']' AS [@Name], [cc].[definition] AS [@Definition], [cc].[is_persisted] AS [@Persisted], CASE

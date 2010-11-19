@@ -47,6 +47,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			                      	if (!name.LockedOverride) {
 			                      		SchemaName qualification = name.Qualification;
 			                      		if (qualification != null) {
+																	Debug.Assert(!string.IsNullOrEmpty(qualification.Value));
 			                      			return checkSchemaName(qualification.Value);
 			                      		}
 			                      		if (((name.Name is TableName) || (name.Name is ViewName)) && scope.ContainsName(name.Name.Value)) {

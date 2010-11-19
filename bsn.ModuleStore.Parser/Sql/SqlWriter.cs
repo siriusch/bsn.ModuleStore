@@ -141,6 +141,7 @@ namespace bsn.ModuleStore.Sql {
 		public void WriteEnum(TableCheck tableCheck, WhitespacePadding padding) {
 			if (tableCheck != TableCheck.Unspecified) {
 				PaddingBefore(padding);
+				Write("WITH ");
 				switch (tableCheck) {
 				case TableCheck.Check:
 					Write("CHECK");

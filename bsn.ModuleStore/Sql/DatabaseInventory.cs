@@ -99,7 +99,7 @@ namespace bsn.ModuleStore.Sql {
 						using (StringWriter writer = new StringWriter(builder)) {
 							SqlXml xml = reader.GetSqlXml(definitionColumn);
 							scripter.Transform(xml.CreateReader(), arguments, writer);
-							TraceXmlToSql(xml, writer);
+//							TraceXmlToSql(xml, writer);
 						}
 						try {
 							try {

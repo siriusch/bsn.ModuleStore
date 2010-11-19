@@ -35,7 +35,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class AlterTableAddStatement: AlterTableStatement, IApplicableTo<CreateTableStatement> {
+	public class AlterTableAddStatement: AlterTableStatement, IApplicableTo<CreateTableStatement>, IObjectBoundStatement {
 		private readonly TableCheck check;
 		private readonly List<TableDefinition> definitions;
 
@@ -50,6 +50,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public IEnumerable<TableDefinition> Definitions {
 			get {
 				return definitions;
+			}
+		}
+
+		string IObjectBoundStatement.ObjectName {
+			get {
+				return TableName.Name.Value;
 			}
 		}
 

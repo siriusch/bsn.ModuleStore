@@ -38,6 +38,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		bool LockedOverride {
 			get;
 		}
+
 		SqlName Name {
 			get;
 		}

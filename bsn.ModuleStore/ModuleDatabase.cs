@@ -176,6 +176,7 @@ namespace bsn.ModuleStore {
 			}
 			AssertSmoTransaction();
 			foreach (string sql in inventory.GenerateInstallSql(moduleSchema)) {
+				Debug.WriteLine(sql, "SQL install");
 				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
 					command.Transaction = managementConnectionProvider.GetTransaction();
 					command.CommandType = CommandType.Text;

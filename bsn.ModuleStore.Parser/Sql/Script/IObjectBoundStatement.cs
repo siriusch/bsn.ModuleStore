@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -30,11 +30,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class Statement: CommentContainerToken {
-		public IEnumerable<T> GetReferencedObjectNames<T>() where T: SqlName {
-			return GetInnerTokens<IQualifiedName<SchemaName>>((qn, scope) => (!qn.LockedOverride) && qn.IsOverridden, null).Select(qn => qn.Name).OfType<T>().Distinct();
+	public interface IObjectBoundStatement {
+		string ObjectName {
+			get;
 		}
 	}
 }

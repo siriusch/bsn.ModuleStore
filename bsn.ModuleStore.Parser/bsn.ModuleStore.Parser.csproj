@@ -92,6 +92,7 @@
     <Compile Include="Sql\Script\IndexUsingProperty.cs" />
     <Compile Include="Sql\Script\IndexUsingValue.cs" />
     <Compile Include="Sql\Script\IntersectClause.cs" />
+    <Compile Include="Sql\Script\IObjectBoundStatement.cs" />
     <Compile Include="Sql\Script\KeywordFunction.cs" />
     <Compile Include="Sql\Script\Label.cs" />
     <Compile Include="Sql\Script\QueryOptions.cs" />

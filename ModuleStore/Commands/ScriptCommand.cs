@@ -66,7 +66,8 @@ namespace bsn.ModuleStore.Console.Commands {
 					if (objectDirectories) {
 						categoryName = statement.ObjectCategory+"s\\";
 					}
-					string fileRelativePath = string.Format("{0}{1}.sql", categoryName, statement.ObjectName);
+					string objectName = statement.ObjectName;
+					string fileRelativePath = string.Format("{0}{1}.sql", categoryName, objectName);
 					executionContext.Output.WriteLine("* Scripting {0}", fileRelativePath);
 					FileInfo scriptFileName = new FileInfo(Path.Combine(baseDirectory.FullName, fileRelativePath));
 					filesToDelete.Remove(scriptFileName.FullName);
@@ -80,13 +81,10 @@ namespace bsn.ModuleStore.Console.Commands {
 							SqlWriter sqlWriter = new SqlWriter(writer);
 							statement.WriteTo(sqlWriter);
 							sqlWriter.WriteLine(";");
-							CreateTableStatement createTableStatement = statement as CreateTableStatement;
-							if (createTableStatement != null) {
-								foreach (CreateIndexStatement createIndexStatement in inventory.Objects.OfType<CreateIndexStatement>().Where(s => s.TableName.Name.Equals(createTableStatement.TableName.Name)).OrderBy(s => s.IndexName.Value)) {
-									writer.WriteLine();
-									createIndexStatement.WriteTo(sqlWriter);
-									sqlWriter.WriteLine(";");
-								}
+							foreach (CreateIndexStatement createIndexStatement in inventory.Objects.OfType<CreateIndexStatement>().Where(s => s.TableName.Name.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.IndexName.Value)) {
+								writer.WriteLine();
+								createIndexStatement.WriteTo(sqlWriter);
+								sqlWriter.WriteLine(";");
 							}
 						}
 					}
