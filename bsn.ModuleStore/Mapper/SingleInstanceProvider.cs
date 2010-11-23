@@ -106,6 +106,8 @@ namespace bsn.ModuleStore.Mapper {
 			throw new KeyNotFoundException(string.Format("A {0} instance with the identity {1} was not found in the cache", typeof(T).FullName, identity));
 		}
 
+		protected virtual void InstanceDeserialized(IDictionary<string, object> state, object instance) {}
+
 		protected bool TryGetFromCache<T>(TKey identity, out T item) where T: class {
 			WeakReference reference;
 			if (instances.TryGetValue(new TypeKey(typeof(T), identity), out reference)) {
@@ -142,6 +144,10 @@ namespace bsn.ModuleStore.Mapper {
 
 		void IDeserializationStateProvider.BeginDeserialize(IDictionary<string, object> state) {
 			BeginDeserialize(state);
+		}
+
+		void IDeserializationStateProvider.InstanceDeserialized(IDictionary<string, object> state, object instance) {
+			InstanceDeserialized(state, instance);
 		}
 
 		void IDeserializationStateProvider.EndDeserialize(IDictionary<string, object> state) {

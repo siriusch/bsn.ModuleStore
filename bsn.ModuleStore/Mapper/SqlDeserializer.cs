@@ -119,12 +119,13 @@ namespace bsn.ModuleStore.Mapper {
 	/// <seealso cref="SqlDeserializer{T}"/>
 	public class SqlDeserializer: IDisposable {
 		protected internal class DeserializerContext: IDisposable {
+			private readonly IDictionary<SqlDeserializer, object[]> buffers = new Dictionary<SqlDeserializer, object[]>();
 			private readonly bool callConstructor;
 			private readonly Guid contextId = Guid.NewGuid();
 			private readonly SqlDataReader dataReader;
-			private readonly IDictionary<SqlDeserializer, object[]> buffers = new Dictionary<SqlDeserializer, object[]>();
-			private readonly IDictionary<string, object> state;
 			private readonly IInstanceProvider provider;
+			private readonly IDictionary<string, object> state;
+			private readonly IDeserializationStateProvider stateProvider;
 			private XmlNameTable nameTable;
 			private XmlDocument xmlDocument;
 
@@ -139,7 +140,7 @@ namespace bsn.ModuleStore.Mapper {
 				this.callConstructor = callConstructor;
 				this.nameTable = nameTable;
 				dataReader = deserializer.reader;
-				IDeserializationStateProvider stateProvider = provider as IDeserializationStateProvider;
+				stateProvider = provider as IDeserializationStateProvider;
 				if (stateProvider != null) {
 					state = new SortedDictionary<string, object>(StringComparer.Ordinal);
 					stateProvider.BeginDeserialize(state);
@@ -189,8 +190,13 @@ namespace bsn.ModuleStore.Mapper {
 				return result;
 			}
 
+			internal void NotifyInstancePopulated(object instance) {
+				if (stateProvider != null) {
+					stateProvider.InstanceDeserialized(state, instance);
+				}
+			}
+
 			public void Dispose() {
-				IDeserializationStateProvider stateProvider = provider as IDeserializationStateProvider;
 				if (stateProvider != null) {
 					stateProvider.EndDeserialize(state);
 				}
@@ -366,6 +372,7 @@ namespace bsn.ModuleStore.Mapper {
 			object result = context.GetInstance(typeInfo.InstanceType, identity);
 			if (result != null) {
 				FormatterServices.PopulateObjectMembers(result, typeInfo.Mapping.Members, buffer);
+				context.NotifyInstancePopulated(result);
 				if (typeInfo.RequiresNotification) {
 					((ISqlDeserializationHook)result).AfterDeserialization();
 				}
