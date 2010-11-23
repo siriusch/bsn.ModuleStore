@@ -70,19 +70,11 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly Dictionary<TypeKey, WeakReference> instances = new Dictionary<TypeKey, WeakReference>();
 		private int lastCollection;
 
-		void IDeserializationStateProvider.BeginDeserialize(IDictionary<string, object> state) {
-			BeginDeserialize(state);
-		}
-
-		void IDeserializationStateProvider.EndDeserialize(IDictionary<string, object> state) {
-			EndDeserialize(state);
-		}
-
-		bool IInstanceProvider.TryGetInstance(Type instanceType, object identity, out object instance) {
-			return TryGetInstance(instanceType, identity, out instance);
-		}
-
 		protected virtual void BeginDeserialize(IDictionary<string, object> state) {}
+
+		protected virtual object CreateInstance(TypeKey key) {
+			return FormatterServices.GetUninitializedObject(key.Type);
+		}
 
 		protected virtual void EndDeserialize(IDictionary<string, object> state) {
 			// some simple heuristic to determine when to perform a cleanup run
@@ -100,6 +92,28 @@ namespace bsn.ModuleStore.Mapper {
 				}
 				lastCollection = GC.CollectionCount(GCGeneration);
 			}
+		}
+
+		protected T GetFromCache<T>(TKey identity) where T: class {
+			WeakReference reference;
+			if (instances.TryGetValue(new TypeKey(typeof(T), identity), out reference)) {
+				object result = reference.Target;
+				if (result != null) {
+					return (T)result;
+				}
+				throw new KeyNotFoundException(string.Format("The {0} instance with the identity {1} is no longer in the cache", typeof(T).FullName, identity));
+			}
+			throw new KeyNotFoundException(string.Format("A {0} instance with the identity {1} was not found in the cache", typeof(T).FullName, identity));
+		}
+
+		protected bool TryGetFromCache<T>(TKey identity, out T item) where T: class {
+			WeakReference reference;
+			if (instances.TryGetValue(new TypeKey(typeof(T), identity), out reference)) {
+				item = (T)reference.Target;
+				return item != null;
+			}
+			item = null;
+			return false;
 		}
 
 		protected virtual bool TryGetInstance(Type instanceType, object identity, out object instance) {
@@ -126,8 +140,16 @@ namespace bsn.ModuleStore.Mapper {
 			return false;
 		}
 
-		protected virtual object CreateInstance(TypeKey key) {
-			return FormatterServices.GetUninitializedObject(key.Type);
+		void IDeserializationStateProvider.BeginDeserialize(IDictionary<string, object> state) {
+			BeginDeserialize(state);
+		}
+
+		void IDeserializationStateProvider.EndDeserialize(IDictionary<string, object> state) {
+			EndDeserialize(state);
+		}
+
+		bool IInstanceProvider.TryGetInstance(Type instanceType, object identity, out object instance) {
+			return TryGetInstance(instanceType, identity, out instance);
 		}
 	}
 }
