@@ -90,6 +90,9 @@ namespace bsn.ModuleStore.Bootstrapper {
 					throw new InvalidOperationException(string.Format("The database {0} does not exist", dbName));
 				}
 				commit = true;
+			} catch (Exception ex) {
+				Trace.WriteLine(ex, "ModuleStore initialization failed");
+				throw;
 			} finally {
 				database.ManagementConnectionProvider.EndTransaction(commit);
 			}

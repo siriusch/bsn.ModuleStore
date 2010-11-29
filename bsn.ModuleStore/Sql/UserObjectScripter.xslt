@@ -219,32 +219,23 @@
 				<xsl:value-of select="@FillFactor"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:text xml:space="preserve">(PAD_INDEX=</xsl:text>
-				<xsl:call-template name="OnOff">
-					<xsl:with-param name="value" select="@Padded" />
-				</xsl:call-template>
-				<xsl:text xml:space="preserve">, STATISTICS_NORECOMPUTE=OFF, IGNORE_DUP_KEY=</xsl:text>
-				<xsl:call-template name="OnOff">
-					<xsl:with-param name="value" select="@IgnoreDuplicateKeys" />
-				</xsl:call-template>
-				<xsl:text xml:space="preserve">, ALLOW_ROW_LOCKS=</xsl:text>
-				<xsl:call-template name="OnOff">
-					<xsl:with-param name="value" select="@AllowRowLocks" />
-				</xsl:call-template>
-				<xsl:text xml:space="preserve">, ALLOW_PAGE_LOCKS=</xsl:text>
-				<xsl:call-template name="OnOff">
-					<xsl:with-param name="value" select="@AllowPageLocks" />
-				</xsl:call-template>
+				<xsl:text xml:space="preserve">(</xsl:text>
+				<xsl:if test="@Padded=1">
+					<xsl:text xml:space="preserve">PAD_INDEX=ON, </xsl:text>
+				</xsl:if>
+				<xsl:text xml:space="preserve">STATISTICS_NORECOMPUTE=OFF, IGNORE_DUP_KEY=</xsl:text>
+				<xsl:choose>
+					<xsl:when test="@IgnoreDuplicateKeys=1">ON</xsl:when>
+					<xsl:otherwise>OFF</xsl:otherwise>
+				</xsl:choose>
+				<xsl:if test="@AllowRowLocks=0">
+					<xsl:text xml:space="preserve">, ALLOW_ROW_LOCKS=OFF</xsl:text>
+				</xsl:if>
+				<xsl:if test="@AllowPageLocks=0">
+					<xsl:text xml:space="preserve">, ALLOW_PAGE_LOCKS=OFF</xsl:text>
+				</xsl:if>
 				<xsl:text>)</xsl:text>
 			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template name="OnOff">
-		<xsl:param name="value" />
-		<xsl:choose>
-			<xsl:when test="$value=1">ON</xsl:when>
-			<xsl:otherwise>OFF</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 

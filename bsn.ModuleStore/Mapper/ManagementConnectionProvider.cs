@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace bsn.ModuleStore.Mapper {
 	public sealed class ManagementConnectionProvider: IConnectionProvider, IDisposable {
@@ -75,8 +76,10 @@ namespace bsn.ModuleStore.Mapper {
 		public void BeginTransaction() {
 			lock (sync) {
 				if (transaction == null) {
+					Debug.WriteLine("Starting management transaction");
 					transaction = connection.BeginTransaction();
 				} else {
+					Debug.WriteLine("Creating management transaction savepoint");
 					string savepoint = Guid.NewGuid().ToString("N");
 					transaction.Save(savepoint);
 					savepoints.Push(savepoint);
@@ -86,20 +89,29 @@ namespace bsn.ModuleStore.Mapper {
 
 		public void EndTransaction(bool commit) {
 			lock (sync) {
+				Debug.WriteLine(string.Format("[Savepoints: {0}] [Commit: {1}]", savepoints.Count, commit), "Ending management transaction");
 				if (transaction == null) {
 					throw new InvalidOperationException("No open transaction");
 				}
 				if (savepoints.Count > 0) {
 					string savepoint = savepoints.Pop();
 					if (!commit) {
-						transaction.Rollback(savepoint);
+						try {
+							transaction.Rollback(savepoint);
+						} catch (SqlException ex) {
+							Trace.WriteLine(ex, "Rollback to savepoint failed");
+						}
 					}
 				} else {
 					try {
 						if (commit) {
 							transaction.Commit();
 						} else {
-							transaction.Rollback();
+							try {
+								transaction.Rollback();
+							} catch (SqlException ex) {
+								Trace.WriteLine(ex, "Rollback failed");
+							}
 						}
 					} finally {
 						try {

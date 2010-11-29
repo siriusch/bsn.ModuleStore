@@ -61,7 +61,10 @@
                         END AS [@Precision], CASE
                         WHEN (([ct].[name]='decimal') OR ([ct].[name]='numeric')) AND ([c].[scale]>0) THEN [c].[scale]
                         ELSE NULL
-                        END AS [@Scale], [c].[collation_name] AS [@Collation], CASE [dc].[is_system_named]
+                        END AS [@Scale], CASE
+                        WHEN ([ct].[name]<>'sysname') THEN [c].[collation_name] 
+                        ELSE NULL 
+                        END AS [@Collation], CASE [dc].[is_system_named]
                         WHEN 0 THEN '['+[dc].[name]+']'
                         ELSE NULL END AS [@DefaultName], [dc].[definition] AS [@Default], NULLIF(CONVERT(bit, [c].[is_rowguidcol]), 0) AS [@RowGuid], [ic].[seed_value] AS [@IdentitySeed], [ic].[seed_value] AS [@IdentityIncrement]
                     FROM [sys].[columns] AS [c]
@@ -115,12 +118,12 @@
     END AS [xDefinition]
     FROM [sys].[objects] AS [o]
     JOIN [sys].[schemas] AS [s] ON [o].[schema_id]=[s].[schema_id]
-    LEFT JOIN [sys].[extended_properties] AS [mdts] ON ([mdts].[name]='microsoft_database_tools_support') AND ([mdts].[class]='1') AND (CONVERT(bit, [mdts].[value])=1) AND ([o].[object_id]=[mdts].[major_id])
-    WHERE ([mdts].[class] IS NULL) AND ([o].[type] IN ('AF', 'FN', 'FS', 'FT', 'IF', 'P', 'PC', 'TA', 'TF', 'TR', 'U', 'V')) AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))
-    UNION ALL
+/*    LEFT JOIN [sys].[extended_properties] AS [mdts] ON ([mdts].[name]='microsoft_database_tools_support') AND ([mdts].[class]='1') AND (CONVERT(bit, [mdts].[value])=1) AND ([o].[object_id]=[mdts].[major_id]) */
+    WHERE /* ([mdts].[class] IS NULL) AND */ ([o].[type] IN ('AF', 'FN', 'FS', 'FT', 'IF', 'P', 'PC', 'TA', 'TF', 'TR', 'U', 'V')) AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))
+/*    UNION ALL
     SELECT [s].[name], [x].[name], (
             SELECT '['+[s].[name]+'].['+[x].[name]+']' AS [@Name], xml_schema_namespace([s].[name], [x].[name]) FOR XML PATH ('XmlSchemaCollection'), TYPE
         ) AS [xDefinition]
     FROM [sys].[xml_schema_collections] AS [x]
     JOIN [sys].[schemas] AS [s] ON [x].[schema_id]=[s].[schema_id]
-    WHERE ([s].[name]<>'sys') AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))
+    WHERE ([s].[name]<>'sys') AND ((@sSchema IS NULL) OR (@sSchema=[s].[name])) */
