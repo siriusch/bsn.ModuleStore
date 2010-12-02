@@ -36,7 +36,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 
 using bsn.ModuleStore.Bootstrapper;
 using bsn.ModuleStore.Mapper;
@@ -46,8 +45,14 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore {
 	public class ModuleDatabase: IDisposable {
 		public static DatabaseType GetDatabaseType(string connectionString) {
-			string dummy;
-			return Bootstrap.GetDatabaseType(connectionString, out dummy);
+			using (SqlConnection connection = new SqlConnection(connectionString)) {
+				connection.Open();
+				return GetDatabaseType(connection);
+			}
+		}
+
+		public static DatabaseType GetDatabaseType(SqlConnection connection) {
+			return Bootstrap.GetDatabaseType(connection);
 		}
 
 		[Conditional("DEBUG")]
@@ -79,8 +84,8 @@ namespace bsn.ModuleStore {
 		private readonly bool autoUpdate;
 		private readonly string connectionString;
 		private readonly Dictionary<Assembly, ModuleInstanceCache> instances = new Dictionary<Assembly, ModuleInstanceCache>();
-		private readonly IModules moduleStore;
 		private readonly ManagementConnectionProvider managementConnectionProvider;
+		private readonly IModules moduleStore;
 		private bool forceUpdateCheck = Debugger.IsAttached;
 
 		public ModuleDatabase(string connectionString): this(connectionString, false) {}
@@ -175,7 +180,7 @@ namespace bsn.ModuleStore {
 				throw new ArgumentNullException("moduleSchema");
 			}
 			AssertSmoTransaction();
-			foreach (string sql in inventory.GenerateInstallSql(moduleSchema)) {
+			foreach (string sql in inventory.GenerateInstallSql(managementConnectionProvider.Engine, moduleSchema)) {
 				Debug.WriteLine(sql, "SQL install");
 				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
 					command.Transaction = managementConnectionProvider.GetTransaction();
@@ -195,7 +200,7 @@ namespace bsn.ModuleStore {
 			}
 			AssertSmoTransaction();
 			DatabaseInventory databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
-			bool hasChanges = !HashWriter.HashEqual(databaseInventory.GetInventoryHash(), inventory.GetInventoryHash());
+			bool hasChanges = !HashWriter.HashEqual(databaseInventory.GetInventoryHash(managementConnectionProvider.Engine), inventory.GetInventoryHash(managementConnectionProvider.Engine));
 			foreach (string sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
 				DebugWriteFirstLines(sql);
 				hasChanges = true;
@@ -223,7 +228,7 @@ namespace bsn.ModuleStore {
 					}
 				}
 			}
-			moduleStore.Update(module.Id, inventory.AssemblyName.FullName, inventory.GetInventoryHash(), inventory.UpdateVersion);
+			moduleStore.Update(module.Id, inventory.AssemblyName.FullName, inventory.GetInventoryHash(managementConnectionProvider.Engine), inventory.UpdateVersion);
 		}
 
 		protected void AssertSmoTransaction() {

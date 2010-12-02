@@ -46,6 +46,8 @@ namespace bsn.ModuleStore.Console {
 		private SqlConnection connection;
 		private string schemaName;
 		private string serverName = ".";
+		private string databaseUser;
+		private string databasePassword;
 
 		public ExecutionContext(TextReader input, TextWriter output): base(new ModuleStoreContext(), input, output) {
 			// trigger async initialization on app start
@@ -80,6 +82,29 @@ namespace bsn.ModuleStore.Console {
 					throw new ArgumentNullException();
 				}
 				connection.ChangeDatabase(value);
+			}
+		}
+
+		public void SetDatabaseAuthentication(string databaseUser, string databasePassword) {
+			Disconnect();
+			if (string.IsNullOrEmpty(databaseUser)) {
+				this.databaseUser = null;
+				this.databasePassword = null;
+			} else {
+				this.databaseUser = databaseUser;
+				this.databasePassword = databasePassword;
+			}
+		}
+
+		public string DatabaseUser {
+			get {
+				return databaseUser;
+			}
+		}
+
+		public string DatabasePassword {
+			get {
+				return databasePassword;
 			}
 		}
 
@@ -124,6 +149,9 @@ namespace bsn.ModuleStore.Console {
 
 		public string Server {
 			get {
+				if (Connected) {
+					return connection.DataSource;
+				}
 				return serverName;
 			}
 			set {
@@ -139,9 +167,9 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public void Connect(string server, string database) {
+		public void Connect(string server, string database, string databaseUser, string databasePassword) {
 			Disconnect();
-			connection.ConnectionString = BuildConnectionString(server, database);
+			connection.ConnectionString = BuildConnectionString(server, database, databaseUser, databasePassword);
 			connection.Open();
 		}
 
@@ -152,16 +180,27 @@ namespace bsn.ModuleStore.Console {
 		}
 
 		public string GetConnectionString() {
-			return BuildConnectionString(Server, Database);
+			if (Connected) {
+				return connection.ConnectionString;
+			}
+			return BuildConnectionString(Server, Database, DatabaseUser, DatabasePassword);
 		}
 
-		public static string BuildConnectionString(string server, string database) {
+		public static string BuildConnectionString(string server, string database, string databaseUser, string databasePassword) {
 			StringBuilder connectionString = new StringBuilder();
-			connectionString.AppendFormat("Data Source={0};", server);
-			if (!string.IsNullOrEmpty(database)) {
-				connectionString.AppendFormat("Initial Catalog={0};", database);
+			if (string.IsNullOrEmpty(databaseUser)) {
+				connectionString.AppendFormat("Data Source={0};", server);
+				if (!string.IsNullOrEmpty(database)) {
+					connectionString.AppendFormat("Initial Catalog={0};", database);
+				}
+				connectionString.Append("Integrated Security=SSPI;");
+			} else {
+				connectionString.AppendFormat("Server=tcp:{0};", server);
+				if (!string.IsNullOrEmpty(database)) {
+					connectionString.AppendFormat("Database={0};", database);
+				}
+				connectionString.AppendFormat("User ID={0};Password={1};Trusted_Connection=False;Encrypt=True;", databaseUser, databasePassword);
 			}
-			connectionString.Append("Integrated Security=SSPI;");
 			return connectionString.ToString();
 		}
 

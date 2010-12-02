@@ -143,12 +143,12 @@ namespace bsn.ModuleStore.Sql {
 				StringBuilder builder = new StringBuilder(4096);
 				// first perform all possible actions which do not rely on tables which are altered
 				foreach (Statement statement in resolver.GetInOrder(false)) {
-					yield return WriteStatement(statement, true, builder);
+					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// then perform updates (if any)
 				foreach (KeyValuePair<int, Statement[]> update in updateStatements.Where(u => u.Key > currentVersion)) {
 					foreach (Statement statement in update.Value) {
-						yield return WriteStatement(statement, false, builder);
+						yield return WriteStatement(statement, builder, inventory.TargetEngine);
 					}
 				}
 				// now that the update scripts have updated the tables, mark the tables in the dependency resolver
@@ -157,7 +157,7 @@ namespace bsn.ModuleStore.Sql {
 				}
 				// try to perform the remaining actions
 				foreach (Statement statement in resolver.GetInOrder(true)) {
-					yield return WriteStatement(statement, true, builder);
+					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// execute insert statements for table setup data
 				foreach (InsertStatement insertStatement in AdditionalSetupStatements.OfType<InsertStatement>()) {
@@ -165,13 +165,13 @@ namespace bsn.ModuleStore.Sql {
 					if (targetTable != null) {
 						Qualified<SchemaName, TableName> name = targetTable.Name;
 						if (name.IsQualified && string.Equals(name.Qualification.Value, inventory.SchemaName, StringComparison.OrdinalIgnoreCase) && newObjectNames.Contains(name.Name.Value)) {
-							yield return WriteStatement(insertStatement, false, builder);
+							yield return WriteStatement(insertStatement, builder, inventory.TargetEngine);
 						}
 					}
 				}
 				// finally drop objects which are no longer used
 				foreach (DropStatement dropStatement in dropStatements) {
-					yield return WriteStatement(dropStatement, false, builder);
+					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
 			} finally {
 				UnsetQualification();

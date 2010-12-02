@@ -71,7 +71,7 @@ namespace bsn.ModuleStore.Sql {
 
 		private string GenerateSql(IEnumerable<Statement> statements) {
 			using (StringWriter stringWriter = new StringWriter()) {
-				SqlWriter sqlGen = new SqlWriter(stringWriter);
+				SqlWriter sqlGen = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
 				foreach (Statement statement in statements) {
 					statement.WriteTo(sqlGen);
 					sqlGen.WriteLine(";");

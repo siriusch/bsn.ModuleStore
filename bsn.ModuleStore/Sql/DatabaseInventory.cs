@@ -70,19 +70,21 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public static Exception CreateException(string message, SqlScriptableToken token) {
+		internal static Exception CreateException(string message, SqlScriptableToken token, DatabaseEngine targetEngine) {
 			StringWriter writer = new StringWriter();
 			writer.WriteLine(message);
-			token.WriteTo(new SqlWriter(writer));
+			token.WriteTo(new SqlWriter(writer, targetEngine));
 			return new InvalidOperationException(writer.ToString());
 		}
 
 		private readonly string schemaName;
+		private DatabaseEngine targetEngine;
 
-		public DatabaseInventory(ManagementConnectionProvider database, string schemaName) {
+		public DatabaseInventory(ManagementConnectionProvider database, string schemaName): base() {
 			if (database == null) {
 				throw new ArgumentNullException("database");
 			}
+			this.targetEngine = database.Engine;
 			this.schemaName = schemaName;
 			using (SqlCommand command = database.GetConnection().CreateCommand()) {
 				command.Transaction = database.GetTransaction();
@@ -105,7 +107,7 @@ namespace bsn.ModuleStore.Sql {
 							try {
 								using (StringReader scriptReader = new StringReader(builder.ToString())) {
 									ProcessSingleScript(scriptReader, statement => {
-									                                  	throw CreateException("Cannot process statement:", statement);
+									                                  	throw CreateException("Cannot process statement:", statement, TargetEngine);
 									                                  });
 								}
 							} catch (ParseException ex) {
@@ -118,6 +120,12 @@ namespace bsn.ModuleStore.Sql {
 						}
 					}
 				}
+			}
+		}
+
+		public DatabaseEngine TargetEngine {
+			get {
+				return targetEngine;
 			}
 		}
 
@@ -136,11 +144,11 @@ namespace bsn.ModuleStore.Sql {
 					resolver.Add(statement);
 				}
 				foreach (CreateStatement statement in resolver.GetInOrder(true).Reverse()) {
-					yield return WriteStatement(statement.CreateDropStatement(), false, buffer);
+					yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);
 				}
 				buffer.Length = 0;
 				using (TextWriter writer = new StringWriter(buffer)) {
-					SqlWriter sqlWriter = new SqlWriter(writer);
+					SqlWriter sqlWriter = new SqlWriter(writer, TargetEngine);
 					sqlWriter.Write("DROP SCHEMA ");
 					new SchemaName(SchemaName).WriteTo(sqlWriter);
 				}

@@ -32,46 +32,45 @@ using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class SqlScriptableToken: SqlToken, IEquatable<SqlScriptableToken> {
-		private byte[] hash;
+		private int? hashCode;
 
 		public override bool Equals(object obj) {
 			return base.Equals(obj as SqlScriptableToken);
 		}
 
-		public byte[] GetHash() {
-			if (hash == null) {
-				hash = GetHashInternal();
+		public byte[] GetHash(DatabaseEngine engine) {
+			using (HashWriter writer = new HashWriter()) {
+				WriteTo(new SqlWriter(writer, engine, false));
+				return writer.ToArray();
 			}
-			return hash;
 		}
 
 		public override int GetHashCode() {
-			return HashWriter.ToHashCode(GetHash());
-		}
-
-		public void ResetHash() {
-			hash = null;
+			if (!hashCode.HasValue) {
+				ComputeHashCode();
+			}
+			return hashCode.GetValueOrDefault();
 		}
 
 		public override sealed string ToString() {
 			using (StringWriter writer = new StringWriter()) {
-				WriteTo(new SqlWriter(writer));
+				WriteTo(new SqlWriter(writer, DatabaseEngine.Unknown));
 				return writer.ToString();
 			}
 		}
 
 		public abstract void WriteTo(SqlWriter writer);
 
-		protected virtual byte[] GetHashInternal() {
-			using (HashWriter writer = new HashWriter()) {
-				WriteTo(new SqlWriter(writer, false));
-				return writer.ToArray();
-			}
+		internal void ComputeHashCode() {
+			hashCode = HashWriter.ToHashCode(GetHash(DatabaseEngine.Unknown));
 		}
 
 		public bool Equals(SqlScriptableToken other) {
+			if (ReferenceEquals(other, this)) {
+				return true;
+			}
 			if ((other != null) && (other.GetType() == GetType())) {
-				return HashWriter.HashEqual(GetHash(), other.GetHash());
+				return HashWriter.HashEqual(GetHash(DatabaseEngine.Unknown), other.GetHash(DatabaseEngine.Unknown));
 			}
 			return false;
 		}

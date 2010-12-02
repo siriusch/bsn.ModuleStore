@@ -110,7 +110,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 				try {
 					LoadModules(false);
 					foreach (ModuleInstance instance in instances.Values) {
-						if (force || (assemblyInfo.Inventory.UpdateVersion > instance.Module.UpdateVersion) || (!HashWriter.HashEqual(instance.Module.SetupHash, assemblyInfo.Inventory.GetInventoryHash()))) {
+						if (force || (assemblyInfo.Inventory.UpdateVersion > instance.Module.UpdateVersion) || (!HashWriter.HashEqual(instance.Module.SetupHash, assemblyInfo.Inventory.GetInventoryHash(owner.ManagementConnectionProvider.Engine)))) {
 							owner.UpdateInstanceDatabaseSchema(assemblyInfo.Inventory, instance.Module);
 						}
 					}
@@ -131,7 +131,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 					Debug.Assert(!module.SchemaExists);
 					string moduleSchema = module.Schema;
 					owner.CreateInstanceDatabaseSchema(assemblyInfo.Inventory, moduleSchema);
-					owner.ModuleStore.Update(module.Id, assemblyInfo.Assembly.FullName, assemblyInfo.Inventory.GetInventoryHash(), assemblyInfo.Inventory.UpdateVersion);
+					owner.ModuleStore.Update(module.Id, assemblyInfo.Assembly.FullName, assemblyInfo.Inventory.GetInventoryHash(owner.ManagementConnectionProvider.Engine), assemblyInfo.Inventory.UpdateVersion);
 					ModuleInstance instance = new ModuleInstance(this, module);
 					instances.Add(moduleSchema, instance);
 					LoadModules(true);

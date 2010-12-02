@@ -718,7 +718,9 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 
 <CreateProcedureStatement> ::= CREATE PROCEDURE <ProcedureNameQualified> <ProcedureParameterGroup> <ProcedureOptionGroup> <ProcedureFor> AS <StatementBlock>
 
-<ProcedureParameterGroup> ::= <ProcedureParameterList>
+<ProcedureParameterGroup> ::= '(' <ProcedureParameterList> ')'
+                            | <ProcedureParameterList>
+                            | '(' ')'
                             |
 
 <ProcedureParameterList> ::= <ProcedureParameter> ',' <ProcedureParameterList>

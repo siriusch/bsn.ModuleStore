@@ -78,7 +78,7 @@ namespace bsn.ModuleStore.Console.Commands {
 					}
 					using (FileStream stream = scriptFileName.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
 						using (StreamWriter writer = new StreamWriter(stream, encoding)) {
-							SqlWriter sqlWriter = new SqlWriter(writer);
+							SqlWriter sqlWriter = new SqlWriter(writer, DatabaseEngine.Unknown);
 							statement.WriteTo(sqlWriter);
 							sqlWriter.WriteLine(";");
 							foreach (CreateIndexStatement createIndexStatement in inventory.Objects.OfType<CreateIndexStatement>().Where(s => s.TableName.Name.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.IndexName.Value)) {

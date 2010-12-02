@@ -39,13 +39,15 @@ namespace bsn.ModuleStore.Console.Commands {
 		public ConnectCommand(ContextBase<ExecutionContext> owner): base(owner) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
-			executionContext.Connect((string)tags["server"], (string)tags["database"]);
+			executionContext.Connect((string)tags["server"], (string)tags["database"], (string)tags["user"], (string)tags["password"]);
 			executionContext.Output.WriteLine("Connected to database {1} on server {0}", executionContext.Server, executionContext.Database);
 		}
 
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
 			yield return new Tag<ExecutionContext, string>("server", "The server to connect to.").SetOptional(context => context.Connected);
 			yield return new Tag<ExecutionContext, string>("database", "The database on the server.");
+			yield return new Tag<ExecutionContext, string>("user", "The user ID for the connection to SQL Azure, or empty for integrated security.").SetDefault(context => null);
+			yield return new Tag<ExecutionContext, string>("password", "The password for the connection.").SetDefault(context => null);
 		}
 	}
 }

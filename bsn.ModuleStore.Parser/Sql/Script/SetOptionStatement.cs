@@ -45,7 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<SetOptionStatement> ::= ~SET STATISTICS <SetValueList>")]
 		public SetOptionStatement(SqlScriptableToken identifier, Sequence<SqlScriptableToken> valueList) {
 			using (StringWriter stringWriter = new StringWriter()) {
-				SqlWriter writer = new SqlWriter(stringWriter);
+				SqlWriter writer = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
 				writer.WriteScript(identifier, WhitespacePadding.None);
 				foreach (SqlScriptableToken token in valueList) {
 					writer.Write(' ');

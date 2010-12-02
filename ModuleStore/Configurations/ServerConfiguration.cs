@@ -32,6 +32,7 @@ using System.Collections.Generic;
 
 using bsn.CommandLine;
 using bsn.CommandLine.Context;
+using bsn.ModuleStore.Mapper;
 
 namespace bsn.ModuleStore.Console.Configurations {
 	[NamedItem("server", "Manage the server and database names.")]
@@ -46,7 +47,13 @@ namespace bsn.ModuleStore.Console.Configurations {
 				executionContext.Output.WriteLine("Database: {0}", executionContext.Database);
 				string connectionString = executionContext.GetConnectionString();
 				executionContext.Output.WriteLine("Connection string: {0}", connectionString);
-				executionContext.Output.WriteLine("Database Type: {0}", ModuleDatabase.GetDatabaseType(connectionString));
+				executionContext.Output.WriteLine("Database Type: {0}", ModuleDatabase.GetDatabaseType(executionContext.Connection));
+				using (ManagementConnectionProvider provider = new ManagementConnectionProvider(executionContext.Connection, "dbo")) {
+					executionContext.Output.WriteLine("Database Engine: {0}", provider.Engine);
+					executionContext.Output.WriteLine("Database Edition: {0}", provider.EngineEdition);
+					executionContext.Output.WriteLine("Database Version: {0}", provider.EngineVersion);
+					executionContext.Output.WriteLine("Database Level: {0}", provider.EngineLevel);
+				}
 			} else {
 				executionContext.Output.WriteLine("Not Connected");
 			}

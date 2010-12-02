@@ -38,32 +38,43 @@ namespace bsn.ModuleStore.Bootstrapper {
 			using (SqlConnection connection = new SqlConnection(connectionString)) {
 				dbName = connection.Database;
 				connection.Open();
-				using (SqlCommand command = connection.CreateCommand()) {
-					command.CommandText = "SELECT DB_ID(@dbname)";
-					command.CommandType = CommandType.Text;
-					command.Parameters.AddWithValue("@dbname", dbName);
-					object dbId = command.ExecuteScalar();
-					if (dbId == DBNull.Value) {
-						return DatabaseType.None;
-					}
-				}
-				Debug.Assert(connection.Database.Equals(dbName, StringComparison.OrdinalIgnoreCase));
-				using (SqlCommand command = connection.CreateCommand()) {
-					command.CommandText = "SELECT COUNT(*) FROM [INFORMATION_SCHEMA].[SCHEMATA] WHERE [SCHEMA_NAME]='ModuleStore'";
-					command.CommandType = CommandType.Text;
-					if (Convert.ToBoolean(command.ExecuteScalar())) {
-						return DatabaseType.ModuleStore;
-					}
-				}
-				using (SqlCommand command = connection.CreateCommand()) {
-					command.CommandText = "SELECT COUNT(*) FROM [INFORMATION_SCHEMA].[TABLES] WHERE [TABLE_NAME] <> 'sysdiagrams'";
-					command.CommandType = CommandType.Text;
-					if (Convert.ToInt32(command.ExecuteScalar()) == 0) {
-						return DatabaseType.Empty;
-					}
-				}
-				return DatabaseType.Other;
+				return GetDatabaseType(connection, dbName);
 			}
+		}
+
+		internal static DatabaseType GetDatabaseType(SqlConnection connection) {
+			if (connection == null) {
+				throw new ArgumentNullException("connection");
+			}
+			return GetDatabaseType(connection, connection.Database);
+		}
+
+		private static DatabaseType GetDatabaseType(SqlConnection connection, string dbName) {
+			using (SqlCommand command = connection.CreateCommand()) {
+				command.CommandText = "SELECT DB_ID(@dbname)";
+				command.CommandType = CommandType.Text;
+				command.Parameters.AddWithValue("@dbname", dbName);
+				object dbId = command.ExecuteScalar();
+				if (dbId == DBNull.Value) {
+					return DatabaseType.None;
+				}
+			}
+			Debug.Assert(connection.Database.Equals(dbName, StringComparison.OrdinalIgnoreCase));
+			using (SqlCommand command = connection.CreateCommand()) {
+				command.CommandText = "SELECT COUNT(*) FROM [INFORMATION_SCHEMA].[SCHEMATA] WHERE [SCHEMA_NAME]='ModuleStore'";
+				command.CommandType = CommandType.Text;
+				if (Convert.ToBoolean(command.ExecuteScalar())) {
+					return DatabaseType.ModuleStore;
+				}
+			}
+			using (SqlCommand command = connection.CreateCommand()) {
+				command.CommandText = "SELECT COUNT(*) FROM [INFORMATION_SCHEMA].[TABLES] WHERE [TABLE_NAME] <> 'sysdiagrams'";
+				command.CommandType = CommandType.Text;
+				if (Convert.ToInt32(command.ExecuteScalar()) == 0) {
+					return DatabaseType.Empty;
+				}
+			}
+			return DatabaseType.Other;
 		}
 
 		public static void InitializeModuleStore(ModuleDatabase database) {
@@ -110,7 +121,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 					command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
 					command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyInfo.AssemblyGuid);
 					command.Parameters.AddWithValue("@sAssemblyName", cache.AssemblyInfo.Assembly.FullName);
-					command.Parameters.AddWithValue("@binSetupHash", cache.AssemblyInfo.Inventory.GetInventoryHash());
+					command.Parameters.AddWithValue("@binSetupHash", cache.AssemblyInfo.Inventory.GetInventoryHash(database.ManagementConnectionProvider.Engine));
 					command.Parameters.AddWithValue("@iUpdateVersion", cache.AssemblyInfo.Inventory.UpdateVersion);
 					command.ExecuteNonQuery();
 				}

@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -28,27 +28,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.IO;
+using System.Linq;
 
-using bsn.GoldParser.Semantic;
-
-namespace bsn.ModuleStore.Sql.Script {
-	public sealed class AnyStatement: Statement {
-		private readonly string statementText;
-
-		[Rule("<AnyStatement> ::= Id <ExpressionList>")]
-		public AnyStatement(Identifier identifier, Sequence<Expression> expressions) {
-			using (StringWriter stringWriter = new StringWriter()) {
-				SqlWriter statementWriter = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
-				statementWriter.Write(identifier.Value);
-				statementWriter.WriteScriptSequence(expressions, WhitespacePadding.SpaceBefore, null);
-				statementText = stringWriter.ToString();
-			}
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
-			writer.WriteLine(statementText);
-		}
+namespace bsn.ModuleStore {
+	public enum DatabaseEngine {
+		Unknown = 0,
+		SqlServer2005 = 9,
+		SqlServer2008 = 10,
+		SqlServer2010 = 11,
+		SqlAzure = 110
 	}
 }

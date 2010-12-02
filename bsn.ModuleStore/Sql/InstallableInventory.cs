@@ -40,13 +40,15 @@ namespace bsn.ModuleStore.Sql {
 	public abstract class InstallableInventory: Inventory {
 		private readonly List<Statement> additionalSetupStatements = new List<Statement>();
 
+		protected InstallableInventory() {}
+
 		public IEnumerable<Statement> AdditionalSetupStatements {
 			get {
 				return additionalSetupStatements;
 			}
 		}
 
-		public IEnumerable<string> GenerateInstallSql(string schemaName) {
+		public IEnumerable<string> GenerateInstallSql(DatabaseEngine targetEngine, string schemaName) {
 			if (string.IsNullOrEmpty(schemaName)) {
 				throw new ArgumentNullException("schemaName");
 			}
@@ -55,7 +57,7 @@ namespace bsn.ModuleStore.Sql {
 			try {
 				StringBuilder builder = new StringBuilder(4096);
 				using (StringWriter writer = new StringWriter(builder)) {
-					SqlWriter sqlWriter = new SqlWriter(writer);
+					SqlWriter sqlWriter = new SqlWriter(writer, targetEngine);
 					sqlWriter.Write("CREATE SCHEMA");
 					sqlWriter.IncreaseIndent();
 					sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
@@ -82,10 +84,10 @@ namespace bsn.ModuleStore.Sql {
 				UnsetQualification();
 				SetQualification(schemaName);
 				foreach (Statement statement in resolver.GetInOrder(true)) {
-					yield return WriteStatement(statement, true, builder);
+					yield return WriteStatement(statement, builder, targetEngine);
 				}
 				foreach (Statement additionalSetupStatement in AdditionalSetupStatements) {
-					yield return WriteStatement(additionalSetupStatement, false, builder);
+					yield return WriteStatement(additionalSetupStatement, builder, targetEngine);
 				}
 			} finally {
 				UnsetQualification();

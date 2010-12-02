@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
@@ -80,10 +81,10 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		protected static string WriteStatement(Statement statement, bool emitComments, StringBuilder buffer) {
+		protected static string WriteStatement(Statement statement, StringBuilder buffer, DatabaseEngine targetEngine) {
 			buffer.Length = 0;
 			using (StringWriter writer = new StringWriter(buffer)) {
-				statement.WriteTo(new SqlWriter(writer, emitComments));
+				statement.WriteTo(new SqlWriter(writer, targetEngine));
 			}
 			return buffer.ToString();
 		}
@@ -122,15 +123,15 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public void Dump(string schemaName, TextWriter writer) {
-			writer.WriteLine("-- Inventory hash: {0}", BitConverter.ToString(GetInventoryHash()));
-			SqlWriter sqlWriter = new SqlWriter(writer);
+			writer.WriteLine("-- Inventory hash: {0}", BitConverter.ToString(GetInventoryHash(DatabaseEngine.Unknown)));
+			SqlWriter sqlWriter = new SqlWriter(writer, DatabaseEngine.Unknown);
 			SetQualification(schemaName);
 			try {
-				foreach (CreateStatement statement in objects.Values) {
+				foreach (CreateStatement statement in objects.OrderBy(pair => pair.Key).Select(pair => pair.Value)) {
 					writer.WriteLine();
 					SetQualification(null);
 					try {
-						writer.WriteLine("-- Object hash: {0}", BitConverter.ToString(statement.GetHash()));
+						writer.WriteLine("-- Object hash: {0}", BitConverter.ToString(statement.GetHash(DatabaseEngine.Unknown)));
 					} finally {
 						UnsetQualification();
 					}
@@ -150,11 +151,11 @@ namespace bsn.ModuleStore.Sql {
 			return result;
 		}
 
-		public byte[] GetInventoryHash() {
+		public byte[] GetInventoryHash(DatabaseEngine targetEngine) {
 			SetQualification(null);
 			try {
 				using (HashWriter writer = new HashWriter()) {
-					SqlWriter sqlWriter = new SqlWriter(writer, false);
+					SqlWriter sqlWriter = new SqlWriter(writer, targetEngine);
 					foreach (CreateStatement statement in objects.Values) {
 						statement.WriteTo(sqlWriter);
 					}
@@ -169,11 +170,11 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public bool IsSameInventoryHash(byte[] inventoryHash) {
+		public bool IsSameInventoryHash(DatabaseEngine targetEngine, byte[] inventoryHash) {
 			if (inventoryHash == null) {
 				throw new ArgumentNullException("inventoryHash");
 			}
-			return HashWriter.HashEqual(GetInventoryHash(), inventoryHash);
+			return HashWriter.HashEqual(GetInventoryHash(targetEngine), inventoryHash);
 		}
 
 		public bool TryFind<T>(string objectName, out T result) where T: CreateStatement {
@@ -197,8 +198,7 @@ namespace bsn.ModuleStore.Sql {
 			foreach (IQualifiedName<SchemaName> qualifiedName in createStatement.GetObjectSchemaQualifiedNames()) {
 				qualifiedName.SetOverride(this);
 			}
-			createStatement.ResetHash();
-			createStatement.GetHash();
+			createStatement.ComputeHashCode();
 			objects.Add(createStatement.ObjectName, createStatement);
 		}
 
@@ -210,7 +210,7 @@ namespace bsn.ModuleStore.Sql {
 					IApplicableTo<CreateTableStatement> addToTable = statement as IApplicableTo<CreateTableStatement>;
 					if (addToTable != null) {
 						if ((createTable == null) || (!createTable.TableName.Name.Equals(addToTable.QualifiedName.Name))) {
-							throw DatabaseInventory.CreateException("Statement tries to modify another table:", statement);
+							throw DatabaseInventory.CreateException("Statement tries to modify another table:", statement, DatabaseEngine.Unknown);
 						}
 						addToTable.ApplyTo(createTable);
 					} else {

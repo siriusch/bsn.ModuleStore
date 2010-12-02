@@ -37,6 +37,10 @@ namespace bsn.ModuleStore.Mapper {
 	public sealed class ManagementConnectionProvider: IConnectionProvider, IDisposable {
 		private readonly bool closeConnection;
 		private readonly SqlConnection connection;
+		private readonly DatabaseEngine engine;
+		private readonly string engineEdition;
+		private readonly string engineLevel;
+		private readonly Version engineVersion;
 		private readonly bool ownsConnection;
 		private readonly Stack<string> savepoints = new Stack<string>();
 		private readonly string schemaName;
@@ -65,11 +69,62 @@ namespace bsn.ModuleStore.Mapper {
 				}
 			}
 			this.connection = connection;
+			using (SqlCommand cmd = connection.CreateCommand()) {
+				cmd.CommandType = CommandType.Text;
+				cmd.CommandText = "SELECT SERVERPROPERTY('productversion')";
+				engineVersion = new Version((string)cmd.ExecuteScalar());
+				cmd.CommandText = "SELECT SERVERPROPERTY('productlevel')";
+				engineLevel = (string)cmd.ExecuteScalar();
+				cmd.CommandText = "SELECT SERVERPROPERTY('edition')";
+				engineEdition = (string)cmd.ExecuteScalar();
+				if (engineEdition.IndexOf("Azure", StringComparison.OrdinalIgnoreCase) >= 0) {
+					engine = DatabaseEngine.SqlAzure;
+				} else {
+					switch (engineVersion.Major) {
+					case 9:
+						engine = DatabaseEngine.SqlServer2005;
+						break;
+					case 10:
+						engine = DatabaseEngine.SqlServer2008;
+						break;
+					case 11:
+						engine = DatabaseEngine.SqlServer2010;
+						break;
+					default:
+						engine = DatabaseEngine.Unknown;
+						break;
+					}
+				}
+			}
 		}
 
 		public string DatabaseName {
 			get {
 				return connection.Database;
+			}
+		}
+
+		public DatabaseEngine Engine {
+			get {
+				return engine;
+			}
+		}
+
+		public string EngineEdition {
+			get {
+				return engineEdition;
+			}
+		}
+
+		public string EngineLevel {
+			get {
+				return engineLevel;
+			}
+		}
+
+		public Version EngineVersion {
+			get {
+				return engineVersion;
 			}
 		}
 
