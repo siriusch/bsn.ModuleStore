@@ -81,11 +81,11 @@ namespace bsn.ModuleStore.Mapper {
 						Debug.Assert(current != null);
 						current.RemoveAll();
 						current.Value = value;
-						do {
+						while (enumerator.MoveNext()) {
 							current = enumerator.Current;
 							Debug.Assert(current != null);
 							current.Remove();
-						} while (enumerator.MoveNext());
+						}
 					} else {
 						root.Add(new XElement(elementName, value));
 					}
