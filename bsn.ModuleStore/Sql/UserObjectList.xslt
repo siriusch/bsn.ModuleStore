@@ -1,5 +1,43 @@
-﻿SELECT [s].[name] AS [sSchema], [o].[name] AS [sName], 
-    -- Types 'AF', 'FS', 'FT', 'PC', 'TA' are not yet implemented!
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+// bsn ModuleStore database versioning
+// 
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// 
+// Development has been supported by Sirius Technologies AG, Basel
+// 
+// Source:
+// 
+// https://bsn-modulestore.googlecode.com/hg/
+// 
+// License:
+// 
+// The library is distributed under the GNU Lesser General Public License:
+// http://www.gnu.org/licenses/lgpl.html
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:utils="urn:utils" exclude-result-prefixes="msxsl utils">
+	<xsl:output method="text" indent="no"/>
+
+	<xsl:param name="engine" />
+	<xsl:param name="azure" />
+	<xsl:param name="version" />
+
+	<xsl:template match="/">
+		<!-- Types 'AF', 'FS', 'FT', 'PC', 'TA' are not yet implemented! -->
+		<![CDATA[SELECT [s].[name] AS [sSchema], [o].[name] AS [sName], 
 		CASE [o].[type] 
     WHEN 'FN' THEN
 			CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
@@ -117,13 +155,23 @@
         ))
     END AS [xDefinition]
     FROM [sys].[objects] AS [o]
-    JOIN [sys].[schemas] AS [s] ON [o].[schema_id]=[s].[schema_id]
-/*    LEFT JOIN [sys].[extended_properties] AS [mdts] ON ([mdts].[name]='microsoft_database_tools_support') AND ([mdts].[class]='1') AND (CONVERT(bit, [mdts].[value])=1) AND ([o].[object_id]=[mdts].[major_id]) */
-    WHERE /* ([mdts].[class] IS NULL) AND */ ([o].[type] IN ('AF', 'FN', 'FS', 'FT', 'IF', 'P', 'PC', 'TA', 'TF', 'TR', 'U', 'V')) AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))
-/*    UNION ALL
+    JOIN [sys].[schemas] AS [s] ON [o].[schema_id]=[s].[schema_id]]]>
+		<xsl:if test="not($azure)">
+			<![CDATA[LEFT JOIN [sys].[extended_properties] AS [mdts] ON ([mdts].[name]='microsoft_database_tools_support') AND ([mdts].[class]='1') AND (CONVERT(bit, [mdts].[value])=1) AND ([o].[object_id]=[mdts].[major_id])]]>
+		</xsl:if>
+		<![CDATA[WHERE ]]>
+		<xsl:if test="not($azure)">
+			<![CDATA[([mdts].[class] IS NULL) AND ]]>
+		</xsl:if>
+		<![CDATA[([o].[type] IN ('AF', 'FN', 'FS', 'FT', 'IF', 'P', 'PC', 'TA', 'TF', 'TR', 'U', 'V')) AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))]]>
+		<xsl:if test="not($azure)">
+			<![CDATA[UNION ALL
     SELECT [s].[name], [x].[name], (
             SELECT '['+[s].[name]+'].['+[x].[name]+']' AS [@Name], xml_schema_namespace([s].[name], [x].[name]) FOR XML PATH ('XmlSchemaCollection'), TYPE
         ) AS [xDefinition]
     FROM [sys].[xml_schema_collections] AS [x]
     JOIN [sys].[schemas] AS [s] ON [x].[schema_id]=[s].[schema_id]
-    WHERE ([s].[name]<>'sys') AND ((@sSchema IS NULL) OR (@sSchema=[s].[name])) */
+    WHERE ([s].[name]<>'sys') AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))]]>
+		</xsl:if>
+	</xsl:template>
+</xsl:stylesheet>

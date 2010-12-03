@@ -32,11 +32,18 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public class SqlWriter {
+		private static readonly HashSet<string> azureUnsupportedIndexOption = new HashSet<string> {
+		                                                                                          		"PAD_INDEX",
+		                                                                                          		"ALLOW_ROW_LOCKS",
+		                                                                                          		"ALLOW_PAGE_LOCKS"
+		                                                                                          };
+
 		private readonly bool emitComments;
 		private readonly DatabaseEngine engine;
 		private readonly TextWriter writer;
@@ -237,7 +244,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		internal void WriteIndexOptions(IEnumerable<IndexOption> indexOptions) {
-			using (IEnumerator<IndexOption> enumerator = indexOptions.GetEnumerator()) {
+			using (IEnumerator<IndexOption> enumerator = indexOptions.Where(o => !((engine == DatabaseEngine.SqlAzure) && azureUnsupportedIndexOption.Contains(o.Key.Value))).GetEnumerator()) {
 				if (enumerator.MoveNext()) {
 					Write(" WITH (");
 					WriteScriptSequence(indexOptions, WhitespacePadding.None, ", ");

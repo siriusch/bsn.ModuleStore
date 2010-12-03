@@ -31,6 +31,10 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:utils="urn:utils" exclude-result-prefixes="msxsl utils">
 	<xsl:output method="text" indent="no"/>
 
+	<xsl:param name="engine" />
+	<xsl:param name="azure" />
+	<xsl:param name="version" />
+
 	<xsl:template match="/">
 		<xsl:apply-templates select="*" mode="script" />
 	</xsl:template>
@@ -220,19 +224,23 @@
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:text xml:space="preserve">(</xsl:text>
-				<xsl:if test="@Padded=1">
-					<xsl:text xml:space="preserve">PAD_INDEX=ON, </xsl:text>
+				<xsl:if test="not($azure)">
+					<xsl:if test="@Padded=1">
+						<xsl:text xml:space="preserve">PAD_INDEX=ON, </xsl:text>
+					</xsl:if>
 				</xsl:if>
 				<xsl:text xml:space="preserve">STATISTICS_NORECOMPUTE=OFF, IGNORE_DUP_KEY=</xsl:text>
 				<xsl:choose>
 					<xsl:when test="@IgnoreDuplicateKeys=1">ON</xsl:when>
 					<xsl:otherwise>OFF</xsl:otherwise>
 				</xsl:choose>
-				<xsl:if test="@AllowRowLocks=0">
-					<xsl:text xml:space="preserve">, ALLOW_ROW_LOCKS=OFF</xsl:text>
-				</xsl:if>
-				<xsl:if test="@AllowPageLocks=0">
-					<xsl:text xml:space="preserve">, ALLOW_PAGE_LOCKS=OFF</xsl:text>
+				<xsl:if test="not($azure)">
+					<xsl:if test="@AllowRowLocks=0">
+						<xsl:text xml:space="preserve">, ALLOW_ROW_LOCKS=OFF</xsl:text>
+					</xsl:if>
+					<xsl:if test="@AllowPageLocks=0">
+						<xsl:text xml:space="preserve">, ALLOW_PAGE_LOCKS=OFF</xsl:text>
+					</xsl:if>
 				</xsl:if>
 				<xsl:text>)</xsl:text>
 			</xsl:otherwise>

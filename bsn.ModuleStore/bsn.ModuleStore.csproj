@@ -120,7 +120,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\UserObjectList.sql" />
+    <EmbeddedResource Include="Sql\UserObjectList.xslt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sql\UserObjectScripter.xslt" />

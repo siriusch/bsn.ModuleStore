@@ -36,7 +36,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 
@@ -45,29 +47,26 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public class DatabaseInventory: Inventory {
-		public class XsltUtils {
+		private class XsltUtils {
+			// ReSharper disable UnusedMember.Local
 			public string AsText(XPathNavigator nav) {
 				return nav.InnerXml;
 			}
+			// ReSharper restore UnusedMember.Local
 		}
 
-		private static readonly XslCompiledTransform scripter;
-		private static readonly string userObjectList;
+		private static readonly XslCompiledTransform scripter = LoadTransform("UserObjectScripter.xslt");
+		private static readonly XslCompiledTransform userObjectList = LoadTransform("UserObjectList.xslt");
 
-		static DatabaseInventory() {
-			using (Stream stream = typeof(DatabaseInventory).Assembly.GetManifestResourceStream(typeof(DatabaseInventory), "UserObjectList.sql")) {
-				Debug.Assert(stream != null);
-				using (StreamReader reader = new StreamReader(stream)) {
-					userObjectList = reader.ReadToEnd();
-				}
-			}
-			scripter = new XslCompiledTransform(Debugger.IsAttached);
-			using (Stream stream = typeof(DatabaseInventory).Assembly.GetManifestResourceStream(typeof(DatabaseInventory), "UserObjectScripter.xslt")) {
+		private static XslCompiledTransform LoadTransform(string embeddedResourceName) {
+			XslCompiledTransform transform = new XslCompiledTransform(Debugger.IsAttached);
+			using (Stream stream = typeof(DatabaseInventory).Assembly.GetManifestResourceStream(typeof(DatabaseInventory), embeddedResourceName)) {
 				Debug.Assert(stream != null);
 				using (XmlReader reader = XmlReader.Create(stream)) {
-					scripter.Load(reader, new XsltSettings(false, false), null);
+					transform.Load(reader, new XsltSettings(false, false), null);
 				}
 			}
+			return transform;
 		}
 
 		internal static Exception CreateException(string message, SqlScriptableToken token, DatabaseEngine targetEngine) {
@@ -86,15 +85,17 @@ namespace bsn.ModuleStore.Sql {
 			}
 			this.targetEngine = database.Engine;
 			this.schemaName = schemaName;
+			XsltArgumentList arguments = CreateArguments(database);
 			using (SqlCommand command = database.GetConnection().CreateCommand()) {
 				command.Transaction = database.GetTransaction();
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@sSchema", schemaName);
-				command.CommandText = userObjectList;
+				using (StringWriter writer = new StringWriter()) {
+					userObjectList.Transform(new XDocument().CreateReader(), arguments, writer);
+					command.CommandText = Regex.Replace(writer.ToString(), @"\s+", " ");
+				}
 				using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleResult)) {
 					int definitionColumn = reader.GetOrdinal("xDefinition");
-					XsltArgumentList arguments = new XsltArgumentList();
-					arguments.AddExtensionObject("urn:utils", new XsltUtils());
 					StringBuilder builder = new StringBuilder(65520);
 					while (reader.Read()) {
 						builder.Length = 0;
@@ -121,6 +122,15 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 			}
+		}
+
+		private XsltArgumentList CreateArguments(ManagementConnectionProvider database) {
+			XsltArgumentList arguments = new XsltArgumentList();
+			arguments.AddExtensionObject("urn:utils", new XsltUtils());
+			arguments.AddParam("engine", "", targetEngine.ToString());
+			arguments.AddParam("azure", "", targetEngine == DatabaseEngine.SqlAzure);
+			arguments.AddParam("version", "", database.EngineVersion.Major);
+			return arguments;
 		}
 
 		public DatabaseEngine TargetEngine {
