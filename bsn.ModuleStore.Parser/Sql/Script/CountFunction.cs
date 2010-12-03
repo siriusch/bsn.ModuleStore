@@ -35,24 +35,26 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CountFunction: FunctionCall {
-		private readonly Qualified<SqlName, ColumnName> columnName;
+		private readonly SqlScriptableToken expression;
 		private readonly bool? restriction;
 
-		[Rule("<FunctionCall> ::= ~COUNT ~'(' <Restriction> <ColumnWildNameQualified> ~')'")]
-		public CountFunction(DuplicateRestrictionToken restriction, Qualified<SqlName, ColumnName> columnName): this(restriction.Distinct, columnName) {}
+		[Rule("<FunctionCall> ::= ~COUNT ~'(' <Restriction> <ColumnWild> ~')'")]
+		[Rule("<FunctionCall> ::= ~COUNT ~'(' <Restriction> <Expression> ~')'")]
+		public CountFunction(DuplicateRestrictionToken restriction, SqlScriptableToken expression): this(restriction.Distinct, expression) {}
 
-		[Rule("<FunctionCall> ::= ~COUNT ~'(' <ColumnWildNameQualified> ~')'")]
-		public CountFunction(Qualified<SqlName, ColumnName> columnName): this(default(bool?), columnName) {}
+		[Rule("<FunctionCall> ::= ~COUNT ~'(' <ColumnWild> ~')'")]
+		[Rule("<FunctionCall> ::= ~COUNT ~'(' <Expression> ~')'")]
+		public CountFunction(SqlScriptableToken expression): this(default(bool?), expression) {}
 
-		private CountFunction(bool? restriction, Qualified<SqlName, ColumnName> columnName) {
-			Debug.Assert(columnName != null);
+		private CountFunction(bool? restriction, SqlScriptableToken expression) {
+			Debug.Assert(expression != null);
 			this.restriction = restriction;
-			this.columnName = columnName;
+			this.expression = expression;
 		}
 
-		public Qualified<SqlName, ColumnName> ColumnName {
+		public SqlScriptableToken Expression {
 			get {
-				return columnName;
+				return expression;
 			}
 		}
 
@@ -65,7 +67,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("COUNT(");
 			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
-			writer.WriteScript(columnName, WhitespacePadding.None);
+			writer.WriteScript(expression, WhitespacePadding.None);
 			writer.Write(')');
 		}
 	}

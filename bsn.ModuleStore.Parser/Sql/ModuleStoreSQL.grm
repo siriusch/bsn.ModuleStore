@@ -1313,8 +1313,10 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                  | RIGHT '(' <Expression> ',' <Expression> ')'
                  | CONVERT '(' <TypeName> ',' <Expression> ')'
                  | CONVERT '(' <TypeName> ',' <Expression> ',' IntegerLiteral ')'
-                 | COUNT '(' <ColumnWildNameQualified> ')'
-                 | COUNT '(' <Restriction> <ColumnWildNameQualified> ')'
+                 | COUNT '(' <ColumnWild> ')'
+                 | COUNT '(' <Expression> ')'
+                 | COUNT '(' <Restriction> <ColumnWild> ')'
+                 | COUNT '(' <Restriction> <Expression> ')'
                  | IDENTITY '(' <TypeName> ')'
                  | IDENTITY '(' <TypeName> ',' <IntegerLiteral> ',' <IntegerLiteral> ')'
                  | CURRENT_TIMESTAMP
