@@ -39,8 +39,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		public AlterTableColumnRowguidcolStatement(Qualified<SchemaName, TableName> tableName, ColumnName columnName, DdlOperationToken ddlOperationToken): base(tableName, columnName, ddlOperationToken) {}
 
 		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
-			writer.Write("ROWGUIDCOL");
+			if (writer.Engine != DatabaseEngine.SqlAzure) {
+				base.WriteTo(writer);
+				writer.Write("ROWGUIDCOL");
+			}
 		}
 	}
 }

@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class ColumnDefinition: SqlScriptableToken {
@@ -47,7 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScriptSequence(constraints, WhitespacePadding.SpaceBefore, null);
+			writer.WriteScriptSequence(constraints.Where(c => !((writer.Engine == DatabaseEngine.SqlAzure) && (c is ColumnRowguidcolConstraint))), WhitespacePadding.SpaceBefore, null);
 		}
 	}
 }
