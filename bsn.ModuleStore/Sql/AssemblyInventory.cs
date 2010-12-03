@@ -113,7 +113,7 @@ namespace bsn.ModuleStore.Sql {
 				List<CreateTableStatement> tables = new List<CreateTableStatement>();
 				List<DropStatement> dropStatements = new List<DropStatement>();
 				HashSet<string> newObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-				foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> pair in Compare(inventory, this)) {
+				foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> pair in Compare(inventory, this, inventory.TargetEngine)) {
 					switch (pair.Value) {
 					case InventoryObjectDifference.None:
 						resolver.AddExistingObject(pair.Key.ObjectName);

@@ -53,8 +53,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override sealed string ToString() {
+			return ToString(DatabaseEngine.Unknown);
+		}
+
+		public string ToString(DatabaseEngine engine) {
 			using (StringWriter writer = new StringWriter()) {
-				WriteTo(new SqlWriter(writer, DatabaseEngine.Unknown));
+				WriteTo(new SqlWriter(writer, engine));
 				return writer.ToString();
 			}
 		}
@@ -66,11 +70,15 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public bool Equals(SqlScriptableToken other) {
+			return Equals(other, DatabaseEngine.Unknown);
+		}
+
+		public bool Equals(SqlScriptableToken other, DatabaseEngine engine) {
 			if (ReferenceEquals(other, this)) {
 				return true;
 			}
 			if ((other != null) && (other.GetType() == GetType())) {
-				return HashWriter.HashEqual(GetHash(DatabaseEngine.Unknown), other.GetHash(DatabaseEngine.Unknown));
+				return HashWriter.HashEqual(GetHash(engine), other.GetHash(engine));
 			}
 			return false;
 		}

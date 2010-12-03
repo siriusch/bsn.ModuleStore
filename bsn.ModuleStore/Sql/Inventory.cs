@@ -40,7 +40,7 @@ namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory: IQualified<SchemaName> {
 		private static readonly byte[] hashXor = new byte[] {0xDA, 0x39, 0xA3, 0xEE, 0x5E, 0x6B, 0x4B, 0x0D, 0x32, 0x55, 0xBF, 0xEF, 0x95, 0x60, 0x18, 0x90, 0xAF, 0xD8, 0x07, 0x09};
 
-		public static IEnumerable<KeyValuePair<CreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target) {
+		public static IEnumerable<KeyValuePair<CreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target, DatabaseEngine engine) {
 			if (source == null) {
 				throw new ArgumentNullException("source");
 			}
@@ -64,7 +64,7 @@ namespace bsn.ModuleStore.Sql {
 							yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(targetStatement, InventoryObjectDifference.TargetOnly);
 							hasTarget = targetEnumerator.MoveNext();
 						} else {
-							yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(targetStatement, targetStatement.Equals(sourceStatement) ? InventoryObjectDifference.None : InventoryObjectDifference.Different);
+							yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(targetStatement, targetStatement.Equals(sourceStatement, engine) ? InventoryObjectDifference.None : InventoryObjectDifference.Different);
 							hasSource = sourceEnumerator.MoveNext();
 							hasTarget = targetEnumerator.MoveNext();
 						}

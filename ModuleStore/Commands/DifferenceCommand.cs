@@ -41,10 +41,20 @@ namespace bsn.ModuleStore.Console.Commands {
 		public DifferenceCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
+			DatabaseEngine engine = DatabaseEngine.Unknown;
 			Inventory sourceInventory = executionContext.GetInventory((Entities.Source)tags["source"]);
+			GetDatabaseEngine(sourceInventory, ref engine);
 			Inventory targetInventory = executionContext.GetInventory((Entities.Source)tags["target"]);
-			foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> difference in Inventory.Compare(sourceInventory, targetInventory)) {
+			GetDatabaseEngine(sourceInventory, ref engine);
+			foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> difference in Inventory.Compare(sourceInventory, targetInventory, engine)) {
 				executionContext.Output.WriteLine(string.Format(" {0} {1}: {2}", difference.Key.ObjectCategory, difference.Key.ObjectName, difference.Value));
+			}
+		}
+
+		private void GetDatabaseEngine(Inventory sourceInventory, ref DatabaseEngine engine) {
+			DatabaseInventory databaseInventory = sourceInventory as DatabaseInventory;
+			if (databaseInventory != null) {
+				engine = databaseInventory.TargetEngine;
 			}
 		}
 
