@@ -88,6 +88,7 @@ namespace bsn.ModuleStore.Mapper {
 			[Conditional("DEBUG")]
 			public void Start(string name, bool transaction) {
 				this.name = name;
+				this.transaction = transaction;
 				sw = new Stopwatch();
 				sw.Start();
 			}
