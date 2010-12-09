@@ -86,5 +86,10 @@ namespace bsn.ModuleStore.Mapper {
 		                                IList<IDisposable> disposeList) {
 			return methods[mcm.MethodBase].GetCommand(mcm, connection, schemaName, out returnValue, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList);
 		}
+
+		public string GetProcedureName(IMethodCallMessage mcm, string schemaName) {
+			string procedureName = methods[mcm.MethodBase].ProcedureName;
+			return string.IsNullOrEmpty(schemaName) ? '['+procedureName+']' : '['+schemaName+"].["+procedureName+']';
+		}
 	}
 }

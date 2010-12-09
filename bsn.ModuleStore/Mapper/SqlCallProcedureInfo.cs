@@ -151,6 +151,12 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
+		public string ProcedureName {
+			get {
+				return procedureName;
+			}
+		}
+
 		public SqlCommand GetCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out KeyValuePair<SqlParameter, Type>[] outArgs, out SqlDeserializerTypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
 		                             IList<IDisposable> disposeList) {
 			if (String.IsNullOrEmpty(schemaName)) {

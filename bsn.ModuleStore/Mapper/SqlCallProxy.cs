@@ -60,6 +60,39 @@ namespace bsn.ModuleStore.Mapper {
 	/// <seealso cref="SqlReturnValue"/>
 	/// <seealso cref="IConnectionProvider"/>
 	public class SqlCallProxy: RealProxy {
+		private struct Profiler {
+			private long call;
+			private long fetch;
+			private string name;
+			private Stopwatch sw;
+			private bool transaction;
+
+			[Conditional("DEBUG")]
+			public void End() {
+				if (sw != null) {
+					sw.Stop();
+					fetch = sw.ElapsedMilliseconds;
+					Debug.WriteLine(string.Format("Call {0}ms -- Fetch {1}ms -- Transaction: {2}", call, fetch, transaction), string.Format("Invoked SP {0}", name));
+				}
+			}
+
+			[Conditional("DEBUG")]
+			public void Fetch() {
+				Debug.Assert(sw != null);
+				sw.Stop();
+				call = sw.ElapsedMilliseconds;
+				sw.Reset();
+				sw.Start();
+			}
+
+			[Conditional("DEBUG")]
+			public void Start(string name, bool transaction) {
+				this.name = name;
+				sw = new Stopwatch();
+				sw.Start();
+			}
+		}
+
 		private static readonly MethodInfo getAssembly = typeof(IStoredProcedures).GetProperty("Assembly").GetGetMethod();
 		private static readonly MethodInfo getInstanceName = typeof(IStoredProcedures).GetProperty("InstanceName").GetGetMethod();
 		private static readonly MethodInfo getProvider = typeof(IStoredProcedures).GetProperty("Provider").GetGetMethod();
@@ -110,6 +143,7 @@ namespace bsn.ModuleStore.Mapper {
 		/// Handle a method invocation. This is called by the proxy and should not be called explicitly.
 		/// </summary>
 		public override IMessage Invoke(IMessage msg) {
+			Profiler profiler = new Profiler();
 			IMethodCallMessage mcm = (IMethodCallMessage)msg;
 			try {
 				if (mcm.MethodBase == getInstanceName) {
@@ -139,6 +173,7 @@ namespace bsn.ModuleStore.Mapper {
 						throw new InvalidOperationException("No connection was returned by the provider");
 					}
 				}
+				profiler.Start(callInfo.GetProcedureName(mcm, connectionProvider.SchemaName), transaction != null);
 				SqlDataReader reader = null;
 				try {
 					ownsConnection = (transaction == null) && (connection.State == ConnectionState.Closed);
@@ -160,10 +195,12 @@ namespace bsn.ModuleStore.Mapper {
 							object returnValue;
 							if (returnType == typeof(void)) {
 								command.ExecuteNonQuery();
+								profiler.Fetch();
 								returnValue = null;
 							} else {
 								if ((returnType == typeof(XPathNavigator)) || (returnType == typeof(XPathDocument))) {
 									using (XmlReader xmlReader = command.ExecuteXmlReader()) {
+										profiler.Fetch();
 										XPathDocument xmlDocument = new XPathDocument(xmlReader);
 										if (returnType == typeof(XPathNavigator)) {
 											returnValue = xmlDocument.CreateNavigator();
@@ -177,9 +214,11 @@ namespace bsn.ModuleStore.Mapper {
 									} else {
 										returnValue = command.ExecuteXmlReader();
 									}
+									profiler.Fetch();
 									connection = null;
 								} else if (typeof(ResultSet).IsAssignableFrom(returnType)) {
 									reader = command.ExecuteReader(CommandBehavior.Default);
+									profiler.Fetch();
 									returnValue = Activator.CreateInstance(returnType);
 									((ResultSet)returnValue).Load(reader, provider);
 									if (reader.NextResult()) {
@@ -199,6 +238,7 @@ namespace bsn.ModuleStore.Mapper {
 											throw new NotSupportedException("Out arguments cannot be combined with a DataReader return value, because DB output values are only returned after the reader is closed. See remarks section of http://msdn.microsoft.com/en-us/library/system.data.common.dbparameter.direction.aspx");
 										}
 										reader = command.ExecuteReader(ownsConnection ? CommandBehavior.CloseConnection : CommandBehavior.Default);
+										profiler.Fetch();
 										connection = null;
 										if (isTypedDataReader) {
 											try {
@@ -212,6 +252,7 @@ namespace bsn.ModuleStore.Mapper {
 										}
 									} else if (returnParameter == null) {
 										reader = command.ExecuteReader(CommandBehavior.SingleResult); // no using() or try...finally required, since the "reader" is already handled below
+										profiler.Fetch();
 										if (!reader.HasRows) {
 											if (procInfo.DeserializeReturnNullOnEmptyReader) {
 												returnValue = null;
@@ -244,6 +285,7 @@ namespace bsn.ModuleStore.Mapper {
 										reader = null;
 									} else {
 										command.ExecuteNonQuery();
+										profiler.Fetch();
 										returnValue = returnParameter.Value;
 										if (returnType != typeof(int)) {
 											returnValue = Convert.ChangeType(returnValue, returnType);
@@ -267,6 +309,7 @@ namespace bsn.ModuleStore.Mapper {
 					if (ownsConnection && (connection != null)) {
 						connection.Dispose();
 					}
+					profiler.End();
 				}
 			} catch (Exception ex) {
 				return new ReturnMessage(ex, mcm);
