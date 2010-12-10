@@ -74,7 +74,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public bool Equals(SqlScriptableToken other, DatabaseEngine engine) {
-			if (ReferenceEquals(other, this)) {
+			if ((object)other == this) {
 				return true;
 			}
 			if ((other != null) && (other.GetType() == GetType())) {

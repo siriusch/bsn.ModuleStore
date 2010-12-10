@@ -250,7 +250,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		public virtual object Process(SqlDeserializer.DeserializerContext context, int column) {
 			object result = context.DataReader.GetValue(column);
-			if (ReferenceEquals(result, DBNull.Value)) {
+			if (result == DBNull.Value) {
 				return null;
 			}
 			return result;

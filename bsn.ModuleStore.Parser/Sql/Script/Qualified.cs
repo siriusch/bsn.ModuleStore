@@ -123,7 +123,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public int CompareTo(IQualifiedName<TQ> other) {
 			if (other != null) {
-				if (ReferenceEquals(this, other)) {
+				if ((object)other == this) {
 					return 0;
 				}
 				TQ currentQualification = Qualification;
@@ -144,7 +144,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public bool Equals(IQualifiedName<TQ> other) {
 			if (other != null) {
-				if (ReferenceEquals(this, other)) {
+				if ((object)other == this) {
 					return true;
 				}
 				TQ currentQualification = Qualification;
@@ -170,7 +170,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		void IQualifiedName<TQ>.SetOverride(IQualified<TQ> qualificationProvider) {
 			if (!lockedOverride) {
-				if (ReferenceEquals(this, qualificationProvider)) {
+				if ((object)qualificationProvider == this) {
 					throw new ArgumentException("Cannot assign itself as override", "qualificationProvider");
 				}
 				qualificationOverride = qualificationProvider;

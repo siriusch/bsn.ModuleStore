@@ -61,7 +61,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (other == null) {
 				return 1;
 			}
-			if (ReferenceEquals(this, other)) {
+			if ((object)other == this) {
 				return 0;
 			}
 			int diff = StringComparer.OrdinalIgnoreCase.Compare(value, other.value);
@@ -73,7 +73,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public bool Equals(SqlName other) {
 			if (other != null) {
-				if (ReferenceEquals(this, other)) {
+				if ((object)other == this) {
 					return true;
 				}
 				if (GetType() == other.GetType()) {

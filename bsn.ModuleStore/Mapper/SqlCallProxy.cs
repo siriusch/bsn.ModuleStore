@@ -223,7 +223,7 @@ namespace bsn.ModuleStore.Mapper {
 									returnValue = Activator.CreateInstance(returnType);
 									((ResultSet)returnValue).Load(reader, provider);
 									if (reader.NextResult()) {
-										throw new InvalidOperationException("The reader contains mroe result sets than expected");
+										throw new InvalidOperationException("The reader contains more result sets than expected");
 									}
 									reader.Dispose();
 									reader = null;
