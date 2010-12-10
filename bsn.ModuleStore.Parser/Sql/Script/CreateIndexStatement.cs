@@ -33,9 +33,9 @@ using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateIndexStatement: CreateStatement {
-		private readonly IndexName indexName;
 		private readonly List<IndexOption> indexOptions;
 		private readonly Qualified<SchemaName, TableName> tableName;
+		private IndexName indexName;
 
 		protected CreateIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, Optional<Sequence<IndexOption>> indexOptions) {
 			Debug.Assert(indexName != null);
@@ -66,6 +66,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override string ObjectName {
 			get {
 				return indexName.Value;
+			}
+			set {
+				indexName = new IndexName(value);
 			}
 		}
 

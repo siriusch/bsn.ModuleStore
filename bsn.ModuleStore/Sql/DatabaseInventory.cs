@@ -52,8 +52,15 @@ namespace bsn.ModuleStore.Sql {
 			public string AsText(XPathNavigator nav) {
 				return nav.InnerXml;
 			}
+
 			// ReSharper restore UnusedMember.Local
 		}
+
+		private static readonly ICollection<Type> objectsToRename = new HashSet<Type> {
+		                                                                              		typeof(CreateFunctionStatement),
+		                                                                              		typeof(CreateProcedureStatement),
+		                                                                              		typeof(CreateTriggerStatement)
+		                                                                              };
 
 		private static readonly XslCompiledTransform scripter = LoadTransform("UserObjectScripter.xslt");
 		private static readonly XslCompiledTransform userObjectList = LoadTransform("UserObjectList.xslt");
@@ -77,13 +84,13 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private readonly string schemaName;
-		private DatabaseEngine targetEngine;
+		private readonly DatabaseEngine targetEngine;
 
 		public DatabaseInventory(ManagementConnectionProvider database, string schemaName): base() {
 			if (database == null) {
 				throw new ArgumentNullException("database");
 			}
-			this.targetEngine = database.Engine;
+			targetEngine = database.Engine;
 			this.schemaName = schemaName;
 			XsltArgumentList arguments = CreateArguments(database);
 			using (SqlCommand command = database.GetConnection().CreateCommand()) {
@@ -96,20 +103,24 @@ namespace bsn.ModuleStore.Sql {
 				}
 				using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleResult)) {
 					int definitionColumn = reader.GetOrdinal("xDefinition");
+					int nameColumn = reader.GetOrdinal("sName");
 					StringBuilder builder = new StringBuilder(65520);
 					while (reader.Read()) {
 						builder.Length = 0;
 						using (StringWriter writer = new StringWriter(builder)) {
 							SqlXml xml = reader.GetSqlXml(definitionColumn);
 							scripter.Transform(xml.CreateReader(), arguments, writer);
-//							TraceXmlToSql(xml, writer);
+							//							TraceXmlToSql(xml, writer);
 						}
 						try {
 							try {
 								using (StringReader scriptReader = new StringReader(builder.ToString())) {
-									ProcessSingleScript(scriptReader, statement => {
-									                                  	throw CreateException("Cannot process statement:", statement, TargetEngine);
-									                                  });
+									CreateStatement objectStatement = ProcessSingleScript(scriptReader, statement => {
+									                                                                    	throw CreateException("Cannot process statement:", statement, TargetEngine);
+									                                                                    }).SingleOrDefault(statement => objectsToRename.Any(t => t.IsAssignableFrom(statement.GetType())));
+									if (objectStatement != null) {
+										objectStatement.ObjectName = reader.GetString(nameColumn);
+									}
 								}
 							} catch (ParseException ex) {
 								ex.FileName = reader.GetString(reader.GetOrdinal("sName"));
@@ -124,24 +135,15 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		private XsltArgumentList CreateArguments(ManagementConnectionProvider database) {
-			XsltArgumentList arguments = new XsltArgumentList();
-			arguments.AddExtensionObject("urn:utils", new XsltUtils());
-			arguments.AddParam("engine", "", targetEngine.ToString());
-			arguments.AddParam("azure", "", targetEngine == DatabaseEngine.SqlAzure);
-			arguments.AddParam("version", "", database.EngineVersion.Major);
-			return arguments;
+		public string SchemaName {
+			get {
+				return schemaName;
+			}
 		}
 
 		public DatabaseEngine TargetEngine {
 			get {
 				return targetEngine;
-			}
-		}
-
-		public string SchemaName {
-			get {
-				return schemaName;
 			}
 		}
 
@@ -166,6 +168,15 @@ namespace bsn.ModuleStore.Sql {
 			} finally {
 				UnsetQualification();
 			}
+		}
+
+		private XsltArgumentList CreateArguments(ManagementConnectionProvider database) {
+			XsltArgumentList arguments = new XsltArgumentList();
+			arguments.AddExtensionObject("urn:utils", new XsltUtils());
+			arguments.AddParam("engine", "", targetEngine.ToString());
+			arguments.AddParam("azure", "", targetEngine == DatabaseEngine.SqlAzure);
+			arguments.AddParam("version", "", database.EngineVersion.Major);
+			return arguments;
 		}
 
 		[Conditional("DEBUG")]

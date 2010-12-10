@@ -202,7 +202,7 @@ namespace bsn.ModuleStore.Sql {
 			objects.Add(createStatement.ObjectName, createStatement);
 		}
 
-		protected void ProcessSingleScript(TextReader scriptReader, Action<Statement> unsupportedStatementFound) {
+		protected IEnumerable<CreateStatement> ProcessSingleScript(TextReader scriptReader, Action<Statement> unsupportedStatementFound) {
 			List<CreateStatement> objects = new List<CreateStatement>();
 			CreateTableStatement createTable = null;
 			foreach (Statement statement in ScriptParser.Parse(scriptReader)) {
@@ -231,6 +231,7 @@ namespace bsn.ModuleStore.Sql {
 			foreach (CreateStatement statement in objects) {
 				AddObject(statement);
 			}
+			return objects;
 		}
 
 		private T FindInternal<T>(string objectName) where T: CreateStatement {

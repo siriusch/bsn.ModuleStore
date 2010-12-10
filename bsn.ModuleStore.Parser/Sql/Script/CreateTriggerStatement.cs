@@ -71,6 +71,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return triggerName.Name.Value;
 			}
+			set {
+				triggerName.Name = new TriggerName(value);
+			}
 		}
 
 		public ReplicationToken Replication {

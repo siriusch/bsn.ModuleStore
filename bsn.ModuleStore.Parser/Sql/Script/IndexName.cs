@@ -35,6 +35,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class IndexName: SqlQuotedName {
 		[Rule("<IndexName> ::= Id")]
 		[Rule("<IndexName> ::= QuotedId")]
-		public IndexName(Identifier identifier): base(identifier.Value) {}
+		public IndexName(Identifier identifier): this(identifier.Value) {}
+
+		internal IndexName(string name): base(name) {}
 	}
 }

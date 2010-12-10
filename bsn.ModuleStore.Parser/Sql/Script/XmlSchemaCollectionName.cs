@@ -35,6 +35,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class XmlSchemaCollectionName: SqlQuotedName {
 		[Rule("<XmlSchemaCollectionName> ::= Id")]
 		[Rule("<XmlSchemaCollectionName> ::= QuotedId")]
-		public XmlSchemaCollectionName(Identifier identifier): base(identifier.Value) {}
+		public XmlSchemaCollectionName(Identifier identifier): this(identifier.Value) {}
+
+		internal XmlSchemaCollectionName(string name): base(name) {}
 	}
 }

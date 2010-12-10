@@ -63,6 +63,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return tableName.Name.Value;
 			}
+			set {
+				tableName.Name = new TableName(value);
+			}
 		}
 
 		public Qualified<SchemaName, TableName> TableName {

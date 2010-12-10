@@ -61,6 +61,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return xmlSchemaCollectionName.Name.Value;
 			}
+			set {
+				xmlSchemaCollectionName.Name = new XmlSchemaCollectionName(value);
+			}
 		}
 
 		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName {

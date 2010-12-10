@@ -69,6 +69,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return viewName.Name.Value;
 			}
+			set {
+				viewName.Name = new ViewName(value);
+			}
 		}
 
 		public SelectStatement SelectStatement {

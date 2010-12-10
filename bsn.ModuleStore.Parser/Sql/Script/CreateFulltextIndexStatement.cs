@@ -37,8 +37,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateFulltextIndexStatement: CreateStatement {
 		private readonly FulltextChangeTracking changeTracking;
 		private readonly List<FulltextColumn> columns;
-		private readonly IndexName indexName;
 		private readonly Qualified<SchemaName, TableName> tableName;
+		private IndexName indexName;
 
 		[Rule("<CreateFulltextStatement> ::= ~CREATE ~FULLTEXT ~INDEX ~ON ~TABLE <TableNameQualified> <FulltextColumnGroup> ~KEY ~INDEX <IndexName> <FulltextChangeTracking>")]
 		public CreateFulltextIndexStatement(Qualified<SchemaName, TableName> tableName, Optional<Sequence<FulltextColumn>> columns, IndexName indexName, FulltextChangeTracking changeTracking) {
@@ -78,6 +78,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override string ObjectName {
 			get {
 				return indexName.Value;
+			}
+			set {
+				indexName = new IndexName(value);
 			}
 		}
 

@@ -39,25 +39,16 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 [assembly: RuleTrim("<OrderClause> ::= ORDER BY <OrderList>", "<OrderList>", SemanticTokenType = typeof(SqlToken))]
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateFunctionStatement<TBody>: CreateStatement, ICreateOrAlterStatement where TBody: SqlScriptableToken {
-		private readonly TBody body;
+	public abstract class CreateFunctionStatement: CreateStatement, ICreateOrAlterStatement {
 		private readonly Qualified<SchemaName, FunctionName> functionName;
 		private readonly OptionToken option;
 		private readonly List<FunctionParameter> parameters;
 
-		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<FunctionParameter> parameters, OptionToken option, TBody body) {
+		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<FunctionParameter> parameters, OptionToken option) {
 			Debug.Assert(functionName != null);
-			Debug.Assert(body != null);
 			this.functionName = functionName;
 			this.parameters = parameters.ToList();
 			this.option = option;
-			this.body = body;
-		}
-
-		public TBody Body {
-			get {
-				return body;
-			}
 		}
 
 		public Qualified<SchemaName, FunctionName> FunctionName {
@@ -76,6 +67,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return functionName.Name.Value;
 			}
+			set {
+				functionName.Name = new FunctionName(value);
+			}
 		}
 
 		public OptionToken Option {
@@ -90,12 +84,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override Statement CreateAlterStatement() {
-			return new AlterOfCreateStatement<CreateFunctionStatement<TBody>>(this);
-		}
-
 		public override DropStatement CreateDropStatement() {
-			return new DropFunctionStatement(functionName);
+			return new DropFunctionStatement(FunctionName);
 		}
 
 		public override sealed void WriteTo(SqlWriter writer) {
@@ -103,7 +93,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected override sealed string GetObjectSchema() {
-			return functionName.IsQualified ? functionName.Qualification.Value : string.Empty;
+			return FunctionName.IsQualified ? FunctionName.Qualification.Value : string.Empty;
 		}
 
 		protected virtual void WriteToInternal(SqlWriter writer, string command) {
@@ -125,6 +115,25 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("command");
 			}
 			WriteToInternal(writer, command);
+		}
+	}
+
+	public abstract class CreateFunctionStatement<TBody>: CreateFunctionStatement where TBody: SqlScriptableToken {
+		private readonly TBody body;
+
+		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<FunctionParameter> parameters, OptionToken option, TBody body): base(functionName, parameters, option) {
+			Debug.Assert(body != null);
+			this.body = body;
+		}
+
+		public TBody Body {
+			get {
+				return body;
+			}
+		}
+
+		public override Statement CreateAlterStatement() {
+			return new AlterOfCreateStatement<CreateFunctionStatement<TBody>>(this);
 		}
 	}
 }

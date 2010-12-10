@@ -34,11 +34,10 @@ using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName
-	                                                                              where TN: SqlName {
-		private readonly TN name;
+	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName where TN: SqlName {
 		private readonly TQ qualification;
 		private bool lockedOverride;
+		private TN name;
 		private IQualified<TQ> qualificationOverride;
 
 		[Rule("<ColumnNameQualified> ::= <ColumnName>", typeof(SqlName), typeof(ColumnName))]
@@ -85,6 +84,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return name;
 			}
+			internal set {
+				if (value == null) {
+					throw new ArgumentNullException("value");
+				}
+				name = value;
+			}
 		}
 
 		public override int GetHashCode() {
@@ -123,7 +128,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public int CompareTo(IQualifiedName<TQ> other) {
 			if (other != null) {
-				if ((object)other == this) {
+				if (other == this) {
 					return 0;
 				}
 				TQ currentQualification = Qualification;
@@ -144,7 +149,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public bool Equals(IQualifiedName<TQ> other) {
 			if (other != null) {
-				if ((object)other == this) {
+				if (other == this) {
 					return true;
 				}
 				TQ currentQualification = Qualification;
@@ -170,7 +175,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		void IQualifiedName<TQ>.SetOverride(IQualified<TQ> qualificationProvider) {
 			if (!lockedOverride) {
-				if ((object)qualificationProvider == this) {
+				if (qualificationProvider == this) {
 					throw new ArgumentException("Cannot assign itself as override", "qualificationProvider");
 				}
 				qualificationOverride = qualificationProvider;
@@ -189,5 +194,5 @@ namespace bsn.ModuleStore.Sql.Script {
 				return qualification;
 			}
 		}
-	                                                                              }
+	}
 }

@@ -73,6 +73,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public abstract string ObjectName {
 			get;
+			set;
 		}
 	}
 }

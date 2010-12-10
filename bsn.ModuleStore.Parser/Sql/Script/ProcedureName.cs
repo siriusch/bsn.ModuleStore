@@ -35,6 +35,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ProcedureName: SqlQuotedName {
 		[Rule("<ProcedureName> ::= Id")]
 		[Rule("<ProcedureName> ::= QuotedId")]
-		public ProcedureName(Identifier identifier): base(identifier.Value) {}
+		public ProcedureName(Identifier identifier): this(identifier.Value) {}
+
+		internal ProcedureName(string name): base(name) {}
 	}
 }

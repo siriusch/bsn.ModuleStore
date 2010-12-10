@@ -35,6 +35,8 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class TriggerName: SqlQuotedName {
 		[Rule("<TriggerName> ::= Id")]
 		[Rule("<TriggerName> ::= QuotedId")]
-		public TriggerName(Identifier identifier): base(identifier.Value) {}
+		public TriggerName(Identifier identifier): this(identifier.Value) {}
+
+		internal TriggerName(string name): base(name) {}
 	}
 }

@@ -70,6 +70,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			get {
 				return procedureName.Name.Value;
 			}
+			set {
+				procedureName.Name = new ProcedureName(value);
+			}
 		}
 
 		public OptionToken Option {
