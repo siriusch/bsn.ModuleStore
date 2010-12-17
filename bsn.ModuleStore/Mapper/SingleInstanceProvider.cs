@@ -35,6 +35,8 @@ using System.Runtime.Serialization;
 
 namespace bsn.ModuleStore.Mapper {
 	public class SingleInstanceProvider<TKey>: IInstanceProvider, IDeserializationStateProvider where TKey: IEquatable<TKey> {
+		protected const string DeserializedInstanceSet = "$DeserializedInstanceSet";
+
 		protected struct TypeKey: IEquatable<TypeKey> {
 			private readonly TKey key;
 			private readonly Type type;
@@ -70,7 +72,9 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly Dictionary<TypeKey, WeakReference> instances = new Dictionary<TypeKey, WeakReference>();
 		private int lastCollection;
 
-		protected virtual void BeginDeserialize(IDictionary<string, object> state) {}
+		protected virtual void BeginDeserialize(IDictionary<string, object> state) {
+			state[DeserializedInstanceSet] = new HashSet<TypeKey>();
+		}
 
 		protected virtual object CreateInstance(TypeKey key) {
 			return FormatterServices.GetUninitializedObject(key.Type);
@@ -118,7 +122,7 @@ namespace bsn.ModuleStore.Mapper {
 			return false;
 		}
 
-		protected virtual bool TryGetInstance(Type instanceType, object identity, out object instance) {
+		protected virtual bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out bool skipDeserialization) {
 			Debug.Assert(instanceType != null);
 			if ((!instanceType.IsValueType) && (identity is TKey)) {
 				TypeKey key = new TypeKey(instanceType, (TKey)identity);
@@ -136,9 +140,11 @@ namespace bsn.ModuleStore.Mapper {
 						instances.Add(key, reference);
 					}
 				}
+				skipDeserialization = !((HashSet<TypeKey>)state[DeserializedInstanceSet]).Add(key);
 				return true;
 			}
 			instance = null;
+			skipDeserialization = false;
 			return false;
 		}
 
@@ -154,8 +160,8 @@ namespace bsn.ModuleStore.Mapper {
 			EndDeserialize(state);
 		}
 
-		bool IInstanceProvider.TryGetInstance(Type instanceType, object identity, out object instance) {
-			return TryGetInstance(instanceType, identity, out instance);
+		bool IInstanceProvider.TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out bool skipDeserialization) {
+			return TryGetInstance(state, instanceType, identity, out instance, out skipDeserialization);
 		}
 	}
 }

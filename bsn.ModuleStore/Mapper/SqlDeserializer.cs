@@ -171,13 +171,14 @@ namespace bsn.ModuleStore.Mapper {
 				}
 			}
 
-			public object GetInstance(Type instanceType, object identity) {
+			public object GetInstance(Type instanceType, object identity, out bool skipDeserialization) {
 				if (provider != null) {
 					object result;
-					if (provider.TryGetInstance(instanceType, identity, out result)) {
+					if (provider.TryGetInstance(state, instanceType, identity, out result, out skipDeserialization)) {
 						return result;
 					}
 				}
+				skipDeserialization = false;
 				return callConstructor ? Activator.CreateInstance(instanceType, true) : FormatterServices.GetUninitializedObject(instanceType);
 			}
 
@@ -369,8 +370,9 @@ namespace bsn.ModuleStore.Mapper {
 					buffer[nested.Key.MemberIndex] = nested.Value.CreateInstance(context);
 				}
 			}
-			object result = context.GetInstance(typeInfo.InstanceType, identity);
-			if (result != null) {
+			bool skipDeserialization;
+			object result = context.GetInstance(typeInfo.InstanceType, identity, out skipDeserialization);
+			if ((result != null) && (!skipDeserialization)) {
 				FormatterServices.PopulateObjectMembers(result, typeInfo.Mapping.Members, buffer);
 				context.NotifyInstancePopulated(result);
 				if (typeInfo.RequiresNotification) {
