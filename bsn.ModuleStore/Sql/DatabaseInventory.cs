@@ -153,7 +153,23 @@ namespace bsn.ModuleStore.Sql {
 			try {
 				DependencyResolver resolver = new DependencyResolver();
 				foreach (CreateStatement statement in Objects) {
-					resolver.Add(statement);
+					CreateTableStatement createTableStatement = statement as CreateTableStatement;
+					if (createTableStatement != null) {
+						using (StringWriter writer = new StringWriter()) {
+							createTableStatement.WriteTo(new SqlWriter(writer, targetEngine));
+							createTableStatement = ScriptParser.Parse(writer.ToString()).Cast<CreateTableStatement>().Single();
+						}
+						for (int i = createTableStatement.Definitions.Count-1; i>=0; i--) {
+							TableConstraint tableConstraint = createTableStatement.Definitions[i] as TableConstraint;
+							if ((tableConstraint != null) && (!(tableConstraint is TableUniqueConstraintBase)) && (tableConstraint.ConstraintName != null)) {
+								yield return WriteStatement(tableConstraint.CreateDropStatement(createTableStatement.TableName), buffer, TargetEngine);
+								createTableStatement.Definitions.RemoveAt(i);
+							}
+						}
+						resolver.Add(createTableStatement);
+					} else {
+						resolver.Add(statement);
+					}
 				}
 				foreach (CreateStatement statement in resolver.GetInOrder(true).Reverse()) {
 					yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);

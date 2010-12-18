@@ -43,6 +43,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		internal AlterTableDropConstraintStatement CreateDropStatement(Qualified<SchemaName, TableName> tableName) {
+			if (tableName == null) {
+				throw new ArgumentNullException("tableName");
+			}
+			return new AlterTableDropConstraintStatement(tableName, ConstraintName);
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			if (constraintName != null) {
 				writer.Write("CONSTRAINT ");
