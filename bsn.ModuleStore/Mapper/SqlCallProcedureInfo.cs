@@ -38,6 +38,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Xml;
 
+using bsn.ModuleStore.Mapper.Deserialization;
 using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
 

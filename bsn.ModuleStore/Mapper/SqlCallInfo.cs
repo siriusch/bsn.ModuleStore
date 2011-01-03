@@ -35,6 +35,8 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Xml;
 
+using bsn.ModuleStore.Mapper.Deserialization;
+
 namespace bsn.ModuleStore.Mapper {
 	internal class SqlCallInfo {
 		private static readonly Dictionary<Type, SqlCallInfo> knownTypes = new Dictionary<Type, SqlCallInfo>();

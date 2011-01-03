@@ -30,6 +30,8 @@
 using System;
 using System.Data.Common;
 
+using bsn.ModuleStore.Mapper.Deserialization;
+
 namespace bsn.ModuleStore.Mapper {
 	/// The DbProcAttribute attribute is used to specify an explicit database procedure binding on an interface.
 	/// <br/><br/>

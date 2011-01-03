@@ -73,7 +73,7 @@ namespace bsn.ModuleStore.Mapper {
 		private int lastCollection;
 
 		protected virtual void BeginDeserialize(IDictionary<string, object> state) {
-			state[DeserializedInstanceSet] = new HashSet<TypeKey>();
+			state[DeserializedInstanceSet] = new Dictionary<TypeKey, object>();
 		}
 
 		protected virtual object CreateInstance(TypeKey key) {
@@ -100,12 +100,14 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected T GetFromCache<T>(TKey identity) where T: class {
 			WeakReference reference;
-			if (instances.TryGetValue(new TypeKey(typeof(T), identity), out reference)) {
-				object result = reference.Target;
-				if (result != null) {
-					return (T)result;
+			lock (instances) {
+				if (instances.TryGetValue(new TypeKey(typeof(T), identity), out reference)) {
+					object result = reference.Target;
+					if (result != null) {
+						return (T)result;
+					}
+					throw new KeyNotFoundException(string.Format("The {0} instance with the identity {1} is no longer in the cache", typeof(T).FullName, identity));
 				}
-				throw new KeyNotFoundException(string.Format("The {0} instance with the identity {1} is no longer in the cache", typeof(T).FullName, identity));
 			}
 			throw new KeyNotFoundException(string.Format("A {0} instance with the identity {1} was not found in the cache", typeof(T).FullName, identity));
 		}
@@ -114,38 +116,62 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected bool TryGetFromCache<T>(TKey identity, out T item) where T: class {
 			WeakReference reference;
-			if (instances.TryGetValue(new TypeKey(typeof(T), identity), out reference)) {
-				item = (T)reference.Target;
-				return item != null;
+			lock (instances) {
+				if (instances.TryGetValue(new TypeKey(typeof(T), identity), out reference)) {
+					item = (T)reference.Target;
+					return item != null;
+				}
 			}
 			item = null;
 			return false;
 		}
 
-		protected virtual bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out bool skipDeserialization) {
+		protected virtual bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin) {
+			Debug.Assert(state != null);
+			Debug.Assert(instanceType != null);
+			if ((!instanceType.IsValueType) && (identity is TKey)) {
+				TypeKey key = new TypeKey(instanceType, (TKey)identity);
+				Dictionary<TypeKey, object> deserializedInstances = (Dictionary<TypeKey, object>)state[DeserializedInstanceSet];
+				if (deserializedInstances.TryGetValue(key, out instance)) {
+					instanceOrigin = InstanceOrigin.ResultSet;
+				} else {
+					lock (instances) {
+						WeakReference reference;
+						if (instances.TryGetValue(key, out reference)) {
+							instance = reference.Target;
+							if (instance == null) {
+								instance = CreateInstance(key);
+								reference.Target = instance;
+								instanceOrigin = InstanceOrigin.New;
+							} else {
+								instanceOrigin = InstanceOrigin.Cache;
+							}
+						} else {
+							instance = CreateInstance(key);
+							reference = new WeakReference(instance);
+							instances.Add(key, reference);
+							instanceOrigin = InstanceOrigin.New;
+						}
+						deserializedInstances.Add(key, instance);
+					}
+				}
+				return true;
+			}
+			instance = null;
+			instanceOrigin = InstanceOrigin.None;
+			return false;
+		}
+
+		protected virtual void Forget(IDictionary<string, object> state, Type instanceType, object identity) {
+			Debug.Assert(state != null);
 			Debug.Assert(instanceType != null);
 			if ((!instanceType.IsValueType) && (identity is TKey)) {
 				TypeKey key = new TypeKey(instanceType, (TKey)identity);
 				lock (instances) {
-					WeakReference reference;
-					if (instances.TryGetValue(key, out reference)) {
-						instance = reference.Target;
-						if (instance == null) {
-							instance = CreateInstance(key);
-							reference.Target = instance;
-						}
-					} else {
-						instance = CreateInstance(key);
-						reference = new WeakReference(instance);
-						instances.Add(key, reference);
-					}
+					instances.Remove(key);
 				}
-				skipDeserialization = !((HashSet<TypeKey>)state[DeserializedInstanceSet]).Add(key);
-				return true;
+				((Dictionary<TypeKey, object>)state[DeserializedInstanceSet]).Remove(key);
 			}
-			instance = null;
-			skipDeserialization = false;
-			return false;
 		}
 
 		void IDeserializationStateProvider.BeginDeserialize(IDictionary<string, object> state) {
@@ -160,8 +186,12 @@ namespace bsn.ModuleStore.Mapper {
 			EndDeserialize(state);
 		}
 
-		bool IInstanceProvider.TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out bool skipDeserialization) {
-			return TryGetInstance(state, instanceType, identity, out instance, out skipDeserialization);
+		bool IInstanceProvider.TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin) {
+			return TryGetInstance(state, instanceType, identity, out instance, out instanceOrigin);
+		}
+
+		void IInstanceProvider.ForgetInstance(IDictionary<string, object> state, Type instanceType, object identity) {
+			Forget(state, instanceType, identity);
 		}
 	}
 }

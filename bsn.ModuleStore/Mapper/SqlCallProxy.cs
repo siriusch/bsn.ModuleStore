@@ -40,6 +40,8 @@ using System.Runtime.Remoting.Proxies;
 using System.Xml;
 using System.Xml.XPath;
 
+using bsn.ModuleStore.Mapper.Deserialization;
+
 namespace bsn.ModuleStore.Mapper {
 	/// <summary>
 	/// The DbCallProxy class allows the creation of transparent proxies to call stored procedures with typed and named parameters, and return results in different ways.

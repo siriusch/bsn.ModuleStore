@@ -28,12 +28,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace bsn.ModuleStore.Mapper {
-	public interface IInstanceProvider {
-		bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin);
-		void ForgetInstance(IDictionary<string, object> state, Type instanceType, object identity);
+namespace bsn.ModuleStore.Mapper.Deserialization {
+	internal class NestedMemberConverter: MemberConverter {
+		public NestedMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
+
+		public override object Process(SqlDeserializer.DeserializerContext context, int column) {
+			throw new NotSupportedException("Nested members need to be deserialized directly via SqlDeserializer");
+		}
 	}
 }

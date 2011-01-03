@@ -28,12 +28,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace bsn.ModuleStore.Mapper {
-	public interface IInstanceProvider {
-		bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin);
-		void ForgetInstance(IDictionary<string, object> state, Type instanceType, object identity);
+namespace bsn.ModuleStore.Mapper.Deserialization {
+	internal class DateTimeMemberConverter: MemberConverter {
+		private readonly DateTimeKind dateTimeKind;
+
+		public DateTimeMemberConverter(Type type, int memberIndex, DateTimeKind dateTimeKind): base(type, memberIndex) {
+			this.dateTimeKind = dateTimeKind;
+		}
+
+		public override object Process(SqlDeserializer.DeserializerContext context, int column) {
+			object result = base.Process(context, column);
+			if (result != null) {
+				result = DateTime.SpecifyKind(Convert.ToDateTime(result), dateTimeKind);
+			}
+			return result;
+		}
 	}
 }

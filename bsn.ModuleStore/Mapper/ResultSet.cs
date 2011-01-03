@@ -32,6 +32,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 
+using bsn.ModuleStore.Mapper.Deserialization;
+
 namespace bsn.ModuleStore.Mapper {
 	public abstract class ResultSet {
 		protected ResultSet() {}

@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace bsn.ModuleStore.Mapper {
+namespace bsn.ModuleStore.Mapper.Deserialization {
 	public class SqlDeserializerTypeInfo {
 		private static readonly Dictionary<Type, SqlDeserializerTypeInfo> infos = new Dictionary<Type, SqlDeserializerTypeInfo>();
 
@@ -52,7 +52,7 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly bool isXmlType;
 		private readonly MethodInfo listToArray;
 		private readonly Type listType;
-		private readonly SqlDeserializer.TypeMapping mapping;
+		private readonly SqlDeserializerTypeMapping mapping;
 		private readonly bool requiresNotification;
 		private readonly MemberConverter simpleConverter;
 		private readonly Type type;
@@ -74,7 +74,7 @@ namespace bsn.ModuleStore.Mapper {
 				throw new NotSupportedException("Nested arrays cannot be deserialized by the DbDeserializer");
 			}
 			requiresNotification = typeof(ISqlDeserializationHook).IsAssignableFrom(instanceType);
-			mapping = SqlDeserializer.TypeMapping.Get(instanceType);
+			mapping = SqlDeserializerTypeMapping.Get(instanceType);
 			if (IsCollection) {
 				listType = typeof(List<>).MakeGenericType(instanceType);
 				if (type.IsArray) {
@@ -129,7 +129,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		internal SqlDeserializer.TypeMapping Mapping {
+		internal SqlDeserializerTypeMapping Mapping {
 			get {
 				return mapping;
 			}

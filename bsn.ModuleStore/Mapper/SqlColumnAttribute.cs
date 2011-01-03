@@ -63,6 +63,7 @@ namespace bsn.ModuleStore.Mapper {
 		private DateTimeKind dateTimeKind = DateTimeKind.Unspecified;
 		private string name;
 		private bool identity;
+		private bool getCachedByIdentity;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlColumnAttribute"/> class.
@@ -108,6 +109,18 @@ namespace bsn.ModuleStore.Mapper {
 			}
 			set {
 				identity = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the column <see cref="SqlColumnAttribute"/> is a foreign key to an instance cached by identity in the provider.
+		/// </summary>
+		public bool GetCachedByIdentity {
+			get {
+				return getCachedByIdentity;
+			}
+			set {
+				getCachedByIdentity = value;
 			}
 		}
 

@@ -32,13 +32,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace bsn.ModuleStore.Mapper {
+namespace bsn.ModuleStore.Mapper.Deserialization {
 	/// <summary>
 	/// The DbDeserializer generic class allows to create an efficient database Deserializer for classes and structs which transforms database rows into object instances.
 	/// <br/><br/>
@@ -121,7 +120,6 @@ namespace bsn.ModuleStore.Mapper {
 		protected internal class DeserializerContext: IDisposable {
 			private readonly IDictionary<SqlDeserializer, object[]> buffers = new Dictionary<SqlDeserializer, object[]>();
 			private readonly bool callConstructor;
-			private readonly Guid contextId = Guid.NewGuid();
 			private readonly SqlDataReader dataReader;
 			private readonly IInstanceProvider provider;
 			private readonly IDictionary<string, object> state;
@@ -171,14 +169,20 @@ namespace bsn.ModuleStore.Mapper {
 				}
 			}
 
-			public object GetInstance(Type instanceType, object identity, out bool skipDeserialization) {
+			public void ForgetInstance(Type type, object identity) {
+				if (provider != null) {
+					provider.ForgetInstance(state, type, identity);
+				}
+			}
+
+			public object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin) {
 				if (provider != null) {
 					object result;
-					if (provider.TryGetInstance(state, instanceType, identity, out result, out skipDeserialization)) {
+					if (provider.TryGetInstance(state, instanceType, identity, out result, out instanceOrigin)) {
 						return result;
 					}
 				}
-				skipDeserialization = false;
+				instanceOrigin = InstanceOrigin.New;
 				return callConstructor ? Activator.CreateInstance(instanceType, true) : FormatterServices.GetUninitializedObject(instanceType);
 			}
 
@@ -200,78 +204,6 @@ namespace bsn.ModuleStore.Mapper {
 			public void Dispose() {
 				if (stateProvider != null) {
 					stateProvider.EndDeserialize(state);
-				}
-			}
-		}
-
-		internal class NestedMemberConverter: MemberConverter {
-			public NestedMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
-
-			public override object Process(DeserializerContext context, int column) {
-				throw new NotSupportedException("Nested members need to be deserialized directly via SqlDeserializer");
-			}
-		}
-
-		internal class TypeMapping {
-			private static readonly Dictionary<Type, TypeMapping> mappings = new Dictionary<Type, TypeMapping>();
-
-			public static TypeMapping Get(Type type) {
-				if (type == null) {
-					throw new ArgumentNullException("type");
-				}
-				TypeMapping result;
-				lock (mappings) {
-					if (!mappings.TryGetValue(type, out result)) {
-						result = new TypeMapping(type);
-						mappings.Add(type, result);
-					}
-				}
-				return result;
-			}
-
-			private static IEnumerable<FieldInfo> GetAllFields(Type type) {
-				while (type != null) {
-					foreach (FieldInfo field in type.GetFields(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
-						yield return field;
-					}
-					type = type.BaseType;
-				}
-			}
-
-			private readonly List<KeyValuePair<string, KeyValuePair<bool, MemberConverter>>> converters;
-			private readonly MemberInfo[] members;
-
-			private TypeMapping(Type type) {
-				if (type == null) {
-					throw new ArgumentNullException("type");
-				}
-				converters = new List<KeyValuePair<string, KeyValuePair<bool, MemberConverter>>>();
-				List<MemberInfo> memberInfos = new List<MemberInfo>();
-				if (!(type.IsPrimitive || type.IsInterface || (typeof(string) == type))) {
-					bool hasIdentity = false;
-					foreach (FieldInfo field in GetAllFields(type)) {
-						SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetColumnAttribute(field, false);
-						if (columnAttribute != null) {
-							converters.Add(new KeyValuePair<string, KeyValuePair<bool, MemberConverter>>(columnAttribute.Name, new KeyValuePair<bool, MemberConverter>((!hasIdentity) && (hasIdentity |= columnAttribute.Identity), MemberConverter.Get(field.FieldType, memberInfos.Count, columnAttribute.DateTimeKind))));
-							memberInfos.Add(field);
-						} else if (field.IsDefined(typeof(SqlDeserializeAttribute), true)) {
-							converters.Add(new KeyValuePair<string, KeyValuePair<bool, MemberConverter>>(null, new KeyValuePair<bool, MemberConverter>(false, new NestedMemberConverter(field.FieldType, memberInfos.Count))));
-							memberInfos.Add(field);
-						}
-					}
-				}
-				members = memberInfos.ToArray();
-			}
-
-			public ICollection<KeyValuePair<string, KeyValuePair<bool, MemberConverter>>> Converters {
-				get {
-					return converters;
-				}
-			}
-
-			public MemberInfo[] Members {
-				get {
-					return members;
 				}
 			}
 		}
@@ -370,9 +302,9 @@ namespace bsn.ModuleStore.Mapper {
 					buffer[nested.Key.MemberIndex] = nested.Value.CreateInstance(context);
 				}
 			}
-			bool skipDeserialization;
-			object result = context.GetInstance(typeInfo.InstanceType, identity, out skipDeserialization);
-			if ((result != null) && (!skipDeserialization)) {
+			InstanceOrigin instanceOrigin;
+			object result = context.GetInstance(typeInfo.InstanceType, identity, out instanceOrigin);
+			if ((result != null) && (instanceOrigin != InstanceOrigin.ResultSet)) {
 				FormatterServices.PopulateObjectMembers(result, typeInfo.Mapping.Members, buffer);
 				context.NotifyInstancePopulated(result);
 				if (typeInfo.RequiresNotification) {

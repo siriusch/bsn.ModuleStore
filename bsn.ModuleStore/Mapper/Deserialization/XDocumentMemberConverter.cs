@@ -28,12 +28,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
 
-namespace bsn.ModuleStore.Mapper {
-	public interface IInstanceProvider {
-		bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin);
-		void ForgetInstance(IDictionary<string, object> state, Type instanceType, object identity);
+namespace bsn.ModuleStore.Mapper.Deserialization {
+	internal class XDocumentMemberConverter: XmlReaderMemberConverterBase {
+		public XDocumentMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
+
+		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
+			return XDocument.Load(reader);
+		}
 	}
 }
