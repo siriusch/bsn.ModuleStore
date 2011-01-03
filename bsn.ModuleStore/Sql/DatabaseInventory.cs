@@ -172,7 +172,9 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				foreach (CreateStatement statement in resolver.GetInOrder(true).Reverse()) {
-					yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);
+					if (!(statement is CreateIndexStatement)) {
+						yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);
+					}
 				}
 				buffer.Length = 0;
 				using (TextWriter writer = new StringWriter(buffer)) {
