@@ -171,10 +171,8 @@ namespace bsn.ModuleStore.Sql {
 						resolver.Add(statement);
 					}
 				}
-				foreach (CreateStatement statement in resolver.GetInOrder(true).Reverse()) {
-					if (!(statement is CreateIndexStatement)) {
-						yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);
-					}
+				foreach (CreateStatement statement in resolver.GetInOrder(true).Where(s => !(s is CreateIndexStatement)).Reverse()) {
+					yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);
 				}
 				buffer.Length = 0;
 				using (TextWriter writer = new StringWriter(buffer)) {
