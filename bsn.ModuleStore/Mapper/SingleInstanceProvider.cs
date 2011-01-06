@@ -94,6 +94,7 @@ namespace bsn.ModuleStore.Mapper {
 						instances.Remove(key);
 					}
 				}
+				state.Remove(DeserializedInstanceSet);
 				lastCollection = GC.CollectionCount(GCGeneration);
 			}
 		}
@@ -127,12 +128,11 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		protected virtual bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin) {
-			Debug.Assert(state != null);
 			Debug.Assert(instanceType != null);
 			if ((!instanceType.IsValueType) && (identity is TKey)) {
 				TypeKey key = new TypeKey(instanceType, (TKey)identity);
-				Dictionary<TypeKey, object> deserializedInstances = (Dictionary<TypeKey, object>)state[DeserializedInstanceSet];
-				if (deserializedInstances.TryGetValue(key, out instance)) {
+				Dictionary<TypeKey, object> deserializedInstances = (state != null) ? (Dictionary<TypeKey, object>)state[DeserializedInstanceSet] : null;
+				if ((deserializedInstances != null) && deserializedInstances.TryGetValue(key, out instance)) {
 					instanceOrigin = InstanceOrigin.ResultSet;
 				} else {
 					lock (instances) {
@@ -152,7 +152,9 @@ namespace bsn.ModuleStore.Mapper {
 							instances.Add(key, reference);
 							instanceOrigin = InstanceOrigin.New;
 						}
-						deserializedInstances.Add(key, instance);
+						if (deserializedInstances != null) {
+							deserializedInstances.Add(key, instance);
+						}
 					}
 				}
 				return true;
@@ -163,14 +165,18 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		protected virtual void Forget(IDictionary<string, object> state, Type instanceType, object identity) {
-			Debug.Assert(state != null);
 			Debug.Assert(instanceType != null);
 			if ((!instanceType.IsValueType) && (identity is TKey)) {
 				TypeKey key = new TypeKey(instanceType, (TKey)identity);
 				lock (instances) {
 					instances.Remove(key);
 				}
-				((Dictionary<TypeKey, object>)state[DeserializedInstanceSet]).Remove(key);
+				if (state != null) {
+					Dictionary<TypeKey, object> deserializedInstances = ((Dictionary<TypeKey, object>)state[DeserializedInstanceSet]);
+					if (deserializedInstances != null) {
+						deserializedInstances.Remove(key);
+					}
+				}
 			}
 		}
 
