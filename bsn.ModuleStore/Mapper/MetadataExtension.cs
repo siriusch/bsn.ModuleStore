@@ -29,27 +29,77 @@
 //  
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	public static class MetadataExtension {
+		public static readonly XName XmlLang = XName.Get("lang", "http://www.w3.org/XML/1998/namespace");
+
 		public static string Get(this XDocument doc, XName elementName) {
-			return Get(doc, elementName, string.Empty);
+			return Get(doc, elementName, null, string.Empty);
 		}
 
 		public static string Get(this XDocument doc, XName elementName, string @default) {
+			return Get(doc, elementName, null, @default);
+		}
+
+		public static string Get(this XDocument doc, XName elementName, CultureInfo culture) {
+			return Get(doc, elementName, culture, string.Empty);
+		}
+
+		public static XElement GetElement(this XDocument doc, XName elementName, CultureInfo culture, bool cultureFallback) {
 			if (elementName == null) {
 				throw new ArgumentNullException("elementName");
 			}
 			if (doc != null) {
 				XElement root = doc.Root;
 				if (root != null) {
-					XElement value = root.Element(elementName);
-					if (value != null) {
-						return value.Value;
+					if (culture == null) {
+						culture = CultureInfo.InvariantCulture;
+					}
+					do {
+						string cultureId = culture.ToString();
+						foreach (XElement element in root.Elements(elementName)) {
+							XAttribute lang = element.Attribute(XmlLang);
+							if ((lang == null) ? (cultureId.Length == 0) : (lang.Value == cultureId)) {
+								return element;
+							}
+						}
+						if (!cultureFallback) {
+							break;
+						}
+						culture = culture.Parent; // as per documentation, the Parent returns itself on the invariant culture
+					} while (culture != CultureInfo.InvariantCulture);
+				}
+			}
+			return null;
+		}
+
+		public static XElement NextMedadataSibling(this XElement element) {
+			if (element == null) {
+				throw new ArgumentNullException("element");
+			}
+			XAttribute lang = element.Attribute(XmlLang);
+			string cultureId = (lang != null) ? lang.Value : string.Empty;
+			XName elementName = element.Name;
+			for (XNode node = element.NextNode; node != null; node = node.NextNode) {
+				element = node as XElement;
+				if ((element != null) && (element.Name == elementName)) {
+					lang = element.Attribute(XmlLang);
+					if ((lang == null) ? (cultureId.Length == 0) : (lang.Value == cultureId)) {
+						return element;
 					}
 				}
+			}
+			return null;
+		}
+
+		public static string Get(this XDocument doc, XName elementName, CultureInfo culture, string @default) {
+			XElement element = doc.GetElement(elementName, culture, true);
+			if (element != null) {
+				return element.Value;
 			}
 			return @default;
 		}
@@ -64,31 +114,31 @@ namespace bsn.ModuleStore.Mapper {
 			return new XElement[0];
 		}
 
-		public static void Set(this XDocument doc, XName elementName, string value) {
-			if (doc == null) {
-				throw new ArgumentNullException("doc");
-			}
-			if (elementName == null) {
-				throw new ArgumentNullException("elementName");
-			}
-			XElement root = doc.GetRoot();
-			if (value == null) {
-				root.Elements(elementName).Remove();
+		public static XDocument Clone(this XDocument doc) {
+			return new XDocument(doc);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, CultureInfo culture, string value) {
+			XElement element = doc.GetElement(elementName, culture, false);
+			if (element == null) {
+				if (value == null) {
+					return;
+				}
+				element = new XElement(elementName, value);
+				if ((culture != null) && (culture != CultureInfo.InvariantCulture)) {
+					element.SetAttributeValue(XmlLang, culture.ToString());
+				}
+				doc.GetRoot().Add(element);
 			} else {
-				using (IEnumerator<XElement> enumerator = root.Elements(elementName).GetEnumerator()) {
-					if (enumerator.MoveNext()) {
-						XElement current = enumerator.Current;
-						Debug.Assert(current != null);
-						current.RemoveAll();
-						current.Value = value;
-						while (enumerator.MoveNext()) {
-							current = enumerator.Current;
-							Debug.Assert(current != null);
-							current.Remove();
-						}
-					} else {
-						root.Add(new XElement(elementName, value));
-					}
+				if (value != null) {
+					element.RemoveAll();
+					element.Value = value;
+					element = element.NextMedadataSibling();
+				}
+				while (element != null) {
+					XElement next = element.NextMedadataSibling();
+					element.Remove();
+					element = next;
 				}
 			}
 		}
