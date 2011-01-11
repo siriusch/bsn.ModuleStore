@@ -67,11 +67,12 @@ namespace bsn.ModuleStore.Mapper {
 								return element;
 							}
 						}
-						if (!cultureFallback) {
-							break;
+						if ((!cultureFallback) || (culture == CultureInfo.InvariantCulture)) {
+							culture = null;
+						} else {
+							culture = culture.Parent;
 						}
-						culture = culture.Parent; // as per documentation, the Parent returns itself on the invariant culture
-					} while (culture != CultureInfo.InvariantCulture);
+					} while (culture != null);
 				}
 			}
 			return null;
