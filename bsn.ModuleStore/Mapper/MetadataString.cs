@@ -64,18 +64,41 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
+		public void Set(XDocument metadata, CultureInfo culture, string value) {
+			if (metadata == null) {
+				throw new ArgumentNullException("metadata");
+			}
+			metadata.Set(elementName, culture, value);
+		}
+
 		public XDocument Set(CultureInfo culture, string value) {
 			XDocument result = Metadata.Clone();
-			result.Set(elementName, culture, value);
+			Set(result, culture, value);
 			return result;
 		}
 
-		public string ToString(CultureInfo culture) {
-			return Metadata.Get(elementName, culture);
+		public XDocument Set(string value) {
+			return Set((CultureInfo)null, value);
 		}
 
-		public override string ToString() {
-			return ToString(CultureInfo.CurrentUICulture);
+		public void Set(XDocument metadata, string value) {
+			Set(metadata, null, value);
+		}
+
+		public virtual string ToString(XDocument metadata, CultureInfo culture) {
+			return metadata.Get(elementName, culture);
+		}
+
+		public string ToString(CultureInfo culture) {
+			return ToString(Metadata, culture);
+		}
+
+		public string ToString(XDocument metadata) {
+			return ToString(metadata, null);
+		}
+
+		public sealed override string ToString() {
+			return ToString(Metadata, CultureInfo.CurrentUICulture);
 		}
 	}
 }
