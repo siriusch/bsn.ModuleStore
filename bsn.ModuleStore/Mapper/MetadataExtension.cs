@@ -115,6 +115,9 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static XDocument Clone(this XDocument doc) {
+			if (doc == null) {
+				return new XDocument();
+			}
 			return new XDocument(doc);
 		}
 

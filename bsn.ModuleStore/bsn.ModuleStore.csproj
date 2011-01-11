@@ -64,6 +64,7 @@
     <Compile Include="Mapper\IInstanceProvider.cs" />
     <Compile Include="Mapper\Deserialization\NestedMemberConverter.cs" />
     <Compile Include="Mapper\InstanceOrigin.cs" />
+    <Compile Include="Mapper\MetadataString.cs" />
     <Compile Include="Mapper\SingleInstanceProvider.cs" />
     <Compile Include="Mapper\MetadataExtension.cs" />
     <Compile Include="Mapper\ResultSet.cs" />
