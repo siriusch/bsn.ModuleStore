@@ -129,6 +129,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected virtual bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin) {
 			Debug.Assert(instanceType != null);
+			Debug.Assert(!instanceType.IsAbstract);
 			if ((!instanceType.IsValueType) && (identity is TKey)) {
 				TypeKey key = new TypeKey(instanceType, (TKey)identity);
 				Dictionary<TypeKey, object> deserializedInstances = (state != null) ? (Dictionary<TypeKey, object>)state[DeserializedInstanceSet] : null;
@@ -166,6 +167,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected virtual void Forget(IDictionary<string, object> state, Type instanceType, object identity) {
 			Debug.Assert(instanceType != null);
+			Debug.Assert(!instanceType.IsAbstract);
 			if ((!instanceType.IsValueType) && (identity is TKey)) {
 				TypeKey key = new TypeKey(instanceType, (TKey)identity);
 				lock (instances) {
