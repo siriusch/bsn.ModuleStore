@@ -44,11 +44,12 @@ namespace bsn.ModuleStore.Mapper {
 			DynamicMethod factoryMethod;
 			lock (factoryMethods) {
 				if (!factoryMethods.TryGetValue(type, out factoryMethod)) {
-					ConstructorInfo constructor = type.GetConstructor(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic, null, new[] {typeof(TManager)}, null);
+					Type[] arguments = new[] {typeof(TManager)};
+					ConstructorInfo constructor = type.GetConstructor(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic, null, arguments, null);
 					if (constructor == null) {
 						throw new MissingMemberException(type.FullName, string.Format(".ctor({0})", typeof(TManager).FullName));
 					}
-					factoryMethod = new DynamicMethod(string.Format("ManagedInstanceFactory<{0}>", type.Name), type, Type.EmptyTypes, true);
+					factoryMethod = new DynamicMethod(string.Format("ManagedInstanceFactory<{0}>", type.Name), type, arguments, type, true);
 					ILGenerator il = factoryMethod.GetILGenerator();
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Newobj, constructor);
@@ -56,7 +57,7 @@ namespace bsn.ModuleStore.Mapper {
 					factoryMethods.Add(type, factoryMethod);
 				}
 			}
-			return (Func<Instance<TId, TManager>>)factoryMethod.CreateDelegate(typeof(Func<TId, Instance<TId, TManager>>), manager);
+			return (Func<Instance<TId, TManager>>)factoryMethod.CreateDelegate(typeof(Func<Instance<TId, TManager>>), manager);
 		}
 
 		private readonly Dictionary<Type, Func<Instance<TId, TManager>>> factories = new Dictionary<Type, Func<Instance<TId, TManager>>>();
