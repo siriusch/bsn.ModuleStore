@@ -81,6 +81,7 @@ namespace bsn.ModuleStore.Mapper {
 		protected override object CreateInstance(TypeKey key) {
 			Debug.Assert(manager != null);
 			if (typeof(Instance<TId, TManager>).IsAssignableFrom(key.Type)) {
+				Debug.Assert(!key.Type.IsAbstract);
 				Func<Instance<TId, TManager>> factory;
 				lock (factories) {
 					if (!factories.TryGetValue(key.Type, out factory)) {
