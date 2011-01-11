@@ -32,10 +32,27 @@ using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	public abstract class InstanceManager<TId, TManager> where TId: struct, IEquatable<TId> where TManager: InstanceManager<TId, TManager> {
+		protected static TDataInterface GetDefaultDataInterface<TDataInterface>(ModuleDatabase database) where TDataInterface: IStoredProcedures {
+			return GetDefaultDataInterface<TDataInterface>(database, true);
+		}
+
+		protected static TDataInterface GetDefaultDataInterface<TDataInterface>(ModuleDatabase database, bool autoCreate) where TDataInterface: IStoredProcedures {
+			if (database == null) {
+				throw new ArgumentNullException("database");
+			}
+			return database.Get<TDataInterface>(autoCreate);
+		}
+
 		private readonly ManagedInstanceProvider<TId, TManager> provider;
 
+		protected InstanceManager(): this(new ManagedInstanceProvider<TId, TManager>()) {}
+
 		protected InstanceManager(ManagedInstanceProvider<TId, TManager> provider) {
-			this.provider = new ManagedInstanceProvider<TId, TManager>((TManager)this);
+			if (provider == null) {
+				throw new ArgumentNullException("provider");
+			}
+			provider.Manager = (TManager)this;
+			this.provider = provider;
 		}
 
 		protected ManagedInstanceProvider<TId, TManager> Provider {

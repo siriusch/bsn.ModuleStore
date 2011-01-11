@@ -28,10 +28,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
-	public abstract class Instance<TId, TManager>: IIdentifiable<TId> where TId: struct, IEquatable<TId> where TManager: InstanceManager<TId, TManager> {
+	public abstract class Instance<TId, TManager>: IIdentifiable<TId>, IEquatable<Instance<TId, TManager>> where TId: struct, IEquatable<TId> where TManager: InstanceManager<TId, TManager> {
 		private readonly TManager owner;
 
 		protected Instance(TManager owner) {
@@ -45,6 +46,22 @@ namespace bsn.ModuleStore.Mapper {
 			get {
 				return owner;
 			}
+		}
+
+		public override sealed bool Equals(object obj) {
+			return Equals(obj as Instance<TId, TManager>);
+		}
+
+		public override sealed int GetHashCode() {
+			return GetType().GetHashCode()^Id.GetHashCode();
+		}
+
+		public bool Equals(Instance<TId, TManager> other) {
+			if (other == this) {
+				return true;
+			}
+			Debug.Assert((other == null) || (!Id.Equals(other.Id)));
+			return false;
 		}
 
 		public abstract TId Id {

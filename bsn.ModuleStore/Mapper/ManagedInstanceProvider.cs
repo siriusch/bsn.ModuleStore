@@ -60,16 +60,25 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		private readonly Dictionary<Type, Func<Instance<TId, TManager>>> factories = new Dictionary<Type, Func<Instance<TId, TManager>>>();
-		private readonly TManager manager;
+		private TManager manager;
 
-		public ManagedInstanceProvider(TManager manager) {
-			if (manager == null) {
-				throw new ArgumentNullException("manager");
+		protected internal TManager Manager {
+			get {
+				return manager;
 			}
-			this.manager = manager;
+			internal set {
+				if (value == null) {
+					throw new ArgumentNullException("manager");
+				}
+				if (manager != null) {
+					throw new InvalidOperationException("Manager can only be set once");
+				}
+				manager = value;
+			}
 		}
 
 		protected override object CreateInstance(TypeKey key) {
+			Debug.Assert(manager != null);
 			if (typeof(Instance<TId, TManager>).IsAssignableFrom(key.Type)) {
 				Func<Instance<TId, TManager>> factory;
 				lock (factories) {
