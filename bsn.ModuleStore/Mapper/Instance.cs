@@ -67,5 +67,9 @@ namespace bsn.ModuleStore.Mapper {
 		public abstract TId Id {
 			get;
 		}
+
+		public override string ToString() {
+			return string.Format("{0}[{1}]", GetType().FullName, Id);
+		}
 	}
 }
