@@ -45,7 +45,7 @@ namespace bsn.ModuleStore.Sql {
 			public DependencyNode(string objectName, Statement statement) {
 				this.objectName = objectName;
 				this.statement = statement;
-				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames<SqlName>().Where(n => !n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase))) {
+				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames<SqlName>().Where(n => !(n.Value.StartsWith("@") || n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase)))) {
 					edges.Add(referencedObjectName.Value);
 				}
 			}
@@ -167,12 +167,14 @@ namespace bsn.ModuleStore.Sql {
 			if (string.IsNullOrEmpty(objectName)) {
 				throw new ArgumentNullException("objectName");
 			}
-			List<DependencyNode> dependencyNodes;
-			if (!dependencies.TryGetValue(objectName, out dependencyNodes)) {
-				dependencyNodes = new List<DependencyNode>();
-				dependencies.Add(objectName, dependencyNodes);
+			if (!objectName.StartsWith("@")) {
+				List<DependencyNode> dependencyNodes;
+				if (!dependencies.TryGetValue(objectName, out dependencyNodes)) {
+					dependencyNodes = new List<DependencyNode>();
+					dependencies.Add(objectName, dependencyNodes);
+				}
+				dependencyNodes.Add(new DependencyNode(objectName, statement));
 			}
-			dependencyNodes.Add(new DependencyNode(objectName, statement));
 		}
 
 		private bool CheckDependenciesExist(DependencyNode node) {
