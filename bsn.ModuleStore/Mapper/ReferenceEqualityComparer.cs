@@ -28,19 +28,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
+using System.Runtime.CompilerServices;
 
 namespace bsn.ModuleStore.Mapper {
-	public class MetadataString: MetadataBase<string> {
-		public MetadataString(Func<XDocument> metadata, XName elementName): base(metadata, elementName) {}
+	public sealed class ReferenceEqualityComparer<T>: IEqualityComparer<T> where T: class {
+		private static readonly ReferenceEqualityComparer<T> @default = new ReferenceEqualityComparer<T>();
 
-		protected override string ToStringInternal(string value) {
-			return value;
+		public static ReferenceEqualityComparer<T> Default {
+			get {
+				return @default;
+			}
 		}
 
-		protected override string ToValueInternal(string value) {
-			return value;
+		private ReferenceEqualityComparer() {}
+
+		public bool Equals(T x, T y) {
+			return x == y; // this must always perform a reference comparison, since T can be any class no operator overloading is applied
+		}
+
+		public int GetHashCode(T obj) {
+			return RuntimeHelpers.GetHashCode(obj);
 		}
 	}
 }

@@ -28,19 +28,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace bsn.ModuleStore.Mapper {
-	public class MetadataString: MetadataBase<string> {
-		public MetadataString(Func<XDocument> metadata, XName elementName): base(metadata, elementName) {}
+	public class MetadataBoolean: MetadataBase<bool?> {
+		public MetadataBoolean(Func<XDocument> metadata, XName elementName): base(metadata, elementName) {}
 
-		protected override string ToStringInternal(string value) {
-			return value;
+		protected override string ToStringInternal(bool? value) {
+			if (!value.HasValue) {
+				return null;
+			}
+			return XmlConvert.ToString(value.Value);
 		}
 
-		protected override string ToValueInternal(string value) {
-			return value;
+		protected override bool? ToValueInternal(string value) {
+			if (string.IsNullOrEmpty(value)) {
+				return null;
+			}
+			return XmlConvert.ToBoolean(value);
 		}
 	}
 }

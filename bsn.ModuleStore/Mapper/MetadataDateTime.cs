@@ -1,7 +1,7 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -28,19 +28,29 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace bsn.ModuleStore.Mapper {
-	public class MetadataString: MetadataBase<string> {
-		public MetadataString(Func<XDocument> metadata, XName elementName): base(metadata, elementName) {}
+	public class MetadataDateTime: MetadataBase<DateTime?> {
+		private readonly XmlDateTimeSerializationMode mode;
 
-		protected override string ToStringInternal(string value) {
-			return value;
+		public MetadataDateTime(Func<XDocument> metadata, XName elementName, XmlDateTimeSerializationMode mode): base(metadata, elementName) {
+			this.mode = mode;
 		}
 
-		protected override string ToValueInternal(string value) {
-			return value;
+		protected override string ToStringInternal(DateTime? value) {
+			if (!value.HasValue) {
+				return null;
+			}
+			return XmlConvert.ToString(value.Value, mode);
+		}
+
+		protected override DateTime? ToValueInternal(string value) {
+			if (string.IsNullOrEmpty(value)) {
+				return null;
+			}
+			return XmlConvert.ToDateTime(value, mode);
 		}
 	}
 }
