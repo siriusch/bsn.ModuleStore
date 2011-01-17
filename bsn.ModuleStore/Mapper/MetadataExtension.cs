@@ -31,11 +31,148 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	public static class MetadataExtension {
 		public static readonly XName XmlLang = XName.Get("lang", "http://www.w3.org/XML/1998/namespace");
+
+		public static bool? GetBoolean(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToBoolean(result);
+		}
+
+		public static byte? GetByte(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToByte(result);
+		}
+
+		public static char? GetChar(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToChar(result);
+		}
+
+		public static DateTime? GetDateTime(this XDocument doc, XName elementName, XmlDateTimeSerializationMode mode) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToDateTime(result, mode);
+		}
+
+		public static DateTimeOffset? GetDateTimeOffset(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToDateTimeOffset(result);
+		}
+
+		public static Decimal? GetDecimal(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToDecimal(result);
+		}
+
+		public static double? GetDouble(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToDouble(result);
+		}
+
+		public static Guid? GetGuid(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToGuid(result);
+		}
+
+		public static short? GetInt16(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToInt16(result);
+		}
+
+		public static int? GetInt32(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToInt32(result);
+		}
+
+		public static long? GetInt64(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToInt64(result);
+		}
+
+		public static sbyte? GetSByte(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToSByte(result);
+		}
+
+		public static float? GetSingle(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToSingle(result);
+		}
+
+		public static TimeSpan? GetTimeSpan(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToTimeSpan(result);
+		}
+
+		public static ushort? GetUInt16(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToUInt16(result);
+		}
+
+		public static uint? GetUInt32(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToUInt32(result);
+		}
+
+		public static ulong? GetUInt64(this XDocument doc, XName elementName) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return null;
+			}
+			return XmlConvert.ToUInt64(result);
+		}
 
 		public static string Get(this XDocument doc, XName elementName) {
 			return Get(doc, elementName, null, string.Empty);
@@ -120,6 +257,78 @@ namespace bsn.ModuleStore.Mapper {
 				return new XDocument();
 			}
 			return new XDocument(doc);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, bool? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, byte? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, char? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, DateTime? value, XmlDateTimeSerializationMode mode) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value, mode) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, DateTimeOffset? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, decimal? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, double? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, Guid? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, short? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, int? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, long? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, sbyte? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, float? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, string value) {
+			doc.Set(elementName, null, value);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, TimeSpan? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, ushort? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, uint? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		}
+
+		public static void Set(this XDocument doc, XName elementName, ulong? value) {
+			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
 		public static void Set(this XDocument doc, XName elementName, CultureInfo culture, string value) {

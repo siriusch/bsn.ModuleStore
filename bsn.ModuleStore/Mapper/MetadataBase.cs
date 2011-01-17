@@ -36,14 +36,11 @@ namespace bsn.ModuleStore.Mapper {
 		public static implicit operator T(MetadataBase<T> metadataValue) {
 			return metadataValue.GetValue();
 		}
-		
+
 		private readonly XName elementName;
 		private readonly Func<XDocument> metadata;
 
 		protected MetadataBase(Func<XDocument> metadata, XName elementName) {
-			if (metadata == null) {
-				throw new ArgumentNullException("metadata");
-			}
 			if (elementName == null) {
 				throw new ArgumentNullException("elementName");
 			}
@@ -57,10 +54,11 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		protected XDocument Metadata {
-			get {
-				return metadata();
+		protected XDocument GetMetadata() {
+			if (metadata == null) {
+				throw new InvalidOperationException("The given metadata object was not associated to a specific metadata");
 			}
+			return metadata();
 		}
 
 		public void Set(XDocument metadata, CultureInfo culture, T value) {
@@ -71,7 +69,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public XDocument Set(CultureInfo culture, T value) {
-			XDocument result = Metadata.Clone();
+			XDocument result = GetMetadata().Clone();
 			Set(result, culture, value);
 			return result;
 		}
@@ -93,7 +91,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public T GetValue(CultureInfo culture) {
-			return GetValue(Metadata, culture);
+			return GetValue(GetMetadata(), culture);
 		}
 
 		public T GetValue(XDocument metadata) {
@@ -101,7 +99,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public T GetValue() {
-			return GetValue(Metadata, CultureInfo.CurrentUICulture);
+			return GetValue(GetMetadata(), CultureInfo.CurrentUICulture);
 		}
 
 		protected abstract string ToStringInternal(T value);
@@ -109,7 +107,7 @@ namespace bsn.ModuleStore.Mapper {
 		protected abstract T ToValueInternal(string value);
 
 		public sealed override string ToString() {
-			return GetValueString(Metadata, CultureInfo.CurrentUICulture);
+			return GetValueString(GetMetadata(), CultureInfo.CurrentUICulture);
 		}
 	}
 }
