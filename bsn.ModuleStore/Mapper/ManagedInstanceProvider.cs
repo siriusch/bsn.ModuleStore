@@ -69,7 +69,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 			internal set {
 				if (value == null) {
-					throw new ArgumentNullException("manager");
+					throw new ArgumentNullException("value");
 				}
 				if (manager != null) {
 					throw new InvalidOperationException("Manager can only be set once");

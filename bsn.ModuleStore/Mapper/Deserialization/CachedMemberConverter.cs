@@ -53,8 +53,7 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 				InstanceOrigin instanceOrigin;
 				object result = context.GetInstance(Type, identity, out instanceOrigin);
 				if (instanceOrigin == InstanceOrigin.New) {
-					context.ForgetInstance(Type, identity);
-					throw new InvalidOperationException("The instance {0} of the type {1} wasn't in the cache");
+					context.RequireDeserialization(result);
 				}
 				return result;
 			}

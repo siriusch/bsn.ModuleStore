@@ -124,6 +124,7 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			private readonly IInstanceProvider provider;
 			private readonly IDictionary<string, object> state;
 			private readonly IDeserializationStateProvider stateProvider;
+			private readonly Dictionary<object, bool> deserialized = new Dictionary<object, bool>(ReferenceEqualityComparer<object>.Default);
 			private XmlNameTable nameTable;
 			private XmlDocument xmlDocument;
 
@@ -199,11 +200,21 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 				if (stateProvider != null) {
 					stateProvider.InstanceDeserialized(state, instance);
 				}
+				deserialized[instance] = true;
 			}
 
 			public void Dispose() {
 				if (stateProvider != null) {
 					stateProvider.EndDeserialize(state);
+				}
+				if (deserialized.ContainsValue(false)) {
+					throw new InvalidOperationException("Some objects were created as forward reference but were missing in the result set");
+				}
+			}
+
+			public void RequireDeserialization(object instance) {
+				if (!deserialized.ContainsKey(instance)) {
+					deserialized.Add(instance, false);
 				}
 			}
 		}
