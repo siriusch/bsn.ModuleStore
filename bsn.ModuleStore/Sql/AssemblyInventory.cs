@@ -43,6 +43,7 @@ namespace bsn.ModuleStore.Sql {
 		private readonly IAssemblyHandle assembly;
 		private readonly ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> attributes;
 		private readonly SortedList<int, Statement[]> updateStatements = new SortedList<int, Statement[]>();
+		private readonly HashSet<string> processedManifestStreamKeys = new HashSet<string>(StringComparer.Ordinal);
 		private readonly int updateVersion;
 
 		public AssemblyInventory(Assembly assembly): this(new AssemblyHandle(assembly)) {}
@@ -53,12 +54,15 @@ namespace bsn.ModuleStore.Sql {
 			foreach (KeyValuePair<SqlAssemblyAttribute, string> attribute in attributes) {
 				SqlSetupScriptAttributeBase setupScriptAttribute = attribute.Key as SqlSetupScriptAttributeBase;
 				if (setupScriptAttribute != null) {
-					using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value)) {
-						try {
-							ProcessSingleScript(reader, AddAdditionalSetupStatement);
-						} catch (ParseException ex) {
-							ex.FileName = setupScriptAttribute.ManifestResourceName;
-							throw;
+					string manifestStreamKey;
+					using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value, out manifestStreamKey)) {
+						if (processedManifestStreamKeys.Add(manifestStreamKey)) {
+							try {
+								ProcessSingleScript(reader, AddAdditionalSetupStatement);
+							} catch (ParseException ex) {
+								ex.FileName = setupScriptAttribute.ManifestResourceName;
+								throw;
+							}
 						}
 					}
 				} else {
@@ -179,10 +183,16 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		private Stream OpenStream(SqlManifestResourceAttribute attribute, string optionalPrefix) {
-			Stream result = assembly.GetManifestResourceStream(attribute.ManifestResourceType, attribute.ManifestResourceName);
+		private Stream OpenStream(SqlManifestResourceAttribute attribute, string optionalPrefix, out string manifestStreamKey) {
+			if (attribute.ManifestResourceType == null) {
+				manifestStreamKey = attribute.ManifestResourceName;
+			} else {
+				manifestStreamKey = attribute.ManifestResourceType.Namespace+Type.Delimiter+attribute.ManifestResourceName;
+			}
+			Stream result = assembly.GetManifestResourceStream(null, manifestStreamKey);
 			if ((result == null) && (attribute.ManifestResourceType == null) && (!string.IsNullOrEmpty(optionalPrefix))) {
-				result = assembly.GetManifestResourceStream(null, optionalPrefix+Type.Delimiter+attribute.ManifestResourceName);
+				manifestStreamKey = optionalPrefix+Type.Delimiter+attribute.ManifestResourceName;
+				result = assembly.GetManifestResourceStream(null, manifestStreamKey);
 				if (result == null) {
 					throw new FileNotFoundException("The embedded SQL file was not found", attribute.ManifestResourceName);
 				}
@@ -190,8 +200,13 @@ namespace bsn.ModuleStore.Sql {
 			return result;
 		}
 
+		private TextReader OpenText(SqlManifestResourceAttribute attribute, string optionalPrefix, out string manifestStreamKey) {
+			return new StreamReader(OpenStream(attribute, optionalPrefix, out manifestStreamKey), true);
+		}
+
 		private TextReader OpenText(SqlManifestResourceAttribute attribute, string optionalPrefix) {
-			return new StreamReader(OpenStream(attribute, optionalPrefix), true);
+			string key;
+			return OpenText(attribute, optionalPrefix, out key);
 		}
 	}
 }

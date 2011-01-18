@@ -87,12 +87,20 @@ namespace bsn.ModuleStore.Sql {
 						switch (member.MemberType) {
 						case MemberTypes.Method:
 							if ((targets&AttributeTargets.ReturnValue) != 0) {
-								MethodBase methodBase = (MethodBase)member;
+								MethodInfo method = (MethodInfo)member;
+								foreach (T attribute in method.ReturnTypeCustomAttributes.GetCustomAttributes(typeof(T), inherit)) {
+									yield return attribute;
+								}
 							}
 							goto case MemberTypes.Constructor;
 						case MemberTypes.Constructor:
 							if ((targets&AttributeTargets.Parameter) != 0) {
 								MethodBase methodBase = (MethodBase)member;
+								foreach (ParameterInfo parameter in methodBase.GetParameters()) {
+									foreach (T attribute in parameter.GetCustomAttributes(typeof(T), inherit)) {
+										yield return attribute;
+									}
+								}
 							}
 							goto case MemberTypes.Field;
 						case MemberTypes.Field:
