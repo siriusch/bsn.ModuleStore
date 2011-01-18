@@ -61,6 +61,7 @@
     <Compile Include="Mapper\IConnectionProvider.cs" />
     <Compile Include="Mapper\IDeserializationStateProvider.cs" />
     <Compile Include="Mapper\IIdentifiable.cs" />
+    <Compile Include="Mapper\IIdentifiableExtension.cs" />
     <Compile Include="Mapper\IInstanceProvider.cs" />
     <Compile Include="Mapper\Deserialization\NestedMemberConverter.cs" />
     <Compile Include="Mapper\Instance.cs" />

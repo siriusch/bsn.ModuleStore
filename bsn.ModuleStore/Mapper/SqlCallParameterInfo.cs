@@ -108,8 +108,10 @@ namespace bsn.ModuleStore.Mapper {
 			if (size > 0) {
 				parameter.Size = size;
 			}
-			if (sqlType == SqlDbType.Xml) {
-				if (value != null) {
+			parameter.SqlDbType = sqlType;
+			if (value != null) {
+				switch (sqlType) {
+				case SqlDbType.Xml:
 					XmlReader reader = value as XmlReader;
 					if (reader == null) {
 						XPathNavigator navigator = value as XPathNavigator;
@@ -131,10 +133,32 @@ namespace bsn.ModuleStore.Mapper {
 						disposeList.Add(reader);
 					}
 					value = new SqlXml(reader);
+					break;
+				case SqlDbType.SmallInt:
+					IIdentifiable<short> identifiableShort = value as IIdentifiable<short>;
+					if (identifiableShort != null) {
+						value = identifiableShort.Id;
+					}
+					break;
+				case SqlDbType.Int:
+					IIdentifiable<int> identifiableInt = value as IIdentifiable<int>;
+					if (identifiableInt != null) {
+						value = identifiableInt.Id;
+					}
+					break;
+				case SqlDbType.BigInt:
+					IIdentifiable<long> identifiableLong = value as IIdentifiable<long>;
+					if (identifiableLong != null) {
+						value = identifiableLong.Id;
+					}
+					break;
+				case SqlDbType.UniqueIdentifier:
+					IIdentifiable<Guid> identifiableGuid = value as IIdentifiable<Guid>;
+					if (identifiableGuid != null) {
+						value = identifiableGuid.Id;
+					}
+					break;
 				}
-				parameter.SqlDbType = SqlDbType.Xml;
-			} else {
-				parameter.SqlDbType = sqlType;
 			}
 			parameter.Value = value ?? DBNull.Value;
 			if (direction != ParameterDirection.Input) {
