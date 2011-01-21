@@ -95,9 +95,9 @@ namespace bsn.ModuleStore.Mapper {
 						instances.Remove(key);
 					}
 				}
-				state.Remove(DeserializedInstanceSet);
 				lastCollection = GC.CollectionCount(GCGeneration);
 			}
+			state.Remove(DeserializedInstanceSet);
 		}
 
 		protected T GetFromCache<T>(TKey identity) where T: class {
@@ -132,7 +132,7 @@ namespace bsn.ModuleStore.Mapper {
 			Debug.Assert(instanceType != null);
 			if ((!instanceType.IsValueType) && (identity is TKey)) {
 				TypeKey key = new TypeKey(instanceType, (TKey)identity);
-				Dictionary<TypeKey, object> deserializedInstances = (state != null) ? (Dictionary<TypeKey, object>)state[DeserializedInstanceSet] : null;
+				Dictionary<TypeKey, object> deserializedInstances = (state != null) ? GetDeserializedInstances(state) : null;
 				if ((deserializedInstances != null) && deserializedInstances.TryGetValue(key, out instance)) {
 					instanceOrigin = InstanceOrigin.ResultSet;
 				} else {
@@ -163,6 +163,10 @@ namespace bsn.ModuleStore.Mapper {
 			instance = null;
 			instanceOrigin = InstanceOrigin.None;
 			return false;
+		}
+
+		protected Dictionary<TypeKey, object> GetDeserializedInstances(IDictionary<string, object> state) {
+			return (Dictionary<TypeKey, object>)state[DeserializedInstanceSet];
 		}
 
 		protected virtual void Forget(IDictionary<string, object> state, Type instanceType, object identity) {
