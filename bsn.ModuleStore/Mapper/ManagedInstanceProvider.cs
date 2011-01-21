@@ -63,6 +63,10 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly Dictionary<Type, Func<Instance<TId, TManager>>> factories = new Dictionary<Type, Func<Instance<TId, TManager>>>();
 		private TManager manager;
 
+		public ManagedInstanceProvider(): this(DefaultCachePolicy) {}
+
+		public ManagedInstanceProvider(CachePolicy defaultCachePolicy): base(defaultCachePolicy) {}
+
 		protected internal TManager Manager {
 			get {
 				return manager;

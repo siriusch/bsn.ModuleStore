@@ -52,6 +52,7 @@
     <Compile Include="Bootstrapper\Bootstrap.cs" />
     <Compile Include="Bootstrapper\DatabaseObject.cs" />
     <Compile Include="Bootstrapper\ModuleAssemblyInfo.cs" />
+    <Compile Include="Mapper\CachePolicy.cs" />
     <Compile Include="Mapper\Deserialization\CachedMemberConverter.cs" />
     <Compile Include="Mapper\ConnectionProvider.cs" />
     <Compile Include="Mapper\Deserialization\ConvertibleMemberConverter.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Mapper\IInstanceProvider.cs" />
     <Compile Include="Mapper\Deserialization\NestedMemberConverter.cs" />
     <Compile Include="Mapper\Instance.cs" />
+    <Compile Include="Mapper\InstanceCacheAttribute.cs" />
     <Compile Include="Mapper\InstanceManager.cs" />
     <Compile Include="Mapper\InstanceOrigin.cs" />
     <Compile Include="Mapper\ManagedInstanceProvider.cs" />

@@ -31,12 +31,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace bsn.ModuleStore.Mapper {
 	public class SingleInstanceProvider<TKey>: IInstanceProvider, IDeserializationStateProvider where TKey: IEquatable<TKey> {
-		protected const string DeserializedInstanceSet = "$DeserializedInstanceSet";
-
 		protected struct TypeKey: IEquatable<TypeKey> {
 			private readonly TKey key;
 			private readonly Type type;
@@ -62,15 +61,84 @@ namespace bsn.ModuleStore.Mapper {
 				return type.GetHashCode()^key.GetHashCode();
 			}
 
+			public override string ToString() {
+				return type.FullName+'['+key+']';
+			}
+
 			public bool Equals(TypeKey other) {
 				return key.Equals(other.key) && type.Equals(other.type);
 			}
 		}
 
+		private interface ICacheReference {
+			bool IsStrong {
+				get;
+			}
+
+			object Target {
+				get;
+				set;
+			}
+		}
+
+		private sealed class StrongCacheReference: ICacheReference {
+			public StrongCacheReference(object target) {
+				Target = target;
+			}
+
+			public object Target {
+				get;
+				set;
+			}
+
+			public bool IsStrong {
+				get {
+					return true;
+				}
+			}
+		}
+
+		private sealed class WeakCacheReference: WeakReference, ICacheReference {
+			public WeakCacheReference(object target): base(target) {}
+
+			public bool IsStrong {
+				get {
+					return false;
+				}
+			}
+		}
+
+		internal const CachePolicy DefaultCachePolicy = CachePolicy.WeakReference;
+		private const string DeserializedInstanceSet = "$DeserializedInstanceSet";
 		private const int GCGeneration = 1;
 
-		private readonly Dictionary<TypeKey, WeakReference> instances = new Dictionary<TypeKey, WeakReference>();
-		private int lastCollection;
+		private static readonly Dictionary<Type, CachePolicy> cachePolicy = new Dictionary<Type, CachePolicy>();
+
+		private readonly CachePolicy defaultCachePolicy;
+		private readonly Dictionary<TypeKey, ICacheReference> instances = new Dictionary<TypeKey, ICacheReference>();
+		private volatile int lastCollection;
+
+		public SingleInstanceProvider(CachePolicy defaultCachePolicy) {
+			switch (defaultCachePolicy) {
+			case CachePolicy.StrongReference:
+			case CachePolicy.WeakReference:
+				this.defaultCachePolicy = defaultCachePolicy;
+				break;
+			default:
+				throw new ArgumentOutOfRangeException("defaultCachePolicy");
+			}
+		}
+
+		public SingleInstanceProvider(): this(CachePolicy.WeakReference) {}
+
+		/// <summary>
+		/// Purges the cache by requesting a full GC and then cleaning up the dead references
+		/// </summary>
+		public void PurgeCache() {
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+			CleanupCache();
+		}
 
 		protected virtual void BeginDeserialize(IDictionary<string, object> state) {
 			state[DeserializedInstanceSet] = new Dictionary<TypeKey, object>();
@@ -84,24 +152,60 @@ namespace bsn.ModuleStore.Mapper {
 		protected virtual void EndDeserialize(IDictionary<string, object> state) {
 			// some simple heuristic to determine when to perform a cleanup run
 			if (GC.CollectionCount(GCGeneration) > (lastCollection+(int)Math.Log(instances.Count))) {
-				lock (instances) {
-					List<TypeKey> keys = new List<TypeKey>();
-					foreach (KeyValuePair<TypeKey, WeakReference> pair in instances) {
-						if (!pair.Value.IsAlive) {
-							keys.Add(pair.Key);
-						}
-					}
-					foreach (TypeKey key in keys) {
-						instances.Remove(key);
-					}
-				}
-				lastCollection = GC.CollectionCount(GCGeneration);
+				CleanupCache();
 			}
 			state.Remove(DeserializedInstanceSet);
 		}
 
+		protected virtual void Forget(IDictionary<string, object> state, Type instanceType, object identity) {
+			Debug.Assert(instanceType != null);
+			if ((!instanceType.IsValueType) && (identity is TKey)) {
+				TypeKey key = new TypeKey(instanceType, (TKey)identity);
+				lock (instances) {
+					instances.Remove(key);
+				}
+				if (state != null) {
+					Dictionary<TypeKey, object> deserializedInstances = ((Dictionary<TypeKey, object>)state[DeserializedInstanceSet]);
+					if (deserializedInstances != null) {
+						deserializedInstances.Remove(key);
+					}
+				}
+			}
+		}
+
+		protected CachePolicy GetCachePolicy(Type type) {
+			if (type == null) {
+				throw new ArgumentNullException("type");
+			}
+			CachePolicy result;
+			lock (cachePolicy) {
+				if (!cachePolicy.TryGetValue(type, out result)) {
+					result = Attribute.GetCustomAttributes(type, typeof(InstanceCacheAttribute)).Cast<InstanceCacheAttribute>().Select(a => a.Policy).SingleOrDefault();
+					cachePolicy.Add(type, result);
+				}
+			}
+			return (result == CachePolicy.None) ? defaultCachePolicy : result;
+		}
+
+		protected Dictionary<TypeKey, object> GetDeserializedInstances(IDictionary<string, object> state) {
+			return (Dictionary<TypeKey, object>)state[DeserializedInstanceSet];
+		}
+
+		protected IEnumerable<T> GetFromCache<T>(bool includeWeak) {
+			lock (instances) {
+				foreach (ICacheReference cacheReference in instances.Where(p => typeof(T) == p.Key.Type).Select(p => p.Value)) {
+					if (includeWeak || cacheReference.IsStrong) {
+						object target = cacheReference.Target;
+						if (target != null) {
+							yield return (T)target;
+						}
+					}
+				}
+			}
+		}
+
 		protected T GetFromCache<T>(TKey identity) where T: class {
-			WeakReference reference;
+			ICacheReference reference;
 			lock (instances) {
 				if (instances.TryGetValue(new TypeKey(typeof(T), identity), out reference)) {
 					object result = reference.Target;
@@ -117,7 +221,7 @@ namespace bsn.ModuleStore.Mapper {
 		protected virtual void InstanceDeserialized(IDictionary<string, object> state, object instance) {}
 
 		protected bool TryGetFromCache<T>(TKey identity, out T item) where T: class {
-			WeakReference reference;
+			ICacheReference reference;
 			lock (instances) {
 				if (instances.TryGetValue(new TypeKey(typeof(T), identity), out reference)) {
 					item = (T)reference.Target;
@@ -137,7 +241,7 @@ namespace bsn.ModuleStore.Mapper {
 					instanceOrigin = InstanceOrigin.ResultSet;
 				} else {
 					lock (instances) {
-						WeakReference reference;
+						ICacheReference reference;
 						if (instances.TryGetValue(key, out reference)) {
 							instance = reference.Target;
 							if (instance == null) {
@@ -149,8 +253,15 @@ namespace bsn.ModuleStore.Mapper {
 							}
 						} else {
 							instance = CreateInstance(key);
-							reference = new WeakReference(instance);
-							instances.Add(key, reference);
+							CachePolicy policy = GetCachePolicy(key.Type);
+							switch (policy) {
+							case CachePolicy.StrongReference:
+								instances.Add(key, new WeakCacheReference(instance));
+								break;
+							case CachePolicy.WeakReference:
+								instances.Add(key, new StrongCacheReference(instance));
+								break;
+							}
 							instanceOrigin = InstanceOrigin.New;
 						}
 						if (deserializedInstances != null) {
@@ -165,24 +276,19 @@ namespace bsn.ModuleStore.Mapper {
 			return false;
 		}
 
-		protected Dictionary<TypeKey, object> GetDeserializedInstances(IDictionary<string, object> state) {
-			return (Dictionary<TypeKey, object>)state[DeserializedInstanceSet];
-		}
-
-		protected virtual void Forget(IDictionary<string, object> state, Type instanceType, object identity) {
-			Debug.Assert(instanceType != null);
-			if ((!instanceType.IsValueType) && (identity is TKey)) {
-				TypeKey key = new TypeKey(instanceType, (TKey)identity);
-				lock (instances) {
-					instances.Remove(key);
-				}
-				if (state != null) {
-					Dictionary<TypeKey, object> deserializedInstances = ((Dictionary<TypeKey, object>)state[DeserializedInstanceSet]);
-					if (deserializedInstances != null) {
-						deserializedInstances.Remove(key);
+		private void CleanupCache() {
+			lock (instances) {
+				List<TypeKey> keys = new List<TypeKey>();
+				foreach (KeyValuePair<TypeKey, ICacheReference> pair in instances) {
+					if (pair.Value.Target == null) {
+						keys.Add(pair.Key);
 					}
 				}
+				foreach (TypeKey key in keys) {
+					instances.Remove(key);
+				}
 			}
+			lastCollection = GC.CollectionCount(GCGeneration);
 		}
 
 		void IDeserializationStateProvider.BeginDeserialize(IDictionary<string, object> state) {
