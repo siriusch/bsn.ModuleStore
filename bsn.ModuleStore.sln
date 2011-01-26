@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleStore", "ModuleStore\ModuleStore.csproj", "{B487D994-7191-451B-9B8C-D46A5CEC67E0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bsn.ModuleStore.Parser", "bsn.ModuleStore.Parser\bsn.ModuleStore.Parser.csproj", "{CE71AB0F-0241-400A-82A1-F385A2D8B985}"
