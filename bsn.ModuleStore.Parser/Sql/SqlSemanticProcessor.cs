@@ -59,7 +59,7 @@ namespace bsn.ModuleStore.Sql {
 			if (commentToken != null) {
 				foreach (IToken token in children) {
 					if ((token != null) && (token.Position.Line > 0)) {
-						commentToken.AddComments(tokenizer.GetComments(token.Position.Index));
+						commentToken.AddComments(tokenizer.GetComments((int)token.Position.Index));
 						break;
 					}
 				}

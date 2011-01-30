@@ -91,7 +91,7 @@ namespace bsn.ModuleStore.Sql {
 				pendingComments.Add(text);
 				break;
 			case SymbolKind.Terminal:
-				TransferPendingComments(tokenPosition.Index);
+				TransferPendingComments((int)tokenPosition.Index);
 				break;
 			case SymbolKind.End:
 				TransferPendingComments(0);
