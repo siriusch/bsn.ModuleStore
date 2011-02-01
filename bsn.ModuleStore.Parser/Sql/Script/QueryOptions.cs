@@ -80,7 +80,7 @@ namespace bsn.ModuleStore.Sql.Script {
 					writer.WriteLine(",");
 				}
 			}
-			writer.WriteScriptSequence(commonTableExpressions, WhitespacePadding.None, ","+Environment.NewLine);
+			writer.WriteScriptSequence(commonTableExpressions, WhitespacePadding.None, ","+writer.NewLine);
 		}
 
 		public bool HasValue {

@@ -33,6 +33,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -73,6 +74,18 @@ namespace bsn.ModuleStore.Sql {
 			}
 			set {
 				indentation = value ?? string.Empty;
+			}
+		}
+
+		public string NewLine {
+			get {
+				StringBuilder result = new StringBuilder(Environment.NewLine);
+				if (!string.IsNullOrEmpty(indentation)) {
+					for (int i = 0; i < indentationLevel; i++) {
+						result.Append(indentation);
+					}
+				}
+				return result.ToString();
 			}
 		}
 
@@ -189,12 +202,7 @@ namespace bsn.ModuleStore.Sql {
 			if (!string.IsNullOrEmpty(text)) {
 				Write(text);
 			}
-			Write(Environment.NewLine);
-			if (!string.IsNullOrEmpty(indentation)) {
-				for (int i = 0; i < indentationLevel; i++) {
-					Write(indentation);
-				}
-			}
+			Write(NewLine);
 		}
 
 		public void WriteLine() {
