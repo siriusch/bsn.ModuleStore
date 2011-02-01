@@ -117,8 +117,11 @@ namespace bsn.ModuleStore.Mapper {
 			}
 			object[] result = new object[dbParams.Length];
 			for (int i = 0; i < result.Length; i++) {
-				object value = dbParams[i].Value;
-				result[i] = value == DBNull.Value ? null : value;
+				SqlParameter sqlParameter = dbParams[i];
+				if (sqlParameter != null) {
+					object value = sqlParameter.Value;
+					result[i] = value == DBNull.Value ? null : value;
+				}
 			}
 			return result;
 		}

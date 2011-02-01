@@ -68,11 +68,8 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly int outArgIndex;
 		private readonly ParameterInfo parameterInfo;
 
-		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script, ref int outArgIndex): base(script, GetParameterDirection(param), GetParameterNullable(param)) {
+		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script): base(script, GetParameterDirection(param), GetParameterNullable(param)) {
 			parameterInfo = param;
-			if (Direction != ParameterDirection.Input) {
-				this.outArgIndex = outArgIndex++;
-			}
 #warning Maybe implement more type compatibility checks for arguments here
 		}
 
@@ -83,7 +80,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		protected override int GetOutArgIndex() {
-			return outArgIndex;
+			return parameterInfo.Position;
 		}
 
 		protected override object SetParameterValue(IMethodCallMessage mcm, IList<IDisposable> disposeList) {

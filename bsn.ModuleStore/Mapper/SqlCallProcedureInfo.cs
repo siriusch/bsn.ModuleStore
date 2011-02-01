@@ -166,7 +166,8 @@ namespace bsn.ModuleStore.Mapper {
 				}
 			}
 			int index = 0;
-			foreach (ParameterInfo parameterInfo in method.GetParameters().OrderBy(p => p.Position)) {
+			ParameterInfo[] methodParameters = method.GetParameters();
+			foreach (ParameterInfo parameterInfo in methodParameters.OrderBy(p => p.Position)) {
 				if ((parameterInfo.GetCustomAttributes(typeof(SqlNameTableAttribute), true).Length > 0) || (typeof(XmlNameTable).IsAssignableFrom(parameterInfo.ParameterType))) {
 					if (xmlNameTableParameter != null) {
 						throw new InvalidOperationException(string.Format("Only one XML name table parameter is allowed for method {0}.{1}", method.DeclaringType.FullName, method.Name));
@@ -179,7 +180,10 @@ namespace bsn.ModuleStore.Mapper {
 					if (index >= parameters.Length) {
 						throw new InvalidOperationException(String.Format("The method {0}.{1} has more parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
 					}
-					SqlCallParameterInfo callParameterInfo = new SqlCallParameterInfo(parameterInfo, script.Parameters[index], ref outArgCount);
+					SqlCallParameterInfo callParameterInfo = new SqlCallParameterInfo(parameterInfo, script.Parameters[index]);
+					if (callParameterInfo.Direction != ParameterDirection.Input) {
+						outArgCount = methodParameters.Length;
+					}
 					parameters[index] = callParameterInfo;
 				}
 			}
