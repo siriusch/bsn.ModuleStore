@@ -30,11 +30,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -42,75 +41,55 @@ using System.Xml.XPath;
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
-	internal class SqlCallParameterInfo {
-		private static readonly Dictionary<string, SqlDbType> knownDbTypes = GetKnownDbTypes();
-
-		private static Dictionary<string, SqlDbType> GetKnownDbTypes() {
-			Dictionary<string, SqlDbType> result = Enum.GetValues(typeof(SqlDbType)).Cast<SqlDbType>().ToDictionary(x => x.ToString(), x => x, StringComparer.OrdinalIgnoreCase);
-			result.Add("sysname", SqlDbType.NVarChar);
-			return result;
+	internal class SqlCallParameterInfo: SqlCallParameterBase {
+		private static bool GetParameterNullable(ParameterInfo param) {
+			Type parameterType = param.ParameterType;
+			if (parameterType.IsByRef) {
+				parameterType = parameterType.GetElementType();
+				Debug.Assert(parameterType != null);
+			}
+#warning Maybe implement a non-null attribute on the parameter?
+			return (!parameterType.IsValueType) || (System.Nullable.GetUnderlyingType(parameterType) != null);
 		}
 
-		private readonly string argName;
-		private readonly ParameterDirection direction = ParameterDirection.Input;
-		private readonly bool nullable;
-		private readonly int outArgIndex;
-		private readonly Type parameterType;
-		private readonly int size;
-		private readonly SqlDbType sqlType;
-
-		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script, ref bool hasOutArg) {
-			parameterType = param.ParameterType;
-			if (parameterType.IsByRef) {
-				if (!script.Output) {
-					throw new InvalidOperationException("An out parameter requires an OUTPUT argument");
-				}
-				parameterType = parameterType.GetElementType();
-				outArgIndex = param.Position;
-				hasOutArg = true;
+		private static ParameterDirection GetParameterDirection(ParameterInfo param) {
+			if (param == null) {
+				throw new ArgumentNullException("param");
+			}
+			if (param.ParameterType.IsByRef) {
 				if (param.IsOut) {
-					direction = ParameterDirection.Output;
-				} else {
-					direction = ParameterDirection.InputOutput;
+					return ParameterDirection.Output;
 				}
-				Debug.Assert(parameterType != null);
-			} else if (script.Output) {
-				throw new InvalidOperationException("An OUTPUT argument requires an out parameter");
+				return ParameterDirection.InputOutput;
 			}
-			argName = script.ParameterName.Value;
-			if (script.ParameterTypeName.IsQualified || (!knownDbTypes.TryGetValue(script.ParameterTypeName.Name.Value, out sqlType))) {
-				sqlType = SqlDbType.Udt;
-				Debug.Fail("UDT?");
-			} else {
-				TypeNameWithPrecision typeNameEx = script.ParameterTypeName.Name as TypeNameWithPrecision;
-				if (typeNameEx != null) {
-					switch (sqlType) {
-					case SqlDbType.Binary:
-					case SqlDbType.VarBinary:
-					case SqlDbType.Char:
-					case SqlDbType.VarChar:
-					case SqlDbType.NChar:
-					case SqlDbType.NVarChar:
-						size = (int)typeNameEx.Precision;
-						break;
-					}
-				}
+			return ParameterDirection.Input;
+		}
+
+		private readonly int outArgIndex;
+		private readonly ParameterInfo parameterInfo;
+
+		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script, ref int outArgIndex): base(script, GetParameterDirection(param), GetParameterNullable(param)) {
+			parameterInfo = param;
+			if (Direction != ParameterDirection.Input) {
+				this.outArgIndex = outArgIndex++;
 			}
-			nullable = (!parameterType.IsValueType) || (Nullable.GetUnderlyingType(parameterType) != null);
 #warning Maybe implement more type compatibility checks for arguments here
 		}
 
-		public SqlParameter GetSqlParameter(SqlCommand command, object value, KeyValuePair<SqlParameter, Type>[] outArgs, IList<IDisposable> disposeList) {
-			SqlParameter parameter = command.CreateParameter();
-			parameter.ParameterName = argName;
-			parameter.IsNullable = nullable;
-			parameter.Direction = direction;
-			if (size > 0) {
-				parameter.Size = size;
+		public string ParameterName {
+			get {
+				return parameterInfo.Name;
 			}
-			parameter.SqlDbType = sqlType;
+		}
+
+		protected override int GetOutArgIndex() {
+			return outArgIndex;
+		}
+
+		protected override object SetParameterValue(IMethodCallMessage mcm, IList<IDisposable> disposeList) {
+			object value = mcm.GetArg(parameterInfo.Position);
 			if (value != null) {
-				switch (sqlType) {
+				switch (SqlType) {
 				case SqlDbType.Xml:
 					XmlReader reader = value as XmlReader;
 					if (reader == null) {
@@ -160,11 +139,7 @@ namespace bsn.ModuleStore.Mapper {
 					break;
 				}
 			}
-			parameter.Value = value ?? DBNull.Value;
-			if (direction != ParameterDirection.Input) {
-				outArgs[outArgIndex] = new KeyValuePair<SqlParameter, Type>(parameter, Nullable.GetUnderlyingType(parameterType));
-			}
-			return parameter;
+			return value;
 		}
 	}
 }

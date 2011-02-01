@@ -35,9 +35,6 @@ namespace bsn.ModuleStore {
 		private readonly Type type;
 
 		internal SqlManifestResourceAttribute(Type type, string embeddedResourceName) {
-			if (string.IsNullOrEmpty(embeddedResourceName)) {
-				throw new ArgumentNullException("embeddedResourceName");
-			}
 			this.type = type;
 			manifestResourceName = embeddedResourceName;
 		}

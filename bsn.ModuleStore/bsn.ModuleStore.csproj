@@ -73,6 +73,7 @@
     <Compile Include="Mapper\InstanceCacheAttribute.cs" />
     <Compile Include="Mapper\InstanceManager.cs" />
     <Compile Include="Mapper\InstanceOrigin.cs" />
+    <Compile Include="Mapper\SqlCallParameterBase.cs" />
     <Compile Include="Mapper\ManagedInstanceProvider.cs" />
     <Compile Include="Mapper\MetadataBase.cs" />
     <Compile Include="Mapper\MetadataBoolean.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Mapper\Deserialization\XmlReaderMemberConverter.cs" />
     <Compile Include="Mapper\Deserialization\XmlReaderMemberConverterBase.cs" />
     <Compile Include="Mapper\Deserialization\XPathDocumentMemberConverter.cs" />
+    <Compile Include="Mapper\SqlParameterAttribute.cs" />
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />
     <Compile Include="Bootstrapper\IModules.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Mapper\SqlDeserializeAttribute.cs" />
     <Compile Include="Mapper\Deserialization\SqlDeserializer.cs" />
     <Compile Include="Mapper\SqlNameTableAttribute.cs" />
+    <Compile Include="Mapper\SqlCallParameterConstant.cs" />
     <Compile Include="SqlManifestResourceAttribute.cs" />
     <Compile Include="Mapper\SqlProcedureAttribute.cs" />
     <Compile Include="Mapper\SqlReturnValue.cs" />

@@ -27,22 +27,24 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Runtime.Remoting.Messaging;
 
-namespace bsn.ModuleStore {
-	public sealed class SqlUpdateScriptAttribute: SqlManifestResourceAttribute {
-		private readonly int version;
+using bsn.ModuleStore.Sql.Script;
 
-		public SqlUpdateScriptAttribute(int version, Type type, string embeddedResourceName): base(type, embeddedResourceName) {
-			this.version = version;
+namespace bsn.ModuleStore.Mapper {
+	internal class SqlCallParameterConstant: SqlCallParameterBase {
+		private readonly object value;
+
+		public SqlCallParameterConstant(ProcedureParameter parameter, object value): base(parameter, ParameterDirection.Input, value == null) {
+			this.value = value;
 		}
 
-		public SqlUpdateScriptAttribute(int version, string embeddedResourceName): this(version, null, embeddedResourceName) {}
-
-		public int Version {
-			get {
-				return version;
-			}
+		protected override object SetParameterValue(IMethodCallMessage mcm, IList<IDisposable> disposables) {
+			return value;
 		}
 	}
 }

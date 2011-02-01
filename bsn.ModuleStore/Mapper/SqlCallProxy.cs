@@ -111,21 +111,14 @@ namespace bsn.ModuleStore.Mapper {
 			return (I)(new SqlCallProxy(connectionProvider, typeof(I))).GetTransparentProxy();
 		}
 
-		private static object[] GetOutArgValues(KeyValuePair<SqlParameter, Type>[] dbParams) {
+		private static object[] GetOutArgValues(SqlParameter[] dbParams) {
 			if (dbParams == null) {
 				return null;
 			}
 			object[] result = new object[dbParams.Length];
 			for (int i = 0; i < result.Length; i++) {
-				SqlParameter param = dbParams[i].Key;
-				Type valueType = dbParams[i].Value;
-				if (param != null) {
-					if ((valueType != null) && ((param.Value == null) || (param.Value == DBNull.Value))) {
-						result[i] = Activator.CreateInstance(valueType);
-					} else {
-						result[i] = param.Value;
-					}
-				}
+				object value = dbParams[i].Value;
+				result[i] = value == DBNull.Value ? null : value;
 			}
 			return result;
 		}
@@ -186,7 +179,7 @@ namespace bsn.ModuleStore.Mapper {
 						Debug.Assert(connection.State == ConnectionState.Open);
 					}
 					SqlParameter returnParameter;
-					KeyValuePair<SqlParameter, Type>[] outParameters;
+					SqlParameter[] outParameters;
 					SqlDeserializerTypeInfo returnTypeInfo;
 					SqlProcedureAttribute procInfo;
 					IList<IDisposable> disposeList = new List<IDisposable>(0);

@@ -84,7 +84,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public SqlCommand CreateCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out KeyValuePair<SqlParameter, Type>[] outParameters, out SqlDeserializerTypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
+		public SqlCommand CreateCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out SqlParameter[] outParameters, out SqlDeserializerTypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
 		                                IList<IDisposable> disposeList) {
 			return methods[mcm.MethodBase].GetCommand(mcm, connection, schemaName, out returnValue, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList);
 		}

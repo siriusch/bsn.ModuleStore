@@ -29,19 +29,26 @@
 //  
 using System;
 
-namespace bsn.ModuleStore {
-	public sealed class SqlUpdateScriptAttribute: SqlManifestResourceAttribute {
-		private readonly int version;
+namespace bsn.ModuleStore.Mapper {
+	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
+	public sealed class SqlParameterAttribute: Attribute {
+		private readonly string parameterName;
+		private readonly object value;
 
-		public SqlUpdateScriptAttribute(int version, Type type, string embeddedResourceName): base(type, embeddedResourceName) {
-			this.version = version;
+		public SqlParameterAttribute(string parameterName, object value) {
+			this.parameterName = parameterName;
+			this.value = value;
 		}
 
-		public SqlUpdateScriptAttribute(int version, string embeddedResourceName): this(version, null, embeddedResourceName) {}
-
-		public int Version {
+		public string ParameterName {
 			get {
-				return version;
+				return parameterName;
+			}
+		}
+
+		public object Value {
+			get {
+				return value;
 			}
 		}
 	}

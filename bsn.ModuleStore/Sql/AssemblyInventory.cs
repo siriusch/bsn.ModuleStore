@@ -68,6 +68,9 @@ namespace bsn.ModuleStore.Sql {
 				} else {
 					SqlUpdateScriptAttribute updateScriptAttribute = attribute.Key as SqlUpdateScriptAttribute;
 					if (updateScriptAttribute != null) {
+						if (updateScriptAttribute.Version < 1) {
+							throw new InvalidOperationException(string.Format("Update script versions must be at least 1, but {0} was specified (script: {1})", updateScriptAttribute.Version, updateScriptAttribute.ManifestResourceName));
+						}
 						using (TextReader reader = OpenText(updateScriptAttribute, attribute.Value)) {
 							updateStatements.Add(updateScriptAttribute.Version, ScriptParser.Parse(reader).ToArray());
 							updateVersion = Math.Max(updateVersion, updateScriptAttribute.Version);
@@ -77,8 +80,11 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 			}
-			foreach (Statement[] statements in updateStatements.Values) {
-				StatementSetSchemaOverride(statements);
+			int expectedVersion = 1;
+			foreach (KeyValuePair<int, Statement[]> update in updateStatements) {
+				Debug.Assert(update.Key == expectedVersion);
+				StatementSetSchemaOverride(update.Value);
+				expectedVersion = update.Key+1;
 			}
 			AdditionalSetupStatementSetSchemaOverride();
 		}
