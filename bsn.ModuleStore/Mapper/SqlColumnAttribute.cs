@@ -28,6 +28,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace bsn.ModuleStore.Mapper {
@@ -61,9 +62,9 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		private DateTimeKind dateTimeKind = DateTimeKind.Unspecified;
-		private string name;
-		private bool identity;
 		private bool getCachedByIdentity;
+		private bool identity;
+		private string name;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlColumnAttribute"/> class.
@@ -74,7 +75,7 @@ namespace bsn.ModuleStore.Mapper {
 		/// Create a new DbColumnAttribute.
 		/// </summary>
 		/// <param name="name">The DB column name to bind to.</param>
-		public SqlColumnAttribute(string name) {
+		public SqlColumnAttribute([Localizable(false)] string name) {
 			this.name = name;
 		}
 
@@ -92,11 +93,14 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		/// <summary>
-		/// The name for the database binding.
+		/// Gets or sets a value indicating whether the column <see cref="SqlColumnAttribute"/> is a foreign key to an instance cached by identity in the provider.
 		/// </summary>
-		public string Name {
+		public bool GetCachedByIdentity {
 			get {
-				return name;
+				return getCachedByIdentity;
+			}
+			set {
+				getCachedByIdentity = value;
 			}
 		}
 
@@ -113,14 +117,11 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the column <see cref="SqlColumnAttribute"/> is a foreign key to an instance cached by identity in the provider.
+		/// The name for the database binding.
 		/// </summary>
-		public bool GetCachedByIdentity {
+		public string Name {
 			get {
-				return getCachedByIdentity;
-			}
-			set {
-				getCachedByIdentity = value;
+				return name;
 			}
 		}
 

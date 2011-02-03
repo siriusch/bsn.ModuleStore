@@ -28,13 +28,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.ComponentModel;
 
 namespace bsn.ModuleStore {
 	public abstract class SqlManifestResourceAttribute: SqlAssemblyAttribute {
 		private readonly string manifestResourceName;
 		private readonly Type type;
 
-		internal SqlManifestResourceAttribute(Type type, string embeddedResourceName) {
+		internal SqlManifestResourceAttribute(Type type, [Localizable(false)] string embeddedResourceName) {
 			this.type = type;
 			manifestResourceName = embeddedResourceName;
 		}

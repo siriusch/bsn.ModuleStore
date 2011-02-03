@@ -28,16 +28,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.ComponentModel;
 
 namespace bsn.ModuleStore {
 	public sealed class SqlUpdateScriptAttribute: SqlManifestResourceAttribute {
 		private readonly int version;
 
-		public SqlUpdateScriptAttribute(int version, Type type, string embeddedResourceName): base(type, embeddedResourceName) {
+		public SqlUpdateScriptAttribute(int version, Type type, [Localizable(false)] string embeddedResourceName): base(type, embeddedResourceName) {
 			this.version = version;
 		}
 
-		public SqlUpdateScriptAttribute(int version, string embeddedResourceName): this(version, null, embeddedResourceName) {}
+		public SqlUpdateScriptAttribute(int version, [Localizable(false)] string embeddedResourceName): this(version, null, embeddedResourceName) {}
 
 		public int Version {
 			get {

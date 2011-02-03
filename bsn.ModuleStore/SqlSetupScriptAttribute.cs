@@ -28,12 +28,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.ComponentModel;
 
 namespace bsn.ModuleStore {
 	[AttributeUsage(AttributeTargets.Assembly|AttributeTargets.Interface|AttributeTargets.Class|AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
 	public sealed class SqlSetupScriptAttribute: SqlSetupScriptAttributeBase {
-		public SqlSetupScriptAttribute(Type type, string embeddedResourceName): base(type, embeddedResourceName) {}
+		public SqlSetupScriptAttribute(Type type, [Localizable(false)] string embeddedResourceName): base(type, embeddedResourceName) {}
 
-		public SqlSetupScriptAttribute(string embeddedResourceName): this(null, embeddedResourceName) {}
+		public SqlSetupScriptAttribute([Localizable(false)] string embeddedResourceName): this(null, embeddedResourceName) {}
 	}
 }

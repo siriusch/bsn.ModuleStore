@@ -28,9 +28,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.ComponentModel;
 
 namespace bsn.ModuleStore {
 	public class SqlSetupScriptAttributeBase: SqlManifestResourceAttribute {
-		internal SqlSetupScriptAttributeBase(Type type, string embeddedResourceName): base(type, embeddedResourceName) {}
+		internal SqlSetupScriptAttributeBase(Type type, [Localizable(false)] string embeddedResourceName): base(type, embeddedResourceName) {}
 	}
 }
