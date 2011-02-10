@@ -32,7 +32,7 @@ using System.Xml;
 
 namespace bsn.ModuleStore.Mapper.Deserialization {
 	internal abstract class XmlReaderMemberConverterBase: XmlReaderMemberConverter {
-		protected XmlReaderMemberConverterBase(Type type, int memberIndex): base(type, memberIndex) {}
+		protected XmlReaderMemberConverterBase(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected abstract object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader);
 

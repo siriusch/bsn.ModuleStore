@@ -121,10 +121,10 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			private readonly IDictionary<SqlDeserializer, object[]> buffers = new Dictionary<SqlDeserializer, object[]>();
 			private readonly bool callConstructor;
 			private readonly SqlDataReader dataReader;
+			private readonly Dictionary<object, bool> deserialized = new Dictionary<object, bool>(ReferenceEqualityComparer<object>.Default);
 			private readonly IInstanceProvider provider;
 			private readonly IDictionary<string, object> state;
 			private readonly IDeserializationStateProvider stateProvider;
-			private readonly Dictionary<object, bool> deserialized = new Dictionary<object, bool>(ReferenceEqualityComparer<object>.Default);
 			private XmlNameTable nameTable;
 			private XmlDocument xmlDocument;
 
@@ -187,10 +187,16 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 				return callConstructor ? Activator.CreateInstance(instanceType, true) : FormatterServices.GetUninitializedObject(instanceType);
 			}
 
+			public void RequireDeserialization(object instance) {
+				if (!deserialized.ContainsKey(instance)) {
+					deserialized.Add(instance, false);
+				}
+			}
+
 			internal object[] GetBuffer(SqlDeserializer deserializer) {
 				object[] result;
 				if (!buffers.TryGetValue(deserializer, out result)) {
-					result = new object[deserializer.TypeInfo.Mapping.Members.Length];
+					result = new object[deserializer.TypeInfo.Mapping.MemberCount];
 					buffers.Add(deserializer, result);
 				}
 				return result;
@@ -211,12 +217,6 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 					throw new InvalidOperationException("Some objects were created as forward reference but were missing in the result set");
 				}
 			}
-
-			public void RequireDeserialization(object instance) {
-				if (!deserialized.ContainsKey(instance)) {
-					deserialized.Add(instance, false);
-				}
-			}
 		}
 
 		/// <summary>
@@ -231,7 +231,7 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			return typeof(XContainer).IsAssignableFrom(type) || typeof(XmlReader).IsAssignableFrom(type) || typeof(XPathNavigator).IsAssignableFrom(type) || typeof(IXPathNavigable).IsAssignableFrom(type);
 		}
 
-		private readonly SortedList<int, KeyValuePair<bool, MemberConverter>> columnConverters;
+		private readonly SortedList<int, MemberConverter> columnConverters;
 		private readonly Dictionary<NestedMemberConverter, SqlDeserializer> nestedDeserializers;
 		private readonly SqlDataReader reader;
 		private readonly SqlDeserializerTypeInfo typeInfo;
@@ -246,18 +246,19 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			}
 			this.reader = reader;
 			typeInfo = SqlDeserializerTypeInfo.Get(type);
-			foreach (KeyValuePair<string, KeyValuePair<bool, MemberConverter>> column in typeInfo.Mapping.Converters) {
-				if (column.Key == null) {
+			foreach (MemberConverter converter in typeInfo.Mapping.Converters) {
+				NestedMemberConverter nestedConverter = converter as NestedMemberConverter;
+				if (nestedConverter != null) {
 					if (nestedDeserializers == null) {
 						nestedDeserializers = new Dictionary<NestedMemberConverter, SqlDeserializer>();
 					}
 #warning Cyclic nested members would cause a stack overflow here
-					nestedDeserializers.Add((NestedMemberConverter)column.Value.Value, new SqlDeserializer(reader, column.Value.Value.Type));
+					nestedDeserializers.Add(nestedConverter, new SqlDeserializer(reader, converter.Type));
 				} else {
 					if (columnConverters == null) {
-						columnConverters = new SortedList<int, KeyValuePair<bool, MemberConverter>>(typeInfo.Mapping.Converters.Count);
+						columnConverters = new SortedList<int, MemberConverter>(typeInfo.Mapping.Converters.Count);
 					}
-					columnConverters.Add(reader.GetOrdinal(column.Key), column.Value);
+					columnConverters.Add(reader.GetOrdinal(converter.ColumnName), converter);
 				}
 			}
 		}
@@ -300,12 +301,12 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			object identity = null;
 			object[] buffer = context.GetBuffer(this);
 			if (columnConverters != null) {
-				foreach (KeyValuePair<int, KeyValuePair<bool, MemberConverter>> converter in columnConverters) {
-					object value = converter.Value.Value.Process(context, converter.Key);
-					if (converter.Value.Key) {
+				foreach (KeyValuePair<int, MemberConverter> converter in columnConverters) {
+					object value = converter.Value.Process(context, converter.Key);
+					if (converter.Value.IsIdentity) {
 						identity = value;
 					}
-					buffer[converter.Value.Value.MemberIndex] = value;
+					buffer[converter.Value.MemberIndex] = value;
 				}
 			}
 			if (nestedDeserializers != null) {
@@ -316,7 +317,7 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			InstanceOrigin instanceOrigin;
 			object result = context.GetInstance(typeInfo.InstanceType, identity, out instanceOrigin);
 			if ((result != null) && (instanceOrigin != InstanceOrigin.ResultSet)) {
-				FormatterServices.PopulateObjectMembers(result, typeInfo.Mapping.Members, buffer);
+				TypeInfo.Mapping.PopulateInstanceMembers(result, buffer);
 				context.NotifyInstancePopulated(result);
 				if (typeInfo.RequiresNotification) {
 					((ISqlDeserializationHook)result).AfterDeserialization();

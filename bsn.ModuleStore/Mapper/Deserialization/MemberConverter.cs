@@ -34,54 +34,72 @@ using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper.Deserialization {
 	internal class MemberConverter {
-		public static MemberConverter Get(Type type, int memberIndex, DateTimeKind dateTimeKind) {
+		public static MemberConverter Get(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
+			type = Nullable.GetUnderlyingType(type) ?? type;
 			if (type.IsEnum) {
-				return new EnumMemberConverter(type, memberIndex);
+				return new EnumMemberConverter(type, isIdentity, columnName, memberIndex);
 			}
 			if (typeof(XmlReader).Equals(type)) {
-				return new XmlReaderMemberConverter(type, memberIndex);
+				return new XmlReaderMemberConverter(type, isIdentity, columnName, memberIndex);
 			}
 			if (typeof(XDocument).Equals(type)) {
-				return new XDocumentMemberConverter(type, memberIndex);
+				return new XDocumentMemberConverter(type, isIdentity, columnName, memberIndex);
 			}
 			if (typeof(XElement).Equals(type)) {
-				return new XElementMemberConverter(type, memberIndex);
+				return new XElementMemberConverter(type, isIdentity, columnName, memberIndex);
 			}
 			if (typeof(XmlElement).Equals(type)) {
-				return new XmlElementMemberConverter(type, memberIndex);
+				return new XmlElementMemberConverter(type, isIdentity, columnName, memberIndex);
 			}
 			if (typeof(XmlDocument).Equals(type)) {
-				return new XmlDocumentMemberConverter(type, memberIndex);
+				return new XmlDocumentMemberConverter(type, isIdentity, columnName, memberIndex);
 			}
 			if (typeof(XPathDocument).Equals(type)) {
-				return new XPathDocumentMemberConverter(type, memberIndex);
+				return new XPathDocumentMemberConverter(type, isIdentity, columnName, memberIndex);
 			}
 			if (typeof(DateTime).Equals(type)) {
-				return new DateTimeMemberConverter(type, memberIndex, dateTimeKind);
+				return new DateTimeMemberConverter(type, isIdentity, columnName, memberIndex, dateTimeKind);
 			}
 			if (typeof(DateTimeOffset).Equals(type)) {
-				return new DateTimeOffsetMemberConverter(type, memberIndex, dateTimeKind);
+				return new DateTimeOffsetMemberConverter(type, isIdentity, columnName, memberIndex, dateTimeKind);
 			}
 			if (typeof(IConvertible).IsAssignableFrom(type)) {
-				return new ConvertibleMemberConverter(type, memberIndex);
+				return new ConvertibleMemberConverter(type, isIdentity, columnName, memberIndex);
 			}
-			return new MemberConverter(type, memberIndex);
+			return new MemberConverter(type, isIdentity, columnName, memberIndex);
 		}
 
-		private readonly int memberMemberIndex;
+		private readonly string columnName;
+		private readonly bool isIdentity;
+
+		private readonly int memberIndex;
 		private readonly Type type;
 
-		internal MemberConverter(Type type, int memberMemberIndex) {
+		internal MemberConverter(Type type, bool isIdentity, string columnName, int memberIndex) {
 			this.type = type;
-			this.memberMemberIndex = memberMemberIndex;
+			this.isIdentity = isIdentity;
+			this.columnName = columnName;
+			this.memberIndex = memberIndex;
+		}
+
+		public string ColumnName {
+			get {
+				return columnName;
+			}
+		}
+
+		public bool IsIdentity {
+			get {
+				return isIdentity;
+			}
 		}
 
 		public int MemberIndex {
 			get {
-				return memberMemberIndex;
+				return memberIndex;
 			}
 		}
 

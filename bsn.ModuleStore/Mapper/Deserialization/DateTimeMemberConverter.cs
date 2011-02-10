@@ -33,7 +33,7 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 	internal class DateTimeMemberConverter: MemberConverter {
 		private readonly DateTimeKind dateTimeKind;
 
-		public DateTimeMemberConverter(Type type, int memberIndex, DateTimeKind dateTimeKind): base(type, memberIndex) {
+		public DateTimeMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
 			this.dateTimeKind = dateTimeKind;
 		}
 

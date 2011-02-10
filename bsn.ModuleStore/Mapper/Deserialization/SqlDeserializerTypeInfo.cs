@@ -83,7 +83,7 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			}
 			isXmlType = SqlDeserializer.IsXmlType(instanceType);
 			if (isXmlType || (Nullable.GetUnderlyingType(instanceType) != null) || instanceType.IsPrimitive || SqlCallProcedureInfo.IsNativeType(instanceType)) {
-				simpleConverter = MemberConverter.Get(instanceType, 0, DateTimeKind.Unspecified);
+				simpleConverter = MemberConverter.Get(instanceType, false, null, 0, DateTimeKind.Unspecified);
 			}
 		}
 
@@ -117,12 +117,6 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			}
 		}
 
-		internal MemberConverter SimpleConverter {
-			get {
-				return simpleConverter;
-			}
-		}
-
 		public Type Type {
 			get {
 				return type;
@@ -132,6 +126,12 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 		internal SqlDeserializerTypeMapping Mapping {
 			get {
 				return mapping;
+			}
+		}
+
+		internal MemberConverter SimpleConverter {
+			get {
+				return simpleConverter;
 			}
 		}
 

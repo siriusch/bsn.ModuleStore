@@ -33,7 +33,7 @@ using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper.Deserialization {
 	internal class XPathDocumentMemberConverter: XmlReaderMemberConverterBase {
-		public XPathDocumentMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
+		public XPathDocumentMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
 			return new XPathDocument(reader);

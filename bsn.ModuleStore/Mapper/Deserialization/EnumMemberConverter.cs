@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 	internal class EnumMemberConverter: MemberConverter {
 		private readonly Type underlyingType;
 
-		public EnumMemberConverter(Type type, int memberIndex) : base(type, memberIndex) {
+		public EnumMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {
 			underlyingType = Enum.GetUnderlyingType(type);
 			Debug.Assert(underlyingType != null);
 		}

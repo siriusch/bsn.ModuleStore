@@ -29,7 +29,9 @@
 //  
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace bsn.ModuleStore.Mapper.Deserialization {
 	internal class SqlDeserializerTypeMapping {
@@ -58,45 +60,51 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			}
 		}
 
-		private readonly List<KeyValuePair<string, KeyValuePair<bool, MemberConverter>>> converters;
+		private readonly ReadOnlyCollection<MemberConverter> converters;
 		private readonly MemberInfo[] members;
 
 		private SqlDeserializerTypeMapping(Type type) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
-			converters = new List<KeyValuePair<string, KeyValuePair<bool, MemberConverter>>>();
+			List<MemberConverter> memberConverters = new List<MemberConverter>();
 			List<MemberInfo> memberInfos = new List<MemberInfo>();
 			if (!(type.IsPrimitive || type.IsInterface || (typeof(string) == type))) {
 				bool hasIdentity = false;
 				foreach (FieldInfo field in GetAllFields(type)) {
 					SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetColumnAttribute(field, false);
 					if (columnAttribute != null) {
+						bool isIdentity = (!hasIdentity) && (hasIdentity |= columnAttribute.Identity);
 						if (columnAttribute.GetCachedByIdentity) {
-							converters.Add(new KeyValuePair<string, KeyValuePair<bool, MemberConverter>>(columnAttribute.Name, new KeyValuePair<bool, MemberConverter>(false, new CachedMemberConverter(field.FieldType, memberInfos.Count, columnAttribute.DateTimeKind))));
+							memberConverters.Add(new CachedMemberConverter(field.FieldType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind));
 						} else {
-							converters.Add(new KeyValuePair<string, KeyValuePair<bool, MemberConverter>>(columnAttribute.Name, new KeyValuePair<bool, MemberConverter>((!hasIdentity) && (hasIdentity |= columnAttribute.Identity), MemberConverter.Get(field.FieldType, memberInfos.Count, columnAttribute.DateTimeKind))));
+							memberConverters.Add(MemberConverter.Get(field.FieldType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind));
 						}
 						memberInfos.Add(field);
 					} else if (field.IsDefined(typeof(SqlDeserializeAttribute), true)) {
-						converters.Add(new KeyValuePair<string, KeyValuePair<bool, MemberConverter>>(null, new KeyValuePair<bool, MemberConverter>(false, new NestedMemberConverter(field.FieldType, memberInfos.Count))));
+						memberConverters.Add(new NestedMemberConverter(field.FieldType, memberInfos.Count));
 						memberInfos.Add(field);
 					}
 				}
 			}
 			members = memberInfos.ToArray();
+			converters = Array.AsReadOnly(memberConverters.ToArray());
 		}
 
-		public ICollection<KeyValuePair<string, KeyValuePair<bool, MemberConverter>>> Converters {
+		public ReadOnlyCollection<MemberConverter> Converters {
 			get {
 				return converters;
 			}
 		}
 
-		public MemberInfo[] Members {
+		public int MemberCount {
 			get {
-				return members;
+				return members.Length;
 			}
+		}
+
+		public void PopulateInstanceMembers(object result, object[] buffer) {
+			FormatterServices.PopulateObjectMembers(result, members, buffer);
 		}
 	}
 }

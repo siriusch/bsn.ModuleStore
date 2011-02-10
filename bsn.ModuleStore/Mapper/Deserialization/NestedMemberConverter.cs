@@ -31,7 +31,7 @@ using System;
 
 namespace bsn.ModuleStore.Mapper.Deserialization {
 	internal class NestedMemberConverter: MemberConverter {
-		public NestedMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
+		public NestedMemberConverter(Type type, int memberIndex): base(type, false, null, memberIndex) {}
 
 		public override object Process(SqlDeserializer.DeserializerContext context, int column) {
 			throw new NotSupportedException("Nested members need to be deserialized directly via SqlDeserializer");

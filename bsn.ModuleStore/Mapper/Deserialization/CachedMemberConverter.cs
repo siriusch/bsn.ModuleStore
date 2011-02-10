@@ -34,11 +34,11 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 	internal class CachedMemberConverter: MemberConverter {
 		private readonly MemberConverter identityMember;
 
-		public CachedMemberConverter(Type type, int memberIndex, DateTimeKind dateTimeKind): base(type, memberIndex) {
+		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
 			foreach (FieldInfo field in SqlDeserializerTypeMapping.GetAllFields(type)) {
 				SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetColumnAttribute(field, false);
 				if ((columnAttribute != null) && columnAttribute.Identity) {
-					identityMember = Get(field.FieldType, memberIndex, dateTimeKind);
+					identityMember = Get(field.FieldType, false, columnName, memberIndex, dateTimeKind);
 					break;
 				}
 			}
