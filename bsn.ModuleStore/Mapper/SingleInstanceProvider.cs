@@ -255,10 +255,10 @@ namespace bsn.ModuleStore.Mapper {
 							instance = CreateInstance(key);
 							CachePolicy policy = GetCachePolicy(key.Type);
 							switch (policy) {
-							case CachePolicy.StrongReference:
+							case CachePolicy.WeakReference:
 								instances.Add(key, new WeakCacheReference(instance));
 								break;
-							case CachePolicy.WeakReference:
+							case CachePolicy.StrongReference:
 								instances.Add(key, new StrongCacheReference(instance));
 								break;
 							}
