@@ -63,6 +63,7 @@
     <Compile Include="Mapper\Deserialization\DateTimeMemberConverter.cs" />
     <Compile Include="Mapper\Deserialization\DateTimeOffsetMemberConverter.cs" />
     <Compile Include="Mapper\Deserialization\EnumMemberConverter.cs" />
+    <Compile Include="Mapper\DistinctInstanceProvider.cs" />
     <Compile Include="Mapper\IConnectionProvider.cs" />
     <Compile Include="Mapper\IDeserializationStateProvider.cs" />
     <Compile Include="Mapper\IIdentifiable.cs" />
