@@ -27,18 +27,21 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
+using bsn.GoldParser.Semantic;
 
-namespace bsn.ModuleStore.Sql.Script {
-	public enum ObjectCategory {
-		None,
-		Table,
-		View,
-		Trigger,
-		Index,
-		Function,
-		Procedure,
-		XmlSchema,
-		Type
+namespace bsn.ModuleStore.Sql.Script.Tokens {
+	public sealed class TypeConstraintNullToken: TypeConstraintToken {
+		[Rule("<TypeConstraint> ::= ~NULL")]
+		public TypeConstraintNullToken() {}
+
+		public override TypeConstraint Constraint {
+			get {
+				return TypeConstraint.Null;
+			}
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			writer.Write(" NULL");
+		}
 	}
 }

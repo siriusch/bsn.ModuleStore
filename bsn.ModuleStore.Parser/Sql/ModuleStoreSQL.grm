@@ -364,8 +364,13 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 <TriggerNameQualified> ::= <TriggerName>
                          | <SchemaName> '.' <TriggerName>
 
-<TypeName> ::= Id
-             | QuotedId
+<SimpleTypeName> ::= Id
+                   | QuotedId
+
+<SimpleTypeNameQualified> ::= <SimpleTypeName>
+                            | <SchemaName> '.' <SimpleTypeName>
+
+<TypeName> ::= <SimpleTypeName>
              | Id '(' Id ')' ! e.g. VARCHAR(MAX)
              | QuotedId '(' Id ')' ! e.g. VARCHAR(MAX)
              | Id '(' <IntegerLiteral> ')' ! e.g. VARCHAR(20)
@@ -464,6 +469,8 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                  | <EnableTriggerStatement>
                  | <DisableTriggerStatement>
                  | <DropTriggerStatement>
+                 | <CreateTypeStatement>
+                 | <DropTypeStatement>
                  | <CreateViewStatement>
                  | <DropViewStatement>
                  | <CreateXmlSchemaCollectionStatement>
@@ -890,6 +897,19 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 <CreateXmlSchemaCollectionStatement> ::= CREATE XML SCHEMA COLLECTION <XmlSchemaCollectionNameQualified> AS <Expression>
 
 <DropXmlSchemaCollectionStatement> ::= DROP XML SCHEMA COLLECTION <XmlSchemaCollectionNameQualified>
+
+! =============================================================================
+! CREATE/DROP TYPE
+! =============================================================================
+
+<CreateTypeStatement> ::= CREATE TYPE <SimpleTypeNameQualified> FROM <TypeName> <TypeConstraint>
+                        | CREATE TYPE <SimpleTypeNameQualified> AS TABLE <TableDefinitionGroup>
+
+<TypeConstraint> ::= NOT NULL
+                   | NULL
+                   |
+
+<DropTypeStatement> ::= DROP TYPE <SimpleTypeNameQualified>
 
 ! =============================================================================
 ! Table/Column Type Definitions

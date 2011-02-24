@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -27,45 +27,34 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
 using System.Collections.Generic;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class TypeName: SqlQuotedName {
-		private static KeyValuePair<string, bool> FormatName(string name) {
-			if (string.IsNullOrEmpty(name)) {
-				throw new ArgumentNullException("name");
-			}
-			bool isBuiltIn = ScriptParser.TryGetBuiltinTypeName(ref name);
-			return new KeyValuePair<string, bool>(name, isBuiltIn);
+	public sealed class CreateTypeAsTableStatement: CreateTypeStatement {
+		private readonly List<TableDefinition> tableDefinitions;
+
+		[Rule("<CreateTypeStatement> ::= ~CREATE ~TYPE <SimpleTypeNameQualified> ~AS ~TABLE <TableDefinitionGroup>")]
+		public CreateTypeAsTableStatement(Qualified<SchemaName, TypeName> typeName, Sequence<TableDefinition> tableDefinitions)
+			: base(typeName) {
+			this.tableDefinitions = tableDefinitions.ToList();
 		}
 
-		private readonly bool builtinType;
-
-		[Rule("<SimpleTypeName> ::= Id")]
-		[Rule("<SimpleTypeName> ::= QuotedId")]
-		public TypeName(SqlIdentifier identifier): this(identifier.Value) {}
-
-		internal TypeName(string name): this(FormatName(name)) {}
-
-		private TypeName(KeyValuePair<string, bool> typeName): base(typeName.Key) {
-			builtinType = typeName.Value;
-		}
-
-		public bool IsBuiltinType {
+		public IEnumerable<TableDefinition> TableDefinitions {
 			get {
-				return builtinType;
+				return tableDefinitions;
 			}
 		}
 
-		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
-			if (isPartOfQualifiedName || (!IsBuiltinType)) {
-				base.WriteToInternal(writer, isPartOfQualifiedName);
-			} else {
-				writer.Write(Value);
-			}
+		public override void WriteTo(SqlWriter writer) {
+			base.WriteTo(writer);
+			writer.Write("AS TABLE (");
+			writer.IncreaseIndent();
+			writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, ",");
+			writer.DecreaseIndent();
+			writer.WriteLine();
+			writer.Write(')');
 		}
 	}
 }

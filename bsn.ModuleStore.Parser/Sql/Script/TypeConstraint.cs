@@ -30,15 +30,9 @@
 using System;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public enum ObjectCategory {
+	public enum TypeConstraint {
 		None,
-		Table,
-		View,
-		Trigger,
-		Index,
-		Function,
-		Procedure,
-		XmlSchema,
-		Type
+		NotNull,
+		Null
 	}
 }

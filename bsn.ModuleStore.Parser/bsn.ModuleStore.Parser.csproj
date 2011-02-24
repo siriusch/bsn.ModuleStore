@@ -78,7 +78,11 @@
     <Compile Include="Sql\Script\CommitTransactionStatement.cs" />
     <Compile Include="Sql\Script\ConstraintDefaultFunctionValue.cs" />
     <Compile Include="Sql\Script\CreatePrimaryXmlIndexStatement.cs" />
+    <Compile Include="Sql\Script\CreateTypeAsTableStatement.cs" />
+    <Compile Include="Sql\Script\CreateTypeFromStatement.cs" />
+    <Compile Include="Sql\Script\CreateTypeStatement.cs" />
     <Compile Include="Sql\Script\CrossApply.cs" />
+    <Compile Include="Sql\Script\DropTypeStatement.cs" />
     <Compile Include="Sql\Script\ExceptClause.cs" />
     <Compile Include="Sql\Script\ForXmlAutoClause.cs" />
     <Compile Include="Sql\Script\ForXmlExplicitClause.cs" />
@@ -406,6 +410,9 @@
     <Compile Include="Sql\Script\Tokens\TriggerTypeForToken.cs" />
     <Compile Include="Sql\Script\Tokens\TriggerTypeInsteadOfToken.cs" />
     <Compile Include="Sql\Script\Tokens\TriggerTypeToken.cs" />
+    <Compile Include="Sql\Script\Tokens\TypeConstraintNotNullToken.cs" />
+    <Compile Include="Sql\Script\Tokens\TypeConstraintNullToken.cs" />
+    <Compile Include="Sql\Script\Tokens\TypeConstraintToken.cs" />
     <Compile Include="Sql\Script\Tokens\UniqueToken.cs" />
     <Compile Include="Sql\Script\Tokens\UpdateToken.cs" />
     <Compile Include="Sql\Script\Tokens\VaryingToken.cs" />
@@ -422,6 +429,7 @@
     <Compile Include="Sql\Script\TriggerType.cs" />
     <Compile Include="Sql\Script\TryCatchStatement.cs" />
     <Compile Include="Sql\Script\Tuple.cs" />
+    <Compile Include="Sql\Script\TypeConstraint.cs" />
     <Compile Include="Sql\Script\TypedColumnDefinition.cs" />
     <Compile Include="Sql\Script\TypeName.cs" />
     <Compile Include="Sql\Script\TypeNameExtended.cs" />

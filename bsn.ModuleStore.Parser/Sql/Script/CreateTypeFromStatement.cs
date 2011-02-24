@@ -29,16 +29,40 @@
 //  
 using System;
 
+using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script.Tokens;
+
 namespace bsn.ModuleStore.Sql.Script {
-	public enum ObjectCategory {
-		None,
-		Table,
-		View,
-		Trigger,
-		Index,
-		Function,
-		Procedure,
-		XmlSchema,
-		Type
+	public sealed class CreateTypeFromStatement: CreateTypeStatement {
+		private readonly TypeName systemTypeName;
+		private readonly TypeConstraintToken constraint;
+
+		[Rule("<CreateTypeStatement> ::= ~CREATE ~TYPE <SimpleTypeNameQualified> ~FROM <TypeName> <TypeConstraint>")]
+		public CreateTypeFromStatement(Qualified<SchemaName, TypeName> typeName, TypeName systemTypeName, TypeConstraintToken constraint): base(typeName) {
+			if (!systemTypeName.IsBuiltinType) {
+				throw new ArgumentException("Derived types can only be created from system types", "systemTypeName");
+			}
+			this.systemTypeName = systemTypeName;
+			this.constraint = constraint;
+		}
+
+		public TypeName SystemTypeName {
+			get {
+				return systemTypeName;
+			}
+		}
+
+		public TypeConstraint Constraint {
+			get {
+				return constraint.Constraint;
+			}
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			base.WriteTo(writer);
+			writer.Write("FROM");
+			writer.WriteScript(systemTypeName, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(constraint, WhitespacePadding.SpaceBefore);
+		}
 	}
 }

@@ -34,7 +34,8 @@ using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName where TN: SqlName {
+	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName
+	                                                                              where TN: SqlName {
 		private readonly TQ qualification;
 		private bool lockedOverride;
 		private TN name;
@@ -45,6 +46,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ProcedureNameQualified> ::= <ProcedureName>", typeof(SchemaName), typeof(ProcedureName))]
 		[Rule("<FunctionNameQualified> ::= <FunctionName>", typeof(SchemaName), typeof(FunctionName))]
 		[Rule("<TableNameQualified> ::= <TableName>", typeof(SchemaName), typeof(TableName))]
+		[Rule("<SimpleTypeNameQualified> ::= <SimpleTypeName>", typeof(SchemaName), typeof(TypeName))]
 		[Rule("<TypeNameQualified> ::= <TypeName>", typeof(SchemaName), typeof(TypeName))]
 		[Rule("<ViewNameQualified> ::= <ViewName>", typeof(SchemaName), typeof(ViewName))]
 		[Rule("<XmlSchemaCollectionNameQualified> ::= <XmlSchemaCollectionName>", typeof(SchemaName), typeof(XmlSchemaCollectionName))]
@@ -58,6 +60,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ProcedureNameQualified> ::= <SchemaName> ~'.' <ProcedureName>", typeof(SchemaName), typeof(ProcedureName))]
 		[Rule("<FunctionNameQualified> ::= <SchemaName> ~'.' <FunctionName>", typeof(SchemaName), typeof(FunctionName))]
 		[Rule("<TableNameQualified> ::= <SchemaName> ~'.' <TableName>", typeof(SchemaName), typeof(TableName))]
+		[Rule("<SimpleTypeNameQualified> ::= <SchemaName> ~'.' <SimpleTypeName>", typeof(SchemaName), typeof(TypeName))]
 		[Rule("<TypeNameQualified> ::= <SchemaName> ~'.' <TypeName>", typeof(SchemaName), typeof(TypeName))]
 		[Rule("<ViewNameQualified> ::= <SchemaName> ~'.' <ViewName>", typeof(SchemaName), typeof(ViewName))]
 		[Rule("<XmlSchemaCollectionNameQualified> ::= <SchemaName> ~'.' <XmlSchemaCollectionName>", typeof(SchemaName), typeof(XmlSchemaCollectionName))]
@@ -194,5 +197,5 @@ namespace bsn.ModuleStore.Sql.Script {
 				return qualification;
 			}
 		}
-	}
+	                                                                              }
 }

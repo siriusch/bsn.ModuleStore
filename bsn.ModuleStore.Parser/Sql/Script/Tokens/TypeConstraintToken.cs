@@ -29,16 +29,25 @@
 //  
 using System;
 
-namespace bsn.ModuleStore.Sql.Script {
-	public enum ObjectCategory {
-		None,
-		Table,
-		View,
-		Trigger,
-		Index,
-		Function,
-		Procedure,
-		XmlSchema,
-		Type
+using bsn.GoldParser.Semantic;
+
+namespace bsn.ModuleStore.Sql.Script.Tokens {
+	public class TypeConstraintToken: SqlScriptableToken, IOptional {
+		[Rule("<TypeConstraint> ::=")]
+		public TypeConstraintToken() {}
+
+		public virtual TypeConstraint Constraint {
+			get {
+				return TypeConstraint.Null;
+			}
+		}
+
+		public override void WriteTo(SqlWriter writer) {}
+
+		public bool HasValue {
+			get {
+				return Constraint != TypeConstraint.None;
+			}
+		}
 	}
 }

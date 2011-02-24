@@ -27,45 +27,21 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
-using System.Collections.Generic;
-
 using bsn.GoldParser.Semantic;
 
-namespace bsn.ModuleStore.Sql.Script {
-	public class TypeName: SqlQuotedName {
-		private static KeyValuePair<string, bool> FormatName(string name) {
-			if (string.IsNullOrEmpty(name)) {
-				throw new ArgumentNullException("name");
-			}
-			bool isBuiltIn = ScriptParser.TryGetBuiltinTypeName(ref name);
-			return new KeyValuePair<string, bool>(name, isBuiltIn);
-		}
+namespace bsn.ModuleStore.Sql.Script.Tokens {
+	public sealed class TypeConstraintNotNullToken: TypeConstraintToken {
+		[Rule("<TypeConstraint> ::= ~NOT ~NULL")]
+		public TypeConstraintNotNullToken() {}
 
-		private readonly bool builtinType;
-
-		[Rule("<SimpleTypeName> ::= Id")]
-		[Rule("<SimpleTypeName> ::= QuotedId")]
-		public TypeName(SqlIdentifier identifier): this(identifier.Value) {}
-
-		internal TypeName(string name): this(FormatName(name)) {}
-
-		private TypeName(KeyValuePair<string, bool> typeName): base(typeName.Key) {
-			builtinType = typeName.Value;
-		}
-
-		public bool IsBuiltinType {
+		public override TypeConstraint Constraint {
 			get {
-				return builtinType;
+				return TypeConstraint.NotNull;
 			}
 		}
 
-		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
-			if (isPartOfQualifiedName || (!IsBuiltinType)) {
-				base.WriteToInternal(writer, isPartOfQualifiedName);
-			} else {
-				writer.Write(Value);
-			}
+		public override void WriteTo(SqlWriter writer) {
+			writer.Write(" NOT NULL");
 		}
 	}
 }

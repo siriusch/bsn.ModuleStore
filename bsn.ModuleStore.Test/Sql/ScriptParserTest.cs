@@ -390,6 +390,24 @@ SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
 		}
 
 		[Test]
+		public void CreateTypeFrom() {
+			ParseWithRoundtrip(@"CREATE TYPE dbo.SSN
+FROM varchar(11) NOT NULL ;", 1);
+		}
+
+		[Test]
+		public void CreateTypeAsTable() {
+			ParseWithRoundtrip(@"CREATE TYPE dbo.LocationTableType AS TABLE 
+    ( LocationName VARCHAR(50)
+    , CostRate INT );", 1);
+		}
+
+		[Test]
+		public void DropType() {
+			ParseWithRoundtrip(@"DROP TYPE dbo.SSN;", 1);
+		}
+
+		[Test]
 		public void UpdateWithTableHint() {
 			ParseWithRoundtrip(@"UPDATE Production.Product
 WITH (TABLOCK)
