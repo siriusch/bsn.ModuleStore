@@ -44,9 +44,27 @@
 		<xsl:call-template name="Indexes" />
 	</xsl:template>
 
+	<xsl:template match="Type" mode="script">
+		<xsl:text xml:space="preserve">CREATE TYPE </xsl:text>
+		<xsl:value-of select="@Name"/>
+		<xsl:text xml:space="preserve"> FROM </xsl:text>
+		<xsl:call-template name="RenderType" />
+	</xsl:template>
+
 	<xsl:template match="Table" mode="script">
 		<xsl:text xml:space="preserve">CREATE TABLE </xsl:text>
 		<xsl:value-of select="@Name"/>
+		<xsl:call-template name="RenderTable" />
+	</xsl:template>
+
+	<xsl:template match="TableType" mode="script">
+		<xsl:text xml:space="preserve">CREATE TYPE </xsl:text>
+		<xsl:value-of select="@Name"/>
+		<xsl:text xml:space="preserve"> AS TABLE</xsl:text>
+		<xsl:call-template name="RenderTable" />
+	</xsl:template>
+
+	<xsl:template name="RenderTable">
 		<xsl:text xml:space="preserve"> (
 	</xsl:text>
 		<xsl:for-each select="Column">
@@ -66,39 +84,7 @@
 				<!-- normal column -->
 				<xsl:otherwise>
 					<xsl:text xml:space="preserve"> </xsl:text>
-					<xsl:value-of select="@Type" />
-					<!-- length or precision/scale -->
-					<xsl:if test="@Length|@Precision">
-						<xsl:text>(</xsl:text>
-						<xsl:value-of select="@Length|@Precision"/>
-						<xsl:if test="@Scale">
-							<xsl:text xml:space="preserve">, </xsl:text>
-							<xsl:value-of select="@Scale"/>
-						</xsl:if>
-						<xsl:text>)</xsl:text>
-					</xsl:if>
-					<!-- collation -->
-					<xsl:if test="@Collation">
-						<xsl:text xml:space="preserve"> COLLATE </xsl:text>
-						<xsl:value-of select="@Collation"/>
-					</xsl:if>
-					<!-- rowguidcol -->
-					<xsl:if test="@RowGuid = 1">
-						<xsl:text xml:space="preserve"> ROWGUIDCOL</xsl:text>
-					</xsl:if>
-					<!-- identity -->
-					<xsl:if test="@IdentitySeed">
-						<xsl:text xml:space="preserve"> IDENTITY(</xsl:text>
-						<xsl:value-of select="@IdentitySeed"/>
-						<xsl:text xml:space="preserve">, </xsl:text>
-						<xsl:value-of select="@IdentityIncrement"/>
-						<xsl:text>)</xsl:text>
-					</xsl:if>
-					<!-- nullable -->
-					<xsl:if test="@Nullable = 0">
-						<xsl:text xml:space="preserve"> NOT</xsl:text>
-					</xsl:if>
-					<xsl:text xml:space="preserve"> NULL</xsl:text>
+					<xsl:call-template name="RenderType" />
 					<!-- default constraint -->
 					<xsl:if test="@Default">
 						<xsl:if test="@DefaultName">
@@ -122,9 +108,11 @@
 			<xsl:sort order="ascending" select="@Name" data-type="text"/>
 			<xsl:text xml:space="preserve">,
 	</xsl:text>
-			<xsl:text xml:space="preserve">CONSTRAINT </xsl:text>
-			<xsl:value-of select="@Name"/>
-			<xsl:text xml:space="preserve"> </xsl:text>
+			<xsl:if test="@Name">
+				<xsl:text xml:space="preserve">CONSTRAINT </xsl:text>
+				<xsl:value-of select="@Name"/>
+				<xsl:text xml:space="preserve"> </xsl:text>
+			</xsl:if>
 			<xsl:choose>
 				<xsl:when test="self::Index">
 					<xsl:choose>
@@ -181,6 +169,42 @@
 		<xsl:call-template name="Indexes" />
 	</xsl:template>
 
+	<xsl:template name="RenderType">
+		<xsl:value-of select="@Type" />
+		<!-- length or precision/scale -->
+		<xsl:if test="@Length|@Precision">
+			<xsl:text>(</xsl:text>
+			<xsl:value-of select="@Length|@Precision"/>
+			<xsl:if test="@Scale">
+				<xsl:text xml:space="preserve">, </xsl:text>
+				<xsl:value-of select="@Scale"/>
+			</xsl:if>
+			<xsl:text>)</xsl:text>
+		</xsl:if>
+		<!-- collation -->
+		<xsl:if test="@Collation">
+			<xsl:text xml:space="preserve"> COLLATE </xsl:text>
+			<xsl:value-of select="@Collation"/>
+		</xsl:if>
+		<!-- rowguidcol -->
+		<xsl:if test="@RowGuid = 1">
+			<xsl:text xml:space="preserve"> ROWGUIDCOL</xsl:text>
+		</xsl:if>
+		<!-- identity -->
+		<xsl:if test="@IdentitySeed">
+			<xsl:text xml:space="preserve"> IDENTITY(</xsl:text>
+			<xsl:value-of select="@IdentitySeed"/>
+			<xsl:text xml:space="preserve">, </xsl:text>
+			<xsl:value-of select="@IdentityIncrement"/>
+			<xsl:text>)</xsl:text>
+		</xsl:if>
+		<!-- nullable -->
+		<xsl:if test="@Nullable = 0">
+			<xsl:text xml:space="preserve"> NOT</xsl:text>
+		</xsl:if>
+		<xsl:text xml:space="preserve"> NULL</xsl:text>
+	</xsl:template>
+
 	<xsl:template name="Indexes">
 		<xsl:for-each select="Index[not((@PrimaryKey=1) or (@UniqueConstraint=1))]">
 			<xsl:text xml:space="preserve">;
@@ -229,7 +253,10 @@
 						<xsl:text xml:space="preserve">PAD_INDEX=ON, </xsl:text>
 					</xsl:if>
 				</xsl:if>
-				<xsl:text xml:space="preserve">STATISTICS_NORECOMPUTE=OFF, IGNORE_DUP_KEY=</xsl:text>
+				<xsl:if test="not(ancestor::TableType)">
+					<xsl:text xml:space="preserve">STATISTICS_NORECOMPUTE=OFF, </xsl:text>
+				</xsl:if>
+				<xsl:text xml:space="preserve">IGNORE_DUP_KEY=</xsl:text>
 				<xsl:choose>
 					<xsl:when test="@IgnoreDuplicateKeys=1">ON</xsl:when>
 					<xsl:otherwise>OFF</xsl:otherwise>
