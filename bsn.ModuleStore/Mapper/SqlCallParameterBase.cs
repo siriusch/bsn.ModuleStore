@@ -117,10 +117,6 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		protected virtual int GetOutArgIndex() {
-			throw new NotSupportedException(string.Format("The {0} type does not support output parameters", GetType().Name));
-		}
-
 		public SqlParameter GetSqlParameter(SqlCommand command, IMethodCallMessage mcm, SqlParameter[] outArgs, IList<IDisposable> disposeList) {
 			SqlParameter parameter = command.CreateParameter();
 			parameter.ParameterName = parameterName;
@@ -135,6 +131,10 @@ namespace bsn.ModuleStore.Mapper {
 				outArgs[GetOutArgIndex()] = parameter;
 			}
 			return parameter;
+		}
+
+		protected virtual int GetOutArgIndex() {
+			throw new NotSupportedException(string.Format("The {0} type does not support output parameters", GetType().Name));
 		}
 
 		protected abstract object SetParameterValue(IMethodCallMessage mcm, IList<IDisposable> disposables);

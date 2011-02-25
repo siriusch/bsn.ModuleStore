@@ -28,10 +28,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
-	public abstract class InstanceManager<TId, TManager> where TId: struct, IEquatable<TId> where TManager: InstanceManager<TId, TManager> {
+	public abstract class InstanceManager<TId, TManager> where TId: struct, IEquatable<TId>
+	                                                     where TManager: InstanceManager<TId, TManager> {
 		protected static TDataInterface GetDefaultDataInterface<TDataInterface>(ModuleDatabase database) where TDataInterface: IStoredProcedures {
 			return GetDefaultDataInterface<TDataInterface>(database, true);
 		}
@@ -60,5 +60,5 @@ namespace bsn.ModuleStore.Mapper {
 				return provider;
 			}
 		}
-	}
+	                                                     }
 }

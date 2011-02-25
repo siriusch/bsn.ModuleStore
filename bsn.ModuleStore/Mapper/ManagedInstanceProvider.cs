@@ -30,12 +30,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
 namespace bsn.ModuleStore.Mapper {
-	public class ManagedInstanceProvider<TId, TManager>: SingleInstanceProvider<TId> where TId: struct, IEquatable<TId> where TManager: InstanceManager<TId, TManager> {
+	public class ManagedInstanceProvider<TId, TManager>: SingleInstanceProvider<TId> where TId: struct, IEquatable<TId>
+	                                                                                 where TManager: InstanceManager<TId, TManager> {
 		private static readonly Dictionary<Type, DynamicMethod> factoryMethods = new Dictionary<Type, DynamicMethod>();
 
 		public static Func<Instance<TId, TManager>> CreateFactory(Type type, TManager manager) {
@@ -97,5 +97,5 @@ namespace bsn.ModuleStore.Mapper {
 			}
 			return base.CreateInstance(key);
 		}
-	}
+	                                                                                 }
 }

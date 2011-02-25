@@ -28,7 +28,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]

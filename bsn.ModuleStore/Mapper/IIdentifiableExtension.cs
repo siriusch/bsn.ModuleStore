@@ -28,12 +28,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	// ReSharper disable InconsistentNaming
 	public static class IIdentifiableExtension {
-	// ReSharper restore InconsistentNaming
+		// ReSharper restore InconsistentNaming
 		public static T? GetId<T>(this IIdentifiable<T> value) where T: struct, IEquatable<T> {
 			if (value != null) {
 				return value.Id;

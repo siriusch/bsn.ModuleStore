@@ -44,24 +44,23 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
 	internal class SqlCallProcedureInfo {
-		private static readonly Dictionary<Type, SqlDbType> dbTypeMapping = new Dictionary<Type, SqlDbType>
-		                                                                    	{
-		                                                                    			{typeof(long), SqlDbType.BigInt},
-		                                                                    			{typeof(byte[]), SqlDbType.VarBinary},
-		                                                                    			{typeof(bool), SqlDbType.Bit},
-		                                                                    			{typeof(char), SqlDbType.NChar},
-		                                                                    			{typeof(char[]), SqlDbType.NVarChar},
-		                                                                    			{typeof(string), SqlDbType.NVarChar},
-		                                                                    			{typeof(DateTime), SqlDbType.DateTime},
-		                                                                    			{typeof(DateTimeOffset), SqlDbType.DateTimeOffset}, // not supported in SQL 2005!
-		                                                                    			{typeof(decimal), SqlDbType.Decimal},
-		                                                                    			{typeof(float), SqlDbType.Real},
-		                                                                    			{typeof(double), SqlDbType.Float},
-		                                                                    			{typeof(int), SqlDbType.Int},
-		                                                                    			{typeof(short), SqlDbType.SmallInt},
-		                                                                    			{typeof(sbyte), SqlDbType.TinyInt},
-		                                                                    			{typeof(Guid), SqlDbType.UniqueIdentifier}
-		                                                                    	};
+		private static readonly Dictionary<Type, SqlDbType> dbTypeMapping = new Dictionary<Type, SqlDbType> {
+		                                                                                                    		{typeof(long), SqlDbType.BigInt},
+		                                                                                                    		{typeof(byte[]), SqlDbType.VarBinary},
+		                                                                                                    		{typeof(bool), SqlDbType.Bit},
+		                                                                                                    		{typeof(char), SqlDbType.NChar},
+		                                                                                                    		{typeof(char[]), SqlDbType.NVarChar},
+		                                                                                                    		{typeof(string), SqlDbType.NVarChar},
+		                                                                                                    		{typeof(DateTime), SqlDbType.DateTime},
+		                                                                                                    		{typeof(DateTimeOffset), SqlDbType.DateTimeOffset}, // not supported in SQL 2005!
+		                                                                                                    		{typeof(decimal), SqlDbType.Decimal},
+		                                                                                                    		{typeof(float), SqlDbType.Real},
+		                                                                                                    		{typeof(double), SqlDbType.Float},
+		                                                                                                    		{typeof(int), SqlDbType.Int},
+		                                                                                                    		{typeof(short), SqlDbType.SmallInt},
+		                                                                                                    		{typeof(sbyte), SqlDbType.TinyInt},
+		                                                                                                    		{typeof(Guid), SqlDbType.UniqueIdentifier}
+		                                                                                                    };
 
 		private static readonly Dictionary<string, CreateProcedureStatement> statements = new Dictionary<string, CreateProcedureStatement>(StringComparer.Ordinal);
 
@@ -121,8 +120,8 @@ namespace bsn.ModuleStore.Mapper {
 			return SqlDbType.Udt;
 		}
 
-		private readonly SqlCallParameterBase[] parameters;
 		private readonly int outArgCount;
+		private readonly SqlCallParameterBase[] parameters;
 		private readonly SqlProcedureAttribute proc;
 		private readonly SqlDeserializerTypeInfo returnTypeInfo;
 		private readonly CreateProcedureStatement script;

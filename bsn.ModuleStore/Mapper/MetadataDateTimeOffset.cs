@@ -33,8 +33,7 @@ using System.Xml.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	public class MetadataDateTimeOffset: MetadataBase<DateTimeOffset?> {
-		public MetadataDateTimeOffset(Func<XDocument> metadata, XName elementName) : base(metadata, elementName) {
-		}
+		public MetadataDateTimeOffset(Func<XDocument> metadata, XName elementName): base(metadata, elementName) {}
 
 		protected override string ToStringInternal(DateTimeOffset? value) {
 			if (!value.HasValue) {

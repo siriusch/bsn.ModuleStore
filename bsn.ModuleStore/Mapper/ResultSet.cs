@@ -30,13 +30,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 
 using bsn.ModuleStore.Mapper.Deserialization;
 
 namespace bsn.ModuleStore.Mapper {
 	public abstract class ResultSet {
-		protected ResultSet() {}
+		public abstract int Count {
+			get;
+		}
 
 		public abstract Type DataType {
 			get;
@@ -46,10 +47,6 @@ namespace bsn.ModuleStore.Mapper {
 			get {
 				return null;
 			}
-		}
-
-		public abstract int Count {
-			get;
 		}
 
 		protected internal abstract void Load(SqlDataReader reader, IInstanceProvider provider);

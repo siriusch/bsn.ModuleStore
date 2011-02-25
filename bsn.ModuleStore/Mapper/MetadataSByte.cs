@@ -33,8 +33,7 @@ using System.Xml.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	public class MetadataSByte: MetadataBase<sbyte?> {
-		public MetadataSByte(Func<XDocument> metadata, XName elementName) : base(metadata, elementName) {
-		}
+		public MetadataSByte(Func<XDocument> metadata, XName elementName): base(metadata, elementName) {}
 
 		protected override string ToStringInternal(sbyte? value) {
 			if (!value.HasValue) {

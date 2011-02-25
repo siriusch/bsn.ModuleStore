@@ -29,10 +29,10 @@
 //  
 using System;
 using System.Diagnostics;
-using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
-	public abstract class Instance<TId, TManager>: IIdentifiable<TId>, IEquatable<Instance<TId, TManager>> where TId: struct, IEquatable<TId> where TManager: InstanceManager<TId, TManager> {
+	public abstract class Instance<TId, TManager>: IIdentifiable<TId>, IEquatable<Instance<TId, TManager>> where TId: struct, IEquatable<TId>
+	                                                                                                       where TManager: InstanceManager<TId, TManager> {
 		private readonly TManager owner;
 
 		protected Instance(TManager owner) {
@@ -56,6 +56,10 @@ namespace bsn.ModuleStore.Mapper {
 			return GetType().GetHashCode()^Id.GetHashCode();
 		}
 
+		public override string ToString() {
+			return string.Format("{0}[{1}]", GetType().FullName, Id);
+		}
+
 		public bool Equals(Instance<TId, TManager> other) {
 			if (other == this) {
 				return true;
@@ -67,9 +71,5 @@ namespace bsn.ModuleStore.Mapper {
 		public abstract TId Id {
 			get;
 		}
-
-		public override string ToString() {
-			return string.Format("{0}[{1}]", GetType().FullName, Id);
-		}
-	}
+	                                                                                                       }
 }

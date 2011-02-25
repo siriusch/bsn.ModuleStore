@@ -54,11 +54,20 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		protected XDocument GetMetadata() {
-			if (metadata == null) {
-				throw new InvalidOperationException("The given metadata object was not associated to a specific metadata");
-			}
-			return metadata();
+		public T GetValue(XDocument metadata, CultureInfo culture) {
+			return ToValueInternal(GetValueString(metadata, culture));
+		}
+
+		public T GetValue(CultureInfo culture) {
+			return GetValue(GetMetadata(), culture);
+		}
+
+		public T GetValue(XDocument metadata) {
+			return GetValue(metadata, null);
+		}
+
+		public T GetValue() {
+			return GetValue(GetMetadata(), CultureInfo.CurrentUICulture);
 		}
 
 		public void Set(XDocument metadata, CultureInfo culture, T value) {
@@ -82,32 +91,23 @@ namespace bsn.ModuleStore.Mapper {
 			Set(metadata, null, value);
 		}
 
-		private string GetValueString(XDocument metadata, CultureInfo culture) {
-			return metadata.Get(elementName, culture);
+		public override sealed string ToString() {
+			return GetValueString(GetMetadata(), CultureInfo.CurrentUICulture);
 		}
 
-		public T GetValue(XDocument metadata, CultureInfo culture) {
-			return ToValueInternal(GetValueString(metadata, culture));
-		}
-
-		public T GetValue(CultureInfo culture) {
-			return GetValue(GetMetadata(), culture);
-		}
-
-		public T GetValue(XDocument metadata) {
-			return GetValue(metadata, null);
-		}
-
-		public T GetValue() {
-			return GetValue(GetMetadata(), CultureInfo.CurrentUICulture);
+		protected XDocument GetMetadata() {
+			if (metadata == null) {
+				throw new InvalidOperationException("The given metadata object was not associated to a specific metadata");
+			}
+			return metadata();
 		}
 
 		protected abstract string ToStringInternal(T value);
 
 		protected abstract T ToValueInternal(string value);
 
-		public sealed override string ToString() {
-			return GetValueString(GetMetadata(), CultureInfo.CurrentUICulture);
+		private string GetValueString(XDocument metadata, CultureInfo culture) {
+			return metadata.Get(elementName, culture);
 		}
 	}
 }

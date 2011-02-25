@@ -47,18 +47,6 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public sealed override int Count {
-			get {
-				return items.Count;
-			}
-		}
-
-		bool ICollection<T>.IsReadOnly {
-			get {
-				return true;
-			}
-		}
-
 		protected IList<T> Items {
 			get {
 				return items;
@@ -67,7 +55,19 @@ namespace bsn.ModuleStore.Mapper {
 				if (value == null) {
 					throw new ArgumentNullException("value");
 				}
-				this.items = value;
+				items = value;
+			}
+		}
+
+		public override sealed int Count {
+			get {
+				return items.Count;
+			}
+		}
+
+		bool ICollection<T>.IsReadOnly {
+			get {
+				return true;
 			}
 		}
 

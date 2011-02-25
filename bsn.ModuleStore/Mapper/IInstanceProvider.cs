@@ -29,11 +29,11 @@
 //  
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	public interface IInstanceProvider {
-		bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin);
 		void ForgetInstance(IDictionary<string, object> state, Type instanceType, object identity);
+
+		bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin);
 	}
 }

@@ -33,7 +33,9 @@ using System.Collections.Generic;
 namespace bsn.ModuleStore.Mapper {
 	public interface IDeserializationStateProvider {
 		void BeginDeserialize(IDictionary<string, object> state);
-		void InstanceDeserialized(IDictionary<string, object> state, object instance);
+
 		void EndDeserialize(IDictionary<string, object> state);
+
+		void InstanceDeserialized(IDictionary<string, object> state, object instance);
 	}
 }
