@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -27,33 +27,19 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
-
-using bsn.GoldParser.Semantic;
-
 namespace bsn.ModuleStore.Sql.Script {
-	public class ColumnName: SqlQuotedName {
-		[Rule("<ColumnWild> ::= ~'*'")]
-		public ColumnName(): this("*") {}
+	public abstract class MergeWhenNotMatched: MergeWhenMatched {
+		protected MergeWhenNotMatched(Predicate predicate, MergeOperation operation): base(predicate, operation) {}
 
-		[Rule("<ColumnName> ::= Id")]
-		[Rule("<ColumnName> ::= QuotedId")]
-		public ColumnName(Identifier identifier): this(identifier.Value) {}
-
-		internal ColumnName(string name): base(name) {}
-
-		public bool IsWildcard {
-			get {
-				return StringComparer.Ordinal.Equals("*", Value);
-			}
+		public abstract string NotMatchedBy {
+			get;
 		}
 
-		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
-			if (IsWildcard) {
-				writer.Write(Value);
-			} else {
-				base.WriteToInternal(writer, isPartOfQualifiedName);
-			}
+		protected override sealed void WriteMatchedTo(SqlWriter writer) {
+			writer.Write("NOT ");
+			base.WriteMatchedTo(writer);
+			writer.Write(" BY ");
+			writer.Write(NotMatchedBy);
 		}
 	}
 }

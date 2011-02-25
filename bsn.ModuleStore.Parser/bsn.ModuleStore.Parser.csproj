@@ -104,6 +104,15 @@
     <Compile Include="Sql\Script\IObjectBoundStatement.cs" />
     <Compile Include="Sql\Script\KeywordFunction.cs" />
     <Compile Include="Sql\Script\Label.cs" />
+    <Compile Include="Sql\Script\MergeOperation.cs" />
+    <Compile Include="Sql\Script\MergeOperationDelete.cs" />
+    <Compile Include="Sql\Script\MergeOperationInsert.cs" />
+    <Compile Include="Sql\Script\MergeOperationUpdate.cs" />
+    <Compile Include="Sql\Script\MergeStatement.cs" />
+    <Compile Include="Sql\Script\MergeWhenMatched.cs" />
+    <Compile Include="Sql\Script\MergeWhenNotMatched.cs" />
+    <Compile Include="Sql\Script\MergeWhenNotMatchedBySource.cs" />
+    <Compile Include="Sql\Script\MergeWhenNotMatchedByTarget.cs" />
     <Compile Include="Sql\Script\QueryOptions.cs" />
     <Compile Include="Sql\Script\ExpressionColumnFunctionCalls.cs" />
     <Compile Include="Sql\Script\ExpressionFunctionCalls.cs" />
@@ -126,6 +135,7 @@
     <Compile Include="Sql\Script\SourceRemoteTableRowset.cs" />
     <Compile Include="Sql\Script\SourceTableColumnNodesRowset.cs" />
     <Compile Include="Sql\Script\SourceTableVariableNodesRowset.cs" />
+    <Compile Include="Sql\Script\SourceValuesRowset.cs" />
     <Compile Include="Sql\Script\SourceVariableNodesRowset.cs" />
     <Compile Include="Sql\Script\SqlAssemblyName.cs" />
     <Compile Include="Sql\Script\BreakStatement.cs" />
@@ -447,6 +457,7 @@
     <Compile Include="Sql\Script\UpdateStatement.cs" />
     <Compile Include="Sql\Script\VariableName.cs" />
     <Compile Include="Sql\Script\ViewName.cs" />
+    <Compile Include="Sql\Script\SpecialColumnName.cs" />
     <Compile Include="Sql\Script\WaitforStatement.cs" />
     <Compile Include="Sql\Script\WhileStatement.cs" />
     <Compile Include="Sql\Script\XmlDirective.cs" />

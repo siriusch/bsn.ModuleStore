@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -27,33 +27,33 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
+
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ColumnName: SqlQuotedName {
-		[Rule("<ColumnWild> ::= ~'*'")]
-		public ColumnName(): this("*") {}
+	public sealed class MergeOperationUpdate: MergeOperation {
+		private readonly List<UpdateItem> updateItems;
 
-		[Rule("<ColumnName> ::= Id")]
-		[Rule("<ColumnName> ::= QuotedId")]
-		public ColumnName(Identifier identifier): this(identifier.Value) {}
+		[Rule("<MergeMatched> ::= ~UPDATE ~SET <UpdateItemList>")]
+		public MergeOperationUpdate(Sequence<UpdateItem> updateItems) {
+			Debug.Assert(updateItems.Count() > 0);
+			this.updateItems = updateItems.ToList();
+		}
 
-		internal ColumnName(string name): base(name) {}
-
-		public bool IsWildcard {
+		public IEnumerable<UpdateItem> UpdateItems {
 			get {
-				return StringComparer.Ordinal.Equals("*", Value);
+				return updateItems;
 			}
 		}
 
-		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
-			if (IsWildcard) {
-				writer.Write(Value);
-			} else {
-				base.WriteToInternal(writer, isPartOfQualifiedName);
-			}
+		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
+			writer.Write("UPDATE SET ");
+			writer.WriteScriptSequence(updateItems, WhitespacePadding.None, ", ");
 		}
 	}
 }

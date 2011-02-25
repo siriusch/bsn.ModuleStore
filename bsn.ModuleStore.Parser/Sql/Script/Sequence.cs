@@ -77,6 +77,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<XmlNamespaceList> ::= <XmlNamespace>", typeof(XmlNamespace))]
 		[Rule("<TableHintList> ::= <TableHint>", typeof(TableHint))]
 		[Rule("<IndexValueList> ::= IntegerLiteral", typeof(IntegerLiteral))]
+		[Rule("<MergeWhenMatchedList> ::= <MergeWhenMatched>", typeof(MergeWhenMatched))]
+		[Rule("<ValuesList> ::= ~'(' <ExpressionList> ~')'", typeof(Sequence<Expression>))]
 		public Sequence(T item): this(item, null) {}
 
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
@@ -113,6 +115,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<XmlNamespaceList> ::= <XmlNamespace> ~',' <XmlNamespaceList>", typeof(XmlNamespace))]
 		[Rule("<TableHintList> ::= <TableHint> ~',' <TableHintList>", typeof(TableHint))]
 		[Rule("<IndexValueList> ::= IntegerLiteral ~',' <IndexValueList>", typeof(IntegerLiteral))]
+		[Rule("<MergeWhenMatchedList> ::= <MergeWhenMatched> <MergeWhenMatchedList>", typeof(MergeWhenMatched))]
+		[Rule("<ValuesList> ::= ~'(' <ExpressionList> ~')' ~',' <ValuesList>", typeof(Sequence<Expression>))]
 		public Sequence(T item, Sequence<T> next) {
 			if (next != null) {
 				if (next.Item != null) {

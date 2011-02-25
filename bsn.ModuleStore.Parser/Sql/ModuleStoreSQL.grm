@@ -250,7 +250,9 @@ INSTEAD = INSTEAD
 LANGUAGE = LANGUAGE
 MANUAL = MANUAL
 MARK = MARK
+MATCHED = MATCHED
 MAXRECURSION = MAXRECURSION
+MERGE = MERGE
 NAME = NAME
 NO = NO
 ONLY = ONLY
@@ -266,6 +268,8 @@ REPEATABLE = REPEATABLE
 RETURNS = RETURNS
 SCHEMABINDING = SCHEMABINDING
 SERVER = SERVER
+SOURCE = SOURCE
+TARGET = TARGET
 TIES = TIES
 TRY = TRY
 TYPE = TYPE
@@ -280,6 +284,7 @@ XMLNAMESPACES = XMLNAMESPACES
 ! Special terminal tokens to resolve ambiguities
 FOR_UPDATE = FOR{Whitespace}+UPDATE
 WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
+_ACTION = '$ACTION'
 
 ! =============================================================================
 ! Common Terminals (Names, Literals, ...)
@@ -298,6 +303,7 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 
 <ColumnName> ::= Id
                | QuotedId
+               | _ACTION
 
 <ColumnNameQualified> ::= <ColumnName>
                         | <TableName> '.' <ColumnName>
@@ -480,6 +486,7 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                  | <InsertStatement>
                  | <UpdateStatement>
                  | <DeleteStatement>
+                 | <MergeStatement>
 
 <PrgStatement> ::= <AnyStatement>
                  | <BeginTransactionStatement>
@@ -1044,6 +1051,30 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
                  |
 
 ! =============================================================================
+! MERGE Statement
+! =============================================================================
+
+<MergeStatement> ::= <QueryOptions> MERGE <OptionalTop> <OptionalInto> <DestinationRowset> <RowsetAlias> USING <SourceRowset> ON <Predicate> <MergeWhenMatchedList> <OutputClause> <QueryHint>
+
+<MergeWhenMatchedList> ::= <MergeWhenMatched> <MergeWhenMatchedList>
+                         | <MergeWhenMatched>
+
+<MergeWhenMatched> ::= WHEN MATCHED AND <Predicate> THEN <MergeMatched>
+                     | WHEN MATCHED THEN <MergeMatched>
+                     | WHEN NOT MATCHED AND <Predicate> BY TARGET THEN <MergeNotMatched>
+                     | WHEN NOT MATCHED BY TARGET THEN <MergeNotMatched>
+                     | WHEN NOT MATCHED AND <Predicate> THEN <MergeNotMatched>
+                     | WHEN NOT MATCHED THEN <MergeNotMatched>
+                     | WHEN NOT MATCHED AND <Predicate> BY SOURCE THEN <MergeMatched>
+                     | WHEN NOT MATCHED BY SOURCE THEN <MergeMatched>
+
+<MergeMatched> ::= UPDATE SET <UpdateItemList>
+                 | DELETE
+
+<MergeNotMatched> ::= INSERT <ColumnNameGroup> VALUES '(' <ExpressionList> ')'
+                    | INSERT <ColumnNameGroup> DEFAULT VALUES
+
+! =============================================================================
 ! UPDATE Statement
 ! =============================================================================
 
@@ -1143,11 +1174,15 @@ WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 !                 | <SchemaName> '.' <TableName> '.' <ColumnName> '.' <FunctionCall> <RowsetAlias> ! also XML nodes() function
                  | <SchemaName> '.' <TableName> '.' <TableName> <RowsetAlias> !Table in a different DB
                  | <SchemaName> '.' <TableName> '.' <SchemaName> '.' <TableName> <RowsetAlias> !Table in a different DB on a different server
+                 | '(' VALUES <ValuesList> ')' <RowsetAlias>
                  | '(' <SelectQuery> ')' <RowsetAlias>
 
 <RowsetAlias> ::= <OptionalAs> <AliasName> '(' <ColumnNameList> ')'
                 | <OptionalAs> <AliasName>
                 |
+
+<ValuesList> ::= '(' <ExpressionList> ')' ',' <ValuesList>
+               | '(' <ExpressionList> ')'
 
 <TextTableFunction> ::= CONTAINSTABLE '(' <TableNameQualified> ',' <ColumnName> ',' <Expression> ',' LANGUAGE <Literal> <OptionalContainsTop> ')'
                       | CONTAINSTABLE '(' <TableNameQualified> ',' <ColumnName> ',' <Expression> <OptionalContainsTop> ')'

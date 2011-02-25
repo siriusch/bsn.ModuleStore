@@ -27,42 +27,52 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
+
+using System.Collections.Generic;
 
 using bsn.GoldParser.Semantic;
-using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateTypeFromStatement: CreateTypeStatement {
-		private readonly TypeConstraintToken constraint;
-		private readonly TypeName systemTypeName;
+	public sealed class MergeOperationInsert: MergeOperation {
+		private readonly List<ColumnName> columnNames;
+		private readonly List<Expression> expressions;
 
-		[Rule("<CreateTypeStatement> ::= ~CREATE ~TYPE <SimpleTypeNameQualified> ~FROM <TypeName> <TypeConstraint>")]
-		public CreateTypeFromStatement(Qualified<SchemaName, TypeName> typeName, TypeName systemTypeName, TypeConstraintToken constraint): base(typeName) {
-			if (!systemTypeName.IsBuiltinType) {
-				throw new ArgumentException("Derived types can only be created from system types", "systemTypeName");
-			}
-			this.systemTypeName = systemTypeName;
-			this.constraint = constraint;
+		[Rule("<MergeNotMatched> ::= ~INSERT <ColumnNameGroup> ~DEFAULT ~VALUES")]
+		public MergeOperationInsert(Optional<Sequence<ColumnName>> columnNames): this(columnNames, null) {}
+
+		[Rule("<MergeNotMatched> ::= ~INSERT <ColumnNameGroup> ~VALUES ~'(' <ExpressionList> ~')'")]
+		public MergeOperationInsert(Optional<Sequence<ColumnName>> columnNames, Sequence<Expression> expressions) {
+			this.columnNames = columnNames.ToList();
+			this.expressions = expressions.ToList();
 		}
 
-		public TypeConstraintToken Constraint {
+		public IEnumerable<ColumnName> ColumnNames {
 			get {
-				return constraint;
+				return columnNames;
 			}
 		}
 
-		public TypeName SystemTypeName {
+		public IEnumerable<Expression> Expressions {
 			get {
-				return systemTypeName;
+				return expressions;
 			}
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
-			writer.Write("FROM");
-			writer.WriteScript(systemTypeName, WhitespacePadding.SpaceBefore);
-			writer.WriteScript(constraint, WhitespacePadding.SpaceBefore);
+			WriteCommentsTo(writer);
+			writer.Write("INSERT ");
+			if (columnNames.Count > 0) {
+				writer.Write("(");
+				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, ", ");
+				writer.Write(") ");
+			}
+			if (expressions.Count > 0) {
+				writer.Write("VALUES (");
+				writer.WriteScriptSequence(expressions, WhitespacePadding.None, ", ");
+				writer.Write(")");
+			} else {
+				writer.Write("DEFAULT VALUES");
+			}
 		}
 	}
 }

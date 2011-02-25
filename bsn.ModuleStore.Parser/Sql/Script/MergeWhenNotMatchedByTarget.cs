@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -27,32 +27,21 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
-
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ColumnName: SqlQuotedName {
-		[Rule("<ColumnWild> ::= ~'*'")]
-		public ColumnName(): this("*") {}
+	public sealed class MergeWhenNotMatchedByTarget: MergeWhenNotMatched {
+		[Rule("<MergeWhenMatched> ::= ~WHEN ~NOT ~MATCHED ~THEN <MergeNotMatched>")]
+		[Rule("<MergeWhenMatched> ::= ~WHEN ~NOT ~MATCHED ~BY ~TARGET ~THEN <MergeNotMatched>")]
+		public MergeWhenNotMatchedByTarget(MergeOperation operation): this(null, operation) {}
 
-		[Rule("<ColumnName> ::= Id")]
-		[Rule("<ColumnName> ::= QuotedId")]
-		public ColumnName(Identifier identifier): this(identifier.Value) {}
+		[Rule("<MergeWhenMatched> ::= ~WHEN ~NOT ~MATCHED ~AND <Predicate> ~THEN <MergeNotMatched>")]
+		[Rule("<MergeWhenMatched> ::= ~WHEN ~NOT ~MATCHED ~AND <Predicate> ~BY ~TARGET ~THEN <MergeNotMatched>")]
+		public MergeWhenNotMatchedByTarget(Predicate predicate, MergeOperation operation): base(predicate, operation) {}
 
-		internal ColumnName(string name): base(name) {}
-
-		public bool IsWildcard {
+		public override string NotMatchedBy {
 			get {
-				return StringComparer.Ordinal.Equals("*", Value);
-			}
-		}
-
-		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
-			if (IsWildcard) {
-				writer.Write(Value);
-			} else {
-				base.WriteToInternal(writer, isPartOfQualifiedName);
+				return "TARGET";
 			}
 		}
 	}

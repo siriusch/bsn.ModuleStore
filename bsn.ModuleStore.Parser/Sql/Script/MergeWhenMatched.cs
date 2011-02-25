@@ -28,41 +28,50 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
-using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateTypeFromStatement: CreateTypeStatement {
-		private readonly TypeConstraintToken constraint;
-		private readonly TypeName systemTypeName;
+	public class MergeWhenMatched: CommentContainerToken {
+		private readonly MergeOperation operation;
+		private readonly Predicate predicate;
 
-		[Rule("<CreateTypeStatement> ::= ~CREATE ~TYPE <SimpleTypeNameQualified> ~FROM <TypeName> <TypeConstraint>")]
-		public CreateTypeFromStatement(Qualified<SchemaName, TypeName> typeName, TypeName systemTypeName, TypeConstraintToken constraint): base(typeName) {
-			if (!systemTypeName.IsBuiltinType) {
-				throw new ArgumentException("Derived types can only be created from system types", "systemTypeName");
-			}
-			this.systemTypeName = systemTypeName;
-			this.constraint = constraint;
+		[Rule("<MergeWhenMatched> ::= ~WHEN ~MATCHED ~THEN <MergeMatched>")]
+		public MergeWhenMatched(MergeOperation operation): this(null, operation) {}
+
+		[Rule("<MergeWhenMatched> ::= ~WHEN ~MATCHED ~AND <Predicate> ~THEN <MergeMatched>")]
+		public MergeWhenMatched(Predicate predicate, MergeOperation operation) {
+			Debug.Assert(operation != null);
+			this.predicate = predicate;
+			this.operation = operation;
 		}
 
-		public TypeConstraintToken Constraint {
+		public MergeOperation Operation {
 			get {
-				return constraint;
+				return operation;
 			}
 		}
 
-		public TypeName SystemTypeName {
+		public Predicate Predicate {
 			get {
-				return systemTypeName;
+				return predicate;
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
-			writer.Write("FROM");
-			writer.WriteScript(systemTypeName, WhitespacePadding.SpaceBefore);
-			writer.WriteScript(constraint, WhitespacePadding.SpaceBefore);
+		public override sealed void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
+			writer.IncreaseIndent();
+			writer.Write("WHEN ");
+			WriteMatchedTo(writer);
+			writer.WriteLine(" THEN");
+			writer.WriteScript(operation, WhitespacePadding.None);
+			writer.DecreaseIndent();
+		}
+
+		protected virtual void WriteMatchedTo(SqlWriter writer) {
+			writer.Write("MATCHED");
+			writer.WriteScript(predicate, WhitespacePadding.None, " AND ", "");
 		}
 	}
 }

@@ -112,6 +112,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("LIKE")]
 	[Terminal("LINENO")]
 	[Terminal("LOAD")]
+	[Terminal("MERGE")]
 	[Terminal("NATIONAL")]
 	[Terminal("NOCHECK")]
 	[Terminal("NULLIF")]

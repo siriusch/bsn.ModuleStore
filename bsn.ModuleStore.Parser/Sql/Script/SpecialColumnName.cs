@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -27,33 +27,15 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
-
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ColumnName: SqlQuotedName {
-		[Rule("<ColumnWild> ::= ~'*'")]
-		public ColumnName(): this("*") {}
-
-		[Rule("<ColumnName> ::= Id")]
-		[Rule("<ColumnName> ::= QuotedId")]
-		public ColumnName(Identifier identifier): this(identifier.Value) {}
-
-		internal ColumnName(string name): base(name) {}
-
-		public bool IsWildcard {
-			get {
-				return StringComparer.Ordinal.Equals("*", Value);
-			}
-		}
+	[Terminal("_ACTION")]
+	public sealed class SpecialColumnName: ColumnName {
+		public SpecialColumnName(string value): base(value) {}
 
 		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
-			if (IsWildcard) {
-				writer.Write(Value);
-			} else {
-				base.WriteToInternal(writer, isPartOfQualifiedName);
-			}
+			writer.Write(Value);
 		}
 	}
 }

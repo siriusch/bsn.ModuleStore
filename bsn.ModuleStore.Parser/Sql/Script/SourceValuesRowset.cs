@@ -27,42 +27,38 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
+
+using System.Collections.Generic;
+using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
-using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateTypeFromStatement: CreateTypeStatement {
-		private readonly TypeConstraintToken constraint;
-		private readonly TypeName systemTypeName;
+	public sealed class SourceValuesRowset: SourceRowset {
+		private readonly List<IEnumerable<Expression>> valuesList = new List<IEnumerable<Expression>>();
 
-		[Rule("<CreateTypeStatement> ::= ~CREATE ~TYPE <SimpleTypeNameQualified> ~FROM <TypeName> <TypeConstraint>")]
-		public CreateTypeFromStatement(Qualified<SchemaName, TypeName> typeName, TypeName systemTypeName, TypeConstraintToken constraint): base(typeName) {
-			if (!systemTypeName.IsBuiltinType) {
-				throw new ArgumentException("Derived types can only be created from system types", "systemTypeName");
+		[Rule("<SourceRowset> ::= ~'(' ~VALUES <ValuesList> ~')' <RowsetAlias>")]
+		public SourceValuesRowset(Sequence<Sequence<Expression>> valuesList, RowsetAlias rowsetAlias): base(rowsetAlias) {
+			foreach (Sequence<Expression> expressions in valuesList) {
+				this.valuesList.Add(expressions.ToList());
 			}
-			this.systemTypeName = systemTypeName;
-			this.constraint = constraint;
-		}
-
-		public TypeConstraintToken Constraint {
-			get {
-				return constraint;
-			}
-		}
-
-		public TypeName SystemTypeName {
-			get {
-				return systemTypeName;
-			}
+			Debug.Assert(this.valuesList.Count > 0);
 		}
 
 		public override void WriteTo(SqlWriter writer) {
+			writer.IncreaseIndent();
+			string separator = "(VALUES";
+			foreach (IEnumerable<Expression> expressions in valuesList) {
+				writer.WriteLine(separator);
+				separator = ",";
+				writer.Write("(");
+				writer.WriteScriptSequence(expressions, WhitespacePadding.None, ", ");
+				writer.Write(")");
+			}
+			writer.DecreaseIndent();
+			writer.WriteLine();
+			writer.Write(")");
 			base.WriteTo(writer);
-			writer.Write("FROM");
-			writer.WriteScript(systemTypeName, WhitespacePadding.SpaceBefore);
-			writer.WriteScript(constraint, WhitespacePadding.SpaceBefore);
 		}
 	}
 }
