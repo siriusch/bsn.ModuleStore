@@ -53,6 +53,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 			this.owner = owner;
 			assemblyInfo = ModuleAssemblyInfo.Get(assembly);
 			dirty = true;
+			assemblyInfo.Inventory.AssertEngineVersion(owner.ManagementConnectionProvider.EngineVersion.Major);
 		}
 
 		public ModuleAssemblyInfo AssemblyInfo {

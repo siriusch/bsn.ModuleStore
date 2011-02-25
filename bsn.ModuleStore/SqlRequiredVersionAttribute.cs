@@ -29,8 +29,19 @@
 //  
 using System;
 
-using bsn.ModuleStore;
+namespace bsn.ModuleStore {
+	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
+	public sealed class SqlRequiredVersionAttribute: SqlAssemblyAttribute {
+		private readonly int requiredEngineVersion;
 
-[assembly: SqlRequiredVersion(9)]
-[assembly: SqlSetupScript("Bootstrapper.tblModule.sql")]
-[assembly: SqlSetupScript("Bootstrapper.vwModule.sql")]
+		public SqlRequiredVersionAttribute(int requiredEngineVersion) {
+			this.requiredEngineVersion = requiredEngineVersion;
+		}
+
+		public int RequiredEngineVersion {
+			get {
+				return requiredEngineVersion;
+			}
+		}
+	}
+}

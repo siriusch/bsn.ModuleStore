@@ -42,8 +42,9 @@ namespace bsn.ModuleStore.Sql {
 	public class AssemblyInventory: InstallableInventory {
 		private readonly IAssemblyHandle assembly;
 		private readonly ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> attributes;
-		private readonly SortedList<int, Statement[]> updateStatements = new SortedList<int, Statement[]>();
 		private readonly HashSet<string> processedManifestStreamKeys = new HashSet<string>(StringComparer.Ordinal);
+		private readonly int requiredEngineVersion = 9;
+		private readonly SortedList<int, Statement[]> updateStatements = new SortedList<int, Statement[]>();
 		private readonly int updateVersion;
 
 		public AssemblyInventory(Assembly assembly): this(new AssemblyHandle(assembly)) {}
@@ -52,31 +53,38 @@ namespace bsn.ModuleStore.Sql {
 			this.assembly = assembly;
 			attributes = assembly.GetCustomAttributes<SqlAssemblyAttribute>().ToList().AsReadOnly();
 			foreach (KeyValuePair<SqlAssemblyAttribute, string> attribute in attributes) {
-				SqlSetupScriptAttributeBase setupScriptAttribute = attribute.Key as SqlSetupScriptAttributeBase;
-				if (setupScriptAttribute != null) {
-					string manifestStreamKey;
-					using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value, out manifestStreamKey)) {
-						if (processedManifestStreamKeys.Add(manifestStreamKey)) {
-							try {
-								ProcessSingleScript(reader, AddAdditionalSetupStatement);
-							} catch (ParseException ex) {
-								ex.FileName = setupScriptAttribute.ManifestResourceName;
-								throw;
-							}
-						}
+				SqlRequiredVersionAttribute requiredVersionAttribute = attribute.Key as SqlRequiredVersionAttribute;
+				if (requiredVersionAttribute != null) {
+					if (requiredVersionAttribute.RequiredEngineVersion > requiredEngineVersion) {
+						requiredEngineVersion = requiredVersionAttribute.RequiredEngineVersion;
 					}
 				} else {
-					SqlUpdateScriptAttribute updateScriptAttribute = attribute.Key as SqlUpdateScriptAttribute;
-					if (updateScriptAttribute != null) {
-						if (updateScriptAttribute.Version < 1) {
-							throw new InvalidOperationException(string.Format("Update script versions must be at least 1, but {0} was specified (script: {1})", updateScriptAttribute.Version, updateScriptAttribute.ManifestResourceName));
-						}
-						using (TextReader reader = OpenText(updateScriptAttribute, attribute.Value)) {
-							updateStatements.Add(updateScriptAttribute.Version, ScriptParser.Parse(reader).ToArray());
-							updateVersion = Math.Max(updateVersion, updateScriptAttribute.Version);
+					SqlSetupScriptAttributeBase setupScriptAttribute = attribute.Key as SqlSetupScriptAttributeBase;
+					if (setupScriptAttribute != null) {
+						string manifestStreamKey;
+						using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value, out manifestStreamKey)) {
+							if (processedManifestStreamKeys.Add(manifestStreamKey)) {
+								try {
+									ProcessSingleScript(reader, AddAdditionalSetupStatement);
+								} catch (ParseException ex) {
+									ex.FileName = setupScriptAttribute.ManifestResourceName;
+									throw;
+								}
+							}
 						}
 					} else {
-						Debug.WriteLine(attribute.Key.GetType(), "Unrecognized assembly SQL attribute");
+						SqlUpdateScriptAttribute updateScriptAttribute = attribute.Key as SqlUpdateScriptAttribute;
+						if (updateScriptAttribute != null) {
+							if (updateScriptAttribute.Version < 1) {
+								throw new InvalidOperationException(string.Format("Update script versions must be at least 1, but {0} was specified (script: {1})", updateScriptAttribute.Version, updateScriptAttribute.ManifestResourceName));
+							}
+							using (TextReader reader = OpenText(updateScriptAttribute, attribute.Value)) {
+								updateStatements.Add(updateScriptAttribute.Version, ScriptParser.Parse(reader).ToArray());
+								updateVersion = Math.Max(updateVersion, updateScriptAttribute.Version);
+							}
+						} else {
+							Debug.WriteLine(attribute.Key.GetType(), "Unrecognized assembly SQL attribute");
+						}
 					}
 				}
 			}
@@ -101,11 +109,18 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
+		public int RequiredEngineVersion {
+			get {
+				return requiredEngineVersion;
+			}
+		}
+
 		public SortedList<int, Statement[]> UpdateStatements {
 			get {
 				return updateStatements;
 			}
 		}
+
 		public int UpdateVersion {
 			get {
 				return updateVersion;
@@ -186,6 +201,12 @@ namespace bsn.ModuleStore.Sql {
 			} finally {
 				UnsetQualification();
 				inventory.UnsetQualification();
+			}
+		}
+
+		internal void AssertEngineVersion(int engineVersion) {
+			if (engineVersion < RequiredEngineVersion) {
+				throw new InvalidOperationException(string.Format("The assembly {0} requires a database engine version {1}, but the database engine version is {2}", assembly.AssemblyName.FullName, requiredEngineVersion, engineVersion));
 			}
 		}
 

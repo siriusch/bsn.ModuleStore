@@ -139,6 +139,7 @@
     <Compile Include="Mapper\XmlReaderCloseConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bootstrapper\SetupScripts.cs" />
+    <Compile Include="SqlRequiredVersionAttribute.cs" />
     <Compile Include="SqlSetupScriptAttribute.cs" />
     <Compile Include="SqlSetupScriptAttributeBase.cs" />
     <Compile Include="SqlUpdateScriptAttribute.cs" />
