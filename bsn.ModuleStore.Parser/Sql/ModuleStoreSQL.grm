@@ -1035,8 +1035,14 @@ _ACTION = '$ACTION'
                  | OUTPUT <ColumnItemList> INTO <DestinationRowset> <ColumnNameGroup>
                  |
 
-<QueryHint> ::= OPTION '(' MAXRECURSION IntegerLiteral ')'
+<QueryHint> ::= OPTION '(' <QueryHintOptionList> ')'
               |
+
+<QueryHintOption> ::= MAXRECURSION IntegerLiteral
+                    | RECOMPILE
+
+<QueryHintOptionList> ::= <QueryHintOption> ',' <QueryHintOptionList>
+                        | <QueryHintOption>
 
 ! =============================================================================
 ! INSERT Statement
