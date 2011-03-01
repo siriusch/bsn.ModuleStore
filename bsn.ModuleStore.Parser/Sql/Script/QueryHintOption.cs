@@ -27,24 +27,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
-using System.Globalization;
-
-using bsn.GoldParser.Semantic;
-
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class QueryMaxrecursionHint: QueryHintOption {
-		private readonly long maxRecursion;
-
-		[Rule("<QueryHintOption> ::= ~MAXRECURSION IntegerLiteral")]
-		public QueryMaxrecursionHint(IntegerLiteral maxRecursion) {
-			this.maxRecursion = maxRecursion.Value;
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
-			writer.Write("MAXRECURSION ");
-			writer.Write(maxRecursion.ToString(NumberFormatInfo.InvariantInfo));
-		}
-	}
+	public abstract class QueryHintOption: CommentContainerToken {}
 }

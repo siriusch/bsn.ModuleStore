@@ -390,6 +390,11 @@ SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
 		}
 
 		[Test]
+		public void SelectWithHints() {
+			ParseWithRoundtrip(@"SELECT @a=1 OPTION (MAXRECURSION 0, RECOMPILE);", 1);
+		}
+
+		[Test]
 		public void CreateTypeFrom() {
 			ParseWithRoundtrip(@"CREATE TYPE dbo.SSN
 FROM varchar(11) NOT NULL ;", 1);

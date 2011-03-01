@@ -222,6 +222,12 @@ namespace bsn.ModuleStore.Sql {
 					value.WriteTo(this);
 					Write(suffix);
 					PaddingAfter(padding);
+				} else {
+					CommentContainerToken comments = value as CommentContainerToken;
+					if (comments != null) {
+						PaddingBefore(padding);
+						comments.WriteCommentsTo(this);
+					}
 				}
 			}
 		}

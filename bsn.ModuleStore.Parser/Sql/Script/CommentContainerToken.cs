@@ -33,13 +33,14 @@ using System.Collections.Generic;
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CommentContainerToken: SqlScriptableToken {
 		private IList<string> comments = new string[0];
+
 		public ICollection<string> Comments {
 			get {
 				return comments;
 			}
 		}
 
-		protected void WriteCommentsTo(SqlWriter writer) {
+		protected internal void WriteCommentsTo(SqlWriter writer) {
 			for (int i = 0; i < comments.Count; i++) {
 				writer.WriteComment(comments[i]);
 			}

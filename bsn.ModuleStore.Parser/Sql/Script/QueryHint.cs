@@ -28,19 +28,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Collections.Generic;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class QueryHint: SqlScriptableToken, IOptional {
+	public sealed class QueryHint: CommentContainerToken, IOptional {
+		private readonly List<QueryHintOption> options;
+
 		[Rule("<QueryHint> ::=")]
-		public QueryHint() {}
+		public QueryHint(): this(null) {}
 
-		public override void WriteTo(SqlWriter writer) {}
+		[Rule("<QueryHint> ::= ~OPTION ~'(' <QueryHintOptionList> ~')'")]
+		public QueryHint(Sequence<QueryHintOption> options) {
+			this.options = options.ToList();
+		}
 
-		public virtual bool HasValue {
+		public IEnumerable<QueryHintOption> Options {
 			get {
-				return false;
+				return options;
+			}
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
+			writer.Write("OPTION (");
+			writer.WriteScriptSequence(options, WhitespacePadding.None, ", ");
+			writer.Write(")");
+		}
+
+		public bool HasValue {
+			get {
+				return options.Count > 0;
 			}
 		}
 	}

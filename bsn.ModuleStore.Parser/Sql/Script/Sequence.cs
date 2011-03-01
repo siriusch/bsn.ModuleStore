@@ -79,6 +79,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexValueList> ::= IntegerLiteral", typeof(IntegerLiteral))]
 		[Rule("<MergeWhenMatchedList> ::= <MergeWhenMatched>", typeof(MergeWhenMatched))]
 		[Rule("<ValuesList> ::= ~'(' <ExpressionList> ~')'", typeof(Sequence<Expression>))]
+		[Rule("<QueryHintOptionList> ::= <QueryHintOption>", typeof(QueryHintOption))]
 		public Sequence(T item): this(item, null) {}
 
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
@@ -117,6 +118,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexValueList> ::= IntegerLiteral ~',' <IndexValueList>", typeof(IntegerLiteral))]
 		[Rule("<MergeWhenMatchedList> ::= <MergeWhenMatched> <MergeWhenMatchedList>", typeof(MergeWhenMatched))]
 		[Rule("<ValuesList> ::= ~'(' <ExpressionList> ~')' ~',' <ValuesList>", typeof(Sequence<Expression>))]
+		[Rule("<QueryHintOptionList> ::= <QueryHintOption> ~',' <QueryHintOptionList>", typeof(QueryHintOption))]
 		public Sequence(T item, Sequence<T> next) {
 			if (next != null) {
 				if (next.Item != null) {
