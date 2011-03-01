@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -29,16 +29,20 @@
 //  
 using System;
 
-using bsn.ModuleStore.Mapper.Serialization;
+namespace bsn.ModuleStore.Mapper.Serialization {
+	internal class DateTimeOffsetMemberConverter: MemberConverter {
+		private readonly DateTimeKind dateTimeKind;
 
-namespace bsn.ModuleStore.Mapper {
-	/// <summary>
-	/// Classes used in database deserialization with <see cref="SqlDeserializer{T}"/> or automatically by <see cref="SqlCallProxy"/> calls can implement this interface to receive a notification after deserialization.
-	/// </summary>
-	public interface ISqlDeserializationHook {
-		/// <summary>
-		/// Called after the instance has been deserialized.
-		/// </summary>
-		void AfterDeserialization();
+		public DateTimeOffsetMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
+			this.dateTimeKind = dateTimeKind;
+		}
+
+		public override object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
+			object result = base.ProcessFromDb(context, column);
+			if ((result != null) && (!(result is DateTimeOffset))) {
+				result = new DateTimeOffset(DateTime.SpecifyKind(Convert.ToDateTime(result), dateTimeKind));
+			}
+			return result;
+		}
 	}
 }

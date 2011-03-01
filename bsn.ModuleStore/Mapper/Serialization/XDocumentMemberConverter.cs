@@ -28,21 +28,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Xml;
+using System.Xml.Linq;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
-	internal class DateTimeOffsetMemberConverter: MemberConverter {
-		private readonly DateTimeKind dateTimeKind;
+namespace bsn.ModuleStore.Mapper.Serialization {
+	internal class XDocumentMemberConverter: XmlReaderMemberConverterBase {
+		public XDocumentMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
-		public DateTimeOffsetMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
-			this.dateTimeKind = dateTimeKind;
-		}
-
-		public override object Process(SqlDeserializer.DeserializerContext context, int column) {
-			object result = base.Process(context, column);
-			if ((result != null) && (!(result is DateTimeOffset))) {
-				result = new DateTimeOffset(DateTime.SpecifyKind(Convert.ToDateTime(result), dateTimeKind));
-			}
-			return result;
+		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
+			return XDocument.Load(reader);
 		}
 	}
 }

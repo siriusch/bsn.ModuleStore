@@ -29,14 +29,16 @@
 //  
 using System;
 using System.Xml;
-using System.Xml.Linq;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
-	internal class XElementMemberConverter: XmlReaderMemberConverterBase {
-		public XElementMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
+namespace bsn.ModuleStore.Mapper.Serialization {
+	internal class XmlElementMemberConverter: XmlReaderMemberConverterBase {
+		public XmlElementMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
-			return XElement.Load(reader);
+			context.XmlDocument.Load(reader);
+			XmlElement result = context.XmlDocument.DocumentElement;
+			context.XmlDocument.RemoveAll();
+			return result;
 		}
 	}
 }

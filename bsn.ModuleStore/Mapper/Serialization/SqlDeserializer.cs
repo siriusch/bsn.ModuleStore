@@ -34,10 +34,8 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
+namespace bsn.ModuleStore.Mapper.Serialization {
 	/// <summary>
 	/// The DbDeserializer generic class allows to create an efficient database Deserializer for classes and structs which transforms database rows into object instances.
 	/// <br/><br/>
@@ -59,7 +57,7 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 		/// <remarks>Disposing the DbDeserializer will also dispose the reader. Also, you must not continue to use the Deserializer afterwards if you call <see cref="SqlDataReader.NextResult"/>.</remarks>
 		/// <param name="reader">The SqlDataReader to read data from. The DbDeserializer will take ownership of the reader.</param>
 		/// <param name="callConstructor">If true, the normal default constructor is called instead of creating empty instances. Empty instances, however, are much faster.</param>
-		public SqlDeserializer(SqlDataReader reader, bool callConstructor): base(reader, typeof(T)) {
+		public SqlDeserializer(SqlDataReader reader, bool callConstructor): base(reader, typeof(T), true) {
 			this.callConstructor = callConstructor;
 		}
 
@@ -219,25 +217,13 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			}
 		}
 
-		/// <summary>
-		/// Returns true if the type given is a known XML type.
-		/// </summary>
-		/// <param name="type">Te type to be checked.</param>
-		/// <returns>True if the type is recognized as XML type.</returns>
-		public static bool IsXmlType(Type type) {
-			if (type == null) {
-				throw new ArgumentNullException("type");
-			}
-			return typeof(XContainer).IsAssignableFrom(type) || typeof(XmlReader).IsAssignableFrom(type) || typeof(XPathNavigator).IsAssignableFrom(type) || typeof(IXPathNavigable).IsAssignableFrom(type);
-		}
-
 		private readonly SortedList<int, MemberConverter> columnConverters;
 		private readonly Dictionary<NestedMemberConverter, SqlDeserializer> nestedDeserializers;
 		private readonly SqlDataReader reader;
-		private readonly SqlDeserializerTypeInfo typeInfo;
-		private bool disposeReader = true;
+		private readonly SqlSerializationTypeInfo typeInfo;
+		private bool disposeReader;
 
-		internal SqlDeserializer(SqlDataReader reader, Type type) {
+		internal SqlDeserializer(SqlDataReader reader, Type type, bool disposeReader) {
 			if (reader == null) {
 				throw new ArgumentNullException("reader");
 			}
@@ -245,7 +231,8 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 				throw new NotSupportedException("Deserialization only supports normal classes and structs.");
 			}
 			this.reader = reader;
-			typeInfo = SqlDeserializerTypeInfo.Get(type);
+			this.disposeReader = disposeReader;
+			typeInfo = SqlSerializationTypeInfo.Get(type);
 			foreach (MemberConverter converter in typeInfo.Mapping.Converters) {
 				NestedMemberConverter nestedConverter = converter as NestedMemberConverter;
 				if (nestedConverter != null) {
@@ -253,7 +240,9 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 						nestedDeserializers = new Dictionary<NestedMemberConverter, SqlDeserializer>();
 					}
 #warning Cyclic nested members would cause a stack overflow here
-					nestedDeserializers.Add(nestedConverter, new SqlDeserializer(reader, converter.Type));
+					SqlDeserializer nestedDeserializer = new SqlDeserializer(reader, nestedConverter.Type, false);
+					NestedListMemberConverter nestedListConverter = nestedConverter as NestedListMemberConverter;
+					nestedDeserializers.Add(nestedListConverter ?? nestedConverter, nestedDeserializer);
 				} else {
 					if (columnConverters == null) {
 						columnConverters = new SortedList<int, MemberConverter>(typeInfo.Mapping.Converters.Count);
@@ -263,10 +252,6 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets a value indicating whether to dispose the reader when the deserializer is disposed.
-		/// </summary>
-		/// <value><c>true</c> if the reader shall be disposed; otherwise, <c>false</c>.</value>
 		public bool DisposeReader {
 			get {
 				return disposeReader;
@@ -290,19 +275,19 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 		/// Gets the type information used for deserialization.
 		/// </summary>
 		/// <value>The type info.</value>
-		public SqlDeserializerTypeInfo TypeInfo {
+		public SqlSerializationTypeInfo TypeInfo {
 			get {
 				return typeInfo;
 			}
 		}
 
-		protected object CreateInstance(DeserializerContext context) {
+		protected object CreateInstance(DeserializerContext context, out InstanceOrigin instanceOrigin) {
 			Debug.Assert(context != null);
 			object identity = null;
 			object[] buffer = context.GetBuffer(this);
 			if (columnConverters != null) {
 				foreach (KeyValuePair<int, MemberConverter> converter in columnConverters) {
-					object value = converter.Value.Process(context, converter.Key);
+					object value = converter.Value.ProcessFromDb(context, converter.Key);
 					if (converter.Value.IsIdentity) {
 						identity = value;
 					}
@@ -311,16 +296,38 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			}
 			if (nestedDeserializers != null) {
 				foreach (KeyValuePair<NestedMemberConverter, SqlDeserializer> nested in nestedDeserializers) {
-					buffer[nested.Key.MemberIndex] = nested.Value.CreateInstance(context);
+					InstanceOrigin nestedOrigin;
+					buffer[nested.Key.MemberIndex] = nested.Value.CreateInstance(context, out nestedOrigin);
+					if (nested.Key is NestedListMemberConverter) {
+						IList list = nested.Value.TypeInfo.CreateList();
+						list.Add(buffer[nested.Key.MemberIndex]);
+						buffer[nested.Key.MemberIndex] = list;
+					}
 				}
 			}
-			InstanceOrigin instanceOrigin;
 			object result = context.GetInstance(typeInfo.InstanceType, identity, out instanceOrigin);
-			if ((result != null) && (instanceOrigin != InstanceOrigin.ResultSet)) {
-				TypeInfo.Mapping.PopulateInstanceMembers(result, buffer);
-				context.NotifyInstancePopulated(result);
-				if (typeInfo.RequiresNotification) {
-					((ISqlDeserializationHook)result).AfterDeserialization();
+			if ((result != null)) {
+				if (instanceOrigin != InstanceOrigin.ResultSet) {
+					TypeInfo.Mapping.PopulateInstanceMembers(result, buffer);
+					context.NotifyInstancePopulated(result);
+					if (typeInfo.RequiresNotification) {
+						((ISqlDeserializationHook)result).AfterDeserialization();
+					}
+				} else if (instanceOrigin == InstanceOrigin.ResultSet) {
+					// add the instances to the nested lists
+					if (nestedDeserializers != null) {
+						foreach (KeyValuePair<NestedMemberConverter, SqlDeserializer> nested in nestedDeserializers) {
+							if (nested.Key is NestedListMemberConverter) {
+								IList list = buffer[nested.Key.MemberIndex] as IList;
+								IList resultList = typeInfo.Mapping.GetMember(result, nested.Key.MemberIndex) as IList;
+								if ((list != null) && (resultList != null)) {
+									foreach (object entry in list) {
+										resultList.Add(entry);
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 			return result;
@@ -333,7 +340,11 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 					if (!reader.Read()) {
 						break;
 					}
-					yield return (T)CreateInstance(context);
+					InstanceOrigin instanceOrigin;
+					T instance = (T)CreateInstance(context, out instanceOrigin);
+					if (instanceOrigin != InstanceOrigin.ResultSet) {
+						yield return instance;
+					}
 					maxRows--;
 				}
 			}
@@ -354,7 +365,8 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 				if (!reader.Read()) {
 					throw new InvalidOperationException("No more rows");
 				}
-				return CreateInstance(deserializerContext);
+				InstanceOrigin instanceOrigin;
+				return CreateInstance(deserializerContext, out instanceOrigin);
 			}
 		}
 

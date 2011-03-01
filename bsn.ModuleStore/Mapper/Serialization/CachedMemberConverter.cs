@@ -30,12 +30,12 @@
 using System;
 using System.Reflection;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
+namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class CachedMemberConverter: MemberConverter {
 		private readonly MemberConverter identityMember;
 
 		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
-			foreach (FieldInfo field in SqlDeserializerTypeMapping.GetAllFields(type)) {
+			foreach (FieldInfo field in SqlSerializationTypeMapping.GetAllFields(type)) {
 				SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetColumnAttribute(field, false);
 				if ((columnAttribute != null) && columnAttribute.Identity) {
 					identityMember = Get(field.FieldType, false, columnName, memberIndex, dateTimeKind);
@@ -47,8 +47,8 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			}
 		}
 
-		public override object Process(SqlDeserializer.DeserializerContext context, int column) {
-			object identity = identityMember.Process(context, column);
+		public override object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
+			object identity = identityMember.ProcessFromDb(context, column);
 			if (identity != null) {
 				InstanceOrigin instanceOrigin;
 				object result = context.GetInstance(Type, identity, out instanceOrigin);

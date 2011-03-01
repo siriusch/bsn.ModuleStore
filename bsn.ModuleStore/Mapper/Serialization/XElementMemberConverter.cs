@@ -29,14 +29,14 @@
 //  
 using System;
 using System.Xml;
-using System.Xml.XPath;
+using System.Xml.Linq;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
-	internal class XPathDocumentMemberConverter: XmlReaderMemberConverterBase {
-		public XPathDocumentMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
+namespace bsn.ModuleStore.Mapper.Serialization {
+	internal class XElementMemberConverter: XmlReaderMemberConverterBase {
+		public XElementMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
-			return new XPathDocument(reader);
+			return XElement.Load(reader);
 		}
 	}
 }

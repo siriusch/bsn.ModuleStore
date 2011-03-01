@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -38,6 +38,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
+using bsn.ModuleStore.Mapper.Serialization;
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
@@ -65,12 +66,22 @@ namespace bsn.ModuleStore.Mapper {
 			return ParameterDirection.Input;
 		}
 
-		private readonly int outArgIndex;
 		private readonly ParameterInfo parameterInfo;
+		private readonly Type structuredReaderType;
 
 		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script): base(script, GetParameterDirection(param), GetParameterNullable(param)) {
 			parameterInfo = param;
+			if (SqlType == SqlDbType.Structured) {
+				Type structuredType;
+				if (!SqlSerializationTypeInfo.TryGetIEnumerableElementType(param.ParameterType, out structuredType)) {
+					throw new ArgumentException("The given parameter must implement IEnumerable<> in order to be used as SQL structured parameter");
+				}
+				structuredReaderType = typeof(SqlTableValuedParameterReader<>).MakeGenericType(structuredType);
+			}
 #warning Maybe implement more type compatibility checks for arguments here
+			//			if ((sqlType == SqlDbType.Udt) && string.IsNullOrEmpty(arg.UserDefinedTypeName)) {
+			//				userDefinedTypeName = SqlSerializationTypeMapping.GetClrUserDefinedTypeName(parameter.ParameterType, arg);
+			//			}
 		}
 
 		public string ParameterName {
@@ -133,6 +144,14 @@ namespace bsn.ModuleStore.Mapper {
 					if (identifiableGuid != null) {
 						value = identifiableGuid.Id;
 					}
+					break;
+					//				case SqlDbType.Udt:
+					//					parameter.UdtTypeName = userDefinedTypeName;
+					//					break;
+				case SqlDbType.Structured:
+					IDataReader dataReader = (IDataReader)Activator.CreateInstance(structuredReaderType, value);
+					disposeList.Add(dataReader);
+					value = dataReader;
 					break;
 				}
 			}

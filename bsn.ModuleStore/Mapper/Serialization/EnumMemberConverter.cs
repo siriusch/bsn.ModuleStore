@@ -30,7 +30,7 @@
 using System;
 using System.Diagnostics;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
+namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class EnumMemberConverter: MemberConverter {
 		private readonly Type underlyingType;
 
@@ -39,8 +39,8 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			Debug.Assert(underlyingType != null);
 		}
 
-		public override object Process(SqlDeserializer.DeserializerContext context, int column) {
-			object result = base.Process(context, column);
+		public override object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
+			object result = base.ProcessFromDb(context, column);
 			if (result != null) {
 				switch (Type.GetTypeCode(result.GetType())) {
 				case TypeCode.String:

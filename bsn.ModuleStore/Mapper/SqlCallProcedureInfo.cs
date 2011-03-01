@@ -38,30 +38,12 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Xml;
 
-using bsn.ModuleStore.Mapper.Deserialization;
+using bsn.ModuleStore.Mapper.Serialization;
 using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
 	internal class SqlCallProcedureInfo {
-		private static readonly Dictionary<Type, SqlDbType> dbTypeMapping = new Dictionary<Type, SqlDbType> {
-		                                                                                                    		{typeof(long), SqlDbType.BigInt},
-		                                                                                                    		{typeof(byte[]), SqlDbType.VarBinary},
-		                                                                                                    		{typeof(bool), SqlDbType.Bit},
-		                                                                                                    		{typeof(char), SqlDbType.NChar},
-		                                                                                                    		{typeof(char[]), SqlDbType.NVarChar},
-		                                                                                                    		{typeof(string), SqlDbType.NVarChar},
-		                                                                                                    		{typeof(DateTime), SqlDbType.DateTime},
-		                                                                                                    		{typeof(DateTimeOffset), SqlDbType.DateTimeOffset}, // not supported in SQL 2005!
-		                                                                                                    		{typeof(decimal), SqlDbType.Decimal},
-		                                                                                                    		{typeof(float), SqlDbType.Real},
-		                                                                                                    		{typeof(double), SqlDbType.Float},
-		                                                                                                    		{typeof(int), SqlDbType.Int},
-		                                                                                                    		{typeof(short), SqlDbType.SmallInt},
-		                                                                                                    		{typeof(sbyte), SqlDbType.TinyInt},
-		                                                                                                    		{typeof(Guid), SqlDbType.UniqueIdentifier}
-		                                                                                                    };
-
 		private static readonly Dictionary<string, CreateProcedureStatement> statements = new Dictionary<string, CreateProcedureStatement>(StringComparer.Ordinal);
 
 		public static CreateProcedureStatement GetCreateScript(Type type, string manifestResourceName) {
@@ -98,32 +80,10 @@ namespace bsn.ModuleStore.Mapper {
 			return result;
 		}
 
-		internal static bool IsNativeType(Type type) {
-			return dbTypeMapping.ContainsKey(type);
-		}
-
-		public static SqlDbType GetTypeMapping(Type type) {
-			if (type != null) {
-				if (type.IsByRef && type.HasElementType) {
-					type = type.GetElementType();
-					Debug.Assert(type != null);
-				}
-				type = Nullable.GetUnderlyingType(type) ?? type;
-				SqlDbType result;
-				if (dbTypeMapping.TryGetValue(type, out result)) {
-					return result;
-				}
-				if (SqlDeserializer.IsXmlType(type)) {
-					return SqlDbType.Xml;
-				}
-			}
-			return SqlDbType.Udt;
-		}
-
 		private readonly int outArgCount;
 		private readonly SqlCallParameterBase[] parameters;
 		private readonly SqlProcedureAttribute proc;
-		private readonly SqlDeserializerTypeInfo returnTypeInfo;
+		private readonly SqlSerializationTypeInfo returnTypeInfo;
 		private readonly CreateProcedureStatement script;
 		private readonly bool useReturnValue;
 		private readonly ParameterInfo xmlNameTableParameter;
@@ -189,9 +149,9 @@ namespace bsn.ModuleStore.Mapper {
 			if (parameters.Any(p => p == null)) {
 				throw new InvalidOperationException(String.Format("The method {0}.{1} has less parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
 			}
-			returnTypeInfo = SqlDeserializerTypeInfo.Get(method.ReturnType);
+			returnTypeInfo = SqlSerializationTypeInfo.Get(method.ReturnType);
 			if ((proc.UseReturnValue != SqlReturnValue.Auto) || (method.ReturnType != typeof(void))) {
-				useReturnValue = (proc.UseReturnValue == SqlReturnValue.ReturnValue) || ((proc.UseReturnValue == SqlReturnValue.Auto) && (GetTypeMapping(method.ReturnType) == SqlDbType.Int));
+				useReturnValue = (proc.UseReturnValue == SqlReturnValue.ReturnValue) || ((proc.UseReturnValue == SqlReturnValue.Auto) && (SqlSerializationTypeMapping.GetTypeMapping(method.ReturnType) == SqlDbType.Int));
 			}
 		}
 
@@ -201,7 +161,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public SqlCommand GetCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out SqlParameter[] outArgs, out SqlDeserializerTypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
+		public SqlCommand GetCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out SqlParameter[] outArgs, out SqlSerializationTypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
 		                             IList<IDisposable> disposeList) {
 			if (String.IsNullOrEmpty(schemaName)) {
 				throw new ArgumentNullException("schemaName");

@@ -70,11 +70,14 @@ namespace bsn.ModuleStore.Mapper {
 				if (!parameter.Output) {
 					throw new InvalidOperationException("An out parameter requires an OUTPUT argument");
 				}
+				if (sqlType == SqlDbType.Structured) {
+					throw new NotSupportedException("Table valued parameters only support readonly inputs!");
+				}
 			}
 			this.direction = direction;
 			if (parameter.ParameterTypeName.IsQualified || (!knownDbTypes.TryGetValue(parameter.ParameterTypeName.Name.Value, out sqlType))) {
-				sqlType = SqlDbType.Udt;
-				Debug.Fail("UDT?");
+				sqlType = SqlDbType.Variant;
+				Debug.Fail("Unknown SQL type?");
 			} else {
 				TypeNameWithPrecision typeNameEx = parameter.ParameterTypeName.Name as TypeNameWithPrecision;
 				if (typeNameEx != null) {

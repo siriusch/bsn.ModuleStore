@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
-using bsn.ModuleStore.Mapper.Deserialization;
+using bsn.ModuleStore.Mapper.Serialization;
 
 namespace bsn.ModuleStore.Mapper {
 	public abstract class ResultSet {

@@ -28,17 +28,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Xml;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
-	internal class ConvertibleMemberConverter: MemberConverter {
-		public ConvertibleMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
+namespace bsn.ModuleStore.Mapper.Serialization {
+	internal abstract class XmlReaderMemberConverterBase: XmlReaderMemberConverter {
+		protected XmlReaderMemberConverterBase(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
-		public override object Process(SqlDeserializer.DeserializerContext context, int column) {
-			object result = base.Process(context, column);
-			if ((result != null) && (!Type.IsAssignableFrom(result.GetType()))) {
-				result = Convert.ChangeType(result, Type);
+		protected abstract object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader);
+
+		protected override sealed object ProcessXmlReader(SqlDeserializer.DeserializerContext context, XmlReader xmlReader) {
+			using (xmlReader) {
+				return GetXmlObject(context, xmlReader);
 			}
-			return result;
 		}
 	}
 }

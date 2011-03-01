@@ -28,17 +28,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Xml;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
-	internal class XmlElementMemberConverter: XmlReaderMemberConverterBase {
-		public XmlElementMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
+namespace bsn.ModuleStore.Mapper.Serialization {
+	internal class NestedListMemberConverter: NestedMemberConverter {
+		public NestedListMemberConverter(Type type, int memberIndex): base(type, memberIndex) {}
 
-		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
-			context.XmlDocument.Load(reader);
-			XmlElement result = context.XmlDocument.DocumentElement;
-			context.XmlDocument.RemoveAll();
-			return result;
+		public override object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
+			throw new NotSupportedException("Nested members need to be deserialized directly via SqlDeserializer");
 		}
 	}
 }

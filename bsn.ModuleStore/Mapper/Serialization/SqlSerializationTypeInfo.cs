@@ -32,32 +32,68 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
-	public class SqlDeserializerTypeInfo {
-		private static readonly Dictionary<Type, SqlDeserializerTypeInfo> infos = new Dictionary<Type, SqlDeserializerTypeInfo>();
+namespace bsn.ModuleStore.Mapper.Serialization {
+	public class SqlSerializationTypeInfo {
+		private static readonly Dictionary<Type, SqlSerializationTypeInfo> infos = new Dictionary<Type, SqlSerializationTypeInfo>();
 
-		public static SqlDeserializerTypeInfo Get(Type type) {
-			SqlDeserializerTypeInfo result;
+		public static SqlSerializationTypeInfo Get(Type type) {
+			SqlSerializationTypeInfo result;
 			lock (infos) {
 				if (!infos.TryGetValue(type, out result)) {
-					result = new SqlDeserializerTypeInfo(type);
+					result = new SqlSerializationTypeInfo(type);
 					infos.Add(type, result);
 				}
 			}
 			return result;
 		}
 
+		private static Type GetElementTypeOfIEnumerable(Type type) {
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) {
+				return type.GetGenericArguments()[0];
+			}
+			return null;
+		}
+
+		public static bool TryGetIEnumerableElementType(Type type, out Type elementType) {
+			elementType = GetElementTypeOfIEnumerable(type);
+			if (elementType != null) {
+				return true;
+			}
+			foreach (Type interfaceType in type.GetInterfaces()) {
+				elementType = GetElementTypeOfIEnumerable(interfaceType);
+				if (elementType != null) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Returns true if the type given is a known XML type.
+		/// </summary>
+		/// <param name="type">Te type to be checked.</param>
+		/// <returns>True if the type is recognized as XML type.</returns>
+		public static bool IsXmlType(Type type) {
+			if (type == null) {
+				throw new ArgumentNullException("type");
+			}
+			return typeof(XContainer).IsAssignableFrom(type) || typeof(XmlReader).IsAssignableFrom(type) || typeof(XPathNavigator).IsAssignableFrom(type) || typeof(IXPathNavigable).IsAssignableFrom(type);
+		}
+
 		private readonly Type instanceType;
 		private readonly bool isXmlType;
 		private readonly MethodInfo listToArray;
 		private readonly Type listType;
-		private readonly SqlDeserializerTypeMapping mapping;
+		private readonly SqlSerializationTypeMapping mapping;
 		private readonly bool requiresNotification;
 		private readonly MemberConverter simpleConverter;
 		private readonly Type type;
 
-		private SqlDeserializerTypeInfo(Type type) {
+		private SqlSerializationTypeInfo(Type type) {
 			this.type = type;
 			if (type.IsArray) {
 				if (type.GetArrayRank() != 1) {
@@ -65,24 +101,22 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 				}
 				instanceType = type.GetElementType();
 				Debug.Assert(instanceType != null);
-			} else if (type.IsGenericType && ((type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) || (type.GetGenericTypeDefinition() == typeof(ICollection<>)) || (type.GetGenericTypeDefinition() == typeof(IList<>)) || (type.GetGenericTypeDefinition() == typeof(List<>)))) {
-				instanceType = type.GetGenericArguments()[0];
-			} else {
+			} else if (!TryGetIEnumerableElementType(type, out instanceType)) {
 				instanceType = type;
 			}
 			if (instanceType.IsArray) {
 				throw new NotSupportedException("Nested arrays cannot be deserialized by the DbDeserializer");
 			}
 			requiresNotification = typeof(ISqlDeserializationHook).IsAssignableFrom(instanceType);
-			mapping = SqlDeserializerTypeMapping.Get(instanceType);
+			mapping = SqlSerializationTypeMapping.Get(instanceType);
 			if (IsCollection) {
-				listType = typeof(List<>).MakeGenericType(instanceType);
+				listType = (type.IsInterface || type.IsArray) ? typeof(List<>).MakeGenericType(instanceType) : type;
 				if (type.IsArray) {
 					listToArray = listType.GetMethod("ToArray");
 				}
 			}
-			isXmlType = SqlDeserializer.IsXmlType(instanceType);
-			if (isXmlType || (Nullable.GetUnderlyingType(instanceType) != null) || instanceType.IsPrimitive || SqlCallProcedureInfo.IsNativeType(instanceType)) {
+			isXmlType = IsXmlType(instanceType);
+			if (isXmlType || (Nullable.GetUnderlyingType(instanceType) != null) || instanceType.IsPrimitive || SqlSerializationTypeMapping.IsNativeType(instanceType)) {
 				simpleConverter = MemberConverter.Get(instanceType, false, null, 0, DateTimeKind.Unspecified);
 			}
 		}
@@ -123,7 +157,7 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 			}
 		}
 
-		internal SqlDeserializerTypeMapping Mapping {
+		internal SqlSerializationTypeMapping Mapping {
 			get {
 				return mapping;
 			}
@@ -136,7 +170,12 @@ namespace bsn.ModuleStore.Mapper.Deserialization {
 		}
 
 		public IList CreateList() {
-			return (IList)Activator.CreateInstance(listType);
+			try {
+				return (IList)Activator.CreateInstance(listType);
+			} catch {
+				Debug.WriteLine(listType, "Failed to create list");
+				throw;
+			}
 		}
 
 		public object FinalizeList(IList list) {

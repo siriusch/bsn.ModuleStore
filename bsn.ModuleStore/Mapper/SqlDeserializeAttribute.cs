@@ -31,7 +31,7 @@ using System;
 
 namespace bsn.ModuleStore.Mapper {
 	/// <summary>
-	/// The DbDeserializeAttribute can be specified on fields representing nested data that should be deserialized.
+	/// The SqlDeserializeAttribute can be specified on fields representing nested data that should be deserialized.
 	/// </summary>
 	/// <example>
 	/// The class B contains the nested class A, which will be deserialized as inner object from a resultset containing the columns [a,b].

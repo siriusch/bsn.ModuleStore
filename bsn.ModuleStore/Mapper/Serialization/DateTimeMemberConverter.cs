@@ -28,18 +28,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Xml;
 
-namespace bsn.ModuleStore.Mapper.Deserialization {
-	internal abstract class XmlReaderMemberConverterBase: XmlReaderMemberConverter {
-		protected XmlReaderMemberConverterBase(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
+namespace bsn.ModuleStore.Mapper.Serialization {
+	internal class DateTimeMemberConverter: MemberConverter {
+		private readonly DateTimeKind dateTimeKind;
 
-		protected abstract object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader);
+		public DateTimeMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
+			this.dateTimeKind = dateTimeKind;
+		}
 
-		protected override sealed object ProcessXmlReader(SqlDeserializer.DeserializerContext context, XmlReader xmlReader) {
-			using (xmlReader) {
-				return GetXmlObject(context, xmlReader);
+		public override object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
+			object result = base.ProcessFromDb(context, column);
+			if (result != null) {
+				result = DateTime.SpecifyKind(Convert.ToDateTime(result), dateTimeKind);
 			}
+			return result;
+		}
+
+		public override object ProcessToDb(object value) {
+			object result = base.ProcessToDb(value);
+			if ((result != DBNull.Value) && (result != null) && (result is DateTime)) {
+				DateTime dateTime = (DateTime)result;
+				if (dateTime.Kind != dateTimeKind) {
+					result = DateTime.SpecifyKind(dateTime, dateTimeKind);
+				}
+			}
+			return result;
 		}
 	}
 }

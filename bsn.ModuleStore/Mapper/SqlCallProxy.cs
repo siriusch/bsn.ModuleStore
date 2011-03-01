@@ -40,23 +40,21 @@ using System.Runtime.Remoting.Proxies;
 using System.Xml;
 using System.Xml.XPath;
 
-using bsn.ModuleStore.Mapper.Deserialization;
+using bsn.ModuleStore.Mapper.Serialization;
 
 namespace bsn.ModuleStore.Mapper {
 	/// <summary>
-	/// The DbCallProxy class allows the creation of transparent proxies to call stored procedures with typed and named parameters, and return results in different ways.
+	/// The SqlCallProxy class allows the creation of transparent proxies to call stored procedures with typed and named parameters, and return results in different ways.
 	/// <br/><br/>
 	/// The interface can declare any number of methods, which are then used to call stored procedures on the database.
-	/// <br/><br/>
-	/// See also <see cref="SqlProcedureAttribute"/> for bindings on methods.
 	/// <br/><br/>
 	/// The result is returned as follows:<br/>
 	/// - When no return value is expected (void), the call is made as non-query call (<see cref="DbCommand.ExecuteNonQuery"/>).<br/>
 	/// - When the return value is a <see cref="IDataReader"/>, a DataReader is opened and returned (<see cref="DbCommand.ExecuteReader(CommandBehavior)"/>). Note that this return type cannot be combined with OUTPUT arguments.<br/>
 	/// - When the return value is an interface implementing <see cref="ITypedDataReader"/>, a typed data reader is initialized. Note that this return type cannot be combined with OUTPUT arguments.<br/>
 	/// - When the return value is a <see cref="XPathNavigator"/>, a XPathNavigator will be returned to navigator over the rows.<br/>
-	/// - When the return value is an <see cref="int"/> and the <see cref="SqlReturnValue"/> is <see cref="SqlReturnValue.Auto"/> or <see cref="SqlReturnValue.ReturnValue"/>, the SP result is returned.
-	/// - When the return value is another primitive (or <see cref="int"/> with DbReturnValue.<see cref="SqlReturnValue.Scalar"/> set), a scalar call is made (<see cref="DbCommand.ExecuteScalar"/>).
+	/// - When the return value is an <see cref="int"/> and the <see cref="System.Data.SqlClient.SqlReturnValue"/> is <see cref="System.Data.SqlClient.SqlReturnValue.Auto"/> or <see cref="System.Data.SqlClient.SqlReturnValue.ReturnValue"/>, the SP result is returned.
+	/// - When the return value is another primitive (or <see cref="int"/> with <see cref="SqlReturnValue"/>.<see cref="System.Data.SqlClient.SqlReturnValue.Scalar"/> set), a scalar call is made (<see cref="DbCommand.ExecuteScalar"/>).
 	/// </summary>
 	/// <seealso cref="SqlProcedureAttribute"/>
 	/// <seealso cref="SqlReturnValue"/>
@@ -104,12 +102,16 @@ namespace bsn.ModuleStore.Mapper {
 		/// <summary>
 		/// Create a new proxy to be used for stored procedure calls, which can be called through the interface specified by <typeparamref name="I"/>.
 		/// </summary>
-		/// <typeparam name="I">The interface declaring the calls. This interface must implement <see cref="IStoredProcedures"/></typeparam>
-		/// <param name="connectionProvider">The provider for the SQL connections.</param>
-		/// <returns>An instance of the type requested by <typeparamref name="I"/>.</returns>
+		/// <typeparam name="I">The interface declaring the calls. This interface must implement <see cref="IDisposable"/></typeparam>
+		/// <param name="connectionProvider">The connection provider.</param>
+		/// <returns>
+		/// An instance of the type requested by <typeparamref name="I"/>.
+		/// </returns>
+		// ReSharper disable InconsistentNaming
 		public static I Create<I>(IConnectionProvider connectionProvider) where I: IStoredProcedures {
 			return (I)(new SqlCallProxy(connectionProvider, typeof(I))).GetTransparentProxy();
 		}
+		// ReSharper restore InconsistentNaming
 
 		private static object[] GetOutArgValues(SqlParameter[] dbParams) {
 			if (dbParams == null) {
@@ -183,7 +185,7 @@ namespace bsn.ModuleStore.Mapper {
 					}
 					SqlParameter returnParameter;
 					SqlParameter[] outParameters;
-					SqlDeserializerTypeInfo returnTypeInfo;
+					SqlSerializationTypeInfo returnTypeInfo;
 					SqlProcedureAttribute procInfo;
 					IList<IDisposable> disposeList = new List<IDisposable>(0);
 					XmlNameTable xmlNameTable;
@@ -201,18 +203,10 @@ namespace bsn.ModuleStore.Mapper {
 									using (XmlReader xmlReader = command.ExecuteXmlReader()) {
 										profiler.Fetch();
 										XPathDocument xmlDocument = new XPathDocument(xmlReader);
-										if (returnType == typeof(XPathNavigator)) {
-											returnValue = xmlDocument.CreateNavigator();
-										} else {
-											returnValue = xmlDocument;
-										}
+										returnValue = (returnType == typeof(XPathNavigator)) ? (object)xmlDocument.CreateNavigator() : xmlDocument;
 									}
 								} else if (returnType == typeof(XmlReader)) {
-									if (ownsConnection) {
-										returnValue = new XmlReaderCloseConnection(command.ExecuteXmlReader(), connection);
-									} else {
-										returnValue = command.ExecuteXmlReader();
-									}
+									returnValue = ownsConnection ? new XmlReaderCloseConnection(command.ExecuteXmlReader(), connection) : command.ExecuteXmlReader();
 									profiler.Fetch();
 									connection = null;
 								} else if (typeof(ResultSet).IsAssignableFrom(returnType)) {
@@ -258,7 +252,7 @@ namespace bsn.ModuleStore.Mapper {
 											} else if (returnTypeInfo.Type.IsArray) {
 												returnValue = Array.CreateInstance(returnTypeInfo.InstanceType, 0);
 											} else if (returnTypeInfo.IsCollection) {
-												returnValue = Activator.CreateInstance(returnTypeInfo.ListType, 0); // creates an List<InstanceType> with capacity 0
+												returnValue = returnTypeInfo.CreateList();
 											} else {
 												throw new InvalidOperationException("The stored procedure did not return any result, but a result was required for object deserialization");
 											}
@@ -268,16 +262,16 @@ namespace bsn.ModuleStore.Mapper {
 													if (returnTypeInfo.IsCollection) {
 														IList list = returnTypeInfo.CreateList();
 														for (int row = procInfo.DeserializeRowLimit; reader.Read() && (row > 0); row--) {
-															list.Add(returnTypeInfo.SimpleConverter.Process(context, 0));
+															list.Add(returnTypeInfo.SimpleConverter.ProcessFromDb(context, 0));
 														}
 														returnValue = returnTypeInfo.FinalizeList(list);
 													} else {
 														reader.Read();
-														returnValue = returnTypeInfo.SimpleConverter.Process(context, 0);
+														returnValue = returnTypeInfo.SimpleConverter.ProcessFromDb(context, 0);
 													}
 												}
 											} else {
-												returnValue = new SqlDeserializer(reader, returnType).DeserializeInternal(procInfo.DeserializeRowLimit, provider, procInfo.DeserializeCallConstructor, xmlNameTable);
+												returnValue = new SqlDeserializer(reader, returnType, false).DeserializeInternal(procInfo.DeserializeRowLimit, provider, procInfo.DeserializeCallConstructor, xmlNameTable);
 											}
 										}
 										reader.Dispose();
