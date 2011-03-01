@@ -122,101 +122,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		private static DataTable CreateMetadataTable(Type type, IEnumerable<SqlColumnInfo> columnInfos) {
-			/* The following colums are returned in a data reader created by an query to sql server but they do not exist in the framework column definitions!
-			 * schemaTable.Columns.Add("IsIdentity", typeof(Boolean));
-			 * schemaTable.Columns.Add("DataTypeName", typeof(String));
-			 * schemaTable.Columns.Add("XmlSchemaCollectionDatabase", typeof(String));
-			 * schemaTable.Columns.Add("XmlSchemaCollectionOwningSchema", typeof(String));
-			 * schemaTable.Columns.Add("XmlSchemaCollectionName", typeof(String));
-			 * schemaTable.Columns.Add("UdtAssemblyQualifiedName", typeof(String));
-			 * schemaTable.Columns.Add("IsColumnSet", typeof(Boolean));
-			 */
-			DataTable schemaTable = new DataTable("SchemaTable");
-			schemaTable.Locale = CultureInfo.InvariantCulture;
-			DataColumn columnName = new DataColumn(SchemaTableColumn.ColumnName, typeof(string));
-			DataColumn columnOrdinal = new DataColumn(SchemaTableColumn.ColumnOrdinal, typeof(int));
-			DataColumn columnSize = new DataColumn(SchemaTableColumn.ColumnSize, typeof(int));
-			DataColumn numericPrecision = new DataColumn(SchemaTableColumn.NumericPrecision, typeof(short));
-			DataColumn numericScale = new DataColumn(SchemaTableColumn.NumericScale, typeof(short));
-			DataColumn dataType = new DataColumn(SchemaTableColumn.DataType, typeof(Type));
-			DataColumn providerType = new DataColumn(SchemaTableColumn.ProviderType, typeof(int));
-			DataColumn isLong = new DataColumn(SchemaTableColumn.IsLong, typeof(bool));
-			DataColumn allowDbNull = new DataColumn(SchemaTableColumn.AllowDBNull, typeof(bool));
-			DataColumn isReadOnly = new DataColumn(SchemaTableOptionalColumn.IsReadOnly, typeof(bool));
-			DataColumn isRowVersion = new DataColumn(SchemaTableOptionalColumn.IsRowVersion, typeof(bool));
-			DataColumn isUnique = new DataColumn(SchemaTableColumn.IsUnique, typeof(bool));
-			DataColumn isKey = new DataColumn(SchemaTableColumn.IsKey, typeof(bool));
-			DataColumn isAutoIncrement = new DataColumn(SchemaTableOptionalColumn.IsAutoIncrement, typeof(bool));
-			DataColumn baseSchemaName = new DataColumn(SchemaTableColumn.BaseSchemaName, typeof(string));
-			DataColumn baseCatalogName = new DataColumn(SchemaTableOptionalColumn.BaseCatalogName, typeof(string));
-			DataColumn baseTableName = new DataColumn(SchemaTableColumn.BaseTableName, typeof(string));
-			DataColumn baseColumnName = new DataColumn(SchemaTableColumn.BaseColumnName, typeof(string));
-			DataColumn autoIncrementSeed = new DataColumn(SchemaTableOptionalColumn.AutoIncrementSeed, typeof(long));
-			DataColumn autoIncrementStep = new DataColumn(SchemaTableOptionalColumn.AutoIncrementStep, typeof(long));
-			DataColumn defaultValue = new DataColumn(SchemaTableOptionalColumn.DefaultValue, typeof(object));
-			DataColumn expression = new DataColumn(SchemaTableOptionalColumn.Expression, typeof(string));
-			DataColumn columnMapping = new DataColumn(SchemaTableOptionalColumn.ColumnMapping, typeof(MappingType));
-			DataColumn baseTableNamespace = new DataColumn(SchemaTableOptionalColumn.BaseTableNamespace, typeof(string));
-			DataColumn baseColumnNamespace = new DataColumn(SchemaTableOptionalColumn.BaseColumnNamespace, typeof(string));
-			DataColumn nonVersionedProviderType = new DataColumn(SchemaTableColumn.NonVersionedProviderType, typeof(int));
-			columnSize.DefaultValue = -1;
-			baseTableName.DefaultValue = type.Name;
-			baseTableNamespace.DefaultValue = type.Namespace;
-			isRowVersion.DefaultValue = false;
-			isLong.DefaultValue = false;
-			isReadOnly.DefaultValue = true;
-			isKey.DefaultValue = false;
-			isAutoIncrement.DefaultValue = false;
-			isUnique.DefaultValue = false;
-			autoIncrementSeed.DefaultValue = 0;
-			autoIncrementStep.DefaultValue = 1;
-			schemaTable.Columns.Add(columnName);
-			schemaTable.Columns.Add(columnOrdinal);
-			schemaTable.Columns.Add(columnSize);
-			schemaTable.Columns.Add(numericPrecision);
-			schemaTable.Columns.Add(numericScale);
-			schemaTable.Columns.Add(dataType);
-			schemaTable.Columns.Add(providerType);
-			schemaTable.Columns.Add(isLong);
-			schemaTable.Columns.Add(allowDbNull);
-			schemaTable.Columns.Add(isReadOnly);
-			schemaTable.Columns.Add(isRowVersion);
-			schemaTable.Columns.Add(isUnique);
-			schemaTable.Columns.Add(isKey);
-			schemaTable.Columns.Add(isAutoIncrement);
-			schemaTable.Columns.Add(baseCatalogName);
-			schemaTable.Columns.Add(baseSchemaName);
-			schemaTable.Columns.Add(baseTableName);
-			schemaTable.Columns.Add(baseColumnName);
-			schemaTable.Columns.Add(autoIncrementSeed);
-			schemaTable.Columns.Add(autoIncrementStep);
-			schemaTable.Columns.Add(defaultValue);
-			schemaTable.Columns.Add(expression);
-			schemaTable.Columns.Add(columnMapping);
-			schemaTable.Columns.Add(baseTableNamespace);
-			schemaTable.Columns.Add(baseColumnNamespace);
-			schemaTable.Columns.Add(nonVersionedProviderType);
-			foreach (SqlColumnInfo info in columnInfos) {
-				DataRow row = schemaTable.NewRow();
-				row[columnName] = info.Name;
-				row[columnOrdinal] = info.Index;
-				row[dataType] = info.ElementType;
-				row[allowDbNull] = info.IsNullable;
-				row[baseColumnName] = info.Name;
-				row[providerType] = (int)info.DbType;
-				row[nonVersionedProviderType] = (int)info.DbType;
-				schemaTable.Rows.Add(row);
-			}
-			schemaTable.AcceptChanges();
-			return schemaTable;
-		}
-
 		private readonly ReadOnlyCollection<MemberConverter> converters;
 		private readonly FieldInfo[] members;
 		private readonly bool hasNestedSerializers;
-		private readonly SqlColumnInfo[] listColumns;
-		private readonly DataTable schemaTable;
+		private readonly Dictionary<string, SqlColumnInfo> columns = new Dictionary<string, SqlColumnInfo>(StringComparer.OrdinalIgnoreCase);
 
 		private SqlSerializationTypeMapping(Type type) {
 			if (type == null) {
@@ -224,7 +133,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 			List<MemberConverter> memberConverters = new List<MemberConverter>();
 			List<FieldInfo> memberInfos = new List<FieldInfo>();
-			List<SqlColumnInfo> columns = new List<SqlColumnInfo>();
 			if (!(type.IsPrimitive || type.IsInterface || (typeof(string) == type))) {
 				bool hasIdentity = false;
 				foreach (FieldInfo field in GetAllFields(type)) {
@@ -239,7 +147,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 						}
 						memberConverters.Add(memberConverter);
 						memberInfos.Add(field);
-						columns.Add(new SqlColumnInfo(field, columnAttribute, memberConverter));
+						columns.Add(columnAttribute.Name, new SqlColumnInfo(field, columnAttribute, memberConverter));
 					} else if (field.IsDefined(typeof(SqlDeserializeAttribute), true)) {
 						NestedMemberConverter nestedMemberConverter;
 						// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
@@ -257,8 +165,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 			}
 			members = memberInfos.ToArray();
-			listColumns = columns.OrderBy(ci => ci.Index).ToArray();
-			schemaTable = CreateMetadataTable(type, listColumns);
 			converters = Array.AsReadOnly(memberConverters.ToArray());
 		}
 
@@ -288,15 +194,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public SqlColumnInfo[] ListColumns {
+		public IDictionary<string, SqlColumnInfo> Columns {
 			get {
-				return listColumns;
-			}
-		}
-
-		public DataTable SchemaTable {
-			get {
-				return schemaTable;
+				return columns;
 			}
 		}
 	}

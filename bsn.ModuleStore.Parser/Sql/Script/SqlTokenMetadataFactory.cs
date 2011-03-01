@@ -161,6 +161,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				return EnumerateTokens((TToken)instance, skipNestedOfType);
 			}
 
+			[Conditional("DEBUG")]
 			private void CheckFieldNames(Dictionary<string, bool> propertyNames, ICollection<string> checkFieldErrors) {
 				foreach (FieldInfo field in typeof(TToken).GetFields(BindingFlags.DeclaredOnly|BindingFlags.Instance|BindingFlags.NonPublic|BindingFlags.Public)) {
 					if (typeof(SqlToken).IsAssignableFrom(field.FieldType)) {
@@ -237,6 +238,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		private static readonly Dictionary<Type, SqlTokenMetadata> tokenMetadata = new Dictionary<Type, SqlTokenMetadata>();
 
+		[Conditional("DEBUG")]
 		internal static void CheckFieldsAndProperties() {
 			List<string> errors = new List<string>();
 			List<string> localErrors = new List<string>();

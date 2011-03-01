@@ -36,13 +36,12 @@ using bsn.ModuleStore.Sql;
 
 namespace bsn.ModuleStore {
 	public class Module {
+#pragma warning disable 649
 		[SqlColumn("uidAssemblyGuid")]
 		private Guid assemblyGuid;
 
 		[SqlColumn("uidModule", Identity = true)]
 		private Guid id;
-
-		private ModuleInstanceCache owner;
 
 		[SqlColumn("sSchema")]
 		private string schema;
@@ -61,6 +60,9 @@ namespace bsn.ModuleStore {
 
 		[SqlColumn("iUpdateVersion")]
 		private int updateVersion;
+#pragma warning restore 649
+
+		private ModuleInstanceCache owner;
 
 		public Guid AssemblyGuid {
 			get {

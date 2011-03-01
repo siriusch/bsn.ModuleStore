@@ -29,31 +29,31 @@
 //  
 using System;
 using System.Data;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class SqlColumnInfo {
+		private readonly Type clrType;
 		private readonly MemberConverter converter;
-
 		private readonly SqlDbType dbType;
-		private readonly Type elementType;
 		private readonly FieldInfo fieldInfo;
-		private readonly int index;
-		private readonly bool isNullable;
 		private readonly string name;
-		//private readonly string userDefinedTypeName;
+		private readonly string userDefinedTypeName;
 
 		public SqlColumnInfo(FieldInfo fieldInfo, SqlColumnAttribute columnAttribute, MemberConverter converter) {
 			this.fieldInfo = fieldInfo;
-#warning index = columnAttribute.Index;
 			name = columnAttribute.Name;
-			elementType = Nullable.GetUnderlyingType(fieldInfo.FieldType) ?? fieldInfo.FieldType;
-			isNullable = fieldInfo.FieldType!=elementType;
-//			userDefinedTypeName = SqlSerializationTypeMapping.GetClrUserDefinedTypeName(fieldInfo.DeclaringType, columnAttribute);
-			dbType = SqlSerializationTypeMapping.GetTypeMapping(ElementType);
+			clrType = Nullable.GetUnderlyingType(fieldInfo.FieldType) ?? fieldInfo.FieldType;
+			userDefinedTypeName = null;
+#warning SqlSerializationTypeMapping.GetClrUserDefinedTypeName(fieldInfo.DeclaringType, columnAttribute);
+			dbType = SqlSerializationTypeMapping.GetTypeMapping(clrType);
 			this.converter = converter;
-			Debug.Fail("Index needs to be determined");
+		}
+
+		public Type ClrType {
+			get {
+				return clrType;
+			}
 		}
 
 		public MemberConverter Converter {
@@ -68,27 +68,15 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public Type ElementType {
-			get {
-				return elementType;
-			}
-		}
-
 		public FieldInfo FieldInfo {
 			get {
 				return fieldInfo;
 			}
 		}
 
-		public int Index {
-			get {
-				return index;
-			}
-		}
-
 		public bool IsNullable {
 			get {
-				return isNullable;
+				return fieldInfo.FieldType != clrType;
 			}
 		}
 
@@ -100,8 +88,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public string UserDefinedTypeName {
 			get {
-				throw new NotSupportedException();
-#warning return userDefinedTypeName;
+				return userDefinedTypeName;
 			}
 		}
 	}

@@ -31,17 +31,22 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class SqlTableValuedParameterReader<T>: DbDataReader where T: IEnumerable {
-		private static readonly SqlSerializationTypeInfo typeInfo = SqlSerializationTypeInfo.Get(typeof(T));
-
+	internal class StructuredParameterReader: DbDataReader {
 		private readonly IEnumerator enumerator;
+		private readonly StructuredParameterSchema schema;
+		private object[] data;
 		private bool isClosed;
 		private int rowCount;
 
-		public SqlTableValuedParameterReader(IEnumerable values) {
+		public StructuredParameterReader(StructuredParameterSchema schema, IEnumerable values) {
+			if (schema == null) {
+				throw new ArgumentNullException("schema");
+			}
+			this.schema = schema;
 			enumerator = values.GetEnumerator();
 			if (!enumerator.MoveNext()) {
 				IDisposable disposable = enumerator as IDisposable;
@@ -49,14 +54,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					disposable.Dispose();
 				}
 				enumerator = null;
-			}
-			rowCount = (enumerator != null) ? 0 : -1;
-#warning Get rid of this check and warning through runtime binding to parsed data type
-			if (typeInfo.Mapping.ListColumns.Any(c => c.Index < 0)) {
-				throw new ArgumentException(string.Format("At least one attribute has no 'Index' property specified on type '{0}'", typeof(T).FullName));
-			}
-			if (typeInfo.Mapping.HasNestedSerializers) {
-				throw new NotSupportedException("Nested serialization is not supported for table valued parameters!");
 			}
 		}
 
@@ -80,7 +77,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public override int FieldCount {
 			get {
-				return ListColumns.Length;
+				return schema.ColumnCount;
 			}
 		}
 
@@ -102,14 +99,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		private SqlColumnInfo[] ListColumns {
-			get {
-				return typeInfo.Mapping.ListColumns;
-			}
-		}
-
 		public override void Close() {
-			isClosed = true;
+			Dispose(true);
 		}
 
 		public override bool GetBoolean(int i) {
@@ -139,11 +130,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override string GetDataTypeName(int i) {
-			SqlColumnInfo sqlColumnInfo = ListColumns[i];
-			if (sqlColumnInfo.DbType == SqlDbType.Udt) {
-				return sqlColumnInfo.UserDefinedTypeName;
-			}
-			return Enum.GetName(typeof(SqlDbType), sqlColumnInfo.DbType);
+			return schema.GetColumnTypeName(i);
 		}
 
 		public override DateTime GetDateTime(int i) {
@@ -159,11 +146,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override IEnumerator GetEnumerator() {
-			return enumerator;
+			throw new NotSupportedException("Iteration over the reader is not supported");
 		}
 
 		public override Type GetFieldType(int i) {
-			return ListColumns[i].ElementType;
+			return schema.GetColumnDataType(i);
 		}
 
 		public override float GetFloat(int i) {
@@ -187,12 +174,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override string GetName(int i) {
-			return ListColumns[i].Name;
+			return schema.GetColumnName(i);
 		}
 
 		public override int GetOrdinal(string name) {
-			for (int i = 0; i < ListColumns.Length; i++) {
-				if (ListColumns[i].Name.Equals(name, StringComparison.OrdinalIgnoreCase)) {
+			for (int i = 0; i < schema.ColumnCount; i++) {
+				if (string.Equals(schema.GetColumnName(i), name, StringComparison.OrdinalIgnoreCase)) {
 					return i;
 				}
 			}
@@ -200,7 +187,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override DataTable GetSchemaTable() {
-			return typeInfo.Mapping.SchemaTable;
+			return schema;
 		}
 
 		public override string GetString(int i) {
@@ -209,21 +196,29 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override object GetValue(int i) {
-			SqlColumnInfo sqlColumnInfo = ListColumns[i];
-			object value = sqlColumnInfo.FieldInfo.GetValue(enumerator.Current);
-			return sqlColumnInfo.Converter.ProcessToDb(value);
+			int fieldIndex;
+			if (schema.TryGetFieldIndexOfColumn(i, out fieldIndex)) {
+				return data[fieldIndex];
+			}
+			return DBNull.Value;
 		}
 
 		public override int GetValues(object[] values) {
-			int columnCount;
-			for (columnCount = 0; ((columnCount < ListColumns.Length) && (columnCount < values.Length)); columnCount++) {
-				values[columnCount] = GetValue(columnCount);
+			if (values == null) {
+				throw new ArgumentNullException("values");
 			}
-			return columnCount;
+			for (int i = 0; i < schema.ColumnCount; i++) {
+				values[i] = GetValue(i);
+			}
+			return schema.ColumnCount;
 		}
 
 		public override bool IsDBNull(int i) {
-			return (GetValue(i) == DBNull.Value);
+			int fieldIndex;
+			if (schema.TryGetFieldIndexOfColumn(i, out fieldIndex)) {
+				return data[fieldIndex] == DBNull.Value;
+			}
+			return true;
 		}
 
 		public override bool NextResult() {
@@ -231,8 +226,40 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override bool Read() {
-			// we alerady performed the first MoveNext() call so we have to return true on the first run (RowCount == 0) and increment rowcount so that the second run is a real MoveNext() call
-			return HasRows && ((rowCount++ == 0) || enumerator.MoveNext());
+			// we already performed the first MoveNext() call so we have to return true on the first run (RowCount == 0) and increment rowcount so that the second run is a real MoveNext() call
+			if (HasRows) {
+				if ((rowCount == 0) || enumerator.MoveNext()) {
+					LoadData(enumerator.Current);
+					rowCount++;
+					return true;
+				}
+			}
+			LoadData(null);
+			return false;
+		}
+
+		protected override void Dispose(bool disposing) {
+			if (disposing && (!isClosed)) {
+				isClosed = true;
+				IDisposable disposableEnumerator = enumerator as IDisposable;
+				if (disposableEnumerator != null) {
+					disposableEnumerator.Dispose();
+				}
+			}
+			base.Dispose(disposing);
+		}
+
+		private void LoadData(object instance) {
+			if (instance == null) {
+				data = new object[schema.Fields.Length];
+			} else {
+				data = FormatterServices.GetObjectData(instance, schema.Fields);
+			}
+			Debug.Assert(schema.Converters.Length == data.Length);
+			for (int i = 0; i < data.Length; i++) {
+				MemberConverter converter = schema.Converters[i];
+				data[i] = ((converter != null) ? converter.ProcessToDb(data[i]) : data[i]) ?? DBNull.Value;
+			}
 		}
 	}
 }

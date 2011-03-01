@@ -67,7 +67,7 @@
     <Compile Include="Mapper\Serialization\SqlColumnInfo.cs" />
     <Compile Include="Mapper\Serialization\SqlSerializationTypeInfo.cs" />
     <Compile Include="Mapper\Serialization\SqlSerializationTypeMapping.cs" />
-    <Compile Include="Mapper\Serialization\SqlTableValuedParameterReader.cs" />
+    <Compile Include="Mapper\Serialization\StructuredParameterReader.cs" />
     <Compile Include="Mapper\DistinctInstanceProvider.cs" />
     <Compile Include="Mapper\IConnectionProvider.cs" />
     <Compile Include="Mapper\IDeserializationStateProvider.cs" />
@@ -79,6 +79,9 @@
     <Compile Include="Mapper\InstanceCacheAttribute.cs" />
     <Compile Include="Mapper\InstanceManager.cs" />
     <Compile Include="Mapper\InstanceOrigin.cs" />
+    <Compile Include="Mapper\Serialization\StructuredParameterSchema.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Mapper\SqlCallParameterBase.cs" />
     <Compile Include="Mapper\ManagedInstanceProvider.cs" />
     <Compile Include="Mapper\MetadataBase.cs" />
@@ -113,6 +116,7 @@
     <Compile Include="Mapper\Serialization\XmlReaderMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\XmlReaderMemberConverterBase.cs" />
     <Compile Include="Mapper\Serialization\XPathDocumentMemberConverter.cs" />
+    <Compile Include="Mapper\SqlMappingAttribute.cs" />
     <Compile Include="Mapper\SqlParameterAttribute.cs" />
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />

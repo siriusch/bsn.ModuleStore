@@ -28,6 +28,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
@@ -68,23 +69,29 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		private readonly ParameterInfo parameterInfo;
-		private readonly Type structuredReaderType;
+		private readonly StructuredParameterSchema structuredSchema;
 
 		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script): base(script, GetParameterDirection(param), GetParameterNullable(param)) {
 			parameterInfo = param;
-			if (script.ParameterTypeName.IsQualified || (!script.ParameterTypeName.Name.IsBuiltinType)) {
-				CreateTypeAsTableStatement createTableTypeScript; 
-				if (AssemblyInventory.Get(param.Member.DeclaringType.Assembly).TryFind(script.ParameterTypeName.Name.Value, out createTableTypeScript)) {
-					Debugger.Break();
-					// bind to createTableTypeScript.TableDefinitions
-				}
-			}
 			if (SqlType == SqlDbType.Structured) {
 				Type structuredType;
 				if (!SqlSerializationTypeInfo.TryGetIEnumerableElementType(param.ParameterType, out structuredType)) {
 					throw new ArgumentException("The given parameter must implement IEnumerable<> in order to be used as SQL structured parameter");
 				}
-				structuredReaderType = typeof(SqlTableValuedParameterReader<>).MakeGenericType(structuredType);
+				CreateTypeAsTableStatement createTableTypeScript; 
+				if (!AssemblyInventory.Get(param.Member.DeclaringType.Assembly).TryFind(script.ParameterTypeName.Name.Value, out createTableTypeScript)) {
+					throw new ArgumentException(string.Format("The given structured parameter table type {0} cannot be found in the inventory", script.ParameterTypeName));
+				}
+				IDictionary<string, SqlColumnInfo> columnInfos = SqlSerializationTypeMapping.Get(structuredType).Columns;
+				Attribute[] mappingAttributes = Attribute.GetCustomAttributes(param, typeof(SqlMappingAttribute), true);
+				if ((mappingAttributes != null) && (mappingAttributes.Length > 0)) {
+					IDictionary<string, SqlColumnInfo> mappedColumnInfos = new Dictionary<string, SqlColumnInfo>(columnInfos);
+					foreach (SqlMappingAttribute mappingAttribute in mappingAttributes) {
+						mappedColumnInfos[mappingAttribute.TableTypeColumn] = columnInfos[mappingAttribute.SqlColumn];
+					}
+					columnInfos = mappedColumnInfos;
+				}
+				structuredSchema = new StructuredParameterSchema(createTableTypeScript, columnInfos);
 			}
 #warning Maybe implement more type compatibility checks for arguments here
 			//			if ((sqlType == SqlDbType.Udt) && string.IsNullOrEmpty(arg.UserDefinedTypeName)) {
@@ -157,7 +164,7 @@ namespace bsn.ModuleStore.Mapper {
 					//					parameter.UdtTypeName = userDefinedTypeName;
 					//					break;
 				case SqlDbType.Structured:
-					IDataReader dataReader = (IDataReader)Activator.CreateInstance(structuredReaderType, value);
+					IDataReader dataReader = new StructuredParameterReader(structuredSchema, (IEnumerable)value);
 					disposeList.Add(dataReader);
 					value = dataReader;
 					break;
