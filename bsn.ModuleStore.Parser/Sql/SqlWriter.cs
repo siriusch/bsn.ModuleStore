@@ -224,7 +224,7 @@ namespace bsn.ModuleStore.Sql {
 					PaddingAfter(padding);
 				} else {
 					CommentContainerToken comments = value as CommentContainerToken;
-					if (comments != null) {
+					if ((comments != null) && (comments.Comments.Count > 0)) {
 						PaddingBefore(padding);
 						comments.WriteCommentsTo(this);
 					}
