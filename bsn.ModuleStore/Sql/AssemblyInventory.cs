@@ -40,14 +40,28 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public class AssemblyInventory: InstallableInventory {
+		private static readonly Dictionary<Assembly, AssemblyInventory> cachedInventories = new Dictionary<Assembly, AssemblyInventory>();
+
+		public static AssemblyInventory Get(Assembly assembly) {
+			if (assembly == null) {
+				throw new ArgumentNullException("assembly");
+			}
+			lock (cachedInventories) {
+				AssemblyInventory result;
+				if (!cachedInventories.TryGetValue(assembly, out result)) {
+					result = new AssemblyInventory(new AssemblyHandle(assembly));
+					cachedInventories.Add(assembly, result);
+				}
+				return result;
+			}
+		}
+
 		private readonly IAssemblyHandle assembly;
 		private readonly ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> attributes;
 		private readonly HashSet<string> processedManifestStreamKeys = new HashSet<string>(StringComparer.Ordinal);
 		private readonly int requiredEngineVersion = 9;
 		private readonly SortedList<int, Statement[]> updateStatements = new SortedList<int, Statement[]>();
 		private readonly int updateVersion;
-
-		public AssemblyInventory(Assembly assembly): this(new AssemblyHandle(assembly)) {}
 
 		public AssemblyInventory(IAssemblyHandle assembly) {
 			this.assembly = assembly;

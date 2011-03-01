@@ -39,6 +39,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 
 using bsn.ModuleStore.Mapper.Serialization;
+using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
@@ -71,6 +72,13 @@ namespace bsn.ModuleStore.Mapper {
 
 		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script): base(script, GetParameterDirection(param), GetParameterNullable(param)) {
 			parameterInfo = param;
+			if (script.ParameterTypeName.IsQualified || (!script.ParameterTypeName.Name.IsBuiltinType)) {
+				CreateTypeAsTableStatement createTableTypeScript; 
+				if (AssemblyInventory.Get(param.Member.DeclaringType.Assembly).TryFind(script.ParameterTypeName.Name.Value, out createTableTypeScript)) {
+					Debugger.Break();
+					// bind to createTableTypeScript.TableDefinitions
+				}
+			}
 			if (SqlType == SqlDbType.Structured) {
 				Type structuredType;
 				if (!SqlSerializationTypeInfo.TryGetIEnumerableElementType(param.ParameterType, out structuredType)) {

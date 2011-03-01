@@ -62,7 +62,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		private ModuleAssemblyInfo(Assembly assembly) {
 			this.assembly = assembly;
-			inventory = new AssemblyInventory(assembly);
+			inventory = AssemblyInventory.Get(assembly);
 			using (IEnumerator<GuidAttribute> guidAttributeEnumerator = assembly.GetCustomAttributes(typeof(GuidAttribute), true).Cast<GuidAttribute>().GetEnumerator()) {
 				if (guidAttributeEnumerator.MoveNext()) {
 					GuidAttribute guidAttribute = guidAttributeEnumerator.Current;
