@@ -340,10 +340,14 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					if (!reader.Read()) {
 						break;
 					}
-					InstanceOrigin instanceOrigin;
-					T instance = (T)CreateInstance(context, out instanceOrigin);
-					if (instanceOrigin != InstanceOrigin.ResultSet) {
-						yield return instance;
+					if (typeInfo.SimpleConverter != null) {
+						yield return (T)typeInfo.SimpleConverter.ProcessFromDb(context, 0);
+					} else {
+						InstanceOrigin instanceOrigin;
+						T instance = (T)CreateInstance(context, out instanceOrigin);
+						if (instanceOrigin != InstanceOrigin.ResultSet) {
+							yield return instance;
+						}
 					}
 					maxRows--;
 				}
@@ -364,6 +368,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			using (DeserializerContext deserializerContext = new DeserializerContext(this, provider, callConstructor, nameTable)) {
 				if (!reader.Read()) {
 					throw new InvalidOperationException("No more rows");
+				}
+				if (typeInfo.SimpleConverter != null) {
+					return typeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0);
 				}
 				InstanceOrigin instanceOrigin;
 				return CreateInstance(deserializerContext, out instanceOrigin);
