@@ -32,6 +32,7 @@ using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.Serialization;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
@@ -100,7 +101,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override void Close() {
-			Dispose(true);
+			if (!isClosed) {
+				Dispose(true);
+			}
 		}
 
 		public override bool GetBoolean(int i) {
@@ -111,22 +114,65 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			return (byte)GetValue(i);
 		}
 
-		public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length) {
-			throw new NotSupportedException();
+		public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length) {
+			if (length > 0) {
+				object value = GetValue(i);
+				byte[] bytes = value as byte[];
+				if (bytes != null) {
+					if (fieldOffset > bytes.Length) {
+						return 0;
+					}
+					length = Math.Min(bytes.Length-(int)fieldOffset, length);
+					Array.Copy(bytes, fieldOffset, buffer, bufferOffset, length);
+					return length;
+				}
+				Stream stream = value as Stream;
+				if (stream != null) {
+					if (stream.Position != fieldOffset) {
+						stream.Seek(fieldOffset, SeekOrigin.Begin);
+					}
+					return stream.Read(buffer, bufferOffset, length);
+				}
+			}
+			return 0;
 		}
 
 		public override char GetChar(int i) {
 			return (char)GetValue(i);
 		}
 
-		public override long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length) {
-			char[] charArray = GetString(i).ToCharArray();
-			long charCount = 0;
-			for (long k = fieldoffset; k < charArray.Length && charCount < length; k++) {
-				buffer[bufferoffset+charCount] = charArray[k];
-				charCount++;
+		public override long GetChars(int i, long fieldOffset, char[] buffer, int bufferOffset, int length) {
+			if (length > 0) {
+				object value = GetValue(i);
+				if (value is char) {
+					if (fieldOffset > 0) {
+						return 0;
+					}
+					buffer[bufferOffset] = (char)value;
+					return 1;
+				}
+				string str = value as string;
+				if (str != null) {
+					if (fieldOffset > str.Length) {
+						return 0;
+					}
+					length = Math.Min(str.Length-(int)fieldOffset, length);
+					for (i = 0; i < length; i++) {
+						buffer[bufferOffset+i] = str[i];
+					}
+					return length;
+				}
+				char[] chars = value as char[];
+				if (chars != null) {
+					if (fieldOffset > chars.Length) {
+						return 0;
+					}
+					length = Math.Min(chars.Length-(int)fieldOffset, length);
+					Array.Copy(chars, fieldOffset, buffer, bufferOffset, length);
+					return length;
+				}
 			}
-			return charCount;
+			return 0;
 		}
 
 		public override string GetDataTypeName(int i) {
@@ -250,15 +296,19 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private void LoadData(object instance) {
-			if (instance == null) {
-				data = new object[schema.Fields.Length];
+			if ((schema.Fields.Length == 1) && (schema.Fields[0] == null)) {
+				data = new[] {schema.Converters[0].ProcessToDb(instance) ?? DBNull.Value};
 			} else {
-				data = FormatterServices.GetObjectData(instance, schema.Fields);
-			}
-			Debug.Assert(schema.Converters.Length == data.Length);
-			for (int i = 0; i < data.Length; i++) {
-				MemberConverter converter = schema.Converters[i];
-				data[i] = ((converter != null) ? converter.ProcessToDb(data[i]) : data[i]) ?? DBNull.Value;
+				if (instance == null) {
+					data = new object[schema.Fields.Length];
+				} else {
+					data = FormatterServices.GetObjectData(instance, schema.Fields);
+				}
+				Debug.Assert(schema.Converters.Length == data.Length);
+				for (int i = 0; i < data.Length; i++) {
+					MemberConverter converter = schema.Converters[i];
+					data[i] = ((converter != null) ? converter.ProcessToDb(data[i]) : data[i]) ?? DBNull.Value;
+				}
 			}
 		}
 	}

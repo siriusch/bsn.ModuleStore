@@ -38,7 +38,7 @@ namespace bsn.ModuleStore.Mapper {
 	internal class SqlCallParameterConstant: SqlCallParameterBase {
 		private readonly object value;
 
-		public SqlCallParameterConstant(ProcedureParameter parameter, object value): base(parameter, ParameterDirection.Input, value == null) {
+		public SqlCallParameterConstant(ProcedureParameter parameter, object value): base(parameter, ParameterDirection.Input, value == null, false) {
 			this.value = value;
 		}
 

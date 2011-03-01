@@ -33,10 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 
@@ -122,10 +119,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		private readonly ReadOnlyCollection<MemberConverter> converters;
-		private readonly FieldInfo[] members;
-		private readonly bool hasNestedSerializers;
 		private readonly Dictionary<string, SqlColumnInfo> columns = new Dictionary<string, SqlColumnInfo>(StringComparer.OrdinalIgnoreCase);
+		private readonly ReadOnlyCollection<MemberConverter> converters;
+		private readonly bool hasNestedSerializers;
+		private readonly FieldInfo[] members;
 
 		private SqlSerializationTypeMapping(Type type) {
 			if (type == null) {
@@ -147,7 +144,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 						}
 						memberConverters.Add(memberConverter);
 						memberInfos.Add(field);
-						columns.Add(columnAttribute.Name, new SqlColumnInfo(field, columnAttribute, memberConverter));
+						columns.Add(columnAttribute.Name, new SqlColumnInfo(field, columnAttribute.Name, memberConverter));
 					} else if (field.IsDefined(typeof(SqlDeserializeAttribute), true)) {
 						NestedMemberConverter nestedMemberConverter;
 						// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
@@ -168,9 +165,21 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			converters = Array.AsReadOnly(memberConverters.ToArray());
 		}
 
+		public IDictionary<string, SqlColumnInfo> Columns {
+			get {
+				return columns;
+			}
+		}
+
 		public ReadOnlyCollection<MemberConverter> Converters {
 			get {
 				return converters;
+			}
+		}
+
+		public bool HasNestedSerializers {
+			get {
+				return hasNestedSerializers;
 			}
 		}
 
@@ -180,24 +189,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public void PopulateInstanceMembers(object result, object[] buffer) {
-			FormatterServices.PopulateObjectMembers(result, members, buffer);
-		}
-
 		public object GetMember(object instance, int index) {
 			return members[index].GetValue(instance);
 		}
 
-		public bool HasNestedSerializers {
-			get {
-				return hasNestedSerializers;
-			}
-		}
-
-		public IDictionary<string, SqlColumnInfo> Columns {
-			get {
-				return columns;
-			}
+		public void PopulateInstanceMembers(object result, object[] buffer) {
+			FormatterServices.PopulateObjectMembers(result, members, buffer);
 		}
 	}
 }

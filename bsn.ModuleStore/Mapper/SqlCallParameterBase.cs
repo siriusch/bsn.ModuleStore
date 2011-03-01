@@ -31,7 +31,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 
@@ -54,7 +53,7 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly int size;
 		private readonly SqlDbType sqlType;
 
-		protected SqlCallParameterBase(ProcedureParameter parameter, ParameterDirection direction, bool nullable) {
+		protected SqlCallParameterBase(ProcedureParameter parameter, ParameterDirection direction, bool nullable, bool isEnumerable) {
 			if (parameter == null) {
 				throw new ArgumentNullException("parameter");
 			}
@@ -62,22 +61,9 @@ namespace bsn.ModuleStore.Mapper {
 			if (direction == ParameterDirection.ReturnValue) {
 				throw new ArgumentOutOfRangeException("direction");
 			}
-			if (direction == ParameterDirection.Input) {
-				if (parameter.Output) {
-					throw new InvalidOperationException("An OUTPUT argument requires an out parameter");
-				}
-			} else {
-				if (!parameter.Output) {
-					throw new InvalidOperationException("An out parameter requires an OUTPUT argument");
-				}
-				if (sqlType == SqlDbType.Structured) {
-					throw new NotSupportedException("Table valued parameters only support readonly inputs!");
-				}
-			}
 			this.direction = direction;
 			if (parameter.ParameterTypeName.IsQualified || (!knownDbTypes.TryGetValue(parameter.ParameterTypeName.Name.Value, out sqlType))) {
-				sqlType = SqlDbType.Variant;
-				Debug.Fail("Unknown SQL type?");
+				sqlType = isEnumerable ? SqlDbType.Structured : SqlDbType.Udt;
 			} else {
 				TypeNameWithPrecision typeNameEx = parameter.ParameterTypeName.Name as TypeNameWithPrecision;
 				if (typeNameEx != null) {
@@ -94,6 +80,18 @@ namespace bsn.ModuleStore.Mapper {
 				}
 			}
 			this.nullable = nullable;
+			if (direction == ParameterDirection.Input) {
+				if (parameter.Output) {
+					throw new InvalidOperationException("An OUTPUT argument requires an out parameter");
+				}
+			} else {
+				if (!parameter.Output) {
+					throw new InvalidOperationException("An out parameter requires an OUTPUT argument");
+				}
+				if (sqlType == SqlDbType.Structured) {
+					throw new NotSupportedException("Table valued parameters only support readonly inputs!");
+				}
+			}
 		}
 
 		public ParameterDirection Direction {

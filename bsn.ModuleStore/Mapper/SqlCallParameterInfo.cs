@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Xml;
@@ -68,28 +69,41 @@ namespace bsn.ModuleStore.Mapper {
 			return ParameterDirection.Input;
 		}
 
+		private static bool GetParameterEnumerable(ParameterInfo param) {
+			Type structuredType;
+			return SqlSerializationTypeInfo.TryGetIEnumerableElementType(param.ParameterType, out structuredType);
+		}
+
 		private readonly ParameterInfo parameterInfo;
 		private readonly StructuredParameterSchema structuredSchema;
 
-		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script): base(script, GetParameterDirection(param), GetParameterNullable(param)) {
+		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script): base(script, GetParameterDirection(param), GetParameterNullable(param), GetParameterEnumerable(param)) {
 			parameterInfo = param;
 			if (SqlType == SqlDbType.Structured) {
 				Type structuredType;
 				if (!SqlSerializationTypeInfo.TryGetIEnumerableElementType(param.ParameterType, out structuredType)) {
 					throw new ArgumentException("The given parameter must implement IEnumerable<> in order to be used as SQL structured parameter");
 				}
-				CreateTypeAsTableStatement createTableTypeScript; 
+				CreateTypeAsTableStatement createTableTypeScript;
 				if (!AssemblyInventory.Get(param.Member.DeclaringType.Assembly).TryFind(script.ParameterTypeName.Name.Value, out createTableTypeScript)) {
 					throw new ArgumentException(string.Format("The given structured parameter table type {0} cannot be found in the inventory", script.ParameterTypeName));
 				}
-				IDictionary<string, SqlColumnInfo> columnInfos = SqlSerializationTypeMapping.Get(structuredType).Columns;
-				Attribute[] mappingAttributes = Attribute.GetCustomAttributes(param, typeof(SqlMappingAttribute), true);
-				if ((mappingAttributes != null) && (mappingAttributes.Length > 0)) {
-					IDictionary<string, SqlColumnInfo> mappedColumnInfos = new Dictionary<string, SqlColumnInfo>(columnInfos);
-					foreach (SqlMappingAttribute mappingAttribute in mappingAttributes) {
-						mappedColumnInfos[mappingAttribute.TableTypeColumn] = columnInfos[mappingAttribute.SqlColumn];
+				IDictionary<string, SqlColumnInfo> columnInfos;
+				SqlSerializationTypeInfo info = SqlSerializationTypeInfo.Get(structuredType);
+				if (info.SimpleConverter != null) {
+					string columnName = createTableTypeScript.TableDefinitions.OfType<TableColumnDefinition>().First(d => d.ColumnDefinition is TypedColumnDefinition).ColumnName.Value;
+					columnInfos = new Dictionary<string, SqlColumnInfo>(1);
+					columnInfos.Add(columnName, new SqlColumnInfo(structuredType, columnName, info.SimpleConverter));
+				} else {
+					columnInfos = SqlSerializationTypeMapping.Get(structuredType).Columns;
+					Attribute[] mappingAttributes = Attribute.GetCustomAttributes(param, typeof(SqlMappingAttribute), true);
+					if ((mappingAttributes != null) && (mappingAttributes.Length > 0)) {
+						IDictionary<string, SqlColumnInfo> mappedColumnInfos = new Dictionary<string, SqlColumnInfo>(columnInfos);
+						foreach (SqlMappingAttribute mappingAttribute in mappingAttributes) {
+							mappedColumnInfos[mappingAttribute.TableTypeColumn] = columnInfos[mappingAttribute.SqlColumn];
+						}
+						columnInfos = mappedColumnInfos;
 					}
-					columnInfos = mappedColumnInfos;
 				}
 				structuredSchema = new StructuredParameterSchema(createTableTypeScript, columnInfos);
 			}
