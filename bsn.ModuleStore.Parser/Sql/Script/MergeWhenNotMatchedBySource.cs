@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<MergeWhenMatched> ::= ~WHEN ~NOT ~MATCHED ~BY ~SOURCE ~THEN <MergeMatched>")]
 		public MergeWhenNotMatchedBySource(MergeOperation operation): this(null, operation) {}
 
-		[Rule("<MergeWhenMatched> ::= ~WHEN ~NOT ~MATCHED ~AND <Predicate> ~BY ~SOURCE ~THEN <MergeMatched>")]
+		[Rule("<MergeWhenMatched> ::= ~WHEN ~NOT ~MATCHED ~BY ~SOURCE ~AND <Predicate> ~THEN <MergeMatched>")]
 		public MergeWhenNotMatchedBySource(Predicate predicate, MergeOperation operation): base(predicate, operation) {}
 
 		public override string NotMatchedBy {

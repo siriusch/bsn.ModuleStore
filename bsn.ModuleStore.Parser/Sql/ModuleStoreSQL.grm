@@ -1067,11 +1067,11 @@ _ACTION = '$ACTION'
 
 <MergeWhenMatched> ::= WHEN MATCHED AND <Predicate> THEN <MergeMatched>
                      | WHEN MATCHED THEN <MergeMatched>
-                     | WHEN NOT MATCHED AND <Predicate> BY TARGET THEN <MergeNotMatched>
+                     | WHEN NOT MATCHED BY TARGET AND <Predicate> THEN <MergeNotMatched>
                      | WHEN NOT MATCHED BY TARGET THEN <MergeNotMatched>
                      | WHEN NOT MATCHED AND <Predicate> THEN <MergeNotMatched>
                      | WHEN NOT MATCHED THEN <MergeNotMatched>
-                     | WHEN NOT MATCHED AND <Predicate> BY SOURCE THEN <MergeMatched>
+                     | WHEN NOT MATCHED BY SOURCE AND <Predicate> THEN <MergeMatched>
                      | WHEN NOT MATCHED BY SOURCE THEN <MergeMatched>
 
 <MergeMatched> ::= UPDATE SET <UpdateItemList>
