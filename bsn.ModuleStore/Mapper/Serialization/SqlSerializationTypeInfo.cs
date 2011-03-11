@@ -101,7 +101,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 				instanceType = type.GetElementType();
 				Debug.Assert(instanceType != null);
-			} else if (!TryGetIEnumerableElementType(type, out instanceType)) {
+			} else if ((type == typeof(string)) || (!TryGetIEnumerableElementType(type, out instanceType))) {
 				instanceType = type;
 			}
 			if (instanceType.IsArray) {

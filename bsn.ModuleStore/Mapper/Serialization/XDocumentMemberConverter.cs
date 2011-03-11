@@ -32,7 +32,7 @@ using System.Xml;
 using System.Xml.Linq;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class XDocumentMemberConverter: XmlReaderMemberConverterBase {
+	internal class XDocumentMemberConverter: XNodeMemberConverter {
 		public XDocumentMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {

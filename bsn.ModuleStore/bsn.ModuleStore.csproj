@@ -82,6 +82,8 @@
     <Compile Include="Mapper\Serialization\StructuredParameterSchema.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Mapper\Serialization\XNodeMemberConverter.cs" />
+    <Compile Include="Mapper\Serialization\XPathNavigableMemberConverter.cs" />
     <Compile Include="Mapper\SqlCallParameterBase.cs" />
     <Compile Include="Mapper\ManagedInstanceProvider.cs" />
     <Compile Include="Mapper\MetadataBase.cs" />

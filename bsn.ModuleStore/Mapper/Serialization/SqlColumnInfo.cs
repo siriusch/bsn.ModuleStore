@@ -35,30 +35,26 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class SqlColumnInfo {
 		private readonly Type clrType;
 		private readonly MemberConverter converter;
-		private readonly SqlDbType dbType;
 		private readonly FieldInfo fieldInfo;
-		private readonly Type fieldType;
 		private readonly string name;
 		private readonly string userDefinedTypeName;
 
 		public SqlColumnInfo(Type fieldType, string columnName, MemberConverter converter) {
+			if (string.IsNullOrEmpty(columnName)) {
+				throw new ArgumentNullException("columnName");
+			}
+			if (converter == null) {
+				throw new ArgumentNullException("converter");
+			}
 			name = columnName;
-			this.fieldType = fieldType;
 			clrType = Nullable.GetUnderlyingType(fieldType) ?? fieldType;
 			userDefinedTypeName = null;
 #warning SqlSerializationTypeMapping.GetClrUserDefinedTypeName(fieldInfo.DeclaringType, columnAttribute);
-			dbType = SqlSerializationTypeMapping.GetTypeMapping(clrType);
 			this.converter = converter;
 		}
 
 		public SqlColumnInfo(FieldInfo fieldInfo, string columnName, MemberConverter converter): this(fieldInfo.FieldType, columnName, converter) {
 			this.fieldInfo = fieldInfo;
-		}
-
-		public Type ClrType {
-			get {
-				return clrType;
-			}
 		}
 
 		public MemberConverter Converter {
@@ -69,19 +65,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public SqlDbType DbType {
 			get {
-				return dbType;
+				return SqlSerializationTypeMapping.GetTypeMapping(clrType);
 			}
 		}
 
 		public FieldInfo FieldInfo {
 			get {
 				return fieldInfo;
-			}
-		}
-
-		public bool IsNullable {
-			get {
-				return fieldType != clrType;
 			}
 		}
 

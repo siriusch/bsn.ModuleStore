@@ -31,7 +31,7 @@ using System;
 using System.Xml;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class XmlDocumentMemberConverter: XmlReaderMemberConverterBase {
+	internal class XmlDocumentMemberConverter: XPathNavigableMemberConverter {
 		public XmlDocumentMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {

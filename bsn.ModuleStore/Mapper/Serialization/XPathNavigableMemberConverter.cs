@@ -28,42 +28,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Data.SqlTypes;
-using System.Diagnostics;
 using System.Xml;
+using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class XmlReaderMemberConverter: MemberConverter {
-		public XmlReaderMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {
-			Debug.Assert(!isIdentity);
-		}
+	internal abstract class XPathNavigableMemberConverter: XmlReaderMemberConverterBase {
+		public XPathNavigableMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
-		public override sealed Type DbClrType {
-			get {
-				return typeof(SqlXml);
-			}
-		}
-
-		public override sealed object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
-			if (context.DataReader.IsDBNull(column)) {
-				return null;
-			}
-			return ProcessXmlReader(context, context.DataReader.GetSqlXml(column).CreateReader());
-		}
-
-		public override sealed object ProcessToDb(object value) {
-			if (value == null) {
-				return DBNull.Value;
-			}
-			return new SqlXml(GetXmlReader(value));
-		}
-
-		protected virtual XmlReader GetXmlReader(object value) {
-			return (XmlReader)value;
-		}
-
-		protected virtual object ProcessXmlReader(SqlDeserializer.DeserializerContext context, XmlReader xmlReader) {
-			return xmlReader;
+		protected override XmlReader GetXmlReader(object value) {
+			return ((IXPathNavigable)value).CreateNavigator().ReadSubtree();
 		}
 	}
 }

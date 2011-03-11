@@ -62,7 +62,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private static readonly Dictionary<Type, SqlSerializationTypeMapping> mappings = new Dictionary<Type, SqlSerializationTypeMapping>();
 
 		internal static bool IsNativeType(Type type) {
-			return dbTypeMapping.ContainsKey(type);
+			lock (dbTypeMapping) {
+				return dbTypeMapping.ContainsKey(type);
+			}
 		}
 
 		/// <summary>
@@ -79,19 +81,27 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					type = Nullable.GetUnderlyingType(type) ?? type;
 				}
 				SqlDbType result;
-				if (dbTypeMapping.TryGetValue(type, out result)) {
-					return result;
+				lock (dbTypeMapping) {
+					if (dbTypeMapping.TryGetValue(type, out result)) {
+						return result;
+					}
+					if (SqlSerializationTypeInfo.IsXmlType(type)) {
+						result = SqlDbType.Xml;
+					} else {
+						Type dummyType;
+						if (SqlSerializationTypeInfo.TryGetIEnumerableElementType(type, out dummyType)) {
+							result = SqlDbType.Structured;
+						} else {
+							if (type.IsDefined(typeof(SqlUserDefinedTypeAttribute), false)) {
+								result = SqlDbType.Udt;
+							} else {
+								result = SqlDbType.Variant;
+							}
+						}
+					}
+					dbTypeMapping.Add(type, result);
 				}
-				if (SqlSerializationTypeInfo.IsXmlType(type)) {
-					return SqlDbType.Xml;
-				}
-				Type dummyType;
-				if (SqlSerializationTypeInfo.TryGetIEnumerableElementType(type, out dummyType)) {
-					return SqlDbType.Structured;
-				}
-				if (type.IsDefined(typeof(SqlUserDefinedTypeAttribute), false)) {
-					return SqlDbType.Udt;
-				}
+				return result;
 			}
 			return SqlDbType.Variant;
 		}

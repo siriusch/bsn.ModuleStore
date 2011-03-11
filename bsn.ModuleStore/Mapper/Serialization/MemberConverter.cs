@@ -28,6 +28,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Data;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -88,6 +89,18 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		public string ColumnName {
 			get {
 				return columnName;
+			}
+		}
+
+		public virtual Type DbClrType {
+			get {
+				return type;
+			}
+		}
+
+		public SqlDbType DbType {
+			get {
+				return SqlSerializationTypeMapping.GetTypeMapping(DbClrType);
 			}
 		}
 

@@ -80,8 +80,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private readonly ColumnInfo[] columns;
-		private readonly FieldInfo[] fields;
 		private readonly MemberConverter[] converters;
+		private readonly FieldInfo[] fields;
 
 		public StructuredParameterSchema(CreateTypeAsTableStatement script, IDictionary<string, SqlColumnInfo> columnInfos) {
 			if (script == null) {
@@ -178,7 +178,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				row[allowDbNull] = !notNull;
 				SqlColumnInfo info;
 				if (columnInfos.TryGetValue(column.ColumnName.Value, out info)) {
-					columnDataType = info.ClrType;
+					columnDataType = info.Converter.DbClrType;
 				} else if (notNull) {
 					throw new InvalidOperationException(string.Format("The column {0} on the table type {1} is not nullable, but the re is no matching column for it", column.ColumnName, script.ObjectName));
 				} else {
@@ -229,8 +229,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				Rows.Add(row);
 				columns.Add(new ColumnInfo(fieldIndex, column.ColumnName.Value, columnType, columnDataType));
 			}
-			this.fields = fieldInfos.Select(i => i.FieldInfo).ToArray();
-			this.converters = fieldInfos.Select(i => i.Converter).ToArray();
+			fields = fieldInfos.Select(i => i.FieldInfo).ToArray();
+			converters = fieldInfos.Select(i => i.Converter).ToArray();
 			this.columns = columns.ToArray();
 			AcceptChanges();
 		}
@@ -241,15 +241,15 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public FieldInfo[] Fields {
-			get {
-				return fields;
-			}
-		}
-
 		public MemberConverter[] Converters {
 			get {
 				return converters;
+			}
+		}
+
+		public FieldInfo[] Fields {
+			get {
+				return fields;
 			}
 		}
 
