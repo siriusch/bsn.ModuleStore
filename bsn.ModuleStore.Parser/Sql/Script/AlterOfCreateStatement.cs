@@ -38,6 +38,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.owner = owner;
 		}
 
+		public T Owner {
+			get {
+				return owner;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			owner.WriteToInternal(writer, "ALTER");
