@@ -30,7 +30,7 @@
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class MergeWhenNotMatchedByTarget: MergeWhenNotMatched {
+	public sealed class MergeWhenNotMatchedByTarget: MergeWhenMatched {
 		[Rule("<MergeWhenMatched> ::= ~WHEN ~NOT ~MATCHED ~THEN <MergeNotMatched>")]
 		[Rule("<MergeWhenMatched> ::= ~WHEN ~NOT ~MATCHED ~BY ~TARGET ~THEN <MergeNotMatched>")]
 		public MergeWhenNotMatchedByTarget(MergeOperation operation): this(null, operation) {}

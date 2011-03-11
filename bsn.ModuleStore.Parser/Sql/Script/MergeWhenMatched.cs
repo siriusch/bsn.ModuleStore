@@ -69,8 +69,19 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 		}
 
+		public virtual string NotMatchedBy {
+			get {
+				return string.Empty;
+			}
+		}
+
 		protected virtual void WriteMatchedTo(SqlWriter writer) {
-			writer.Write("MATCHED");
+			if (string.IsNullOrEmpty(NotMatchedBy)) {
+				writer.Write("MATCHED");
+			} else {
+				writer.Write("NOT MATCHED BY ");
+				writer.Write(NotMatchedBy);
+			}
 			writer.WriteScript(predicate, WhitespacePadding.None, " AND ", "");
 		}
 	}

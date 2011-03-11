@@ -110,7 +110,6 @@
     <Compile Include="Sql\Script\MergeOperationUpdate.cs" />
     <Compile Include="Sql\Script\MergeStatement.cs" />
     <Compile Include="Sql\Script\MergeWhenMatched.cs" />
-    <Compile Include="Sql\Script\MergeWhenNotMatched.cs" />
     <Compile Include="Sql\Script\MergeWhenNotMatchedBySource.cs" />
     <Compile Include="Sql\Script\MergeWhenNotMatchedByTarget.cs" />
     <Compile Include="Sql\Script\QueryHintOption.cs" />
