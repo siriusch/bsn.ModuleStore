@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
 
@@ -212,6 +213,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					stateProvider.EndDeserialize(state);
 				}
 				if (deserialized.ContainsValue(false)) {
+					foreach (KeyValuePair<Type, int> pair in deserialized.Where(p => !p.Value).Select(p => p.Key).GroupBy(o => o.GetType(), (t, o) => new KeyValuePair<Type, int>(t, o.Count()))) {
+						Debug.WriteLine(string.Format("Found {0} unresolved forward references of the type {1} in resultset", pair.Value, pair.Key));
+					}
 					throw new InvalidOperationException("Some objects were created as forward reference but were missing in the result set");
 				}
 			}
