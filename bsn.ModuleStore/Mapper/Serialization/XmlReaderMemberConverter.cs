@@ -45,10 +45,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override sealed object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
-			if (context.DataReader.IsDBNull(column)) {
-				return null;
+			SqlXml xml = context.DataReader.GetSqlXml(column);
+			if (!xml.IsNull) {
+				return ProcessXmlReader(context, xml.CreateReader());
 			}
-			return ProcessXmlReader(context, context.DataReader.GetSqlXml(column).CreateReader());
+			return null;
 		}
 
 		public override sealed object ProcessToDb(object value) {

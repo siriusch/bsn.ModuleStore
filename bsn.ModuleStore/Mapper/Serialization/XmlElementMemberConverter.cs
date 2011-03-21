@@ -35,10 +35,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		public XmlElementMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
-			context.XmlDocument.Load(reader);
-			XmlElement result = context.XmlDocument.DocumentElement;
-			context.XmlDocument.RemoveAll();
-			return result;
+			if (HasContent(reader)) {
+				context.XmlDocument.Load(reader);
+				XmlElement result = context.XmlDocument.DocumentElement;
+				context.XmlDocument.RemoveAll();
+				return result;
+			}
+			return null;
 		}
 	}
 }

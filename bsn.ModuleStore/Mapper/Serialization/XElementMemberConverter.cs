@@ -36,7 +36,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		public XElementMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
-			return XElement.Load(reader);
+			if (HasContent(reader)) {
+				return XElement.Load(reader);
+			}
+			return null;
 		}
 	}
 }

@@ -32,6 +32,16 @@ using System.Xml;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	internal abstract class XmlReaderMemberConverterBase: XmlReaderMemberConverter {
+		protected static bool HasContent(XmlReader reader) {
+			if (reader.ReadState == ReadState.Initial) {
+				reader.Read();
+			}
+			if (reader.ReadState == ReadState.Interactive) {
+				return !reader.EOF;
+			}
+			return false;
+		}
+
 		protected XmlReaderMemberConverterBase(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected abstract object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader);
