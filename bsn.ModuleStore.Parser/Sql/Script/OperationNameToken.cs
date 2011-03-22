@@ -35,7 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("OR")]
 	[Terminal("AND")]
 	public sealed class OperationNameToken: OperationToken {
-		public OperationNameToken(string operation): base(operation) {}
+		public OperationNameToken(string operation): base(operation.ToUpperInvariant()) {}
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write(' ');
