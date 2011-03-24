@@ -35,20 +35,20 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public class PredicateLike: PredicateNegable {
 		private readonly StringLiteral escape;
-		private readonly StringLiteral text;
+		private readonly Expression pattern;
 		private readonly Expression valueExpression;
 
-		[Rule("<PredicateLike> ::= <Expression> ~LIKE <CollableStringLiteral>")]
-		public PredicateLike(Expression valueExpression, StringLiteral text): this(valueExpression, false, text, null) {}
+		[Rule("<PredicateLike> ::= <Expression> ~LIKE <Expression>")]
+		public PredicateLike(Expression valueExpression, Expression pattern): this(valueExpression, false, pattern, null) {}
 
-		[Rule("<PredicateLike> ::= <Expression> ~LIKE <CollableStringLiteral> ~ESCAPE StringLiteral")]
-		public PredicateLike(Expression valueExpression, StringLiteral text, StringLiteral escape): this(valueExpression, false, text, escape) {}
+		[Rule("<PredicateLike> ::= <Expression> ~LIKE <Expression> ~ESCAPE StringLiteral")]
+		public PredicateLike(Expression valueExpression, Expression pattern, StringLiteral escape): this(valueExpression, false, pattern, escape) {}
 
-		protected PredicateLike(Expression valueExpression, bool not, StringLiteral text, StringLiteral escape): base(not) {
+		protected PredicateLike(Expression valueExpression, bool not, Expression pattern, StringLiteral escape): base(not) {
 			Debug.Assert(valueExpression != null);
-			Debug.Assert(text != null);
+			Debug.Assert(pattern != null);
 			this.valueExpression = valueExpression;
-			this.text = text;
+			this.pattern = pattern;
 			this.escape = escape;
 		}
 
@@ -58,9 +58,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public StringLiteral Text {
+		public Expression Pattern {
 			get {
-				return text;
+				return pattern;
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			base.WriteTo(writer);
 			writer.Write(" LIKE ");
-			writer.WriteScript(text, WhitespacePadding.None);
+			writer.WriteScript(pattern, WhitespacePadding.None);
 			writer.WriteScript(escape, WhitespacePadding.None, "ESCAPE ", null);
 		}
 	}

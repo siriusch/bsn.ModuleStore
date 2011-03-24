@@ -126,6 +126,24 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
+		public void CreateTypeAsTable() {
+			ParseWithRoundtrip(@"CREATE TYPE dbo.LocationTableType AS TABLE 
+    ( LocationName VARCHAR(50)
+    , CostRate INT );", 1);
+		}
+
+		[Test]
+		public void CreateTypeFrom() {
+			ParseWithRoundtrip(@"CREATE TYPE dbo.SSN
+FROM varchar(11) NOT NULL ;", 1);
+		}
+
+		[Test]
+		public void DropType() {
+			ParseWithRoundtrip(@"DROP TYPE dbo.SSN;", 1);
+		}
+
+		[Test]
 		public void GetGrammar() {
 			Expect(ScriptParser.GetGrammar(), Not.Null);
 		}
@@ -133,6 +151,71 @@ namespace bsn.ModuleStore.Sql {
 		[Test]
 		public void GetSemanticActions() {
 			Expect(ScriptParser.GetSemanticActions(), Not.Null);
+		}
+
+		[Test]
+		public void LikePredicate() {
+			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a'", 1);
+		}
+
+		[Test]
+		public void LikeWithCollationPredicate() {
+			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a' COLLATE Latin1_General_BIN2", 1);
+		}
+
+		[Test]
+		public void LikeWithExpressionPredicate() {
+			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a%'+x.z", 1);
+		}
+
+		[Test]
+		public void MergeUpdateDelete() {
+			ParseWithRoundtrip(
+					@"MERGE Production.ProductInventory AS target
+USING (SELECT ProductID, SUM(OrderQty) FROM Sales.SalesOrderDetail AS sod
+    JOIN Sales.SalesOrderHeader AS soh
+    ON sod.SalesOrderID = soh.SalesOrderID
+    AND soh.OrderDate = @OrderDate
+    GROUP BY ProductID) AS source (ProductID, OrderQty)
+ON (target.ProductID = source.ProductID)
+WHEN MATCHED AND target.Quantity - source.OrderQty <= 0
+    THEN DELETE
+WHEN MATCHED 
+    THEN UPDATE SET target.Quantity = target.Quantity - source.OrderQty, 
+                    target.ModifiedDate = GETDATE()
+OUTPUT $action, Inserted.ProductID, Inserted.Quantity, Inserted.ModifiedDate, Deleted.ProductID,
+    Deleted.Quantity, Deleted.ModifiedDate;",
+					1);
+		}
+
+		[Test]
+		public void MergeUpdateInsert() {
+			ParseWithRoundtrip(
+					@"MERGE Production.UnitMeasure AS target
+    USING (SELECT @UnitMeasureCode, @Name) AS source (UnitMeasureCode, Name)
+    ON (target.UnitMeasureCode = source.UnitMeasureCode)
+    WHEN MATCHED THEN 
+        UPDATE SET Name = source.Name
+	WHEN NOT MATCHED THEN	
+	    INSERT (UnitMeasureCode, Name)
+	    VALUES (source.UnitMeasureCode, source.Name)
+	    OUTPUT deleted.*, $action, inserted.* INTO #MyTempTable;",
+					1);
+		}
+
+		[Test]
+		public void MergeUpdateInsert2() {
+			ParseWithRoundtrip(
+					@"MERGE INTO Sales.SalesReason AS Target
+USING (VALUES ('Recommendation','Other'), ('Review', 'Marketing'), ('Internet', 'Promotion'))
+       AS Source (NewName, NewReasonType)
+ON Target.Name = Source.NewName
+WHEN MATCHED THEN
+	UPDATE SET ReasonType = Source.NewReasonType
+WHEN NOT MATCHED BY TARGET THEN
+	INSERT (Name, ReasonType) VALUES (NewName, NewReasonType)
+OUTPUT $action INTO @SummaryOfChanges;",
+					1);
 		}
 
 		[Test]
@@ -318,6 +401,11 @@ PRINT 'Cool'", 3);
 		}
 
 		[Test]
+		public void SelectValuesRowset() {
+			ParseWithRoundtrip(@"SELECT * FROM (VALUES (1,2,3),(4,5,6)) AS Ints (x, y, z);", 1);
+		}
+
+		[Test]
 		public void SelectWithCrossApplyAndXmlFunctions() {
 			ParseWithRoundtrip(
 					@"SELECT ProductModelID, Locations.value('./@LocationID','int') as LocID,
@@ -327,6 +415,11 @@ CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)
 CROSS APPLY T1.Locations.nodes('/MI:step ') as T2(steps)       
 WHERE ProductModelID=7;",
 					1);
+		}
+
+		[Test]
+		public void SelectWithHints() {
+			ParseWithRoundtrip(@"SELECT @a=1 OPTION (MAXRECURSION 0, RECOMPILE);", 1);
 		}
 
 		[Test]
@@ -387,78 +480,6 @@ SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
 		[Test]
 		public void SyntaxError() {
 			Expect(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1), Throws.InstanceOf<ParseException>().With.Message.ContainsSubstring("SyntaxError"));
-		}
-
-		[Test]
-		public void SelectWithHints() {
-			ParseWithRoundtrip(@"SELECT @a=1 OPTION (MAXRECURSION 0, RECOMPILE);", 1);
-		}
-
-		[Test]
-		public void CreateTypeFrom() {
-			ParseWithRoundtrip(@"CREATE TYPE dbo.SSN
-FROM varchar(11) NOT NULL ;", 1);
-		}
-
-		[Test]
-		public void CreateTypeAsTable() {
-			ParseWithRoundtrip(@"CREATE TYPE dbo.LocationTableType AS TABLE 
-    ( LocationName VARCHAR(50)
-    , CostRate INT );", 1);
-		}
-
-		[Test]
-		public void DropType() {
-			ParseWithRoundtrip(@"DROP TYPE dbo.SSN;", 1);
-		}
-
-		[Test]
-		public void SelectValuesRowset() {
-			ParseWithRoundtrip(@"SELECT * FROM (VALUES (1,2,3),(4,5,6)) AS Ints (x, y, z);", 1);
-		}
-
-		[Test]
-		public void MergeUpdateInsert() {
-			ParseWithRoundtrip(@"MERGE Production.UnitMeasure AS target
-    USING (SELECT @UnitMeasureCode, @Name) AS source (UnitMeasureCode, Name)
-    ON (target.UnitMeasureCode = source.UnitMeasureCode)
-    WHEN MATCHED THEN 
-        UPDATE SET Name = source.Name
-	WHEN NOT MATCHED THEN	
-	    INSERT (UnitMeasureCode, Name)
-	    VALUES (source.UnitMeasureCode, source.Name)
-	    OUTPUT deleted.*, $action, inserted.* INTO #MyTempTable;", 1);
-		}		
-		
-		[Test]
-		public void MergeUpdateInsert2() {
-			ParseWithRoundtrip(@"MERGE INTO Sales.SalesReason AS Target
-USING (VALUES ('Recommendation','Other'), ('Review', 'Marketing'), ('Internet', 'Promotion'))
-       AS Source (NewName, NewReasonType)
-ON Target.Name = Source.NewName
-WHEN MATCHED THEN
-	UPDATE SET ReasonType = Source.NewReasonType
-WHEN NOT MATCHED BY TARGET THEN
-	INSERT (Name, ReasonType) VALUES (NewName, NewReasonType)
-OUTPUT $action INTO @SummaryOfChanges;", 1);
-		}
-
-		[Test]
-		public void MergeUpdateDelete() {
-			ParseWithRoundtrip(@"MERGE Production.ProductInventory AS target
-USING (SELECT ProductID, SUM(OrderQty) FROM Sales.SalesOrderDetail AS sod
-    JOIN Sales.SalesOrderHeader AS soh
-    ON sod.SalesOrderID = soh.SalesOrderID
-    AND soh.OrderDate = @OrderDate
-    GROUP BY ProductID) AS source (ProductID, OrderQty)
-ON (target.ProductID = source.ProductID)
-WHEN MATCHED AND target.Quantity - source.OrderQty <= 0
-    THEN DELETE
-WHEN MATCHED 
-    THEN UPDATE SET target.Quantity = target.Quantity - source.OrderQty, 
-                    target.ModifiedDate = GETDATE()
-OUTPUT $action, Inserted.ProductID, Inserted.Quantity, Inserted.ModifiedDate, Deleted.ProductID,
-    Deleted.Quantity, Deleted.ModifiedDate;", 1);
 		}
 
 		[Test]

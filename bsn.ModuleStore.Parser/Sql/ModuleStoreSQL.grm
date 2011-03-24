@@ -416,20 +416,16 @@ _ACTION = '$ACTION'
 
 <StringLiteral> ::= StringLiteral
 
-<CollableStringLiteral> ::= StringLiteral COLLATE <CollationName>
-                          | <StringLiteral>
-
 <IntegerLiteral> ::= IntegerLiteral
                    | HexLiteral
 
 <NumberLiteral> ::= <IntegerLiteral>
                   | RealLiteral
 
-<NullLiteral> ::= NULL
-
 <Literal> ::= <NumberLiteral>
-            | <CollableStringLiteral>
-            | <NullLiteral>
+            | <StringLiteral>
+            | StringLiteral COLLATE <CollationName>
+            | NULL
 
 <Toggle> ::= ON
            | OFF
@@ -996,7 +992,7 @@ _ACTION = '$ACTION'
                            | <FunctionCall>
                            | <NumberLiteral>
                            | <StringLiteral>
-                           | <NullLiteral>
+                           | NULL
 
 <ConstraintIndex> ::= WITH FILLFACTOR '=' <IntegerLiteral>
                     | <IndexOptionGroup>
@@ -1286,10 +1282,10 @@ _ACTION = '$ACTION'
                   | <Expression> IS NOT NULL
                   | <PredicateLike>
 
-<PredicateLike> ::= <Expression> LIKE <CollableStringLiteral>
-                  | <Expression> LIKE <CollableStringLiteral> ESCAPE StringLiteral
-                  | <Expression> NOT LIKE <CollableStringLiteral>
-                  | <Expression> NOT LIKE <CollableStringLiteral> ESCAPE StringLiteral
+<PredicateLike> ::= <Expression> LIKE <Expression>
+                  | <Expression> LIKE <Expression> ESCAPE StringLiteral
+                  | <Expression> NOT LIKE <Expression>
+                  | <Expression> NOT LIKE <Expression> ESCAPE StringLiteral
                   | <PredicateIn>
 
 <PredicateIn> ::= <Expression> IN <Tuple>
