@@ -41,9 +41,13 @@ namespace bsn.ModuleStore.Console.Commands {
 		public DumpCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
-			Source inventorySource = (Source)tags["source"];
-			Inventory inventory = executionContext.GetInventory(inventorySource);
-			inventory.Dump(null, executionContext.Output);
+			try {
+				Source inventorySource = (Source)tags["source"];
+				Inventory inventory = executionContext.GetInventory(inventorySource);
+				inventory.Dump(null, executionContext.Output);
+			} catch (Exception ex) {
+				executionContext.Output.WriteLine("Error: "+ex.Message);
+			}
 		}
 
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
