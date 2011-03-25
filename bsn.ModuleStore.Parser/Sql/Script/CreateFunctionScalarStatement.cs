@@ -39,7 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~')' ~RETURNS <TypeNameQualified> <OptionalFunctionOption> ~<OptionalAs> <StatementBlock>", typeof(StatementBlock))]
 		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~')' ~RETURNS <TypeNameQualified> <OptionalFunctionOption> ~<OptionalAs> <ExternalName>", typeof(ExternalName))]
-		public CreateFunctionScalarStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, Qualified<SchemaName, TypeName> returnTypeName, OptionToken option, T body): base(functionName, parameters, option, body) {
+		public CreateFunctionScalarStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<Parameter>> parameters, Qualified<SchemaName, TypeName> returnTypeName, OptionToken option, T body): base(functionName, parameters, option, body) {
 			Debug.Assert(returnTypeName != null);
 			this.returnTypeName = returnTypeName;
 		}

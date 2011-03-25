@@ -33,18 +33,20 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class FunctionParameter: SqlScriptableToken {
+	public class Parameter: SqlScriptableToken {
 		private readonly Literal defaultValue;
 		private readonly ParameterName parameterName;
 		private readonly Qualified<SchemaName, TypeName> parameterTypeName;
+		private readonly bool readOnly;
 
-		[Rule("<FunctionParameter> ::= <ParameterName> ~<OptionalAs> <TypeNameQualified> <OptionalDefault>")]
-		public FunctionParameter(ParameterName parameterName, Qualified<SchemaName, TypeName> parameterTypeName, Optional<Literal> defaultValue) {
+		[Rule("<FunctionParameter> ::= <ParameterName> ~<OptionalAs> <TypeNameQualified> <OptionalDefault> <OptionalReadonly>")]
+		public Parameter(ParameterName parameterName, Qualified<SchemaName, TypeName> parameterTypeName, Optional<Literal> defaultValue, Optional<UnreservedKeyword> readOnly) {
 			Debug.Assert(parameterName != null);
 			Debug.Assert(parameterTypeName != null);
 			this.parameterName = parameterName;
 			this.parameterTypeName = parameterTypeName;
 			this.defaultValue = defaultValue;
+			this.readOnly = readOnly.HasValue();
 		}
 
 		public Literal DefaultValue {
@@ -65,9 +67,22 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
+		public bool ReadOnly {
+			get {
+				return readOnly;
+			}
+		}
+
+		public override sealed void WriteTo(SqlWriter writer) {
 			writer.WriteScript(parameterName, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(parameterTypeName, WhitespacePadding.None);
+			WriteParameterQualifiers(writer);
+			if (readOnly) {
+				writer.Write(" READONLY");
+			}
+		}
+
+		protected virtual void WriteParameterQualifiers(SqlWriter writer) {
 			writer.WriteScript(defaultValue, WhitespacePadding.None, "=", null);
 		}
 	}

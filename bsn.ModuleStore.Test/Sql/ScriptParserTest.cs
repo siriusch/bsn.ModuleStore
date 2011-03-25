@@ -144,6 +144,47 @@ FROM varchar(11) NOT NULL ;", 1);
 		}
 
 		[Test]
+		public void CreateFunctionWithReadonlyParameter() {
+			ParseWithRoundtrip(@"CREATE FUNCTION [dbo].[fnIndicatorStructureResolve]
+  (
+   @tblPeriodIndicator [dbo].[udtUidList] READONLY,
+   @tblStructure [dbo].[udtStructureList] READONLY
+  )
+RETURNS TABLE
+  AS
+RETURN
+  (
+WITH  [IndicatorStructures]
+        AS (
+            SELECT DISTINCT [pi].[uidPeriodIndicator], [s].[uidStructure], [i].[uidPersistLevel],
+                CASE WHEN [i].[uidPersistLevel] = [s].[uidLevel] THEN CONVERT(bit, 1)
+                     ELSE CONVERT(bit, 0)
+                END AS [bPersist]
+              FROM @tblPeriodIndicator AS [pis]
+              JOIN 
+                [dbo].[tblPeriodIndicator] AS [pi] ON [pis].[uid] = [pi].[uidPeriodIndicator]
+              JOIN 
+                [dbo].[tblIndicator] AS [i] ON [i].[uidIndicator] = [pi].[uidIndicator] 
+              JOIN 
+                @tblStructure AS [s] ON [i].[uidOwnerStructure] = [s].[uidStructure]
+              WHERE ([i].[uidPersistLevel] IS NOT NULL)
+            UNION ALL
+            SELECT [is].[uidPeriodIndicator], [s].[uidStructure], [is].[uidPersistLevel],
+                CASE WHEN [is].[uidPersistLevel] = [s].[uidLevel] THEN CONVERT(bit, 1)
+                     ELSE CONVERT(bit, 0)
+                END
+              FROM [IndicatorStructures] AS [is] 
+              JOIN 
+                @tblStructure AS [s] ON [s].[uidParent] = [is].[uidStructure]
+              WHERE [is].[bPersist] = 0
+           )
+  SELECT [is].[uidPeriodIndicator], [is].[uidStructure]
+    FROM [IndicatorStructures] [is]
+    WHERE [is].[bPersist] = 1
+        )", 1);
+		}
+
+		[Test]
 		public void GetGrammar() {
 			Expect(ScriptParser.GetGrammar(), Not.Null);
 		}

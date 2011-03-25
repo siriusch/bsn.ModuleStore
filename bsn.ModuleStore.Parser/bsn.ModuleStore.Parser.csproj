@@ -251,7 +251,7 @@
     <Compile Include="Sql\Script\FulltextChangeTrackingKind.cs" />
     <Compile Include="Sql\Script\FulltextColumn.cs" />
     <Compile Include="Sql\Script\FunctionName.cs" />
-    <Compile Include="Sql\Script\FunctionParameter.cs" />
+    <Compile Include="Sql\Script\Parameter.cs" />
     <Compile Include="Sql\Script\GotoStatement.cs" />
     <Compile Include="Sql\Script\ICreateOrAlterStatement.cs" />
     <Compile Include="Sql\Script\Identifier.cs" />

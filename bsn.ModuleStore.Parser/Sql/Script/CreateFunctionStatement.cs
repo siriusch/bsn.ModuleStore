@@ -42,9 +42,9 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateFunctionStatement: CreateStatement, ICreateOrAlterStatement {
 		private readonly Qualified<SchemaName, FunctionName> functionName;
 		private readonly OptionToken option;
-		private readonly List<FunctionParameter> parameters;
+		private readonly List<Parameter> parameters;
 
-		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<FunctionParameter> parameters, OptionToken option) {
+		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<Parameter> parameters, OptionToken option) {
 			Debug.Assert(functionName != null);
 			this.functionName = functionName;
 			this.parameters = parameters.ToList();
@@ -78,7 +78,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public IEnumerable<FunctionParameter> Parameters {
+		public IEnumerable<Parameter> Parameters {
 			get {
 				return parameters;
 			}
@@ -121,7 +121,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateFunctionStatement<TBody>: CreateFunctionStatement where TBody: SqlScriptableToken {
 		private readonly TBody body;
 
-		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<FunctionParameter> parameters, OptionToken option, TBody body): base(functionName, parameters, option) {
+		protected CreateFunctionStatement(Qualified<SchemaName, FunctionName> functionName, Sequence<Parameter> parameters, OptionToken option, TBody body): base(functionName, parameters, option) {
 			Debug.Assert(body != null);
 			this.body = body;
 		}

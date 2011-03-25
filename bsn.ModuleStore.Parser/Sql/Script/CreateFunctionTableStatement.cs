@@ -40,10 +40,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<TableDefinition> tableDefinitions;
 
 		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~')' ~RETURNS ~TABLE <TableDefinitionGroup> <OptionalFunctionOption> ~<OptionalAs> <ExternalName>", typeof(ExternalName))]
-		public CreateFunctionTableStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, Sequence<TableDefinition> tableDefinitions, OptionToken option, T body): this(functionName, parameters, null, tableDefinitions, option, body) {}
+		public CreateFunctionTableStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<Parameter>> parameters, Sequence<TableDefinition> tableDefinitions, OptionToken option, T body): this(functionName, parameters, null, tableDefinitions, option, body) {}
 
 		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~')' ~RETURNS <VariableName> ~TABLE <TableDefinitionGroup> <OptionalFunctionOption> ~<OptionalAs> <StatementBlock>", typeof(StatementBlock))]
-		public CreateFunctionTableStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, VariableName resultVariableName, Sequence<TableDefinition> tableDefinitions, OptionToken option, T body): base(functionName, parameters, option, body) {
+		public CreateFunctionTableStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<Parameter>> parameters, VariableName resultVariableName, Sequence<TableDefinition> tableDefinitions, OptionToken option, T body): base(functionName, parameters, option, body) {
 			Debug.Assert(tableDefinitions != null);
 			this.resultVariableName = resultVariableName;
 			this.tableDefinitions = tableDefinitions.ToList();

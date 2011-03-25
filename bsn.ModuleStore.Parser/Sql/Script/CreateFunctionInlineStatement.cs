@@ -35,7 +35,7 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CreateFunctionInlineStatement: CreateFunctionStatement<SelectStatement> {
 		[Rule("<CreateFunctionStatement> ::= ~CREATE ~FUNCTION <FunctionNameQualified> ~'(' <OptionalFunctionParameterList> ~')' ~RETURNS ~TABLE <OptionalFunctionOption> ~<OptionalAs> ~RETURN <FunctionInlineSelect>")]
-		public CreateFunctionInlineStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<FunctionParameter>> parameters, OptionToken option, SelectStatement body): base(functionName, parameters, option, body) {}
+		public CreateFunctionInlineStatement(Qualified<SchemaName, FunctionName> functionName, Optional<Sequence<Parameter>> parameters, OptionToken option, SelectStatement body): base(functionName, parameters, option, body) {}
 
 		protected override void WriteToInternal(SqlWriter writer, string command) {
 			base.WriteToInternal(writer, command);

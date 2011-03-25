@@ -70,6 +70,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("PRECISION")]
 	[Terminal("PROPERTY")]
 	[Terminal("RAW")]
+	[Terminal("READONLY")]
 	[Terminal("RECOMPILE")]
 	[Terminal("REPEATABLE")]
 	[Terminal("RETURNS")]

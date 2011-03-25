@@ -2,8 +2,8 @@
 ! T-SQL Script Analyzer
 ! -----------------------------------------------------------------------------------
 
-"Name"         = 'T-SQL 2005 (strict subset)'
-"Version"      = '2005'
+"Name"         = 'T-SQL 2008 (strict subset)'
+"Version"      = '2008'
 "About"        = 'Parser for T-SQL subset to be supported by ModuleStore.'
                | 'This subset excludes ambiguous and deprecated SQL as well as some features not used by ModuleStore.'
 "Author"       = 'Arsène von Wyss'
@@ -263,6 +263,7 @@ PERSISTED = PERSISTED
 POPULATION = POPULATION
 PROPERTY = PROPERTY
 RAW = RAW
+READONLY = READONLY
 RECOMPILE = RECOMPILE
 REPEATABLE = REPEATABLE
 RETURNS = RETURNS
@@ -708,7 +709,7 @@ _ACTION = '$ACTION'
 <FunctionParameterList> ::= <FunctionParameter> ',' <FunctionParameterList>
                           | <FunctionParameter>
 
-<FunctionParameter> ::= <ParameterName> <OptionalAs> <TypeNameQualified> <OptionalDefault>
+<FunctionParameter> ::= <ParameterName> <OptionalAs> <TypeNameQualified> <OptionalDefault> <OptionalReadonly>
 
 <FunctionInlineSelect> ::= <SelectStatement>
                          | '(' <FunctionInlineSelect> ')'
@@ -744,7 +745,7 @@ _ACTION = '$ACTION'
 <OptionalOutput> ::= OUTPUT
                    |
 
-<OptionalReadonly> ::= Id
+<OptionalReadonly> ::= READONLY
                      |
 
 <ProcedureOptionGroup> ::= WITH RECOMPILE

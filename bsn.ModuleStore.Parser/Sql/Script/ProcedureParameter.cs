@@ -28,65 +28,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ProcedureParameter: SqlScriptableToken {
-		private readonly Literal defaultValue;
+	public sealed class ProcedureParameter: Parameter {
 		private readonly bool output;
-		private readonly ParameterName parameterName;
-		private readonly Qualified<SchemaName, TypeName> parameterTypeName;
-		private readonly bool readOnly;
 		private readonly bool varying;
 
 		[Rule("<ProcedureParameter> ::= <ParameterName> <TypeNameQualified> <OptionalVarying> <OptionalDefault> <OptionalOutput> <OptionalReadonly>")]
-		public ProcedureParameter(ParameterName parameterName, Qualified<SchemaName, TypeName> parameterTypeName, Optional<VaryingToken> varying, Optional<Literal> defaultValue, Optional<UnreservedKeyword> output, Optional<Identifier> readonlyIdentifier) {
-			Debug.Assert(parameterName != null);
-			Debug.Assert(parameterTypeName != null);
-			this.parameterName = parameterName;
-			this.parameterTypeName = parameterTypeName;
+		public ProcedureParameter(ParameterName parameterName, Qualified<SchemaName, TypeName> parameterTypeName, Optional<VaryingToken> varying, Optional<Literal> defaultValue, Optional<UnreservedKeyword> output, Optional<UnreservedKeyword> readOnly)
+				: base(parameterName, parameterTypeName, defaultValue, readOnly) {
 			this.varying = varying.HasValue();
-			this.defaultValue = defaultValue;
 			this.output = output.HasValue();
-			if (readonlyIdentifier.HasValue()) {
-				if (string.Equals(readonlyIdentifier.Value.Value, "READONLY", StringComparison.OrdinalIgnoreCase)) {
-					readOnly = true;
-				} else {
-					Debug.Fail("READONLY expected");
-				}
-			}
-		}
-
-		public Literal DefaultValue {
-			get {
-				return defaultValue;
-			}
 		}
 
 		public bool Output {
 			get {
 				return output;
-			}
-		}
-
-		public ParameterName ParameterName {
-			get {
-				return parameterName;
-			}
-		}
-
-		public Qualified<SchemaName, TypeName> ParameterTypeName {
-			get {
-				return parameterTypeName;
-			}
-		}
-
-		public bool ReadOnly {
-			get {
-				return readOnly;
 			}
 		}
 
@@ -96,18 +56,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(parameterName, WhitespacePadding.None);
-			writer.WriteScript(parameterTypeName, WhitespacePadding.SpaceBefore);
+		protected override void WriteParameterQualifiers(SqlWriter writer) {
 			if (varying) {
 				writer.Write(" VARYING");
 			}
-			writer.WriteScript(defaultValue, WhitespacePadding.None, "=", null);
+			base.WriteParameterQualifiers(writer);
 			if (output) {
 				writer.Write(" OUTPUT");
-			}
-			if (readOnly) {
-				writer.Write(" READONLY");
 			}
 		}
 	}
