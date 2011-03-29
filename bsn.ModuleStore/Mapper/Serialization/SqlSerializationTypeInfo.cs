@@ -32,13 +32,40 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SqlSerializationTypeInfo {
+		private static class ToArray<T> {
+			public static readonly Func<object, Array> ToArrayInvoker = CreateToArrayInvoker();
+
+			private static Func<object, Array> CreateToArrayInvoker() {
+				MethodInfo toArrayMethod = typeof(T).GetMethod("ToArray");
+				if (toArrayMethod == null) {
+					return null;
+				}
+				DynamicMethod method = new DynamicMethod(string.Format("{0}.ToArray`Invoke", typeof(T).FullName), typeof(Array), new[] { typeof(object) }, false);
+				ILGenerator il = method.GetILGenerator();
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Castclass, typeof(T));
+				il.Emit(OpCodes.Callvirt, toArrayMethod);
+				il.Emit(OpCodes.Ret);
+				return (Func<object, Array>)method.CreateDelegate(typeof(Func<object, Array>));
+			}
+		}
+
 		private static readonly Dictionary<Type, SqlSerializationTypeInfo> infos = new Dictionary<Type, SqlSerializationTypeInfo>();
+
+		private static Array ToArrayGeneric<T>(IEnumerable enumerable) {
+			List<T> list = new List<T>();
+			foreach (object obj in enumerable) {
+				list.Add((T)obj);
+			}
+			return list.ToArray();
+		}
 
 		public static SqlSerializationTypeInfo Get(Type type) {
 			SqlSerializationTypeInfo result;
@@ -86,7 +113,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private readonly Type instanceType;
 		private readonly bool isXmlType;
-		private readonly MethodInfo listToArray;
+		private readonly Func<object, Array> listToArray;
 		private readonly Type listType;
 		private readonly SqlSerializationTypeMapping mapping;
 		private readonly bool requiresNotification;
@@ -112,7 +139,14 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if (IsCollection) {
 				listType = (type.IsInterface || type.IsArray) ? typeof(List<>).MakeGenericType(instanceType) : type;
 				if (type.IsArray) {
-					listToArray = listType.GetMethod("ToArray");
+// ReSharper disable PossibleNullReferenceException
+// ReSharper disable AssignNullToNotNullAttribute
+					listToArray = (Func<object, Array>)typeof(ToArray<>).MakeGenericType(listType).GetField("ToArrayInvoker", BindingFlags.Public|BindingFlags.Static).GetValue(null);
+// ReSharper restore AssignNullToNotNullAttribute
+// ReSharper restore PossibleNullReferenceException
+					if (listToArray == null) {
+						listToArray = (Func<object, Array>)Delegate.CreateDelegate(typeof(Func<object, Array>), typeof(SqlSerializationTypeInfo).GetMethod("ToArrayGeneric").MakeGenericMethod(instanceType));
+					}
 				}
 			}
 			isXmlType = IsXmlType(instanceType);
@@ -180,7 +214,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public object FinalizeList(IList list) {
 			if ((list != null) && (listToArray != null)) {
-				return listToArray.Invoke(list, null);
+				return listToArray(list);
 			}
 			return list;
 		}
