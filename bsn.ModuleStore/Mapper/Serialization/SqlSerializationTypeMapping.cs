@@ -63,8 +63,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		internal static bool IsNativeType(Type type) {
 			lock (dbTypeMapping) {
-				return dbTypeMapping.ContainsKey(type);
+				SqlDbType dbType;
+				if (dbTypeMapping.TryGetValue(type, out dbType)) {
+					return dbType != SqlDbType.Variant;
+				}
 			}
+			return false;
 		}
 
 		/// <summary>
