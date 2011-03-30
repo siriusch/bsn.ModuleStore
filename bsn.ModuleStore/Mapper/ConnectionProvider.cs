@@ -29,6 +29,7 @@
 //  
 using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace bsn.ModuleStore.Mapper {
 	public sealed class ConnectionProvider: IConnectionProvider {
@@ -46,6 +47,10 @@ namespace bsn.ModuleStore.Mapper {
 			this.schemaName = schemaName;
 		}
 
+		private void DisplayInfoMessage(object sender, SqlInfoMessageEventArgs e) {
+			Trace.WriteLine(e.Message);
+		}
+
 		public string SchemaName {
 			get {
 				return schemaName;
@@ -53,7 +58,9 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public SqlConnection GetConnection() {
-			return new SqlConnection(connectionString);
+			SqlConnection connection = new SqlConnection(connectionString);
+			connection.InfoMessage += DisplayInfoMessage;
+			return connection;
 		}
 
 		SqlTransaction IConnectionProvider.GetTransaction() {
