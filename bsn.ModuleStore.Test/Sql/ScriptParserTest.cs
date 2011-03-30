@@ -126,26 +126,9 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
-		public void CreateTypeAsTable() {
-			ParseWithRoundtrip(@"CREATE TYPE dbo.LocationTableType AS TABLE 
-    ( LocationName VARCHAR(50)
-    , CostRate INT );", 1);
-		}
-
-		[Test]
-		public void CreateTypeFrom() {
-			ParseWithRoundtrip(@"CREATE TYPE dbo.SSN
-FROM varchar(11) NOT NULL ;", 1);
-		}
-
-		[Test]
-		public void DropType() {
-			ParseWithRoundtrip(@"DROP TYPE dbo.SSN;", 1);
-		}
-
-		[Test]
 		public void CreateFunctionWithReadonlyParameter() {
-			ParseWithRoundtrip(@"CREATE FUNCTION [dbo].[fnIndicatorStructureResolve]
+			ParseWithRoundtrip(
+					@"CREATE FUNCTION [dbo].[fnIndicatorStructureResolve]
   (
    @tblPeriodIndicator [dbo].[udtUidList] READONLY,
    @tblStructure [dbo].[udtStructureList] READONLY
@@ -181,7 +164,51 @@ WITH  [IndicatorStructures]
   SELECT [is].[uidPeriodIndicator], [is].[uidStructure]
     FROM [IndicatorStructures] [is]
     WHERE [is].[bPersist] = 1
-        )", 1);
+        )",
+					1);
+		}
+
+		[Test]
+		public void CreateTypeAsTable() {
+			ParseWithRoundtrip(@"CREATE TYPE dbo.LocationTableType AS TABLE 
+    ( LocationName VARCHAR(50)
+    , CostRate INT );", 1);
+		}
+
+		[Test]
+		public void CreateTypeFrom() {
+			ParseWithRoundtrip(@"CREATE TYPE dbo.SSN
+FROM varchar(11) NOT NULL ;", 1);
+		}
+
+		[Test]
+		public void DropType() {
+			ParseWithRoundtrip(@"DROP TYPE dbo.SSN;", 1);
+		}
+
+		[Test]
+		public void Fetch() {
+			ParseWithRoundtrip(@"FETCH @curs", 1);
+		}
+
+		[Test]
+		public void FetchAbsoluteVariable() {
+			ParseWithRoundtrip(@"FETCH ABSOLUTE @i FROM curs INTO @a, @b", 1);
+		}
+
+		[Test]
+		public void FetchGlobal() {
+			ParseWithRoundtrip(@"FETCH NEXT FROM GLOBAL curs", 1);
+		}
+
+		[Test]
+		public void FetchInto() {
+			ParseWithRoundtrip(@"FETCH FIRST FROM curs INTO @a, @b", 1);
+		}
+
+		[Test]
+		public void FetchRelativeInt() {
+			ParseWithRoundtrip(@"FETCH RELATIVE 12 FROM curs INTO @a, @b", 1);
 		}
 
 		[Test]

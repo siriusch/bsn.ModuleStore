@@ -35,23 +35,21 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class CursorName: SqlQuotedName {
 		private readonly bool global;
+		private readonly bool quote;
 
 		[Rule("<CursorName> ::= Id")]
 		[Rule("<CursorName> ::= QuotedId")]
-		public CursorName(Identifier identifier): this(identifier.Value, false) {}
+		public CursorName(Identifier identifier): this(identifier.Value, false, true) {}
 
 		[Rule("<GlobalOrLocalCursor> ::= <VariableName>")]
-		public CursorName(VariableName variableName): this(variableName.Value, false) {}
+		public CursorName(VariableName variableName): this(variableName.Value, false, false) {}
 
-		[Rule("<GlobalOrLocalCursor> ::= Id <CursorName>")]
-		public CursorName(Identifier global, CursorName name): this(name.Value, true) {
-			if (!string.Equals(global.Value, "GLOBAL", StringComparison.OrdinalIgnoreCase)) {
-				throw new ArgumentException("GLOBAl expected", "global");
-			}
-		}
+		[Rule("<GlobalOrLocalCursor> ::= ~GLOBAL <CursorName>")]
+		public CursorName(CursorName name): this(name.Value, true, true) {}
 
-		private CursorName(string name, bool global): base(name) {
+		private CursorName(string name, bool global, bool quote): base(name) {
 			this.global = global;
+			this.quote = quote;
 		}
 
 		public bool Global {
@@ -69,14 +67,21 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		internal CursorName AsGlobal() {
+			if (!quote) {
+				throw new InvalidOperationException();
+			}
 			if (global) {
 				return this;
 			}
-			return new CursorName(Value, true);
+			return new CursorName(Value, true, true);
 		}
 
 		internal void WriteNonGlobalInternal(SqlWriter writer) {
-			base.WriteToInternal(writer, false);
+			if (!quote) {
+				writer.Write(Value);
+			} else {
+				base.WriteToInternal(writer, false);
+			}
 		}
 	}
 }

@@ -82,6 +82,16 @@
     <Compile Include="Sql\Script\CreateTypeFromStatement.cs" />
     <Compile Include="Sql\Script\CreateTypeStatement.cs" />
     <Compile Include="Sql\Script\CrossApply.cs" />
+    <Compile Include="Sql\Script\CursorPosition.cs" />
+    <Compile Include="Sql\Script\FetchStatement.cs" />
+    <Compile Include="Sql\Script\Tokens\CursorPositionAbsolute.cs" />
+    <Compile Include="Sql\Script\Tokens\CursorPositionFirst.cs" />
+    <Compile Include="Sql\Script\Tokens\CursorPositionLast.cs" />
+    <Compile Include="Sql\Script\Tokens\CursorPositionNext.cs" />
+    <Compile Include="Sql\Script\Tokens\CursorPositionOffset.cs" />
+    <Compile Include="Sql\Script\Tokens\CursorPositionPrior.cs" />
+    <Compile Include="Sql\Script\Tokens\CursorPositionRelative.cs" />
+    <Compile Include="Sql\Script\Tokens\CursorPositionToken.cs" />
     <Compile Include="Sql\Script\DropTypeStatement.cs" />
     <Compile Include="Sql\Script\ExceptClause.cs" />
     <Compile Include="Sql\Script\ForXmlAutoClause.cs" />

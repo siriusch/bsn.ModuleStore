@@ -227,6 +227,7 @@ WITH = WITH
 WRITETEXT = WRITETEXT
 
 ! Unreserved keywords, to be re-tried as identifier if a syntax error occurs
+ABSOLUTE = ABSOLUTE
 ACTION = ACTION
 AFTER = AFTER
 APPLY = APPLY
@@ -243,17 +244,21 @@ DISABLE = DISABLE
 ENABLE = ENABLE
 EXPLICIT = EXPLICIT
 EXTERNAL = EXTERNAL
+FIRST = FIRST
 FULLTEXT = FULLTEXT
+GLOBAL = GLOBAL
 INCLUDE = INCLUDE
 INPUT = INPUT
 INSTEAD = INSTEAD
 LANGUAGE = LANGUAGE
+LAST = LAST
 MANUAL = MANUAL
 MARK = MARK
 MATCHED = MATCHED
 MAXRECURSION = MAXRECURSION
 MERGE = MERGE
 NAME = NAME
+NEXT = NEXT
 NO = NO
 ONLY = ONLY
 OUTPUT = OUT(PUT)?
@@ -261,10 +266,12 @@ PARTITION = PARTITION
 PATH = PATH
 PERSISTED = PERSISTED
 POPULATION = POPULATION
+PRIOR = PRIOR
 PROPERTY = PROPERTY
 RAW = RAW
 READONLY = READONLY
 RECOMPILE = RECOMPILE
+RELATIVE = RELATIVE
 REPEATABLE = REPEATABLE
 RETURNS = RETURNS
 SCHEMABINDING = SCHEMABINDING
@@ -494,6 +501,7 @@ _ACTION = '$ACTION'
                  | <DeallocateStatement>
                  | <DeclareStatement>
                  | <ExecuteStatement>
+                 | <FetchStatement>
                  | <GotoStatement>
                  | <IfStatement>
                  | <OpenStatement>
@@ -568,11 +576,28 @@ _ACTION = '$ACTION'
 
 <GlobalOrLocalCursor> ::= <VariableName>
                         | <CursorName>
-                        | Id <CursorName> ! Id should be GLOBAL, but GLOBAL isn't a reserved word
+                        | GLOBAL <CursorName>
 
 <CursorUpdate> ::= FOR_UPDATE OF <ColumnNameList>
                  | FOR_UPDATE
                  | READ ONLY
+
+<FetchStatement> ::= FETCH <CursorPosition> <GlobalOrLocalCursor>
+                   | FETCH <CursorPosition> <GlobalOrLocalCursor> INTO <VariableNameList>
+
+<CursorPosition> ::= NEXT FROM
+                   | PRIOR FROM
+                   | FIRST FROM
+                   | LAST FROM
+                   | ABSOLUTE <IntegerLiteral> FROM
+                   | ABSOLUTE <VariableName> FROM
+                   | RELATIVE <IntegerLiteral> FROM
+                   | RELATIVE <VariableName> FROM
+                   | FROM
+                   |
+
+<VariableNameList> ::= <VariableName> ',' <VariableNameList>
+                     | <VariableName>
 
 ! =============================================================================
 ! Common helper constructs
