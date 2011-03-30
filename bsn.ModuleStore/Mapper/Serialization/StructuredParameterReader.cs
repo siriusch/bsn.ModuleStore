@@ -31,9 +31,12 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Xml;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class StructuredParameterReader: DbDataReader {
@@ -60,13 +63,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public override object this[int ordinal] {
 			get {
-				return GetValue(ordinal);
+				return GetValueInternal(ordinal);
 			}
 		}
 
 		public override object this[string name] {
 			get {
-				return GetValue(GetOrdinal(name));
+				return GetValueInternal(GetOrdinal(name));
 			}
 		}
 
@@ -107,16 +110,21 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override bool GetBoolean(int i) {
-			return (bool)GetValue(i);
+			return (bool)GetValueInternal(i);
 		}
 
 		public override byte GetByte(int i) {
-			return (byte)GetValue(i);
+			return (byte)GetValueInternal(i);
 		}
 
 		public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length) {
 			if (length > 0) {
-				object value = GetValue(i);
+				object value = GetValueInternal(i);
+				XmlReader reader = value as XmlReader;
+				if (reader != null) {
+					CopyXmlReaderContent(reader, XmlWriter.Create((Stream)(value = new MemoryStream()), CreateXmlWriterSettings()));
+					SetValueInternal(i, value);
+				}
 				byte[] bytes = value as byte[];
 				if (bytes != null) {
 					if (fieldOffset > bytes.Length) {
@@ -138,18 +146,26 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override char GetChar(int i) {
-			return (char)GetValue(i);
+			return (char)GetValueInternal(i);
 		}
 
 		public override long GetChars(int i, long fieldOffset, char[] buffer, int bufferOffset, int length) {
 			if (length > 0) {
-				object value = GetValue(i);
+				object value = GetValueInternal(i);
 				if (value is char) {
 					if (fieldOffset > 0) {
 						return 0;
 					}
 					buffer[bufferOffset] = (char)value;
 					return 1;
+				}
+				XmlReader reader = value as XmlReader;
+				if (reader != null) {
+					using (StringWriter output = new StringWriter()) {
+						CopyXmlReaderContent(reader, XmlWriter.Create(output, CreateXmlWriterSettings()));
+						value = output.ToString();
+						SetValueInternal(i, value);
+					}
 				}
 				string str = value as string;
 				if (str != null) {
@@ -180,15 +196,15 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override DateTime GetDateTime(int i) {
-			return (DateTime)GetValue(i);
+			return (DateTime)GetValueInternal(i);
 		}
 
 		public override decimal GetDecimal(int i) {
-			return (decimal)GetValue(i);
+			return (decimal)GetValueInternal(i);
 		}
 
 		public override double GetDouble(int i) {
-			return (double)GetValue(i);
+			return (double)GetValueInternal(i);
 		}
 
 		public override IEnumerator GetEnumerator() {
@@ -200,23 +216,23 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override float GetFloat(int i) {
-			return (float)GetValue(i);
+			return (float)GetValueInternal(i);
 		}
 
 		public override Guid GetGuid(int i) {
-			return (Guid)GetValue(i);
+			return (Guid)GetValueInternal(i);
 		}
 
 		public override short GetInt16(int i) {
-			return (short)GetValue(i);
+			return (short)GetValueInternal(i);
 		}
 
 		public override int GetInt32(int i) {
-			return (int)GetValue(i);
+			return (int)GetValueInternal(i);
 		}
 
 		public override long GetInt64(int i) {
-			return (long)GetValue(i);
+			return (long)GetValueInternal(i);
 		}
 
 		public override string GetName(int i) {
@@ -237,16 +253,20 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override string GetString(int i) {
-			object value = GetValue(i);
+			object value = GetValueInternal(i);
 			return (value is string) ? (string)value : value.ToString();
 		}
 
-		public override object GetValue(int i) {
-			int fieldIndex;
-			if (schema.TryGetFieldIndexOfColumn(i, out fieldIndex)) {
-				return data[fieldIndex];
+		public override object GetValue(int ordinal) {
+			object value = GetValueInternal(ordinal);
+			XmlReader reader = value as XmlReader;
+			if (reader != null) {
+				using (reader) {
+					value = new SqlXml(reader);
+				}
+				SetValueInternal(ordinal, value);
 			}
-			return DBNull.Value;
+			return value;
 		}
 
 		public override int GetValues(object[] values) {
@@ -254,7 +274,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				throw new ArgumentNullException("values");
 			}
 			for (int i = 0; i < schema.ColumnCount; i++) {
-				values[i] = GetValue(i);
+				values[i] = GetValueInternal(i);
 			}
 			return schema.ColumnCount;
 		}
@@ -295,6 +315,35 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			base.Dispose(disposing);
 		}
 
+		private void CopyXmlReaderContent(XmlReader reader, XmlWriter writer) {
+			using (writer) {
+				reader.MoveToContent();
+				Debug.Assert(reader.ReadState == ReadState.Interactive);
+				while (!reader.EOF) {
+					writer.WriteNode(reader, false);
+				}
+			}
+			reader.Close();
+		}
+
+		private XmlWriterSettings CreateXmlWriterSettings() {
+			XmlWriterSettings result = new XmlWriterSettings();
+			result.CloseOutput = false;
+			result.ConformanceLevel = ConformanceLevel.Fragment;
+			result.Encoding = Encoding.Unicode;
+			result.Indent = false;
+			result.OmitXmlDeclaration = true;
+			return result;
+		}
+
+		private object GetValueInternal(int ordinal) {
+			int fieldIndex;
+			if (schema.TryGetFieldIndexOfColumn(ordinal, out fieldIndex)) {
+				return data[fieldIndex];
+			}
+			return DBNull.Value;
+		}
+
 		private void LoadData(object instance) {
 			if ((schema.Fields.Length == 1) && (schema.Fields[0] == null)) {
 				data = new[] {schema.Converters[0].ProcessToDb(instance) ?? DBNull.Value};
@@ -310,6 +359,14 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					data[i] = ((converter != null) ? converter.ProcessToDb(data[i]) : data[i]) ?? DBNull.Value;
 				}
 			}
+		}
+
+		private void SetValueInternal(int ordinal, object value) {
+			int fieldIndex;
+			if (!schema.TryGetFieldIndexOfColumn(ordinal, out fieldIndex)) {
+				throw new ArgumentOutOfRangeException("ordinal");
+			}
+			data[fieldIndex] = value ?? DBNull.Value;
 		}
 	}
 }

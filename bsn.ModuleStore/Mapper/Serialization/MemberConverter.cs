@@ -98,12 +98,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public SqlDbType DbType {
-			get {
-				return SqlSerializationTypeMapping.GetTypeMapping(DbClrType);
-			}
-		}
-
 		public bool IsIdentity {
 			get {
 				return isIdentity;

@@ -56,7 +56,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if (value == null) {
 				return DBNull.Value;
 			}
-			return new SqlXml(GetXmlReader(value));
+			return GetXmlReader(value);
 		}
 
 		protected virtual XmlReader GetXmlReader(object value) {
