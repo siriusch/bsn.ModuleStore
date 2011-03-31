@@ -63,13 +63,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public override object this[int ordinal] {
 			get {
-				return GetValueInternal(ordinal);
+				return GetValue(ordinal);
 			}
 		}
 
 		public override object this[string name] {
 			get {
-				return GetValueInternal(GetOrdinal(name));
+				return this[GetOrdinal(name)];
 			}
 		}
 
@@ -274,7 +274,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				throw new ArgumentNullException("values");
 			}
 			for (int i = 0; i < schema.ColumnCount; i++) {
-				values[i] = GetValueInternal(i);
+				values[i] = GetValue(i);
 			}
 			return schema.ColumnCount;
 		}
