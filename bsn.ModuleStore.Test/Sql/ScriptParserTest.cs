@@ -106,6 +106,26 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
+		public void BitwiseAnd() {
+			ParseWithRoundtrip(@"PRINT 1&0", 1);
+		}
+
+		[Test]
+		public void BitwiseNot() {
+			ParseWithRoundtrip(@"PRINT ~1", 1);
+		}
+
+		[Test]
+		public void BitwiseOr() {
+			ParseWithRoundtrip(@"PRINT 1|0", 1);
+		}
+
+		[Test]
+		public void BitwiseXor() {
+			ParseWithRoundtrip(@"PRINT 1^0", 1);
+		}
+
+		[Test]
 		public void CommitTransaction() {
 			ParseWithRoundtrip(@"COMMIT TRAN", 1);
 		}

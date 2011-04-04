@@ -33,12 +33,16 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ExpressionNegate: Expression {
+	public sealed class ExpressionUnaryOperation: Expression {
 		private readonly Expression expression;
+		private readonly OperationToken operation;
 
-		[Rule("<ExpressionNegate> ::= ~'-' <ExpressionCase>")]
-		public ExpressionNegate(Expression expression) {
+		[Rule("<ExpressionNegate> ::= '-' <ExpressionCase>")]
+		[Rule("<ExpressionNegate> ::= '~' <ExpressionCase>")]
+		public ExpressionUnaryOperation(OperationToken operation, Expression expression) {
+			Debug.Assert(operation != null);
 			Debug.Assert(expression != null);
+			this.operation = operation;
 			this.expression = expression;
 		}
 
@@ -48,9 +52,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public OperationToken Operation {
+			get {
+				return operation;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write('-');
+			writer.WriteScript(operation, WhitespacePadding.None);
 			writer.WriteScript(expression, WhitespacePadding.None);
 		}
 	}

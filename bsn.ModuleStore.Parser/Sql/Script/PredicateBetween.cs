@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression upperBound;
 		private readonly Expression valueExpression;
 
-		[Rule("<PredicateBetween> ::= <Expression> ~BETWEEN <Expression> ~AND <Expression>")]
+		[Rule("<PredicateOr> ::= <Expression> ~BETWEEN <Expression> ~AND <Expression>")]
 		public PredicateBetween(Expression valueExpression, Expression min, Expression max): this(valueExpression, false, min, max) {}
 
 		protected PredicateBetween(Expression valueExpression, bool not, Expression lowerBound, Expression upperBound): base(not) {

@@ -238,7 +238,7 @@
     <Compile Include="Sql\Script\CountFunction.cs" />
     <Compile Include="Sql\Script\ExpressionFunction.cs" />
     <Compile Include="Sql\Script\NamedFunction.cs" />
-    <Compile Include="Sql\Script\ExpressionNegate.cs" />
+    <Compile Include="Sql\Script\ExpressionUnaryOperation.cs" />
     <Compile Include="Sql\Script\KeywordWithArgumentPairFunction.cs" />
     <Compile Include="Sql\Script\ExpressionParens.cs" />
     <Compile Include="Sql\Script\ExpressionRankingFunction.cs" />

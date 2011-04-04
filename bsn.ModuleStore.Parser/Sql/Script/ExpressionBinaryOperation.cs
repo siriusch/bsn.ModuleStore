@@ -40,6 +40,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<ExpressionAdd> ::= <ExpressionMult> '+' <ExpressionAdd>")]
 		[Rule("<ExpressionAdd> ::= <ExpressionMult> '-' <ExpressionAdd>")]
+		[Rule("<ExpressionAdd> ::= <ExpressionMult> '&' <ExpressionAdd>")]
+		[Rule("<ExpressionAdd> ::= <ExpressionMult> '|' <ExpressionAdd>")]
+		[Rule("<ExpressionAdd> ::= <ExpressionMult> '^' <ExpressionAdd>")]
 		[Rule("<ExpressionMult> ::= <ExpressionMult> '*' <ExpressionNegate>")]
 		[Rule("<ExpressionMult> ::= <ExpressionMult> '/' <ExpressionNegate>")]
 		[Rule("<ExpressionMult> ::= <ExpressionMult> '%' <ExpressionNegate>")]

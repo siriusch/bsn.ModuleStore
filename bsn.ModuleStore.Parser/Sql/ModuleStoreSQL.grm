@@ -1292,33 +1292,36 @@ _ACTION = '$ACTION'
 <Predicate> ::= <PredicateOr>
 
 <PredicateOr> ::= <PredicateAnd> OR <PredicateOr>
+                | <Expression> BETWEEN <Expression> AND <Expression>
+                | <Expression> NOT BETWEEN <Expression> AND <Expression>
+                | <Expression> IS NULL
+                | <Expression> IS NOT NULL
+                | <Expression> LIKE <Expression>
+                | <Expression> LIKE <Expression> ESCAPE StringLiteral
+                | <Expression> NOT LIKE <Expression>
+                | <Expression> NOT LIKE <Expression> ESCAPE StringLiteral
+                | <Expression> IN <Tuple>
+                | <Expression> NOT IN <Tuple>
                 | <PredicateAnd>
+
+! support for SOME/ANY/ALL comparisons on sets is missing: http://msdn.microsoft.com/en-US/library/ms175064(v=SQL.90).aspx
 
 <PredicateAnd> ::= <PredicateNot> AND <PredicateAnd>
                  | <PredicateNot>
 
-<PredicateNot> ::= NOT <PredicateBetween>
-                 | <PredicateBetween>
+<PredicateNot> ::= NOT <PredicateCompare>
+                 | <PredicateCompare>
 
-<PredicateBetween> ::= <Expression> BETWEEN <Expression> AND <Expression>
-                     | <Expression> NOT BETWEEN <Expression> AND <Expression>
-                     | <PredicateNull>
-
-<PredicateNull> ::= <Expression> IS NULL
-                  | <Expression> IS NOT NULL
-                  | <PredicateLike>
-
-<PredicateLike> ::= <Expression> LIKE <Expression>
-                  | <Expression> LIKE <Expression> ESCAPE StringLiteral
-                  | <Expression> NOT LIKE <Expression>
-                  | <Expression> NOT LIKE <Expression> ESCAPE StringLiteral
-                  | <PredicateIn>
-
-<PredicateIn> ::= <Expression> IN <Tuple>
-                | <Expression> NOT IN <Tuple>
-                | <PredicateFunction>
-
-! support for SOME/ANY/ALL comparisons on sets is missing: http://msdn.microsoft.com/en-US/library/ms175064(v=SQL.90).aspx
+<PredicateCompare> ::= <Expression> '=' <Expression>
+                     | <Expression> '>' <Expression>
+                     | <Expression> '<' <Expression>
+                     | <Expression> '>=' <Expression>
+                     | <Expression> '<=' <Expression>
+                     | <Expression> '<>' <Expression>
+                     | <Expression> '!=' <Expression>
+                     | <Expression> '!<' <Expression>
+                     | <Expression> '!>' <Expression>
+                     | <PredicateFunction>
 
 <Tuple> ::= '(' <SelectQuery> ')'
           | '(' <ExpressionList> ')'
@@ -1336,18 +1339,7 @@ _ACTION = '$ACTION'
                       | FREETEXT '(' <ColumnWildNameQualified> ',' <Expression> ')'
                       | FREETEXT '(' '(' <ColumnNameQualifiedList> ')' ',' <Expression> ',' LANGUAGE <Literal> ')'
                       | FREETEXT '(' '(' <ColumnNameQualifiedList> ')' ',' <Expression> ')'
-                      | <PredicateCompare>
-
-<PredicateCompare> ::= <Expression> '=' <Expression>
-                     | <Expression> '>' <Expression>
-                     | <Expression> '<' <Expression>
-                     | <Expression> '>=' <Expression>
-                     | <Expression> '<=' <Expression>
-                     | <Expression> '<>' <Expression>
-                     | <Expression> '!=' <Expression>
-                     | <Expression> '!<' <Expression>
-                     | <Expression> '!>' <Expression>
-                     | <PredicateParens>
+                      | <PredicateParens>
 
 <PredicateParens> ::= '(' <Predicate> ')'
 
@@ -1355,6 +1347,9 @@ _ACTION = '$ACTION'
 
 <ExpressionAdd> ::= <ExpressionMult> '+' <ExpressionAdd>
                   | <ExpressionMult> '-' <ExpressionAdd>
+                  | <ExpressionMult> '&' <ExpressionAdd>
+                  | <ExpressionMult> '|' <ExpressionAdd>
+                  | <ExpressionMult> '^' <ExpressionAdd>
                   | <ExpressionMult>
 
 <ExpressionMult> ::= <ExpressionMult> '*' <ExpressionNegate> 
@@ -1364,6 +1359,7 @@ _ACTION = '$ACTION'
 
 <ExpressionNegate> ::= '-' <ExpressionCase>
                      | '+' <ExpressionCase> ! the "unary plus" also belongs somewhere here
+                     | '~' <ExpressionCase>
                      | <ExpressionCase>
 
 <RankingArguments> ::= PARTITION BY <ExpressionList> <OptionalOrderClause>

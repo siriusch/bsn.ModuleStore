@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class PredicateNot: Predicate {
 		private readonly Predicate predicate;
 
-		[Rule("<PredicateNot> ::= ~NOT <PredicateBetween>")]
+		[Rule("<PredicateNot> ::= ~NOT <PredicateCompare>")]
 		public PredicateNot(Predicate predicate) {
 			Debug.Assert(predicate != null);
 			this.predicate = predicate;
