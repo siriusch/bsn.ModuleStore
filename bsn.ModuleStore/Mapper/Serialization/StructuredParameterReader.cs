@@ -51,13 +51,15 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				throw new ArgumentNullException("schema");
 			}
 			this.schema = schema;
-			enumerator = values.GetEnumerator();
-			if (!enumerator.MoveNext()) {
-				IDisposable disposable = enumerator as IDisposable;
-				if (disposable != null) {
-					disposable.Dispose();
+			if (values != null) {
+				enumerator = values.GetEnumerator();
+				if (!enumerator.MoveNext()) {
+					IDisposable disposable = enumerator as IDisposable;
+					if (disposable != null) {
+						disposable.Dispose();
+					}
+					enumerator = null;
 				}
-				enumerator = null;
 			}
 		}
 

@@ -177,12 +177,12 @@ namespace bsn.ModuleStore.Mapper {
 					//				case SqlDbType.Udt:
 					//					parameter.UdtTypeName = userDefinedTypeName;
 					//					break;
-				case SqlDbType.Structured:
-					IDataReader dataReader = new StructuredParameterReader(structuredSchema, (IEnumerable)value);
-					disposeList.Add(dataReader);
-					value = dataReader;
-					break;
 				}
+			}
+			if (SqlType == SqlDbType.Structured) {
+				IDataReader dataReader = new StructuredParameterReader(structuredSchema, (IEnumerable)value);
+				disposeList.Add(dataReader);
+				value = dataReader;
 			}
 			return value;
 		}
