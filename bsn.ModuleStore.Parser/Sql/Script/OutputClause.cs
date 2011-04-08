@@ -74,9 +74,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
 				writer.Write("OUTPUT ");
+				writer.IncreaseIndent();
 				writer.WriteScriptSequence(columnItems, WhitespacePadding.None, ", ");
 				if (destinationName != null) {
-					writer.Write(" INTO ");
+					writer.WriteLine();
+					writer.Write("INTO ");
 					writer.WriteScript(destinationName, WhitespacePadding.None);
 					if (destinationColumnNames.Count > 0) {
 						writer.Write(" (");
@@ -84,6 +86,7 @@ namespace bsn.ModuleStore.Sql.Script {
 						writer.Write(')');
 					}
 				}
+				writer.DecreaseIndent();
 			}
 		}
 
