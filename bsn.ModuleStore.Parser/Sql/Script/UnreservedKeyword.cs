@@ -59,6 +59,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("INSTEAD")]
 	[Terminal("LANGUAGE")]
 	[Terminal("LAST")]
+	[Terminal("LOG")]
 	[Terminal("MANUAL")]
 	[Terminal("MARK")]
 	[Terminal("MATCHED")]
@@ -66,6 +67,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("NAME")]
 	[Terminal("NEXT")]
 	[Terminal("NO")]
+	[Terminal("NOWAIT")]
 	[Terminal("ONLY")]
 	[Terminal("OUTPUT")]
 	[Terminal("PARTITION")]
@@ -83,6 +85,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("RETURNS")]
 	[Terminal("SCHEMABINDING")]
 	[Terminal("SERVER")]
+	[Terminal("SETERROR")]
 	[Terminal("SOURCE")]
 	[Terminal("TARGET")]
 	[Terminal("TIES")]
@@ -95,7 +98,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("WORK")]
 	[Terminal("XML")]
 	[Terminal("XMLNAMESPACES")]
-	public class UnreservedKeyword: SqlToken {
+	public class UnreservedKeyword: SqlScriptableToken {
 		private readonly string originalValue;
 
 		public UnreservedKeyword(string text) {
@@ -110,6 +113,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public Identifier AsIdentifier(Symbol identifierSymbol) {
 			return new Identifier(originalValue, identifierSymbol, ((IToken)this).Position);
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			writer.Write(originalValue);
 		}
 	}
 }

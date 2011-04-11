@@ -81,6 +81,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ValuesList> ::= ~'(' <ExpressionList> ~')'", typeof(Sequence<Expression>))]
 		[Rule("<QueryHintOptionList> ::= <QueryHintOption>", typeof(QueryHintOption))]
 		[Rule("<VariableNameList> ::= <VariableName>", typeof(VariableName))]
+		[Rule("<RaiserrorOptionList> ::= <RaiserrorOption>", typeof(UnreservedKeyword))]
 		public Sequence(T item): this(item, null) {}
 
 		[Rule("<CursorOptionList> ::= Id <CursorOptionList>", typeof(Identifier))]
@@ -121,6 +122,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ValuesList> ::= ~'(' <ExpressionList> ~')' ~',' <ValuesList>", typeof(Sequence<Expression>))]
 		[Rule("<QueryHintOptionList> ::= <QueryHintOption> ~',' <QueryHintOptionList>", typeof(QueryHintOption))]
 		[Rule("<VariableNameList> ::= <VariableName> ~',' <VariableNameList>", typeof(VariableName))]
+		[Rule("<RaiserrorOptionList> ::= <RaiserrorOption> ~',' <RaiserrorOptionList>", typeof(UnreservedKeyword))]
 		public Sequence(T item, Sequence<T> next) {
 			if (next != null) {
 				if (next.Item != null) {

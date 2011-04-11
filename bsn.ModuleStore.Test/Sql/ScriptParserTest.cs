@@ -444,6 +444,24 @@ PRINT 'Cool'", 3);
 		}
 
 		[Test]
+		public void RaiserrorNoOption() {
+			ParseWithRoundtrip(@"RAISERROR (N'<<%*.*s>>', -- Message text.
+           10, -- Severity,
+           1, -- State,
+           7, -- First argument used for width.
+           3, -- Second argument used for precision.
+           N'abcde');", 1);
+		}
+
+		[Test]
+		public void RaiserrorWithOption() {
+			ParseWithRoundtrip(@"RAISERROR (N'<<%7.3s>>', -- Message text.
+           10, -- Severity,
+           1, -- State,
+           N'abcde') WITH NOWAIT, LOG;", 1);
+		}
+
+		[Test]
 		public void RollbackTransaction() {
 			ParseWithRoundtrip(@"ROLLBACK TRAN", 1);
 		}

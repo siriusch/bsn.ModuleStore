@@ -252,6 +252,7 @@ INPUT = INPUT
 INSTEAD = INSTEAD
 LANGUAGE = LANGUAGE
 LAST = LAST
+LOG = LOG
 MANUAL = MANUAL
 MARK = MARK
 MATCHED = MATCHED
@@ -260,6 +261,7 @@ MERGE = MERGE
 NAME = NAME
 NEXT = NEXT
 NO = NO
+NOWAIT = NOWAIT
 ONLY = ONLY
 OUTPUT = OUT(PUT)?
 PARTITION = PARTITION
@@ -276,6 +278,7 @@ REPEATABLE = REPEATABLE
 RETURNS = RETURNS
 SCHEMABINDING = SCHEMABINDING
 SERVER = SERVER
+SETERROR = SETERROR
 SOURCE = SOURCE
 TARGET = TARGET
 TIES = TIES
@@ -544,6 +547,14 @@ _ACTION = '$ACTION'
 <AnyStatement> ::= Id <ExpressionList>
 
 <RaiserrorStatement> ::= RAISERROR '(' <ExpressionList> ')'
+                       | RAISERROR '(' <ExpressionList> ')' WITH <RaiserrorOptionList>
+
+<RaiserrorOption> ::= LOG
+                    | NOWAIT
+                    | SETERROR
+
+<RaiserrorOptionList> ::= <RaiserrorOption> ',' <RaiserrorOptionList>
+                        | <RaiserrorOption>
 
 <Label> ::= Id ':'
 

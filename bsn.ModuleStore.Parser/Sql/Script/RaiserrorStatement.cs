@@ -36,11 +36,16 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public class RaiserrorStatement: Statement {
 		private readonly List<Expression> arguments;
+		private readonly List<UnreservedKeyword> options;
 
 		[Rule("<RaiserrorStatement> ::= ~RAISERROR ~'(' <ExpressionList> ~')'")]
-		public RaiserrorStatement(Sequence<Expression> arguments) {
+		public RaiserrorStatement(Sequence<Expression> arguments): this(arguments, null) {}
+
+		[Rule("<RaiserrorStatement> ::= ~RAISERROR ~'(' <ExpressionList> ~')' ~WITH <RaiserrorOptionList>")]
+		public RaiserrorStatement(Sequence<Expression> arguments, Sequence<UnreservedKeyword> options) {
 			Debug.Assert(arguments != null);
 			this.arguments = arguments.ToList();
+			this.options = options.ToList();
 		}
 
 		public IEnumerable<Expression> Arguments {
@@ -49,11 +54,23 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public IEnumerable<UnreservedKeyword> Options {
+			get {
+				return options;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("RAISERROR(");
+			writer.IncreaseIndent();
 			writer.WriteScriptSequence(arguments, WhitespacePadding.None, ", ");
+			writer.DecreaseIndent();
 			writer.Write(')');
+			if (options.Count > 0) {
+				writer.Write(" WITH ");
+				writer.WriteScriptSequence(options, WhitespacePadding.None, ", ");
+			}
 		}
 	}
 }
