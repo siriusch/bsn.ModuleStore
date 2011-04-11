@@ -40,8 +40,6 @@ namespace bsn.ModuleStore.Sql {
 	public abstract class InstallableInventory: Inventory {
 		private readonly List<Statement> additionalSetupStatements = new List<Statement>();
 
-		protected InstallableInventory() {}
-
 		public IEnumerable<Statement> AdditionalSetupStatements {
 			get {
 				return additionalSetupStatements;
@@ -52,37 +50,46 @@ namespace bsn.ModuleStore.Sql {
 			if (string.IsNullOrEmpty(schemaName)) {
 				throw new ArgumentNullException("schemaName");
 			}
+			StringBuilder builder = new StringBuilder(4096);
 			DependencyResolver resolver = new DependencyResolver();
-			SetQualification(null);
-			try {
-				StringBuilder builder = new StringBuilder(4096);
-				using (StringWriter writer = new StringWriter(builder)) {
-					SqlWriter sqlWriter = new SqlWriter(writer, targetEngine);
-					sqlWriter.Write("CREATE SCHEMA");
-					sqlWriter.IncreaseIndent();
-					sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
-					foreach (CreateStatement statement in Objects) {
-						CreateTableStatement createTable = statement as CreateTableStatement;
-						if (createTable != null) {
-							resolver.AddExistingObject(statement.ObjectName);
-							sqlWriter.WriteLine();
-							createTable.WriteTo(sqlWriter, delegate(TableDefinition definition) {
-							                               	AlterTableAddStatement alterTableStatement = new AlterTableAddStatement(createTable.TableName, new TableWithNocheckToken(), new Sequence<TableDefinition>(definition));
-							                               	if (alterTableStatement.GetReferencedObjectNames<FunctionName>().Any()) {
-							                               		resolver.Add(alterTableStatement);
-							                               		return null;
-							                               	}
-							                               	return definition;
-							                               });
-						} else {
-							resolver.Add(statement);
+			if (!schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase)) {
+				SetQualification(null);
+				try {
+					using (StringWriter writer = new StringWriter(builder)) {
+						SqlWriter sqlWriter = new SqlWriter(writer, targetEngine);
+						sqlWriter.Write("CREATE SCHEMA");
+						sqlWriter.IncreaseIndent();
+						sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
+						foreach (CreateStatement statement in Objects) {
+							CreateTableStatement createTable = statement as CreateTableStatement;
+							if (createTable != null) {
+								resolver.AddExistingObject(statement.ObjectName);
+								sqlWriter.WriteLine();
+								createTable.WriteTo(sqlWriter, delegate(TableDefinition definition) {
+								                               	AlterTableAddStatement alterTableStatement = new AlterTableAddStatement(createTable.TableName, new TableWithNocheckToken(), new Sequence<TableDefinition>(definition));
+								                               	if (alterTableStatement.GetReferencedObjectNames<FunctionName>().Any()) {
+								                               		resolver.Add(alterTableStatement);
+								                               		return null;
+								                               	}
+								                               	return definition;
+								                               });
+							} else {
+								resolver.Add(statement);
+							}
 						}
+						sqlWriter.DecreaseIndent();
+						yield return writer.ToString();
 					}
-					sqlWriter.DecreaseIndent();
-					yield return writer.ToString();
+				} finally {
+					UnsetQualification();
 				}
-				UnsetQualification();
-				SetQualification(schemaName);
+			} else {
+				foreach (CreateStatement statement in Objects) {
+					resolver.Add(statement);
+				}
+			}
+			SetQualification(schemaName);
+			try {
 				foreach (Statement statement in resolver.GetInOrder(true)) {
 					yield return WriteStatement(statement, builder, targetEngine);
 				}

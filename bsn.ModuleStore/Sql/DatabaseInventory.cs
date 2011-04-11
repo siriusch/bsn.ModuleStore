@@ -174,13 +174,15 @@ namespace bsn.ModuleStore.Sql {
 				foreach (CreateStatement statement in resolver.GetInOrder(true).Where(s => !(s is CreateIndexStatement)).Reverse()) {
 					yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);
 				}
-				buffer.Length = 0;
-				using (TextWriter writer = new StringWriter(buffer)) {
-					SqlWriter sqlWriter = new SqlWriter(writer, TargetEngine);
-					sqlWriter.Write("DROP SCHEMA ");
-					new SchemaName(SchemaName).WriteTo(sqlWriter);
+				if (!schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase)) {
+					buffer.Length = 0;
+					using (TextWriter writer = new StringWriter(buffer)) {
+						SqlWriter sqlWriter = new SqlWriter(writer, TargetEngine);
+						sqlWriter.Write("DROP SCHEMA ");
+						new SchemaName(SchemaName).WriteTo(sqlWriter);
+					}
+					yield return buffer.ToString();
 				}
-				yield return buffer.ToString();
 			} finally {
 				UnsetQualification();
 			}
