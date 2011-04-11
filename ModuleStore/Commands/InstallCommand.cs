@@ -62,7 +62,12 @@ namespace bsn.ModuleStore.Console.Commands {
 								command.Transaction = transaction;
 								command.CommandType = CommandType.Text;
 								command.CommandText = sql;
-								command.ExecuteNonQuery();
+								try {
+									command.ExecuteNonQuery();
+								} catch (Exception) {
+									executionContext.Output.WriteLine(sql);
+									throw;
+								}
 							}
 						}
 						transaction.Commit();
