@@ -1,0 +1,73 @@
+﻿<!-- see also http://msdn.microsoft.com/en-us/library/system.data.sqldbtype.aspx -->
+<types>
+	<type name="bigint" dbType="BigInt">
+		<clr name="System.Int64" />
+	</type>
+	<type name="binary">
+		<sql name="Binary" />
+	</type>
+	<type name="bit" dbType="Bit">
+		<clr name="System.Boolean" />
+	</type>
+	<type name="char" dbType="Char" />
+	<!--type name="CURSOR" /-->
+	<type name="date" engine="10" dbType="DateTime" />
+	<type name="datetime" dbType="DateTime">
+		<clr name="System.DateTime" />
+	</type>
+	<type name="datetime2" engine="10" dbType="DateTime2">
+		<clr name="System.DateTime" />
+	</type>
+	<type name="datetimeoffset" engine="10" dbType="DateTimeOffset">
+		<clr name="System.DateTimeOffset" />
+	</type>
+	<type name="decimal" alias="numeric" dbType="Decimal">
+		<clr name="System.Decimal" />
+	</type>
+	<type name="float" dbType="Float">
+		<clr name="System.Double" />
+	</type>
+	<type name="image" dbType="Image" />
+	<type name="int" dbType="Int">
+		<clr name="System.Int32" />
+	</type>
+	<type name="money" dbType="Money" />
+	<type name="nchar" dbType="NChar" />
+	<type name="ntext" dbType="NText" />
+	<type name="nvarchar" dbType="NVarChar">
+		<clr name="System.String" />
+	</type>
+	<type name="real" dbType="Real">
+		<clr name="System.Single" />
+	</type>
+	<type name="smalldatetime" dbType="SmallDateTime" />
+	<type name="smallint" dbType="SmallInt">
+		<clr name="System.Int16" />
+	</type>
+	<type name="smallmoney" dbType="SmallMoney" />
+	<type name="sysname" />
+	<!--type name="TABLE" /-->
+	<type name="text" dbType="Text" />
+	<type name="time" dbType="Time">
+		<clr name="System.TimeSpan" />
+	</type>
+	<type name="timestamp" dbType="Timestamp" />
+	<type name="tinyint" dbType="TinyInt">
+		<clr name="System.SByte" />
+	</type>
+	<type name="uniqueidentifier" dbType="UniqueIdentifier">
+		<clr name="System.Guid" />
+	</type>
+	<type name="varbinary" dbType="VarBinary">
+		<clr name="System.Byte[]" />
+	</type>
+	<type name="varchar" dbType="VarChar" />
+	<type name="sql_variant" dbType="Variant">
+		<clr name="System.Object" />
+	</type>
+	<type name="xml" dbType="Xml">
+		<clr name="System.Xml.XmlReader, System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+		<clr name="System.Xml.XPath.IXPathNavigable, System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+		<clr name="System.Xml.Linq.XContainer, System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+	</type>
+</types>

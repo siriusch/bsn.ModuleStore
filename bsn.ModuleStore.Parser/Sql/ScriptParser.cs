@@ -39,14 +39,13 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public static class ScriptParser {
-		private static readonly Dictionary<string, string> builtinFunctions = LoadFromFile("Sql2005Functions.txt");
-		private static readonly Dictionary<string, string> builtinTypes = LoadFromFile("Sql2005Types.txt");
+		// functions: http://technet.microsoft.com/en-us/library/ms174318(SQL.90).aspx
+		private static readonly Dictionary<string, string> builtinFunctions = LoadFromFile("SqlFunctions.txt");
 		// reserved word list: http://msdn.microsoft.com/en-us/library/aa238507(v=SQL.80).aspx
-		private static readonly Dictionary<string, string> reservedWords = LoadFromFile("Sql2005Keywords.txt");
+		private static readonly Dictionary<string, string> reservedWords = LoadFromFile("SqlKeywords.txt");
 		private static readonly object sync = new object();
 		private static CompiledGrammar compiledGrammar;
 		private static SemanticTypeActions<SqlToken> semanticActions;
-		// functions: http://technet.microsoft.com/en-us/library/ms174318(SQL.90).aspx
 
 		private static Dictionary<string, string> LoadFromFile(string filename) {
 			Dictionary<string, string> result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -131,19 +130,6 @@ namespace bsn.ModuleStore.Sql {
 				throw new ParseException("The supplied SQL could not be parsed", parseMessage, ((IToken)processor.CurrentToken).Position);
 			}
 			return (IEnumerable<Statement>)processor.CurrentToken;
-		}
-
-		public static bool IsBuiltinTypeName(string typeName) {
-			return builtinTypes.ContainsKey(typeName);
-		}
-
-		internal static bool TryGetBuiltinTypeName(ref string name) {
-			string result;
-			if (builtinTypes.TryGetValue(name, out result)) {
-				name = result;
-				return true;
-			}
-			return false;
 		}
 	}
 }

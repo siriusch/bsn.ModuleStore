@@ -477,6 +477,16 @@ PRINT 'Cool'", 3);
 		}
 
 		[Test]
+		public void DateTime2Variable() {
+			ParseWithRoundtrip(@"DECLARE @dt datetime2", 1);
+		}
+
+		[Test]
+		public void DateTime2SpecificVariable() {
+			ParseWithRoundtrip(@"DECLARE @dt datetime2(4)", 1);
+		}
+
+		[Test]
 		public void RollbackTransactionVariableName() {
 			ParseWithRoundtrip(@"ROLLBACK TRANSACTION @trans", 1);
 		}

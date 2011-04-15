@@ -38,7 +38,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (string.IsNullOrEmpty(name)) {
 				throw new ArgumentNullException("name");
 			}
-			bool isBuiltIn = ScriptParser.TryGetBuiltinTypeName(ref name);
+			bool isBuiltIn = SqlTypeMapping.TryGetBuiltinTypeName(ref name);
 			return new KeyValuePair<string, bool>(name, isBuiltIn);
 		}
 

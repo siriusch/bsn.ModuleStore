@@ -47,6 +47,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseEngine.cs" />
@@ -477,6 +478,7 @@
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
     <Compile Include="Sql\SqlSemanticProcessor.cs" />
     <Compile Include="Sql\SqlTokenizer.cs" />
+    <Compile Include="Sql\SqlTypeMapping.cs" />
     <Compile Include="Sql\SqlWriter.cs" />
     <Compile Include="Sql\WhitespacePadding.cs" />
   </ItemGroup>
@@ -487,11 +489,13 @@
     <None Include="Sql\ModuleStoreSQL.grm" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\Sql2005Functions.txt" />
-    <EmbeddedResource Include="Sql\Sql2005Keywords.txt" />
+    <EmbeddedResource Include="Sql\SqlFunctions.txt" />
+    <EmbeddedResource Include="Sql\SqlKeywords.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\Sql2005Types.txt" />
+    <EmbeddedResource Include="Sql\SqlTypes.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
