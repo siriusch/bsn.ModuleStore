@@ -57,6 +57,7 @@
     <Compile Include="Bootstrapper\DatabaseObject.cs" />
     <Compile Include="Bootstrapper\ModuleAssemblyInfo.cs" />
     <Compile Include="Mapper\CachePolicy.cs" />
+    <Compile Include="Mapper\IVersioned.cs" />
     <Compile Include="Mapper\Serialization\CachedMemberConverter.cs" />
     <Compile Include="Mapper\ConnectionProvider.cs" />
     <Compile Include="Mapper\Serialization\ConvertibleMemberConverter.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Mapper\Serialization\XPathDocumentMemberConverter.cs" />
     <Compile Include="Mapper\SqlMappingAttribute.cs" />
     <Compile Include="Mapper\SqlParameterAttribute.cs" />
+    <Compile Include="Mapper\VersionedInstance.cs" />
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />
     <Compile Include="Bootstrapper\IModules.cs" />
