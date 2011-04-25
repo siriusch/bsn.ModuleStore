@@ -39,5 +39,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		public TableName(SqlIdentifier identifier): this(identifier.Value) {}
 
 		internal TableName(string name): base(name) {}
+
+		public bool IsTempTable {
+			get {
+				return Value.StartsWith("#");
+			}
+		}
 	}
 }

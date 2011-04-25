@@ -34,7 +34,7 @@ using System.Data.Common;
 using bsn.ModuleStore.Mapper.Serialization;
 
 namespace bsn.ModuleStore.Mapper {
-	/// The DbProcAttribute attribute is used to specify an explicit database procedure binding on an interface.
+	/// The <c>SqlProcedureAttribute</c> attribute is used to specify an explicit database procedure binding on an interface.
 	/// <br/><br/>
 	/// Information which can be specified includes the <see cref="SqlColumnAttribute.Name"/>, <see cref="Timeout"/>, <see cref="UseReturnValue"/>, <see cref="DeserializeRowLimit"/>, <see cref="DeserializeReturnNullOnEmptyReader"/> and <see cref="DeserializeCallConstructor"/>.
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
@@ -42,6 +42,8 @@ namespace bsn.ModuleStore.Mapper {
 		private bool deserializeCallConstructor;
 		private bool deserializeReturnNullOnEmptyReader;
 		private int deserializeRowLimit = int.MaxValue;
+		private bool executeFirstCommentBeforeInvocation;
+		private bool requireTransaction;
 		private int timeout;
 		private SqlReturnValue useReturnValue = SqlReturnValue.Auto;
 
@@ -60,7 +62,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		/// <summary>
-		/// By default, if a single object is to be automatically deserialized (not a list) but no row is found, an exception will be thrown. You can use this property to change this behaviour for reference types.
+		/// By default, if a single object is to be automatically deserialized (not a list) but no row is found, an exception will be thrown. You can use this property to change this behavior for reference types.
 		/// </summary>
 		public bool DeserializeReturnNullOnEmptyReader {
 			get {
@@ -80,6 +82,30 @@ namespace bsn.ModuleStore.Mapper {
 			}
 			set {
 				deserializeRowLimit = value;
+			}
+		}
+
+		/// <summary>
+		/// Sometimes specific statements (such as creating temporary tables) need to be executed before the SP is called. These statements can be put in a leading comment.
+		/// </summary>
+		public bool ExecuteFirstCommentBeforeInvocation {
+			get {
+				return executeFirstCommentBeforeInvocation;
+			}
+			set {
+				executeFirstCommentBeforeInvocation = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether a transaction is required to execute this stored procedure. The transaction will not be created, but checked only.
+		/// </summary>
+		public bool RequireTransaction {
+			get {
+				return requireTransaction;
+			}
+			set {
+				requireTransaction = value;
 			}
 		}
 

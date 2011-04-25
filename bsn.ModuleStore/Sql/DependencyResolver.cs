@@ -38,6 +38,14 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql {
 	public class DependencyResolver {
 		private class DependencyNode {
+			private static bool IsLocalName(SqlName name) {
+				TableName tableName = name as TableName;
+				if (tableName != null) {
+					return tableName.IsTempTable;
+				}
+				return name is VariableName;
+			}
+
 			private readonly HashSet<string> edges = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			private readonly string objectName;
 			private readonly Statement statement;
@@ -45,7 +53,7 @@ namespace bsn.ModuleStore.Sql {
 			public DependencyNode(string objectName, Statement statement) {
 				this.objectName = objectName;
 				this.statement = statement;
-				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames<SqlName>().Where(n => !(n.Value.StartsWith("@") || n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase)))) {
+				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames<SqlName>().Where(n => !IsLocalName(n) || n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase))) {
 					edges.Add(referencedObjectName.Value);
 				}
 			}

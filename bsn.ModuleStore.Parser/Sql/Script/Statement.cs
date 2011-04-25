@@ -36,5 +36,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public IEnumerable<T> GetReferencedObjectNames<T>() where T: SqlName {
 			return GetInnerTokens<IQualifiedName<SchemaName>>((qn, scope) => (!qn.LockedOverride) && qn.IsOverridden, null).Select(qn => qn.Name).OfType<T>().Distinct();
 		}
+
+		internal IEnumerable<IQualifiedName<SchemaName>> GetObjectSchemaQualifiedNames(string schemaName) {
+			return GetInnerSchemaQualifiedNames(n => n.Equals(schemaName, StringComparison.OrdinalIgnoreCase)).Where(qn => !qn.LockedOverride);
+		}
 	}
 }

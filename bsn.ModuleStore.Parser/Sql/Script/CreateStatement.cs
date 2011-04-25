@@ -29,7 +29,6 @@
 //  
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateStatement: DdlStatement, IObjectBoundStatement {
@@ -60,13 +59,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal IEnumerable<IQualifiedName<SchemaName>> GetObjectSchemaQualifiedNames() {
 			if (schemaQualifiedNames.Count == 0) {
-				string schemaName = GetObjectSchema();
-				foreach (IQualifiedName<SchemaName> innerSchemaQualifiedName in GetInnerSchemaQualifiedNames(n => n.Equals(schemaName, StringComparison.OrdinalIgnoreCase)).Where(qn => !qn.LockedOverride)) {
-					FunctionName functionName = innerSchemaQualifiedName.Name as FunctionName;
-					if ((functionName == null) || (!functionName.IsBuiltinFunction)) {
-						schemaQualifiedNames.Add(innerSchemaQualifiedName);
-					}
-				}
+				schemaQualifiedNames.AddRange(GetObjectSchemaQualifiedNames(GetObjectSchema()));
 			}
 			return schemaQualifiedNames;
 		}

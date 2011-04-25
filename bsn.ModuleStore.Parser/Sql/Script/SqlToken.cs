@@ -47,19 +47,23 @@ namespace bsn.ModuleStore.Sql.Script {
 			                      	if (!name.LockedOverride) {
 			                      		SchemaName qualification = name.Qualification;
 			                      		if (qualification != null) {
-																	Debug.Assert(!string.IsNullOrEmpty(qualification.Value));
+			                      			Debug.Assert(!string.IsNullOrEmpty(qualification.Value));
 			                      			return checkSchemaName(qualification.Value);
 			                      		}
-			                      		if (((name.Name is TableName) || (name.Name is ViewName)) && scope.ContainsName(name.Name.Value)) {
+			                      		TableName tableName = name.Name as TableName;
+			                      		if (((tableName != null) || (name.Name is ViewName)) && scope.ContainsName(name.Name.Value)) {
 			                      			return false;
+			                      		}
+			                      		if (tableName != null) {
+			                      			return !tableName.Value.StartsWith("#");
 			                      		}
 			                      		TypeName typeName = name.Name as TypeName;
-			                      		if ((typeName != null) && typeName.IsBuiltinType) {
-			                      			return false;
+			                      		if (typeName != null) {
+			                      			return !typeName.IsBuiltinType;
 			                      		}
 			                      		FunctionName functionName = name.Name as FunctionName;
-			                      		if ((functionName != null) && functionName.IsBuiltinFunction) {
-			                      			return false;
+			                      		if (functionName != null) {
+			                      			return !functionName.IsBuiltinFunction;
 			                      		}
 			                      		return true;
 			                      	}

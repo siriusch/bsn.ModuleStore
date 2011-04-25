@@ -111,6 +111,7 @@ namespace bsn.ModuleStore.Mapper {
 		public static I Create<I>(IConnectionProvider connectionProvider) where I: IStoredProcedures {
 			return (I)(new SqlCallProxy(connectionProvider, typeof(I))).GetTransparentProxy();
 		}
+
 		// ReSharper restore InconsistentNaming
 
 		private static object[] GetOutArgValues(SqlParameter[] dbParams) {
@@ -189,7 +190,22 @@ namespace bsn.ModuleStore.Mapper {
 					SqlProcedureAttribute procInfo;
 					IList<IDisposable> disposeList = new List<IDisposable>(0);
 					XmlNameTable xmlNameTable;
-					using (SqlCommand command = callInfo.CreateCommand(mcm, connection, connectionProvider.SchemaName, out returnParameter, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList)) {
+					using (IEnumerator<SqlCommand> commandEnumerator = callInfo.CreateCommands(mcm, connection, connectionProvider.SchemaName, out returnParameter, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList).GetEnumerator()) {
+						if (procInfo.RequireTransaction && (transaction == null)) {
+							throw new InvalidOperationException("A transaction is required for this stored procedure invocation");
+						}
+						if (!commandEnumerator.MoveNext()) {
+							throw new InvalidOperationException();
+						}
+						SqlCommand command = commandEnumerator.Current;
+						Debug.Assert(command != null);
+						while (commandEnumerator.MoveNext()) {
+							Debug.WriteLine(command.CommandText, "Pre-call SQL execute");
+							command.Transaction = transaction;
+							command.ExecuteNonQuery();
+							command = commandEnumerator.Current;
+							Debug.Assert(command != null);
+						}
 						command.Transaction = transaction;
 						try {
 							Type returnType = ((MethodInfo)mcm.MethodBase).ReturnType;

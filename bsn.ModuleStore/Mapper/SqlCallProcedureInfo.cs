@@ -32,10 +32,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 using bsn.ModuleStore.Mapper.Serialization;
@@ -43,7 +45,8 @@ using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
-	internal class SqlCallProcedureInfo {
+	internal class SqlCallProcedureInfo: IQualified<SchemaName> {
+		private static readonly Regex rxUncomment = new Regex(@"(?<=^/\*\s*)\S.*?(?=\s*\*/$)|(?<=^--\s*)\S.*?(?=\s*$)", RegexOptions.CultureInvariant|RegexOptions.ExplicitCapture|RegexOptions.Singleline);
 		private static readonly Dictionary<string, CreateProcedureStatement> statements = new Dictionary<string, CreateProcedureStatement>(StringComparer.Ordinal);
 
 		public static CreateProcedureStatement GetCreateScript(Type type, string manifestResourceName) {
@@ -82,11 +85,13 @@ namespace bsn.ModuleStore.Mapper {
 
 		private readonly int outArgCount;
 		private readonly SqlCallParameterBase[] parameters;
+		private readonly Statement[] preCallStatements;
 		private readonly SqlProcedureAttribute proc;
 		private readonly SqlSerializationTypeInfo returnTypeInfo;
 		private readonly CreateProcedureStatement script;
 		private readonly bool useReturnValue;
 		private readonly ParameterInfo xmlNameTableParameter;
+		private SchemaName schemaNameOverride;
 
 		public SqlCallProcedureInfo(MethodInfo method) {
 			foreach (SqlProcedureAttribute attribute in method.GetCustomAttributes(typeof(SqlProcedureAttribute), false)) {
@@ -98,6 +103,17 @@ namespace bsn.ModuleStore.Mapper {
 			script = GetCreateScript(proc.ManifestResourceType ?? method.DeclaringType, proc.ManifestResourceName);
 			if (script == null) {
 				throw new FileNotFoundException(String.Format("The embedded script for the method {0}.{1} could not be found", method.DeclaringType.FullName, method.Name), proc.ManifestResourceName);
+			}
+			if (proc.ExecuteFirstCommentBeforeInvocation && (script.Comments.Count > 0)) {
+				List<Statement> preCallStatements = new List<Statement>(ScriptParser.Parse(rxUncomment.Match(script.Comments.First()).Value));
+				if (preCallStatements.Count > 0) {
+					foreach (Statement preCallStatement in preCallStatements) {
+						foreach (IQualifiedName<SchemaName> qualifiedName in preCallStatement.GetObjectSchemaQualifiedNames(script.ObjectSchema)) {
+							qualifiedName.SetOverride(this);
+						}
+					}
+					this.preCallStatements = preCallStatements.ToArray();
+				}
 			}
 			parameters = new SqlCallParameterBase[script.Parameters.Count];
 			foreach (SqlParameterAttribute parameterAttribute in method.GetCustomAttributes(typeof(SqlParameterAttribute), false)) {
@@ -161,34 +177,54 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public SqlCommand GetCommand(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out SqlParameter[] outArgs, out SqlSerializationTypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
-		                             IList<IDisposable> disposeList) {
+		public ICollection<SqlCommand> GetCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out SqlParameter[] outArgs, out SqlSerializationTypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
+		                                           IList<IDisposable> disposeList) {
 			if (String.IsNullOrEmpty(schemaName)) {
 				throw new ArgumentNullException("schemaName");
 			}
 			VerifyArgs(mcm);
-			SqlCommand result = connection.CreateCommand();
-			result.CommandText = String.Format("[{0}].[{1}]", schemaName, ProcedureName);
-			result.CommandType = CommandType.StoredProcedure;
+			SqlCommand[] commands;
+			if (preCallStatements != null) {
+				commands = new SqlCommand[preCallStatements.Length+1];
+				lock (preCallStatements) {
+					schemaNameOverride = new SchemaName(schemaName);
+					int index = 0;
+					foreach (Statement preCallStatement in preCallStatements) {
+						StringWriter output = new StringWriter(CultureInfo.InvariantCulture);
+						SqlWriter writer = new SqlWriter(output, DatabaseEngine.Unknown, false);
+						preCallStatement.WriteTo(writer);
+						SqlCommand preCallCommand = connection.CreateCommand();
+						preCallCommand.CommandType = CommandType.Text;
+						preCallCommand.CommandText = output.ToString();
+						commands[index++] = preCallCommand;
+					}
+				}
+			} else {
+				commands = new SqlCommand[1];
+			}
+			SqlCommand callCommand = connection.CreateCommand();
+			callCommand.CommandType = CommandType.StoredProcedure;
+			callCommand.CommandText = String.Format("[{0}].[{1}]", schemaName, ProcedureName);
 			if (proc.Timeout > 0) {
-				result.CommandTimeout = proc.Timeout;
+				callCommand.CommandTimeout = proc.Timeout;
 			}
 			outArgs = new SqlParameter[outArgCount];
 			xmlNameTable = xmlNameTableParameter != null ? (XmlNameTable)mcm.GetArg(xmlNameTableParameter.Position) : null;
 			foreach (SqlCallParameterBase factory in parameters) {
-				result.Parameters.Add(factory.GetSqlParameter(result, mcm, outArgs, disposeList));
+				callCommand.Parameters.Add(factory.GetSqlParameter(callCommand, mcm, outArgs, disposeList));
 			}
 			if (useReturnValue) {
-				returnParameter = result.CreateParameter();
+				returnParameter = callCommand.CreateParameter();
 				returnParameter.SqlDbType = SqlDbType.Int;
 				returnParameter.Direction = ParameterDirection.ReturnValue;
-				result.Parameters.Add(returnParameter);
+				callCommand.Parameters.Add(returnParameter);
 			} else {
 				returnParameter = null;
 			}
 			returnTypeInfo = this.returnTypeInfo;
 			procInfo = proc;
-			return result;
+			commands[commands.Length-1] = callCommand;
+			return commands;
 		}
 
 		[Conditional("DEBUG")]
@@ -204,6 +240,12 @@ namespace bsn.ModuleStore.Mapper {
 				if (!string.Equals(expectedNames[i], mcm.GetArgName(i), StringComparison.Ordinal)) {
 					throw new InvalidOperationException(string.Format("{0}.{1} parameter {2} verification failed, expected {3} but got {4}", mcm.MethodBase.DeclaringType.FullName, mcm.MethodName, i, expectedNames[i], mcm.GetArgName(i)));
 				}
+			}
+		}
+
+		SchemaName IQualified<SchemaName>.Qualification {
+			get {
+				return schemaNameOverride;
 			}
 		}
 	}
