@@ -121,11 +121,13 @@
         LEFT JOIN [sys].[default_constraints] AS [dc] ON ([c].[default_object_id]=[dc].[object_id])
         LEFT JOIN [sys].[identity_columns] AS [ic] ON ([c].[object_id]=[ic].[object_id]) AND ([c].[column_id]=[ic].[column_id])
         LEFT JOIN [sys].[computed_columns] AS [cc] ON ([c].[object_id]=[cc].[object_id]) AND ([c].[column_id]=[Cc].[column_id])
-        WHERE [c].[object_id]=[t].[object_id] FOR XML PATH ('Column'), TYPE
+        WHERE [c].[object_id]=[t].[object_id]
+        ORDER BY [c].[column_id] FOR XML PATH ('Column'), TYPE
       ), (
         SELECT '['+[cc].[name]+']' AS [@Name], [cc].[definition] AS [@Definition]
         FROM [sys].[check_constraints] AS [cc]
-        WHERE [cc].[parent_object_id]=[t].[object_id] FOR XML PATH ('CheckConstraint'), TYPE
+        WHERE [cc].[parent_object_id]=[t].[object_id]
+        ORDER BY [cc].[name] FOR XML PATH ('CheckConstraint'), TYPE
       ), (
         SELECT '['+[fk].[name]+']' AS [@Name], '['+[fs].[name]+'].['+[ft].[name]+']' AS [@Reference], CASE [fk].[delete_referential_action]
           WHEN 0 THEN NULL
@@ -281,6 +283,7 @@ SELECT [s].[name], [tt].[name],
           LEFT JOIN [sys].[identity_columns] AS [ic] ON ([c].[object_id] = [ic].[object_id]) AND ([c].[column_id] = [ic].[column_id]) 
           LEFT JOIN [sys].[computed_columns] AS [cc] ON ([c].[object_id] = [cc].[object_id]) AND ([c].[column_id] = [Cc].[column_id])
           WHERE [c].[object_id] = [tt].[type_table_object_id]
+          ORDER BY [c].[column_id] 
         FOR
          XML PATH('Column'),
              TYPE
@@ -290,6 +293,7 @@ SELECT [s].[name], [tt].[name],
             [cc].[definition] AS [@Definition]
           FROM [sys].[check_constraints] AS [cc]
           WHERE [cc].[parent_object_id] = [tt].[type_table_object_id]
+          ORDER BY [cc].[name]
         FOR
          XML PATH('CheckConstraint'),
              TYPE
