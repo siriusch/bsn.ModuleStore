@@ -227,7 +227,7 @@
 		<xsl:param name="indent" select="''" />
 		<xsl:text xml:space="preserve"> (
 </xsl:text>
-		<xsl:for-each select="Column">
+		<xsl:for-each select="Column[not(@IsIncludedColumn=1)]">
 			<xsl:value-of select="$indent"/>
 			<xsl:text xml:space="preserve">  </xsl:text>
 			<xsl:value-of select="@Name" />
@@ -239,7 +239,20 @@
 			<xsl:text xml:space="preserve">
 </xsl:text>
 		</xsl:for-each>
-		<xsl:value-of select="$indent"/>
+		<xsl:if test="Column[@IsIncludedColumn=1]">
+			<xsl:value-of select="$indent"/>
+			<xsl:text xml:space="preserve">) INCLUDE (
+</xsl:text>
+			<xsl:for-each select="Column[@IsIncludedColumn=1]">
+				<xsl:value-of select="$indent"/>
+				<xsl:text xml:space="preserve">  </xsl:text>
+				<xsl:value-of select="@Name" />
+				<xsl:if test="position()!=last()">,</xsl:if>
+				<xsl:text xml:space="preserve">
+</xsl:text>
+			</xsl:for-each>
+			<xsl:value-of select="$indent"/>
+		</xsl:if>
 		<xsl:text xml:space="preserve">) WITH </xsl:text>
 		<xsl:choose>
 			<xsl:when test="@FillFactor">
