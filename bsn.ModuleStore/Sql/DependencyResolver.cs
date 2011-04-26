@@ -53,7 +53,7 @@ namespace bsn.ModuleStore.Sql {
 			public DependencyNode(string objectName, Statement statement) {
 				this.objectName = objectName;
 				this.statement = statement;
-				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames<SqlName>().Where(n => !IsLocalName(n) || n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase))) {
+				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames<SqlName>().Where(n => !(IsLocalName(n) || n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase)))) {
 					edges.Add(referencedObjectName.Value);
 				}
 			}
