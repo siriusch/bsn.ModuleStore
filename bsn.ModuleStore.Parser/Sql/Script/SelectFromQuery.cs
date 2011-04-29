@@ -120,7 +120,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.Write("GROUP BY ");
 				writer.WriteScriptSequence(groupByClause, WhitespacePadding.None, ", ");
 			}
-			writer.WriteScript(havingClause, WhitespacePadding.NewlineBefore);
+			writer.WriteScript(havingClause, WhitespacePadding.NewlineBefore, "HAVING ", null);
 			if (orderList.Count > 0) {
 				writer.WriteLine();
 				writer.Write("ORDER BY ");

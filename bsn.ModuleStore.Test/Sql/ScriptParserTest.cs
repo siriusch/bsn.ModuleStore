@@ -202,6 +202,16 @@ FROM varchar(11) NOT NULL ;", 1);
 		}
 
 		[Test]
+		public void DateTime2SpecificVariable() {
+			ParseWithRoundtrip(@"DECLARE @dt datetime2(4)", 1);
+		}
+
+		[Test]
+		public void DateTime2Variable() {
+			ParseWithRoundtrip(@"DECLARE @dt datetime2", 1);
+		}
+
+		[Test]
 		public void DropType() {
 			ParseWithRoundtrip(@"DROP TYPE dbo.SSN;", 1);
 		}
@@ -477,16 +487,6 @@ PRINT 'Cool'", 3);
 		}
 
 		[Test]
-		public void DateTime2Variable() {
-			ParseWithRoundtrip(@"DECLARE @dt datetime2", 1);
-		}
-
-		[Test]
-		public void DateTime2SpecificVariable() {
-			ParseWithRoundtrip(@"DECLARE @dt datetime2(4)", 1);
-		}
-
-		[Test]
 		public void RollbackTransactionVariableName() {
 			ParseWithRoundtrip(@"ROLLBACK TRANSACTION @trans", 1);
 		}
@@ -509,6 +509,11 @@ PRINT 'Cool'", 3);
 		[Test]
 		public void SelectExceptIntersect() {
 			ParseWithRoundtrip(@"SELECT * FROM TableA EXCEPT SELECT * FROM TableB INTERSECT SELECT * FROM TableC", 1);
+		}
+
+		[Test]
+		public void SelectGroupByHaving() {
+			ParseWithRoundtrip(@"SELECT a FROM tbl GROUP BY a HAVING SUM(b)>0", 1);
 		}
 
 		[Test]
