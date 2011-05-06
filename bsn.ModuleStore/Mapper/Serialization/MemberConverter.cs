@@ -28,7 +28,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
-using System.Data;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -75,7 +74,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private readonly string columnName;
 		private readonly bool isIdentity;
-
 		private readonly int memberIndex;
 		private readonly Type type;
 

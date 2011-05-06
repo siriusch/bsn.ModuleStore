@@ -161,15 +161,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 						columns.Add(columnAttribute.Name, new SqlColumnInfo(field, columnAttribute.Name, memberConverter));
 					} else if (field.IsDefined(typeof(SqlDeserializeAttribute), true)) {
 						NestedMemberConverter nestedMemberConverter;
-						// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 						if (typeof(IList).IsAssignableFrom(field.FieldType)) {
 							nestedMemberConverter = new NestedListMemberConverter(field.FieldType, memberInfos.Count);
 						} else {
 							nestedMemberConverter = new NestedMemberConverter(field.FieldType, memberInfos.Count);
 						}
-						// ReSharper restore ConvertIfStatementToConditionalTernaryExpression
-						memberInfos.Add(field);
 						memberConverters.Add(nestedMemberConverter);
+						memberInfos.Add(field);
 						hasNestedSerializers = true;
 #warning add support for table valued parameters and SqlDeserializeAttribute (flatten the structure to one "table")
 					}

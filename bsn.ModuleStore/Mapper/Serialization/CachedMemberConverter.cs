@@ -32,6 +32,33 @@ using System.Reflection;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class CachedMemberConverter: MemberConverter {
+		private abstract class IdentifiableGetter {
+			internal sealed class Generic<T>: IdentifiableGetter where T: struct, IEquatable<T> {
+				public static readonly Generic<T> Default = new Generic<T>();
+
+				public override Type Type {
+					get {
+						return typeof(T);
+					}
+				}
+
+				public override object GetIdentity(object instance) {
+					IIdentifiable<T> identifiable = instance as IIdentifiable<T>;
+					if (identifiable != null) {
+						return identifiable.Id;
+					}
+					return instance;
+				}
+			}
+
+			public abstract Type Type {
+				get;
+			}
+
+			public abstract object GetIdentity(object instance);
+		}
+
+		private readonly IdentifiableGetter getter;
 		private readonly MemberConverter identityMember;
 
 		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
@@ -44,6 +71,23 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 			if (identityMember == null) {
 				throw new InvalidOperationException(String.Format("The type {0} cannot be retrieved from the cache because it lacks an identity column", type.FullName));
+			}
+			foreach (Type @interface in type.GetInterfaces()) {
+				if (@interface.IsGenericType && typeof(IIdentifiable<>).Equals(@interface.GetGenericTypeDefinition())) {
+					// ReSharper disable AssignNullToNotNullAttribute
+					getter = (IdentifiableGetter)typeof(IdentifiableGetter.Generic<>).MakeGenericType(@interface.GetGenericArguments()).GetField("Default").GetValue(null);
+					// ReSharper restore AssignNullToNotNullAttribute
+					break;
+				}
+			}
+		}
+
+		public override Type DbClrType {
+			get {
+				if (getter != null) {
+					return getter.Type;
+				}
+				return base.DbClrType;
 			}
 		}
 
@@ -58,6 +102,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				return result;
 			}
 			return null;
+		}
+
+		public override object ProcessToDb(object value) {
+			if (getter != null) {
+				return getter.GetIdentity(value) ?? DBNull.Value;
+			}
+			return base.ProcessToDb(value);
 		}
 	}
 }

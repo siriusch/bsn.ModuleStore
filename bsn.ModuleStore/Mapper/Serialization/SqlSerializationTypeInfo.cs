@@ -40,7 +40,10 @@ using System.Xml.XPath;
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SqlSerializationTypeInfo {
 		private static class ToArray<T> {
+#pragma warning disable 169
+			// this field is used via reflection
 			public static readonly Func<object, Array> ToArrayInvoker = CreateToArrayInvoker();
+#pragma warning restore 169
 
 			private static Func<object, Array> CreateToArrayInvoker() {
 				MethodInfo toArrayMethod = typeof(T).GetMethod("ToArray");
@@ -59,7 +62,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private static readonly Dictionary<Type, SqlSerializationTypeInfo> infos = new Dictionary<Type, SqlSerializationTypeInfo>();
 
+// ReSharper disable UnusedMember.Local
 		private static Array ToArrayGeneric<T>(IEnumerable enumerable) {
+// ReSharper restore UnusedMember.Local
 			List<T> list = new List<T>();
 			foreach (object obj in enumerable) {
 				list.Add((T)obj);
