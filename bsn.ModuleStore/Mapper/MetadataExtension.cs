@@ -355,6 +355,14 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
+		public static void Unset(this XDocument doc, XName elementName) {
+			Set(doc, elementName, null, null);
+		}
+
+		public static bool IsSet(this XDocument doc, XName elementName) {
+			return GetElement(doc, elementName, null, false) != null;
+		}
+
 		public static XElement GetRoot(this XDocument doc) {
 			if (doc == null) {
 				throw new ArgumentNullException("doc");
