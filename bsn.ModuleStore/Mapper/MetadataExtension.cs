@@ -37,140 +37,24 @@ namespace bsn.ModuleStore.Mapper {
 	public static class MetadataExtension {
 		public static readonly XName XmlLang = XName.Get("lang", "http://www.w3.org/XML/1998/namespace");
 
-		public static bool? GetBoolean(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
+		public static void Add(this XDocument doc, XName elementName, string value) {
+			if (doc == null) {
+				throw new ArgumentNullException("doc");
 			}
-			return XmlConvert.ToBoolean(result);
+			if (elementName == null) {
+				throw new ArgumentNullException("elementName");
+			}
+			if (value == null) {
+				throw new ArgumentNullException("value");
+			}
+			doc.GetRoot().Add(new XElement(elementName, value));
 		}
 
-		public static byte? GetByte(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
+		public static XDocument Clone(this XDocument doc) {
+			if (doc == null) {
+				return new XDocument();
 			}
-			return XmlConvert.ToByte(result);
-		}
-
-		public static char? GetChar(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToChar(result);
-		}
-
-		public static DateTime? GetDateTime(this XDocument doc, XName elementName, XmlDateTimeSerializationMode mode) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToDateTime(result, mode);
-		}
-
-		public static DateTimeOffset? GetDateTimeOffset(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToDateTimeOffset(result);
-		}
-
-		public static Decimal? GetDecimal(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToDecimal(result);
-		}
-
-		public static double? GetDouble(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToDouble(result);
-		}
-
-		public static Guid? GetGuid(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToGuid(result);
-		}
-
-		public static short? GetInt16(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToInt16(result);
-		}
-
-		public static int? GetInt32(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToInt32(result);
-		}
-
-		public static long? GetInt64(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToInt64(result);
-		}
-
-		public static sbyte? GetSByte(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToSByte(result);
-		}
-
-		public static float? GetSingle(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToSingle(result);
-		}
-
-		public static TimeSpan? GetTimeSpan(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToTimeSpan(result);
-		}
-
-		public static ushort? GetUInt16(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToUInt16(result);
-		}
-
-		public static uint? GetUInt32(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToUInt32(result);
-		}
-
-		public static ulong? GetUInt64(this XDocument doc, XName elementName) {
-			string result = Get(doc, elementName, null, null);
-			if (result == null) {
-				return null;
-			}
-			return XmlConvert.ToUInt64(result);
+			return new XDocument(doc);
 		}
 
 		public static string Get(this XDocument doc, XName elementName) {
@@ -183,6 +67,108 @@ namespace bsn.ModuleStore.Mapper {
 
 		public static string Get(this XDocument doc, XName elementName, CultureInfo culture) {
 			return Get(doc, elementName, culture, string.Empty);
+		}
+
+		public static string Get(this XDocument doc, XName elementName, CultureInfo culture, string @default) {
+			XElement element = doc.GetElement(elementName, culture, true);
+			if (element != null) {
+				return element.Value;
+			}
+			return @default;
+		}
+
+		public static IEnumerable<XElement> GetAll(this XDocument doc) {
+			if (doc != null) {
+				XElement root = doc.Root;
+				if (root != null) {
+					return root.Elements();
+				}
+			}
+			return new XElement[0];
+		}
+
+		public static bool? GetBoolean(this XDocument doc, XName elementName, bool? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToBoolean(result);
+		}
+
+		public static bool? GetBoolean(this XDocument doc, XName elementName) {
+			return GetBoolean(doc, elementName, null);
+		}
+
+		public static byte? GetByte(this XDocument doc, XName elementName, byte? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToByte(result);
+		}
+
+		public static byte? GetByte(this XDocument doc, XName elementName) {
+			return GetByte(doc, elementName, null);
+		}
+
+		public static char? GetChar(this XDocument doc, XName elementName, char? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToChar(result);
+		}
+
+		public static char? GetChar(this XDocument doc, XName elementName) {
+			return GetChar(doc, elementName, null);
+		}
+
+		public static DateTime? GetDateTime(this XDocument doc, XName elementName, XmlDateTimeSerializationMode mode, DateTime? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToDateTime(result, mode);
+		}
+
+		public static DateTime? GetDateTime(this XDocument doc, XName elementName, XmlDateTimeSerializationMode mode) {
+			return GetDateTime(doc, elementName, mode, null);
+		}
+
+		public static DateTimeOffset? GetDateTimeOffset(this XDocument doc, XName elementName, DateTimeOffset? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToDateTimeOffset(result);
+		}
+
+		public static DateTimeOffset? GetDateTimeOffset(this XDocument doc, XName elementName) {
+			return GetDateTimeOffset(doc, elementName, null);
+		}
+
+		public static Decimal? GetDecimal(this XDocument doc, XName elementName, decimal? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToDecimal(result);
+		}
+
+		public static Decimal? GetDecimal(this XDocument doc, XName elementName) {
+			return GetDecimal(doc, elementName, null);
+		}
+
+		public static double? GetDouble(this XDocument doc, XName elementName, double? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToDouble(result);
+		}
+
+		public static double? GetDouble(this XDocument doc, XName elementName) {
+			return GetDouble(doc, elementName, null);
 		}
 
 		public static XElement GetElement(this XDocument doc, XName elementName, CultureInfo culture, bool cultureFallback) {
@@ -214,6 +200,142 @@ namespace bsn.ModuleStore.Mapper {
 			return null;
 		}
 
+		public static Guid? GetGuid(this XDocument doc, XName elementName, Guid? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToGuid(result);
+		}
+
+		public static Guid? GetGuid(this XDocument doc, XName elementName) {
+			return GetGuid(doc, elementName, null);
+		}
+
+		public static short? GetInt16(this XDocument doc, XName elementName, short? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToInt16(result);
+		}
+
+		public static short? GetInt16(this XDocument doc, XName elementName) {
+			return GetInt16(doc, elementName, null);
+		}
+
+		public static int? GetInt32(this XDocument doc, XName elementName, int? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToInt32(result);
+		}
+
+		public static int? GetInt32(this XDocument doc, XName elementName) {
+			return GetInt32(doc, elementName, null);
+		}
+
+		public static long? GetInt64(this XDocument doc, XName elementName, long? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToInt64(result);
+		}
+
+		public static long? GetInt64(this XDocument doc, XName elementName) {
+			return GetInt64(doc, elementName, null);
+		}
+
+		public static XElement GetRoot(this XDocument doc) {
+			if (doc == null) {
+				throw new ArgumentNullException("doc");
+			}
+			XElement root = doc.Root;
+			if (root == null) {
+				root = new XElement("xml");
+				doc.Add(root);
+			}
+			return root;
+		}
+
+		public static sbyte? GetSByte(this XDocument doc, XName elementName, sbyte? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToSByte(result);
+		}
+
+		public static sbyte? GetSByte(this XDocument doc, XName elementName) {
+			return GetSByte(doc, elementName, null);
+		}
+
+		public static float? GetSingle(this XDocument doc, XName elementName, float? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToSingle(result);
+		}
+
+		public static float? GetSingle(this XDocument doc, XName elementName) {
+			return GetSingle(doc, elementName, null);
+		}
+
+		public static TimeSpan? GetTimeSpan(this XDocument doc, XName elementName, TimeSpan? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToTimeSpan(result);
+		}
+
+		public static TimeSpan? GetTimeSpan(this XDocument doc, XName elementName) {
+			return GetTimeSpan(doc, elementName, null);
+		}
+
+		public static ushort? GetUInt16(this XDocument doc, XName elementName, ushort? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToUInt16(result);
+		}
+
+		public static ushort? GetUInt16(this XDocument doc, XName elementName) {
+			return GetUInt16(doc, elementName, null);
+		}
+
+		public static uint? GetUInt32(this XDocument doc, XName elementName, uint? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToUInt32(result);
+		}
+
+		public static uint? GetUInt32(this XDocument doc, XName elementName) {
+			return GetUInt32(doc, elementName, null);
+		}
+
+		public static ulong? GetUInt64(this XDocument doc, XName elementName, ulong? @default) {
+			string result = Get(doc, elementName, null, null);
+			if (result == null) {
+				return @default;
+			}
+			return XmlConvert.ToUInt64(result);
+		}
+
+		public static ulong? GetUInt64(this XDocument doc, XName elementName) {
+			return GetUInt64(doc, elementName, null);
+		}
+
+		public static bool IsSet(this XDocument doc, XName elementName) {
+			return GetElement(doc, elementName, null, false) != null;
+		}
+
 		public static XElement NextMedadataSibling(this XElement element) {
 			if (element == null) {
 				throw new ArgumentNullException("element");
@@ -231,31 +353,6 @@ namespace bsn.ModuleStore.Mapper {
 				}
 			}
 			return null;
-		}
-
-		public static string Get(this XDocument doc, XName elementName, CultureInfo culture, string @default) {
-			XElement element = doc.GetElement(elementName, culture, true);
-			if (element != null) {
-				return element.Value;
-			}
-			return @default;
-		}
-
-		public static IEnumerable<XElement> GetAll(this XDocument doc) {
-			if (doc != null) {
-				XElement root = doc.Root;
-				if (root != null) {
-					return root.Elements();
-				}
-			}
-			return new XElement[0];
-		}
-
-		public static XDocument Clone(this XDocument doc) {
-			if (doc == null) {
-				return new XDocument();
-			}
-			return new XDocument(doc);
 		}
 
 		public static void Set(this XDocument doc, XName elementName, bool? value) {
@@ -357,35 +454,6 @@ namespace bsn.ModuleStore.Mapper {
 
 		public static void Unset(this XDocument doc, XName elementName) {
 			Set(doc, elementName, null, null);
-		}
-
-		public static bool IsSet(this XDocument doc, XName elementName) {
-			return GetElement(doc, elementName, null, false) != null;
-		}
-
-		public static XElement GetRoot(this XDocument doc) {
-			if (doc == null) {
-				throw new ArgumentNullException("doc");
-			}
-			XElement root = doc.Root;
-			if (root == null) {
-				root = new XElement("xml");
-				doc.Add(root);
-			}
-			return root;
-		}
-
-		public static void Add(this XDocument doc, XName elementName, string value) {
-			if (doc == null) {
-				throw new ArgumentNullException("doc");
-			}
-			if (elementName == null) {
-				throw new ArgumentNullException("elementName");
-			}
-			if (value == null) {
-				throw new ArgumentNullException("value");
-			}
-			doc.GetRoot().Add(new XElement(elementName, value));
 		}
 	}
 }
