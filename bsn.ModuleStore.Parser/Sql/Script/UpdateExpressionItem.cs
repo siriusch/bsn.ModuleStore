@@ -36,11 +36,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<UpdateItem> ::= <VariableName> ~'=' <Expression>")]
 		public UpdateExpressionItem(VariableName variableName, Expression expression): this(variableName, null, expression) {}
 
-		[Rule("<UpdateItem> ::= <ColumnName> ~'=' <Expression>")]
-		public UpdateExpressionItem(ColumnName columnName, Expression expression): this(null, columnName, expression) {}
+		[Rule("<UpdateItem> ::= <ColumnNameQualified> ~'=' <Expression>")]
+		public UpdateExpressionItem(Qualified<SqlName, ColumnName> columnName, Expression expression): this(null, columnName, expression) {}
 
-		[Rule("<UpdateItem> ::= <VariableName> ~'=' <ColumnName> ~'=' <Expression>")]
-		public UpdateExpressionItem(VariableName variableName, ColumnName columnName, Expression expression): base(columnName, variableName) {
+		[Rule("<UpdateItem> ::= <VariableName> ~'=' <ColumnNameQualified> ~'=' <Expression>")]
+		public UpdateExpressionItem(VariableName variableName, Qualified<SqlName, ColumnName> columnName, Expression expression): base(columnName, variableName) {
 			this.expression = expression;
 		}
 

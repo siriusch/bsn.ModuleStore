@@ -34,19 +34,19 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class UpdateItem: SqlScriptableToken {
-		private readonly ColumnName columnName;
+		private readonly Qualified<SqlName, ColumnName> columnName;
 		private readonly VariableName variableName;
 
-		[Rule("<UpdateItem> ::= <ColumnName> ~'=' ~DEFAULT")]
-		public UpdateItem(ColumnName columnName): this(columnName, null) {}
+		[Rule("<UpdateItem> ::= <ColumnNameQualified> ~'=' ~DEFAULT")]
+		public UpdateItem(Qualified<SqlName, ColumnName> columnName): this(columnName, null) {}
 
-		protected UpdateItem(ColumnName columnName, VariableName variableName) {
+		protected UpdateItem(Qualified<SqlName, ColumnName> columnName, VariableName variableName) {
 			Debug.Assert((columnName == null)^(variableName == null));
 			this.columnName = columnName;
 			this.variableName = variableName;
 		}
 
-		public ColumnName ColumnName {
+		public Qualified<SqlName, ColumnName> ColumnName {
 			get {
 				return columnName;
 			}

@@ -39,10 +39,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<UpdateItem> ::= <VariableName> ~'.' <NamedFunctionList>")]
 		public UpdateMethodItem(VariableName variableName, Sequence<NamedFunction> methods): this(variableName, null, methods) {}
 
-		[Rule("<UpdateItem> ::= <ColumnName> ~'.' <NamedFunctionList>")]
-		public UpdateMethodItem(ColumnName columnName, Sequence<NamedFunction> methods): this(null, columnName, methods) {}
+		[Rule("<UpdateItem> ::= <TableName> ~'.' <NamedFunctionList>")]
+		public UpdateMethodItem(TableName tableName, Sequence<NamedFunction> methods): this(null, new Qualified<SqlName, ColumnName>(null, new ColumnName(tableName.Value)), methods) {}
 
-		private UpdateMethodItem(VariableName variableName, ColumnName columnName, Sequence<NamedFunction> methods): base(columnName, variableName) {
+		[Rule("<UpdateItem> ::= <TableName> ~'.' <ColumnName> ~'.' <NamedFunctionList>")]
+		public UpdateMethodItem(TableName tableName, ColumnName columnName, Sequence<NamedFunction> methods): this(null, new Qualified<SqlName, ColumnName>(tableName, columnName), methods) {}
+
+		private UpdateMethodItem(VariableName variableName, Qualified<SqlName, ColumnName> columnName, Sequence<NamedFunction> methods): base(columnName, variableName) {
 			this.methods = methods.ToList();
 		}
 

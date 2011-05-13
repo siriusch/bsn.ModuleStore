@@ -279,8 +279,8 @@ ON (target.ProductID = source.ProductID)
 WHEN MATCHED AND target.Quantity - source.OrderQty <= 0
     THEN DELETE
 WHEN MATCHED 
-    THEN UPDATE SET Quantity = target.Quantity - source.OrderQty, 
-                    ModifiedDate = GETDATE()
+    THEN UPDATE SET target.Quantity = target.Quantity - source.OrderQty, 
+                    target.ModifiedDate = GETDATE()
 OUTPUT $action, Inserted.ProductID, Inserted.Quantity, Inserted.ModifiedDate, Deleted.ProductID,
     Deleted.Quantity, Deleted.ModifiedDate;",
 					1);
@@ -610,12 +610,22 @@ SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
 
 		[Test]
 		public void UpdateSetXmlColumnModfiy() {
-			ParseWithRoundtrip(@"UPDATE tbl SET x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), y=1", 1);
+			ParseWithRoundtrip(@"UPDATE tbl SET x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+		}
+
+		[Test]
+		public void UpdateSetXmlVariableColumnModfiy() {
+			ParseWithRoundtrip(@"UPDATE @tbl SET [@tbl].x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+		}
+
+		[Test]
+		public void UpdateSetXmlQualifiedColumnModfiy() {
+			ParseWithRoundtrip(@"UPDATE tbl SET tbl.x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
 		}
 
 		[Test]
 		public void UpdateSetXmlVariableModfiy() {
-			ParseWithRoundtrip(@"UPDATE tbl SET @x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), y=1", 1);
+			ParseWithRoundtrip(@"UPDATE tbl SET @x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
 		}
 
 		[Test]
