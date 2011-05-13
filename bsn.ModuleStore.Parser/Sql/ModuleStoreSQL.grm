@@ -1123,14 +1123,13 @@ _ACTION = '$ACTION'
 <UpdateItemList> ::= <UpdateItem> ',' <UpdateItemList>
                    | <UpdateItem>
 
-<UpdateItem> ::= <ColumnNameQualified> '=' <Expression>
+<UpdateItem> ::= <ColumnName> '=' <Expression>
 !               | <ColumnNameQualified> '=' <ColumnNameQualified> .WRITE -- syntax not yet implemented
-               | <ColumnNameQualified> '=' DEFAULT
+               | <ColumnName> '=' DEFAULT
                | <VariableName> '=' <Expression>
-               | <VariableName> '=' <ColumnNameQualified> '=' <Expression>
+               | <VariableName> '=' <ColumnName> '=' <Expression>
                | <VariableName> '.' <NamedFunctionList>
-               | <TableName> '.' <NamedFunctionList> ! TableName is in fact a ColumnName
-               | <TableName> '.' <ColumnName> '.' <NamedFunctionList>
+               | <ColumnName> '.' <NamedFunctionList>
 
 <OptionalFromClause> ::= <FromClause>
                        |
