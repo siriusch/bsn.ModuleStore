@@ -49,7 +49,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteCommentsTo(writer);
 			writer.Write("SET ");
 			writer.WriteScript(variableName, WhitespacePadding.None);
-			writer.Write('=');
 		}
 	}
 }

@@ -27,16 +27,20 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
-
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class SetVariableExpressionStatement: SetVariableStatement {
+	public sealed class UpdateExpressionItem: UpdateItem {
 		private readonly Expression expression;
 
-		[Rule("<SetVariableStatement> ::= ~SET <VariableName> ~'=' <Expression>")]
-		public SetVariableExpressionStatement(VariableName variableName, Expression expression): base(variableName) {
+		[Rule("<UpdateItem> ::= <VariableName> ~'=' <Expression>")]
+		public UpdateExpressionItem(VariableName variableName, Expression expression): this(variableName, null, expression) {}
+
+		[Rule("<UpdateItem> ::= <ColumnNameQualified> ~'=' <Expression>")]
+		public UpdateExpressionItem(Qualified<SqlName, ColumnName> columnName, Expression expression): this(null, columnName, expression) {}
+
+		[Rule("<UpdateItem> ::= <VariableName> ~'=' <ColumnNameQualified> ~'=' <Expression>")]
+		public UpdateExpressionItem(VariableName variableName, Qualified<SqlName, ColumnName> columnName, Expression expression): base(columnName, variableName) {
 			this.expression = expression;
 		}
 
@@ -47,8 +51,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			base.WriteTo(writer);
-			writer.Write('=');
+			writer.WriteScript(VariableName, WhitespacePadding.None, null, "=");
+			writer.WriteScript(ColumnName, WhitespacePadding.None, null, "=");
 			writer.WriteScript(expression, WhitespacePadding.None);
 		}
 	}

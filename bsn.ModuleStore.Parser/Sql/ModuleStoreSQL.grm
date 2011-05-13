@@ -318,7 +318,7 @@ _ACTION = '$ACTION'
 
 <ColumnNameQualified> ::= <ColumnName>
                         | <TableName> '.' <ColumnName>
-                        | <VariableName> '.' <ColumnName>
+!                        | <VariableName> '.' <ColumnName>
 
 <ColumnNameList> ::= <ColumnName> ',' <ColumnNameList>
                    | <ColumnName>
@@ -649,6 +649,7 @@ _ACTION = '$ACTION'
                  | <SetOptionStatement>
 
 <SetVariableStatement> ::= SET <VariableName> '=' <Expression>
+                         | SET <VariableName> '.' <NamedFunctionList>
                          | SET <VariableName> '=' <CursorDefinition>
 
 <SetOptionStatement> ::= SET Id <SetValueList>
@@ -1127,6 +1128,9 @@ _ACTION = '$ACTION'
                | <ColumnNameQualified> '=' DEFAULT
                | <VariableName> '=' <Expression>
                | <VariableName> '=' <ColumnNameQualified> '=' <Expression>
+               | <VariableName> '.' <NamedFunctionList>
+               | <TableName> '.' <NamedFunctionList> ! TableName is in fact a ColumnName
+               | <TableName> '.' <ColumnName> '.' <NamedFunctionList>
 
 <OptionalFromClause> ::= <FromClause>
                        |

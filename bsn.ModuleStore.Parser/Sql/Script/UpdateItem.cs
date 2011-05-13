@@ -28,40 +28,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class UpdateItem: SqlScriptableToken {
+	public class UpdateItem: SqlScriptableToken {
 		private readonly Qualified<SqlName, ColumnName> columnName;
-		private readonly Expression expression;
 		private readonly VariableName variableName;
 
 		[Rule("<UpdateItem> ::= <ColumnNameQualified> ~'=' ~DEFAULT")]
-		public UpdateItem(Qualified<SqlName, ColumnName> columnName): this(null, columnName, null) {}
+		public UpdateItem(Qualified<SqlName, ColumnName> columnName): this(columnName, null) {}
 
-		[Rule("<UpdateItem> ::= <VariableName> ~'=' <Expression>")]
-		public UpdateItem(VariableName variableName, Expression expression): this(variableName, null, expression) {}
-
-		[Rule("<UpdateItem> ::= <ColumnNameQualified> ~'=' <Expression>")]
-		public UpdateItem(Qualified<SqlName, ColumnName> columnName, Expression expression): this(null, columnName, expression) {}
-
-		[Rule("<UpdateItem> ::= <VariableName> ~'=' <ColumnNameQualified> ~'=' <Expression>")]
-		public UpdateItem(VariableName variableName, Qualified<SqlName, ColumnName> columnName, Expression expression) {
+		protected UpdateItem(Qualified<SqlName, ColumnName> columnName, VariableName variableName) {
+			Debug.Assert((columnName == null)^(variableName == null));
 			this.columnName = columnName;
 			this.variableName = variableName;
-			this.expression = expression;
 		}
 
 		public Qualified<SqlName, ColumnName> ColumnName {
 			get {
 				return columnName;
-			}
-		}
-
-		public Expression Expression {
-			get {
-				return expression;
 			}
 		}
 
@@ -74,11 +61,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(variableName, WhitespacePadding.None, null, "=");
 			writer.WriteScript(columnName, WhitespacePadding.None, null, "=");
-			if (expression == null) {
-				writer.Write("DEFAULT");
-			} else {
-				writer.WriteScript(expression, WhitespacePadding.None);
-			}
+			writer.Write("DEFAULT");
 		}
 	}
 }

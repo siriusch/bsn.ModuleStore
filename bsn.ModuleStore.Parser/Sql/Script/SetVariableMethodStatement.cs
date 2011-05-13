@@ -1,7 +1,7 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -27,29 +27,30 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
+
+using System.Collections.Generic;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class SetVariableExpressionStatement: SetVariableStatement {
-		private readonly Expression expression;
+	public sealed class SetVariableMethodStatement: SetVariableStatement {
+		private readonly List<NamedFunction> methods;
 
-		[Rule("<SetVariableStatement> ::= ~SET <VariableName> ~'=' <Expression>")]
-		public SetVariableExpressionStatement(VariableName variableName, Expression expression): base(variableName) {
-			this.expression = expression;
+		[Rule("<SetVariableStatement> ::= ~SET <VariableName> ~'.' <NamedFunctionList>")]
+		public SetVariableMethodStatement(VariableName variableName, Sequence<NamedFunction> methods): base(variableName) {
+			this.methods = methods.ToList();
 		}
 
-		public Expression Expression {
+		public IEnumerable<NamedFunction> Methods {
 			get {
-				return expression;
+				return methods;
 			}
 		}
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write('=');
-			writer.WriteScript(expression, WhitespacePadding.None);
+			writer.Write('.');
+			writer.WriteScriptSequence(methods, WhitespacePadding.None, ".");
 		}
 	}
 }

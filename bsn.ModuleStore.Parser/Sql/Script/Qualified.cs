@@ -54,7 +54,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		public Qualified(TN name): this(null, name) {}
 
 		[Rule("<ColumnNameQualified> ::= <TableName> ~'.' <ColumnName>", typeof(SqlName), typeof(ColumnName))]
-		[Rule("<ColumnNameQualified> ::= <VariableName> ~'.' <ColumnName>", typeof(SqlName), typeof(ColumnName))]
 		[Rule("<ColumnWildQualified> ::= <TableName> ~'.' <ColumnWild>", typeof(SqlName), typeof(ColumnName))]
 		[Rule("<ColumnWildQualified> ::= <VariableName> ~'.' <ColumnWild>", typeof(SqlName), typeof(ColumnName))]
 		[Rule("<ProcedureNameQualified> ::= <SchemaName> ~'.' <ProcedureName>", typeof(SchemaName), typeof(ProcedureName))]

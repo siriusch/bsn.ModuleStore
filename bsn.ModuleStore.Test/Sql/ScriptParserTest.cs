@@ -592,6 +592,11 @@ AND    steps.exist('./MI:tool') = 1;",
 		}
 
 		[Test]
+		public void SetXmlModfiy() {
+			ParseWithRoundtrip(@"SET @x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]')", 1);
+		}
+
+		[Test]
 		public void StatementsWithXmlFunctions() {
 			ParseWithRoundtrip(@"DECLARE @tbl TABLE (id xml);
 INSERT @tbl (id) SELECT t.x FROM (SELECT NEWID() x FOR XML RAW) t(x);
@@ -601,6 +606,26 @@ SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
 		[Test]
 		public void SyntaxError() {
 			Expect(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1), Throws.InstanceOf<ParseException>().With.Message.ContainsSubstring("SyntaxError"));
+		}
+
+		[Test]
+		public void UpdateSetXmlColumnModfiy() {
+			ParseWithRoundtrip(@"UPDATE tbl SET x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+		}
+
+		[Test]
+		public void UpdateSetXmlVariableColumnModfiy() {
+			ParseWithRoundtrip(@"UPDATE @tbl SET [@tbl].x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+		}
+
+		[Test]
+		public void UpdateSetXmlQualifiedColumnModfiy() {
+			ParseWithRoundtrip(@"UPDATE tbl SET tbl.x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+		}
+
+		[Test]
+		public void UpdateSetXmlVariableModfiy() {
+			ParseWithRoundtrip(@"UPDATE tbl SET @x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
 		}
 
 		[Test]

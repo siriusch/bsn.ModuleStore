@@ -85,6 +85,7 @@
     <Compile Include="Sql\Script\CrossApply.cs" />
     <Compile Include="Sql\Script\CursorPosition.cs" />
     <Compile Include="Sql\Script\FetchStatement.cs" />
+    <Compile Include="Sql\Script\SetVariableMethodStatement.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionAbsolute.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionFirst.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionLast.cs" />
@@ -461,7 +462,9 @@
     <Compile Include="Sql\Script\UnionAllClause.cs" />
     <Compile Include="Sql\Script\UnionClause.cs" />
     <Compile Include="Sql\Script\UnreservedKeyword.cs" />
+    <Compile Include="Sql\Script\UpdateExpressionItem.cs" />
     <Compile Include="Sql\Script\UpdateItem.cs" />
+    <Compile Include="Sql\Script\UpdateMethodItem.cs" />
     <Compile Include="Sql\Script\UpdateMode.cs" />
     <Compile Include="Sql\Script\UpdateModeForUpdate.cs" />
     <Compile Include="Sql\Script\UpdateModeKind.cs" />
