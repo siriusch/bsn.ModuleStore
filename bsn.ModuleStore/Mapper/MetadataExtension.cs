@@ -355,101 +355,105 @@ namespace bsn.ModuleStore.Mapper {
 			return null;
 		}
 
-		public static void Set(this XDocument doc, XName elementName, bool? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, bool? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, byte? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, byte? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, char? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, char? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, DateTime? value, XmlDateTimeSerializationMode mode) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value, mode) : null);
+		public static XElement Set(this XDocument doc, XName elementName, DateTime? value, XmlDateTimeSerializationMode mode) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value, mode) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, DateTimeOffset? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, DateTimeOffset? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, decimal? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, decimal? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, double? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, double? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, Guid? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, Guid? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, short? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, short? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, int? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, int? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, long? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, long? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, sbyte? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, sbyte? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, float? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, float? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, string value) {
-			doc.Set(elementName, null, value);
+		public static XElement Set(this XDocument doc, XName elementName, string value) {
+			return doc.Set(elementName, null, value);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, TimeSpan? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, TimeSpan? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, ushort? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, ushort? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, uint? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, uint? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, ulong? value) {
-			doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
+		public static XElement Set(this XDocument doc, XName elementName, ulong? value) {
+			return doc.Set(elementName, null, value.HasValue ? XmlConvert.ToString(value.Value) : null);
 		}
 
-		public static void Set(this XDocument doc, XName elementName, CultureInfo culture, string value) {
+		public static XElement Set(this XDocument doc, XName elementName, CultureInfo culture, string value) {
 			XElement element = doc.GetElement(elementName, culture, false);
 			if (element == null) {
 				if (value == null) {
-					return;
+					return null;
 				}
 				element = new XElement(elementName, value);
 				if ((culture != null) && (culture != CultureInfo.InvariantCulture)) {
 					element.SetAttributeValue(XmlLang, culture.ToString());
 				}
 				doc.GetRoot().Add(element);
-			} else {
-				if (value != null) {
-					element.RemoveAll();
-					element.Value = value;
-					element = element.NextMedadataSibling();
-				}
-				while (element != null) {
-					XElement next = element.NextMedadataSibling();
-					element.Remove();
-					element = next;
-				}
+				return element;
 			}
+			XElement result = element;
+			if (value != null) {
+				element.RemoveAll();
+				element.Value = value;
+				element = element.NextMedadataSibling();
+			} else {
+				result = null;
+			}
+			while (element != null) {
+				XElement next = element.NextMedadataSibling();
+				element.Remove();
+				element = next;
+			}
+			return result;
 		}
 
 		public static void Unset(this XDocument doc, XName elementName) {
