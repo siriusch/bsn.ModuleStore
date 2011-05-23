@@ -1194,16 +1194,21 @@ _ACTION = '$ACTION'
               |
 
 <Join> ::= JOIN <Source> ON <Predicate>
-         | INNER JOIN <Source> ON <Predicate>
-         | LEFT JOIN <Source> ON <Predicate>
-         | LEFT OUTER JOIN <Source> ON <Predicate>
-         | RIGHT JOIN <Source> ON <Predicate>
-         | RIGHT OUTER JOIN <Source> ON <Predicate>
-         | FULL JOIN <Source> ON <Predicate>
-         | FULL OUTER JOIN <Source> ON <Predicate>
+         | INNER <JoinHint> JOIN <Source> ON <Predicate>
+         | LEFT <JoinHint> JOIN <Source> ON <Predicate>
+         | LEFT OUTER <JoinHint> JOIN <Source> ON <Predicate>
+         | RIGHT <JoinHint> JOIN <Source> ON <Predicate>
+         | RIGHT OUTER <JoinHint> JOIN <Source> ON <Predicate>
+         | FULL <JoinHint> JOIN <Source> ON <Predicate>
+         | FULL OUTER <JoinHint> JOIN <Source> ON <Predicate>
          | CROSS JOIN <Source>
          | CROSS APPLY <Source>
          | OUTER APPLY <Source>
+
+<JoinHint> ::= MERGE
+             | HASH
+             | LOOP
+             |
 
 <SourceRowset> ::= <VariableName> <RowsetAlias>
                  | <VariableName> '.' <NamedFunction> <RowsetAlias> ! XML nodes() function: http://msdn.microsoft.com/en-us/library/ms188282(v=SQL.90).aspx

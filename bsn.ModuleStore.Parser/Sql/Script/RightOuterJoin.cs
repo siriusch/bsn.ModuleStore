@@ -33,9 +33,9 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class RightOuterJoin: PredicateJoin {
-		[Rule("<Join> ::= ~RIGHT ~JOIN <Source> ~ON <Predicate>")]
-		[Rule("<Join> ::= ~RIGHT ~OUTER ~JOIN <Source> ~ON <Predicate>")]
-		public RightOuterJoin(Source joinSource, Predicate predicate): base(joinSource, predicate) {}
+		[Rule("<Join> ::= ~RIGHT <JoinHint> ~JOIN <Source> ~ON <Predicate>")]
+		[Rule("<Join> ::= ~RIGHT ~OUTER <JoinHint> ~JOIN <Source> ~ON <Predicate>")]
+		public RightOuterJoin(Optional<KeywordToken> hint, Source joinSource, Predicate predicate): base(hint, joinSource, predicate) {}
 
 		public override JoinKind Kind {
 			get {
@@ -45,6 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override string JoinSpecifier {
 			get {
+				if (Hint != null) {
+					return "RIGHT "+Hint.Keyword+" JOIN";
+				}
 				return "RIGHT JOIN";
 			}
 		}

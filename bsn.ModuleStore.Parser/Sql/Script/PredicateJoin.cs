@@ -32,11 +32,19 @@ using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class PredicateJoin: Join {
+		private readonly KeywordToken hint;
 		private readonly Predicate predicate;
 
-		protected PredicateJoin(Source joinSource, Predicate predicate): base(joinSource) {
+		protected PredicateJoin(KeywordToken hint, Source joinSource, Predicate predicate): base(joinSource) {
 			Debug.Assert(predicate != null);
 			this.predicate = predicate;
+			this.hint = hint;
+		}
+
+		public KeywordToken Hint {
+			get {
+				return hint;
+			}
 		}
 
 		public Predicate Predicate {

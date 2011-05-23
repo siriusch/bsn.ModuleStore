@@ -175,21 +175,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("WHILE")]
 	[Terminal("WITH")]
 	[Terminal("WRITETEXT")]
-	public sealed class ReservedKeyword: SqlScriptableToken {
-		private readonly string keyword;
-
-		public ReservedKeyword(string keyword) {
-			this.keyword = keyword;
-		}
-
-		public string Keyword {
-			get {
-				return keyword.ToUpperInvariant();
-			}
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			writer.Write(Keyword);
-		}
+	public sealed class ReservedKeyword: KeywordToken {
+		public ReservedKeyword(string keyword): base(keyword) {}
 	}
 }

@@ -27,29 +27,27 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-using System;
-
-using bsn.GoldParser.Semantic;
-
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class LeftOuterJoin: PredicateJoin {
-		[Rule("<Join> ::= ~LEFT <JoinHint> ~JOIN <Source> ~ON <Predicate>")]
-		[Rule("<Join> ::= ~LEFT ~OUTER <JoinHint> ~JOIN <Source> ~ON <Predicate>")]
-		public LeftOuterJoin(Optional<KeywordToken> hint, Source joinSource, Predicate predicate): base(hint, joinSource, predicate) {}
+	public class KeywordToken: CommentContainerToken {
+		private readonly string keyword;
 
-		public override JoinKind Kind {
+		public KeywordToken(string keyword) {
+			this.keyword = keyword;
+		}
+
+		public string Keyword {
 			get {
-				return JoinKind.Left;
+				return keyword.ToUpperInvariant();
 			}
 		}
 
-		protected override string JoinSpecifier {
-			get {
-				if (Hint != null) {
-					return "LEFT "+Hint.Keyword+" JOIN";
-				}
-				return "LEFT JOIN";
-			}
+		public override sealed void WriteTo(SqlWriter writer) {
+			WriteCommentsTo(writer);
+			writer.Write(Keyword);
+		}
+
+		protected string GetOriginalValue() {
+			return keyword;
 		}
 	}
 }

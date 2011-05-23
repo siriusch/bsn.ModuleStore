@@ -34,8 +34,10 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public class InnerJoin: PredicateJoin {
 		[Rule("<Join> ::= ~JOIN <Source> ~ON <Predicate>")]
-		[Rule("<Join> ::= ~INNER ~JOIN <Source> ~ON <Predicate>")]
-		public InnerJoin(Source joinSource, Predicate predicate): base(joinSource, predicate) {}
+		public InnerJoin(Source joinSource, Predicate predicate): this(null, joinSource, predicate) {}
+
+		[Rule("<Join> ::= ~INNER <JoinHint> ~JOIN <Source> ~ON <Predicate>")]
+		public InnerJoin(Optional<KeywordToken> hint, Source joinSource, Predicate predicate): base(hint, joinSource, predicate) {}
 
 		public override JoinKind Kind {
 			get {
@@ -45,6 +47,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override string JoinSpecifier {
 			get {
+				if (Hint != null) {
+					return "INNER "+Hint.Keyword+" JOIN";
+				}
 				return "JOIN";
 			}
 		}

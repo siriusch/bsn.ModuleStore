@@ -85,6 +85,7 @@
     <Compile Include="Sql\Script\CrossApply.cs" />
     <Compile Include="Sql\Script\CursorPosition.cs" />
     <Compile Include="Sql\Script\FetchStatement.cs" />
+    <Compile Include="Sql\Script\KeywordToken.cs" />
     <Compile Include="Sql\Script\SetVariableMethodStatement.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionAbsolute.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionFirst.cs" />

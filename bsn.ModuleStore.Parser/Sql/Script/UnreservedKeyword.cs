@@ -54,12 +54,14 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("FIRST")]
 	[Terminal("FULLTEXT")]
 	[Terminal("GLOBAL")]
+	[Terminal("HASH")]
 	[Terminal("INCLUDE")]
 	[Terminal("INPUT")]
 	[Terminal("INSTEAD")]
 	[Terminal("LANGUAGE")]
 	[Terminal("LAST")]
 	[Terminal("LOG")]
+	[Terminal("LOOP")]
 	[Terminal("MANUAL")]
 	[Terminal("MARK")]
 	[Terminal("MATCHED")]
@@ -98,25 +100,11 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("WORK")]
 	[Terminal("XML")]
 	[Terminal("XMLNAMESPACES")]
-	public class UnreservedKeyword: SqlScriptableToken {
-		private readonly string originalValue;
-
-		public UnreservedKeyword(string text) {
-			originalValue = text;
-		}
-
-		public string OriginalValue {
-			get {
-				return originalValue;
-			}
-		}
+	public class UnreservedKeyword: KeywordToken {
+		public UnreservedKeyword(string text): base(text) {}
 
 		public Identifier AsIdentifier(Symbol identifierSymbol) {
-			return new Identifier(originalValue, identifierSymbol, ((IToken)this).Position);
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			writer.Write(originalValue);
+			return new Identifier(GetOriginalValue(), identifierSymbol, ((IToken)this).Position);
 		}
 	}
 }

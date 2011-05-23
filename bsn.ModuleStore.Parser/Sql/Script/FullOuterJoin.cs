@@ -33,9 +33,9 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class FullOuterJoin: PredicateJoin {
-		[Rule("<Join> ::= ~FULL ~JOIN <Source> ~ON <Predicate>")]
-		[Rule("<Join> ::= ~FULL ~OUTER ~JOIN <Source> ~ON <Predicate>")]
-		public FullOuterJoin(Source joinSource, Predicate predicate): base(joinSource, predicate) {}
+		[Rule("<Join> ::= ~FULL <JoinHint> ~JOIN <Source> ~ON <Predicate>")]
+		[Rule("<Join> ::= ~FULL ~OUTER <JoinHint> ~JOIN <Source> ~ON <Predicate>")]
+		public FullOuterJoin(Optional<KeywordToken> hint, Source joinSource, Predicate predicate): base(hint, joinSource, predicate) {}
 
 		public override JoinKind Kind {
 			get {
@@ -45,6 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override string JoinSpecifier {
 			get {
+				if (Hint != null) {
+					return "FULL "+Hint.Keyword+" JOIN";
+				}
 				return "FULL JOIN";
 			}
 		}

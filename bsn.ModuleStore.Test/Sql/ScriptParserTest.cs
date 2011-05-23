@@ -252,6 +252,21 @@ FROM varchar(11) NOT NULL ;", 1);
 		}
 
 		[Test]
+		public void JoinHashHint() {
+			ParseWithRoundtrip(@"SELECT * FROM a INNER HASH JOIN b ON a.x=b.x", 1);
+		}
+
+		[Test]
+		public void JoinLoopHint() {
+			ParseWithRoundtrip(@"SELECT * FROM a INNER LOOP JOIN b ON a.x=b.x", 1);
+		}
+
+		[Test]
+		public void JoinMergeHint() {
+			ParseWithRoundtrip(@"SELECT * FROM a INNER MERGE JOIN b ON a.x=b.x", 1);
+		}
+
+		[Test]
 		public void LikePredicate() {
 			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a'", 1);
 		}
@@ -614,13 +629,13 @@ SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
 		}
 
 		[Test]
-		public void UpdateSetXmlVariableColumnModfiy() {
-			ParseWithRoundtrip(@"UPDATE @tbl SET [@tbl].x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+		public void UpdateSetXmlQualifiedColumnModfiy() {
+			ParseWithRoundtrip(@"UPDATE tbl SET tbl.x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
 		}
 
 		[Test]
-		public void UpdateSetXmlQualifiedColumnModfiy() {
-			ParseWithRoundtrip(@"UPDATE tbl SET tbl.x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+		public void UpdateSetXmlVariableColumnModfiy() {
+			ParseWithRoundtrip(@"UPDATE @tbl SET [@tbl].x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
 		}
 
 		[Test]

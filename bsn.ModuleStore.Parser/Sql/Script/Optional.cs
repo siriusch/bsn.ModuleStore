@@ -69,6 +69,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalElementName> ::=", typeof(StringLiteral))]
 		[Rule("<OptionalFromClause> ::=", typeof(FromClause))]
 		[Rule("<OptionalContainsTop> ::=", typeof(IntegerLiteral))]
+		[Rule("<JoinHint> ::=", typeof(KeywordToken))]
 		public Optional(): this(null) {}
 
 		[Rule("<FulltextColumnType> ::= ~TYPE ~COLUMN <TypeNameQualified>", typeof(Qualified<SchemaName, TypeName>))]
@@ -99,6 +100,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<OptionalElementName> ::= ~'(' StringLiteral ~')'", typeof(StringLiteral))]
 		[Rule("<OptionalFromClause> ::= <FromClause>", typeof(FromClause))]
 		[Rule("<OptionalContainsTop> ::= ~',' <IntegerLiteral>", typeof(IntegerLiteral))]
+		[Rule("<JoinHint> ::= MERGE", typeof(KeywordToken))]
+		[Rule("<JoinHint> ::= LOOP", typeof(KeywordToken))]
+		[Rule("<JoinHint> ::= HASH", typeof(KeywordToken))]
 		public Optional(T value) {
 			this.value = value;
 		}
