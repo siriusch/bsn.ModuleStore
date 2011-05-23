@@ -33,6 +33,7 @@ using System.Collections.Generic;
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateStatement: DdlStatement, IObjectBoundStatement {
 		private readonly List<IQualifiedName<SchemaName>> schemaQualifiedNames = new List<IQualifiedName<SchemaName>>();
+		private string forcedSchema;
 
 		public abstract ObjectCategory ObjectCategory {
 			get;
@@ -40,7 +41,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public string ObjectSchema {
 			get {
-				return GetObjectSchema() ?? string.Empty;
+				return forcedSchema ?? GetObjectSchema() ?? string.Empty;
+			}
+			internal set {
+				forcedSchema = value;
 			}
 		}
 
@@ -59,7 +63,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal IEnumerable<IQualifiedName<SchemaName>> GetObjectSchemaQualifiedNames() {
 			if (schemaQualifiedNames.Count == 0) {
-				schemaQualifiedNames.AddRange(GetObjectSchemaQualifiedNames(GetObjectSchema()));
+				schemaQualifiedNames.AddRange(GetObjectSchemaQualifiedNames(ObjectSchema));
 			}
 			return schemaQualifiedNames;
 		}

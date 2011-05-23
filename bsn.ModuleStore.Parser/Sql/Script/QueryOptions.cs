@@ -67,20 +67,21 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			Debug.Assert(HasValue);
-			writer.Write("WITH ");
-			if (namespaces.Count > 0) {
-				writer.IncreaseIndent();
-				writer.Write("XMLNAMESPACES (");
-				writer.WriteScriptSequence(namespaces, WhitespacePadding.NewlineBefore, ",");
-				writer.DecreaseIndent();
-				writer.WriteLine();
-				writer.Write(')');
-				if (commonTableExpressions.Count > 0) {
-					writer.WriteLine(",");
+			if (HasValue) {
+				writer.Write("WITH ");
+				if (namespaces.Count > 0) {
+					writer.IncreaseIndent();
+					writer.Write("XMLNAMESPACES (");
+					writer.WriteScriptSequence(namespaces, WhitespacePadding.NewlineBefore, ",");
+					writer.DecreaseIndent();
+					writer.WriteLine();
+					writer.Write(')');
+					if (commonTableExpressions.Count > 0) {
+						writer.WriteLine(",");
+					}
 				}
+				writer.WriteScriptSequence(commonTableExpressions, WhitespacePadding.None, ","+writer.NewLine);
 			}
-			writer.WriteScriptSequence(commonTableExpressions, WhitespacePadding.None, ","+writer.NewLine);
 		}
 
 		public bool HasValue {

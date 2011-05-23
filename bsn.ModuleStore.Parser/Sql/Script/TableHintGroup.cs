@@ -52,10 +52,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			Debug.Assert(hints.Count > 0);
-			writer.Write("WITH (");
-			writer.WriteScriptSequence(hints, WhitespacePadding.None, ", ");
-			writer.Write(')');
+			if (HasValue) {
+				writer.Write("WITH (");
+				writer.WriteScriptSequence(hints, WhitespacePadding.None, ", ");
+				writer.Write(')');
+			}
 		}
 
 		public bool HasValue {

@@ -47,9 +47,10 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		}
 
 		public override sealed void WriteTo(SqlWriter writer) {
-			Debug.Assert(HasValue);
-			writer.Write("WITH ");
-			writer.Write(OptionSpecifier);
+			if (HasValue) {
+				writer.Write("WITH ");
+				writer.Write(OptionSpecifier);
+			}
 		}
 
 		public bool HasValue {

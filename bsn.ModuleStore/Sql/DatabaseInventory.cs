@@ -65,6 +65,13 @@ namespace bsn.ModuleStore.Sql {
 		private static readonly XslCompiledTransform scripter = LoadTransform("UserObjectScripter.xslt");
 		private static readonly XslCompiledTransform userObjectList = LoadTransform("UserObjectList.xslt");
 
+		internal static Exception CreateException(string message, SqlScriptableToken token, DatabaseEngine targetEngine) {
+			StringWriter writer = new StringWriter();
+			writer.WriteLine(message);
+			token.WriteTo(new SqlWriter(writer, targetEngine));
+			return new InvalidOperationException(writer.ToString());
+		}
+
 		private static XslCompiledTransform LoadTransform(string embeddedResourceName) {
 			XslCompiledTransform transform = new XslCompiledTransform(Debugger.IsAttached);
 			using (Stream stream = typeof(DatabaseInventory).Assembly.GetManifestResourceStream(typeof(DatabaseInventory), embeddedResourceName)) {
@@ -74,13 +81,6 @@ namespace bsn.ModuleStore.Sql {
 				}
 			}
 			return transform;
-		}
-
-		internal static Exception CreateException(string message, SqlScriptableToken token, DatabaseEngine targetEngine) {
-			StringWriter writer = new StringWriter();
-			writer.WriteLine(message);
-			token.WriteTo(new SqlWriter(writer, targetEngine));
-			return new InvalidOperationException(writer.ToString());
 		}
 
 		private readonly string schemaName;
@@ -116,8 +116,8 @@ namespace bsn.ModuleStore.Sql {
 							try {
 								using (StringReader scriptReader = new StringReader(builder.ToString())) {
 									CreateStatement objectStatement = ProcessSingleScript(scriptReader, statement => {
-									                                                                    	throw CreateException("Cannot process statement:", statement, TargetEngine);
-									                                                                    }).SingleOrDefault(statement => objectsToRename.Any(t => t.IsAssignableFrom(statement.GetType())));
+									                                                                                	throw CreateException("Cannot process statement:", statement, TargetEngine);
+									                                                                                }).SingleOrDefault(statement => objectsToRename.Any(t => t.IsAssignableFrom(statement.GetType())));
 									if (objectStatement != null) {
 										objectStatement.ObjectName = reader.GetString(nameColumn);
 									}
@@ -133,6 +133,14 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 			}
+		}
+
+		protected override void AddObject(CreateStatement createStatement) {
+			if (createStatement == null) {
+				throw new ArgumentNullException("createStatement");
+			}
+			createStatement.ObjectSchema = schemaName;
+			base.AddObject(createStatement);
 		}
 
 		public string SchemaName {
@@ -159,7 +167,7 @@ namespace bsn.ModuleStore.Sql {
 							createTableStatement.WriteTo(new SqlWriter(writer, targetEngine));
 							createTableStatement = ScriptParser.Parse(writer.ToString()).Cast<CreateTableStatement>().Single();
 						}
-						for (int i = createTableStatement.Definitions.Count-1; i>=0; i--) {
+						for (int i = createTableStatement.Definitions.Count-1; i >= 0; i--) {
 							TableConstraint tableConstraint = createTableStatement.Definitions[i] as TableConstraint;
 							if ((tableConstraint != null) && (!(tableConstraint is TableUniqueConstraintBase)) && (tableConstraint.ConstraintName != null)) {
 								yield return WriteStatement(tableConstraint.CreateDropStatement(createTableStatement.TableName), buffer, TargetEngine);

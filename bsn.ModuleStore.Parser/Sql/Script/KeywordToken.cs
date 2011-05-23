@@ -28,7 +28,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 namespace bsn.ModuleStore.Sql.Script {
-	public class KeywordToken: CommentContainerToken {
+	public class KeywordToken: SqlScriptableToken {
 		private readonly string keyword;
 
 		public KeywordToken(string keyword) {
@@ -42,7 +42,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override sealed void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
 			writer.Write(Keyword);
 		}
 

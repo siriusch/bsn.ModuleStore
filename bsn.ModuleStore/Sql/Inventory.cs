@@ -190,7 +190,7 @@ namespace bsn.ModuleStore.Sql {
 			qualificationStack.Pop();
 		}
 
-		protected void AddObject(CreateStatement createStatement) {
+		protected virtual void AddObject(CreateStatement createStatement) {
 			if (createStatement == null) {
 				throw new ArgumentNullException("createStatement");
 			}
