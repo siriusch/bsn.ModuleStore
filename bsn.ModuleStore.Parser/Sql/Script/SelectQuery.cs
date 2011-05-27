@@ -43,38 +43,41 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool? restriction;
 		private readonly TopExpression top;
 		private readonly RowsetCombineClause unionClause;
+		private readonly Predicate whereClause;
 
-		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <RowsetCombineClause>")]
-		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, RowsetCombineClause unionClause): this(restriction.Distinct, top, columnItems, intoClause, null, unionClause) {}
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>")]
+		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, Optional<Predicate> whereClause, RowsetCombineClause unionClause)
+				: this(restriction.Distinct, top, columnItems, intoClause, whereClause, null, unionClause) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <ColumnItemList> <IntoClause> <RowsetCombineClause>")]
-		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, RowsetCombineClause unionClause): this(restriction.Distinct, null, columnItems, intoClause, null, unionClause) {}
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>")]
+		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, Optional<Predicate> whereClause, RowsetCombineClause unionClause): this(restriction.Distinct, null, columnItems, intoClause, whereClause, null, unionClause) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <TopLegacy> <ColumnItemList> <IntoClause> <RowsetCombineClause>")]
-		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, RowsetCombineClause unionClause): this(default(bool?), top, columnItems, intoClause, null, unionClause) {}
+		[Rule("<SelectQuery> ::= ~SELECT <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>")]
+		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, Optional<Predicate> whereClause, RowsetCombineClause unionClause): this(default(bool?), top, columnItems, intoClause, whereClause, null, unionClause) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <RowsetCombineClause>")]
-		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, RowsetCombineClause unionClause): this(default(bool?), null, columnItems, intoClause, null, unionClause) {}
+		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>")]
+		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, Optional<Predicate> whereClause, RowsetCombineClause unionClause): this(default(bool?), null, columnItems, intoClause, whereClause, null, unionClause) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>")]
-		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(restriction.Distinct, top, columnItems, intoClause, forClause, null) {}
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <ForClause>")]
+		public SelectQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, Optional<Predicate> whereClause, ForClause forClause): this(restriction.Distinct, top, columnItems, intoClause, whereClause, forClause, null) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <ColumnItemList> <IntoClause> <ForClause>")]
-		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(restriction.Distinct, null, columnItems, intoClause, forClause, null) {}
+		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <ColumnItemList> <IntoClause> <WhereClause> <ForClause>")]
+		public SelectQuery(DuplicateRestrictionToken restriction, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, Optional<Predicate> whereClause, ForClause forClause): this(restriction.Distinct, null, columnItems, intoClause, whereClause, forClause, null) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>")]
-		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(default(bool?), top, columnItems, intoClause, forClause, null) {}
+		[Rule("<SelectQuery> ::= ~SELECT <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <ForClause>")]
+		public SelectQuery(TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, Optional<Predicate> whereClause, ForClause forClause): this(default(bool?), top, columnItems, intoClause, whereClause, forClause, null) {}
 
-		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <ForClause>")]
-		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause): this(default(bool?), null, columnItems, intoClause, forClause, null) {}
+		[Rule("<SelectQuery> ::= ~SELECT <ColumnItemList> <IntoClause> <WhereClause> <ForClause>")]
+		public SelectQuery(Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, Optional<Predicate> whereClause, ForClause forClause): this(default(bool?), null, columnItems, intoClause, whereClause, forClause, null) {}
 
-		protected SelectQuery(bool? restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, ForClause forClause, RowsetCombineClause unionClause) {
+		protected SelectQuery(bool? restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, Optional<Predicate> whereClause, ForClause forClause, RowsetCombineClause unionClause) {
 			this.top = top;
 			this.intoClause = intoClause;
 			this.forClause = forClause;
 			this.unionClause = unionClause;
 			this.columnItems = columnItems.ToList();
 			this.restriction = restriction;
+			this.whereClause = whereClause;
 		}
 
 		public IEnumerable<ColumnItem> ColumnItems {
@@ -113,6 +116,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public Predicate WhereClause {
+			get {
+				return whereClause;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("SELECT ");
 			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
@@ -137,6 +146,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected virtual void WriteToInternal(SqlWriter writer) {}
+		protected virtual void WriteToInternal(SqlWriter writer) {
+			writer.WriteScript(whereClause, WhitespacePadding.NewlineBefore, "WHERE ", null);
+		}
 	}
 }

@@ -1160,14 +1160,14 @@ _ACTION = '$ACTION'
                 | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
                 | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>
                 | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
-                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <RowsetCombineClause>
-                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>
-                | SELECT <Restriction> <ColumnItemList> <IntoClause> <RowsetCombineClause>
-                | SELECT <Restriction> <ColumnItemList> <IntoClause> <ForClause>
-                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <RowsetCombineClause>
-                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <ForClause>
-                | SELECT <ColumnItemList> <IntoClause> <RowsetCombineClause>
-                | SELECT <ColumnItemList> <IntoClause> <ForClause>
+                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>
+                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <ForClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <WhereClause> <ForClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <ForClause>
+                | SELECT <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>
+                | SELECT <ColumnItemList> <IntoClause> <WhereClause> <ForClause>
 
 <TopLegacy> ::= TOP IntegerLiteral <OptionalPercent>
               | <Top>

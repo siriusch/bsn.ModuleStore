@@ -39,7 +39,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<Expression> groupByClause;
 		private readonly Predicate havingClause;
 		private readonly List<OrderExpression> orderList;
-		private readonly Predicate whereClause;
 
 		[Rule("<SelectQuery> ::= ~SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>")]
 		public SelectFromQuery(DuplicateRestrictionToken restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, FromClause fromClause, Optional<Predicate> whereClause, Optional<Sequence<Expression>> groupByClause, Optional<Predicate> havingClause,
@@ -74,9 +73,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		                       ForClause forClause): this(default(bool?), null, columnItems, intoClause, fromClause, whereClause, groupByClause, havingClause, orderList, forClause, null) {}
 
 		private SelectFromQuery(bool? restriction, TopExpression top, Sequence<ColumnItem> columnItems, Optional<DestinationRowset> intoClause, FromClause fromClause, Optional<Predicate> whereClause, Optional<Sequence<Expression>> groupByClause, Optional<Predicate> havingClause,
-		                        Optional<Sequence<OrderExpression>> orderList, ForClause forClause, RowsetCombineClause unionClause): base(restriction, top, columnItems, intoClause, forClause, unionClause) {
+		                        Optional<Sequence<OrderExpression>> orderList, ForClause forClause, RowsetCombineClause unionClause): base(restriction, top, columnItems, intoClause, whereClause, forClause, unionClause) {
 			this.fromClause = fromClause;
-			this.whereClause = whereClause;
 			this.groupByClause = groupByClause.ToList();
 			this.havingClause = havingClause;
 			this.orderList = orderList.ToList();
@@ -106,15 +104,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Predicate WhereClause {
-			get {
-				return whereClause;
-			}
-		}
-
 		protected override void WriteToInternal(SqlWriter writer) {
 			writer.WriteScript(fromClause, WhitespacePadding.NewlineBefore);
-			writer.WriteScript(whereClause, WhitespacePadding.NewlineBefore, "WHERE ", null);
+			base.WriteToInternal(writer);
 			if (groupByClause.Count > 0) {
 				writer.WriteLine();
 				writer.Write("GROUP BY ");

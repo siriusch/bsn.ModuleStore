@@ -542,6 +542,11 @@ PRINT 'Cool'", 3);
 		}
 
 		[Test]
+		public void SelectVariableWhere() {
+			ParseWithRoundtrip(@"SELECT @x=1 WHERE EXISTS (SELECT * FROM tbl)", 1);
+		}
+
+		[Test]
 		public void SelectWithCrossApplyAndXmlFunctions() {
 			ParseWithRoundtrip(
 					@"SELECT ProductModelID, Locations.value('./@LocationID','int') as LocID,
