@@ -35,7 +35,6 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.Serialization;
 
 using Microsoft.SqlServer.Server;
 
@@ -61,14 +60,45 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private static readonly Dictionary<Type, SqlSerializationTypeMapping> mappings = new Dictionary<Type, SqlSerializationTypeMapping>();
 
-		internal static bool IsNativeType(Type type) {
-			lock (dbTypeMapping) {
-				SqlDbType dbType;
-				if (dbTypeMapping.TryGetValue(type, out dbType)) {
-					return dbType != SqlDbType.Variant;
+		public static SqlSerializationTypeMapping Get(Type type) {
+			if (type == null) {
+				throw new ArgumentNullException("type");
+			}
+			SqlSerializationTypeMapping result;
+			lock (mappings) {
+				if (!mappings.TryGetValue(type, out result)) {
+					result = new SqlSerializationTypeMapping(type);
+					mappings.Add(type, result);
 				}
 			}
-			return false;
+			return result;
+		}
+
+		internal static IEnumerable<MemberInfo> GetAllFieldsAndProperties(Type type) {
+			while (type != null) {
+				foreach (FieldInfo field in type.GetFields(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
+					yield return field;
+				}
+				foreach (PropertyInfo property in type.GetProperties(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
+					yield return property;
+				}
+				type = type.BaseType;
+			}
+		}
+
+		public static Type GetMemberType(MemberInfo memberInfo) {
+			if (memberInfo == null) {
+				throw new ArgumentNullException("memberInfo");
+			}
+			FieldInfo fieldInfo = memberInfo as FieldInfo;
+			if (fieldInfo != null) {
+				return fieldInfo.FieldType;
+			}
+			PropertyInfo propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null) {
+				return propertyInfo.PropertyType;
+			}
+			throw new ArgumentException("Only fields and properties are supported", "memberInfo");
 		}
 
 		/// <summary>
@@ -110,64 +140,55 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			return SqlDbType.Variant;
 		}
 
-		public static SqlSerializationTypeMapping Get(Type type) {
-			if (type == null) {
-				throw new ArgumentNullException("type");
-			}
-			SqlSerializationTypeMapping result;
-			lock (mappings) {
-				if (!mappings.TryGetValue(type, out result)) {
-					result = new SqlSerializationTypeMapping(type);
-					mappings.Add(type, result);
+		internal static bool IsNativeType(Type type) {
+			lock (dbTypeMapping) {
+				SqlDbType dbType;
+				if (dbTypeMapping.TryGetValue(type, out dbType)) {
+					return dbType != SqlDbType.Variant;
 				}
 			}
-			return result;
-		}
-
-		internal static IEnumerable<FieldInfo> GetAllFields(Type type) {
-			while (type != null) {
-				foreach (FieldInfo field in type.GetFields(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
-					yield return field;
-				}
-				type = type.BaseType;
-			}
+			return false;
 		}
 
 		private readonly Dictionary<string, SqlColumnInfo> columns = new Dictionary<string, SqlColumnInfo>(StringComparer.OrdinalIgnoreCase);
 		private readonly ReadOnlyCollection<MemberConverter> converters;
 		private readonly bool hasNestedSerializers;
-		private readonly FieldInfo[] members;
+		private readonly MemberInfo[] members;
+		private readonly MembersMethods methods;
 
 		private SqlSerializationTypeMapping(Type type) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
 			List<MemberConverter> memberConverters = new List<MemberConverter>();
-			List<FieldInfo> memberInfos = new List<FieldInfo>();
+			List<MemberInfo> memberInfos = new List<MemberInfo>();
 			if (!(type.IsPrimitive || type.IsInterface || (typeof(string) == type))) {
 				bool hasIdentity = false;
-				foreach (FieldInfo field in GetAllFields(type)) {
-					SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetColumnAttribute(field, false);
+				foreach (MemberInfo member in GetAllFieldsAndProperties(type)) {
+					SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetColumnAttribute(member, false);
+					Type memberType = GetMemberType(member);
 					if (columnAttribute != null) {
+						AssertValidMember(member);
 						bool isIdentity = (!hasIdentity) && (hasIdentity |= columnAttribute.Identity);
 						MemberConverter memberConverter;
 						if (columnAttribute.GetCachedByIdentity) {
-							memberConverter = new CachedMemberConverter(field.FieldType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
+							memberConverter = new CachedMemberConverter(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
 						} else {
-							memberConverter = MemberConverter.Get(field.FieldType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
+							memberConverter = MemberConverter.Get(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
 						}
 						memberConverters.Add(memberConverter);
-						memberInfos.Add(field);
-						columns.Add(columnAttribute.Name, new SqlColumnInfo(field, columnAttribute.Name, memberConverter));
-					} else if (field.IsDefined(typeof(SqlDeserializeAttribute), true)) {
+						memberInfos.Add(member);
+						columns.Add(columnAttribute.Name, new SqlColumnInfo(member, columnAttribute.Name, memberConverter));
+					} else if (member.IsDefined(typeof(SqlDeserializeAttribute), true)) {
+						AssertValidMember(member);
 						NestedMemberConverter nestedMemberConverter;
-						if (typeof(IList).IsAssignableFrom(field.FieldType)) {
-							nestedMemberConverter = new NestedListMemberConverter(field.FieldType, memberInfos.Count);
+						if (typeof(IList).IsAssignableFrom(memberType)) {
+							nestedMemberConverter = new NestedListMemberConverter(memberType, memberInfos.Count);
 						} else {
-							nestedMemberConverter = new NestedMemberConverter(field.FieldType, memberInfos.Count);
+							nestedMemberConverter = new NestedMemberConverter(memberType, memberInfos.Count);
 						}
 						memberConverters.Add(nestedMemberConverter);
-						memberInfos.Add(field);
+						memberInfos.Add(member);
 						hasNestedSerializers = true;
 #warning add support for table valued parameters and SqlDeserializeAttribute (flatten the structure to one "table")
 					}
@@ -175,6 +196,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 			members = memberInfos.ToArray();
 			converters = Array.AsReadOnly(memberConverters.ToArray());
+			methods = MembersMethods.Get(members);
 		}
 
 		public IDictionary<string, SqlColumnInfo> Columns {
@@ -202,11 +224,35 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public object GetMember(object instance, int index) {
-			return members[index].GetValue(instance);
+			return methods.GetMember(instance, index);
 		}
 
 		public void PopulateInstanceMembers(object result, object[] buffer) {
-			FormatterServices.PopulateObjectMembers(result, members, buffer);
+			methods.PopulateMembers(result, buffer);
+		}
+
+		private void AssertValidMember(MemberInfo memberInfo) {
+			FieldInfo fieldInfo = memberInfo as FieldInfo;
+			if (fieldInfo != null) {
+				if (fieldInfo.IsInitOnly) {
+					throw new InvalidOperationException(String.Format("The field {0}.{1} cannot be used as SQL column because it is readonly", fieldInfo.DeclaringType.FullName, fieldInfo.Name));
+				}
+			} else {
+				PropertyInfo propertyInfo = memberInfo as PropertyInfo;
+				if (propertyInfo != null) {
+					if (propertyInfo.GetIndexParameters().Length > 0) {
+						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it is indexed", propertyInfo.DeclaringType.FullName, propertyInfo.Name));
+					}
+					if (propertyInfo.GetGetMethod(true) == null) {
+						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it has no getter", propertyInfo.DeclaringType.FullName, propertyInfo.Name));
+					}
+					if (propertyInfo.GetSetMethod(true) == null) {
+						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it has no setter", propertyInfo.DeclaringType.FullName, propertyInfo.Name));
+					}
+				} else {
+					throw new ArgumentException("Only fields and properties are supported", "memberInfo");
+				}
+			}
 		}
 	}
 }

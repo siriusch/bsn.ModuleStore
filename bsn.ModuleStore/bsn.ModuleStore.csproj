@@ -64,6 +64,8 @@
     <Compile Include="Mapper\Serialization\DateTimeMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\DateTimeOffsetMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\EnumMemberConverter.cs" />
+    <Compile Include="Mapper\Serialization\MembersKey.cs" />
+    <Compile Include="Mapper\Serialization\MembersMethods.cs" />
     <Compile Include="Mapper\Serialization\NestedListMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\SqlColumnInfo.cs" />
     <Compile Include="Mapper\Serialization\SqlSerializationTypeInfo.cs" />

@@ -35,7 +35,7 @@ namespace bsn.ModuleStore.Mapper {
 	/// <summary>
 	/// The DbColumnAttribute is used to change the binding name on <see cref="ITypedDataReader"/> interfaces, or to specify the fields to be deserialized when the <see cref="DbDeserializer"/> is used.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Field|AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 	public sealed class SqlColumnAttribute: Attribute {
 		/// <summary>
 		/// Get a single DbColumnAttribute instance.

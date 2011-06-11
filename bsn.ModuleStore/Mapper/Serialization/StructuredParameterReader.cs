@@ -34,15 +34,14 @@ using System.Data.Common;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class StructuredParameterReader: DbDataReader {
+		private readonly object[] data;
 		private readonly IEnumerator enumerator;
 		private readonly StructuredParameterSchema schema;
-		private object[] data;
 		private bool isClosed;
 		private int rowCount;
 
@@ -51,6 +50,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				throw new ArgumentNullException("schema");
 			}
 			this.schema = schema;
+			data = new object[schema.MappedColumns.Count];
 			if (values != null) {
 				enumerator = values.GetEnumerator();
 				if (!enumerator.MoveNext()) {
@@ -347,19 +347,18 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private void LoadData(object instance) {
-			if ((schema.Fields.Length == 1) && (schema.Fields[0] == null)) {
-				data = new[] {schema.Converters[0].ProcessToDb(instance) ?? DBNull.Value};
-			} else {
-				if (instance == null) {
-					data = new object[schema.Fields.Length];
-				} else {
-					data = FormatterServices.GetObjectData(instance, schema.Fields);
-				}
-				Debug.Assert(schema.Converters.Length == data.Length);
+			if (instance == null) {
 				for (int i = 0; i < data.Length; i++) {
-					MemberConverter converter = schema.Converters[i];
+					data[i] = DBNull.Value;
+				}
+			} else if (schema.ExtractMembers != null) {
+				schema.ExtractMembers(instance, data);
+				for (int i = 0; i < data.Length; i++) {
+					MemberConverter converter = schema.MappedColumns[i].Converter;
 					data[i] = ((converter != null) ? converter.ProcessToDb(data[i]) : data[i]) ?? DBNull.Value;
 				}
+			} else {
+				data[0] = schema.MappedColumns[0].Converter.ProcessToDb(instance) ?? DBNull.Value;
 			}
 		}
 

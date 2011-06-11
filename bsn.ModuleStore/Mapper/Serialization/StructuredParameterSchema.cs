@@ -30,12 +30,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 
 using bsn.ModuleStore.Sql.Script;
 
@@ -80,8 +80,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private readonly ColumnInfo[] columns;
-		private readonly MemberConverter[] converters;
-		private readonly FieldInfo[] fields;
+		private readonly Action<object, object[]> extractMembers;
+		private readonly ReadOnlyCollection<SqlColumnInfo> mappedColumns;
 
 		public StructuredParameterSchema(CreateTypeAsTableStatement script, IDictionary<string, SqlColumnInfo> columnInfos) {
 			if (script == null) {
@@ -166,7 +166,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			//			if (schema.HasNestedSerializers) {
 			//				throw new NotSupportedException("Nested serialization is not supported for table valued parameters!");
 			//			}
-			List<SqlColumnInfo> fieldInfos = new List<SqlColumnInfo>();
+			List<SqlColumnInfo> sqlColumnInfos = new List<SqlColumnInfo>();
 			List<ColumnInfo> columns = new List<ColumnInfo>();
 			foreach (TableColumnDefinition column in script.TableDefinitions.OfType<TableColumnDefinition>()) {
 				int? fieldIndex = null;
@@ -219,8 +219,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 						}
 						break;
 					}
-					fieldIndex = fieldInfos.Count;
-					fieldInfos.Add(info);
+					fieldIndex = sqlColumnInfos.Count;
+					sqlColumnInfos.Add(info);
 				}
 				row[baseColumnName] = info.Name;
 				row[providerType] = (int)info.DbType;
@@ -229,9 +229,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				Rows.Add(row);
 				columns.Add(new ColumnInfo(fieldIndex, column.ColumnName.Value, columnType, columnDataType));
 			}
-			fields = fieldInfos.Select(i => i.FieldInfo).ToArray();
-			converters = fieldInfos.Select(i => i.Converter).ToArray();
+			mappedColumns = sqlColumnInfos.AsReadOnly();
 			this.columns = columns.ToArray();
+			if ((mappedColumns.Count != 1) || (mappedColumns[0].MemberInfo != null)) {
+				extractMembers = MembersMethods.Get(mappedColumns.Select(c => c.MemberInfo).ToArray()).ExtractMembers;
+			}
 			AcceptChanges();
 		}
 
@@ -241,15 +243,15 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public MemberConverter[] Converters {
+		public Action<object, object[]> ExtractMembers {
 			get {
-				return converters;
+				return extractMembers;
 			}
 		}
 
-		public FieldInfo[] Fields {
+		public ReadOnlyCollection<SqlColumnInfo> MappedColumns {
 			get {
-				return fields;
+				return mappedColumns;
 			}
 		}
 
