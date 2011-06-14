@@ -54,7 +54,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		                                                                                                    		{typeof(double), SqlDbType.Float},
 		                                                                                                    		{typeof(int), SqlDbType.Int},
 		                                                                                                    		{typeof(short), SqlDbType.SmallInt},
-		                                                                                                    		{typeof(sbyte), SqlDbType.TinyInt},
+		                                                                                                    		{typeof(byte), SqlDbType.TinyInt},
 		                                                                                                    		{typeof(Guid), SqlDbType.UniqueIdentifier}
 		                                                                                                    };
 
@@ -224,10 +224,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public object GetMember(object instance, int index) {
+			Debug.Assert((instance != null) && (index >= 0) && (methods.GetMember != null));
 			return methods.GetMember(instance, index);
 		}
 
 		public void PopulateInstanceMembers(object result, object[] buffer) {
+			Debug.Assert((result != null) && (buffer != null) && (methods.PopulateMembers != null));
 			methods.PopulateMembers(result, buffer);
 		}
 

@@ -28,6 +28,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -69,7 +70,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private struct Struct {
+#pragma warning disable 169
 			private int a;
+#pragma warning restore 169
 		}
 
 		private static readonly MemberInfo[] members = GetMemberFields<Members>();
@@ -160,6 +163,18 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			Expect(x.A, EqualTo(2));
 			Expect(x.B, Null);
 			Expect(x.C, Null);
+		}
+
+		[Test]
+		public void PopulateNullInNonNullField() {
+			Assert.Throws<NullReferenceException>(delegate {
+			                                      	try {
+			                                      		MembersMethods.Get(members).PopulateMembers(new Members(), new object[] {null, null, null});
+			                                      	} catch (Exception ex) {
+			                                      		Trace.WriteLine(ex);
+			                                      		throw;
+			                                      	}
+			                                      });
 		}
 	}
 }

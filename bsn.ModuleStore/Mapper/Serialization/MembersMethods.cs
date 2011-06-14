@@ -29,11 +29,19 @@
 //  
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Reflection;
 using System.Reflection.Emit;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	internal struct MembersMethods {
+		private static ConstructorInfo ctor_ArgumentOutOfRangeException_string = NotNull(typeof(ArgumentOutOfRangeException).GetConstructor(new[] { typeof(string) }));
+		private static MethodInfo method_BuidNullFieldException = NotNull(typeof(MembersMethods).GetMethod("BuidNullFieldException", BindingFlags.Static|BindingFlags.NonPublic, null, new[] { typeof(MemberTypes), typeof(string) }, null));
+
+		private static Exception BuidNullFieldException<T>(MemberTypes memberType, string memberName) {
+			return new NullReferenceException(string.Format("{0} {1}.{2} cannot store a null value", memberType, typeof(T).FullName, memberName));
+		}
+
 		private static readonly Dictionary<MembersKey, MembersMethods> methods = new Dictionary<MembersKey, MembersMethods>();
 
 		public static MembersMethods Get(MemberInfo[] members) {
@@ -122,6 +130,18 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					getMemberIl.Emit(loadInstance);
 					FieldInfo field = member as FieldInfo;
 					if (field != null) {
+						if (field.FieldType.IsValueType && (Nullable.GetUnderlyingType(field.FieldType) == null)) {
+							Label notNull = populateIl.DefineLabel();
+							populateIl.Emit(OpCodes.Dup);
+							populateIl.Emit(OpCodes.Brtrue, notNull);
+							populateIl.Emit(OpCodes.Pop);
+							populateIl.Emit(OpCodes.Pop);
+							populateIl.Emit(OpCodes.Ldc_I4, (int)MemberTypes.Field);
+							populateIl.Emit(OpCodes.Ldstr, field.Name);
+							populateIl.Emit(OpCodes.Call, method_BuidNullFieldException.MakeGenericMethod(new[] { commonType }));
+							populateIl.Emit(OpCodes.Throw);
+							populateIl.MarkLabel(notNull);
+						}
 						populateIl.Emit(OpCodes.Unbox_Any, field.FieldType);
 						populateIl.Emit(OpCodes.Stfld, field);
 						extractIl.Emit(OpCodes.Ldfld, field);
@@ -133,6 +153,18 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					} else {
 						PropertyInfo property = member as PropertyInfo;
 						if (property != null) {
+							if (property.PropertyType.IsValueType && (Nullable.GetUnderlyingType(property.PropertyType) == null)) {
+								Label notNull = populateIl.DefineLabel();
+								populateIl.Emit(OpCodes.Dup);
+								populateIl.Emit(OpCodes.Brtrue, notNull);
+								populateIl.Emit(OpCodes.Pop);
+								populateIl.Emit(OpCodes.Pop);
+								populateIl.Emit(OpCodes.Ldc_I4, (int)MemberTypes.Field);
+								populateIl.Emit(OpCodes.Ldstr, property.Name);
+								populateIl.Emit(OpCodes.Call, method_BuidNullFieldException.MakeGenericMethod(new[] { commonType }));
+								populateIl.Emit(OpCodes.Throw);
+								populateIl.MarkLabel(notNull);
+							}
 							populateIl.Emit(OpCodes.Unbox_Any, property.PropertyType);
 							populateIl.Emit(OpCodes.Callvirt, NotNull(property.GetSetMethod(true)));
 							extractIl.Emit(OpCodes.Callvirt, NotNull(property.GetGetMethod(true)));

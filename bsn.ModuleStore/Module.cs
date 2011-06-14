@@ -56,7 +56,7 @@ namespace bsn.ModuleStore {
 		private byte[] setupHash;
 
 		[SqlColumn("dtUpdate", DateTimeKind = DateTimeKind.Utc)]
-		private DateTime updateDate;
+		private DateTime? updateDate;
 
 		[SqlColumn("iUpdateVersion")]
 		private int updateVersion;
@@ -108,7 +108,7 @@ namespace bsn.ModuleStore {
 
 		public DateTime UpdateDate {
 			get {
-				return updateDate;
+				return updateDate ?? setupDate;
 			}
 		}
 

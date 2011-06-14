@@ -37,20 +37,26 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	[TestFixture]
 	public class MembersKeyTest: AssertionHelper {
 		private class MembersA {
+#pragma warning disable 169
 			private int a;
 			private Guid b;
 			private bool? z;
+#pragma warning restore 169
 		}
 
 		private class MembersB {
+#pragma warning disable 169
 			private int a;
 			private Guid b;
+#pragma warning restore 169
 		}
 
 		private class MembersD: MembersA {}
 
 		private class MembersC: MembersA {
+#pragma warning disable 169
 			private object c;
+#pragma warning restore 169
 		}
 
 		private static readonly MemberInfo[] membersA = SqlSerializationTypeMapping.GetAllFieldsAndProperties(typeof(MembersA)).ToArray();
