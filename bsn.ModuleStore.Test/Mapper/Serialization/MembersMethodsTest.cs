@@ -85,6 +85,29 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
+	public struct GuidStruct {
+		private Guid a;
+
+		private Guid b;
+
+		public GuidStruct(Guid a, Guid b) {
+			this.a = a;
+			this.b = b;
+		}
+
+		public Guid A {
+			get {
+				return a;
+			}
+		}
+
+		public Guid B {
+			get {
+				return b;
+			}
+		}
+	}
+
 		private static readonly MemberInfo[] members = GetMemberFields<Members>();
 
 		private static FieldInfo[] GetMemberFields<T>() {
@@ -170,6 +193,17 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			Expect(x.A, EqualTo(1));
 			Expect(x.B, EqualTo(guid));
 			Expect(x.C, EqualTo(obj));
+		}
+
+		[Test]
+		public void PopulateMembersStruct() {
+			object o = new GuidStruct();
+			Guid guid1 = Guid.NewGuid();
+			Guid guid2 = Guid.NewGuid();
+			MembersMethods.Get(GetMemberFields<GuidStruct>()).PopulateMembers(o, new object[] { guid1, guid2 });
+			GuidStruct x = (GuidStruct)o;
+			Expect(x.A, EqualTo(guid1));
+			Expect(x.B, EqualTo(guid2));
 		}
 
 		[Test]

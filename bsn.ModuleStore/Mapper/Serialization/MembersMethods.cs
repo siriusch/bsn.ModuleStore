@@ -29,6 +29,7 @@
 //  
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -42,10 +43,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		// ReSharper disable UnusedMember.Local
 		private static Exception BuildNullFieldException<T>(MemberTypes memberType, string memberName) {
+			// ReSharper restore UnusedMember.Local
 			return new NullReferenceException(string.Format("{0} {1}.{2} cannot store a null value", memberType, typeof(T).FullName, memberName));
 		}
-
-		// ReSharper restore UnusedMember.Local
 
 		public static MembersMethods Get(MemberInfo[] members) {
 			MembersKey key = new MembersKey(members);
@@ -89,29 +89,20 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				ILGenerator extractIl = extractMethod.GetILGenerator();
 				ILGenerator getMemberIl = getMemberMethod.GetILGenerator();
 				Label[] memberLabels = new Label[members.Length];
-				populateIl.Emit(OpCodes.Ldarg_1);
-				populateIl.Emit(OpCodes.Unbox_Any, commonType);
-				extractIl.Emit(OpCodes.Ldarg_1);
-				extractIl.Emit(OpCodes.Unbox_Any, commonType);
 				for (int i = 0; i < memberLabels.Length; i++) {
 					memberLabels[i] = getMemberIl.DefineLabel();
 				}
-				getMemberIl.Emit(OpCodes.Ldarg_1);
-				getMemberIl.Emit(OpCodes.Unbox_Any, commonType);
-				OpCode loadInstance;
-				if (commonType != arg0Type) {
-					populateIl.DeclareLocal(commonType);
-					extractIl.DeclareLocal(commonType);
-					getMemberIl.DeclareLocal(commonType);
-					populateIl.Emit(OpCodes.Stloc_0);
-					extractIl.Emit(OpCodes.Stloc_0);
-					getMemberIl.Emit(OpCodes.Stloc_0);
-					loadInstance = OpCodes.Ldloc_0;
-				} else {
+				if (!commonType.IsValueType) {
+					Debug.Assert(arg0Type == commonType);
+					populateIl.Emit(OpCodes.Ldarg_1);
+					extractIl.Emit(OpCodes.Ldarg_1);
+					getMemberIl.Emit(OpCodes.Ldarg_1);
+					populateIl.Emit(OpCodes.Castclass, commonType);
+					extractIl.Emit(OpCodes.Castclass, commonType);
+					getMemberIl.Emit(OpCodes.Castclass, commonType);
 					populateIl.Emit(OpCodes.Starg_S, 0);
 					extractIl.Emit(OpCodes.Starg_S, 0);
 					getMemberIl.Emit(OpCodes.Starg_S, 0);
-					loadInstance = OpCodes.Ldarg_0;
 				}
 				getMemberIl.Emit(OpCodes.Ldarg_2);
 				getMemberIl.Emit(OpCodes.Switch, memberLabels);
@@ -120,16 +111,26 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				getMemberIl.Emit(OpCodes.Throw);
 				for (int i = 0; i < members.Length; i++) {
 					MemberInfo member = members[i];
-					populateIl.Emit(loadInstance);
+					extractIl.Emit(OpCodes.Ldarg_2);
+					extractIl.Emit(OpCodes.Ldc_I4, i);
+					getMemberIl.MarkLabel(memberLabels[i]);
+					if (commonType.IsValueType) {
+						extractIl.Emit(OpCodes.Ldarg_1);
+						getMemberIl.Emit(OpCodes.Ldarg_1);
+						populateIl.Emit(OpCodes.Ldarg_1);
+						extractIl.Emit(OpCodes.Unbox, commonType);
+						getMemberIl.Emit(OpCodes.Unbox, commonType);
+						populateIl.Emit(OpCodes.Unbox, commonType);
+					} else {
+						extractIl.Emit(OpCodes.Ldarg_0);
+						getMemberIl.Emit(OpCodes.Ldarg_0);
+						populateIl.Emit(OpCodes.Ldarg_0);
+					}
 					populateIl.Emit(OpCodes.Ldarg_2);
 					populateIl.Emit(OpCodes.Ldc_I4, i);
 					populateIl.Emit(OpCodes.Ldelem, typeof(object));
-					extractIl.Emit(OpCodes.Ldarg_2);
-					extractIl.Emit(OpCodes.Ldc_I4, i);
-					extractIl.Emit(loadInstance);
-					getMemberIl.MarkLabel(memberLabels[i]);
-					getMemberIl.Emit(loadInstance);
 					FieldInfo field = member as FieldInfo;
+					MethodInfo method_BuildNullFieldException = MembersMethods.method_BuildNullFieldException.MakeGenericMethod(new[] {commonType});
 					if (field != null) {
 						if (field.FieldType.IsValueType && (Nullable.GetUnderlyingType(field.FieldType) == null)) {
 							Label notNull = populateIl.DefineLabel();
@@ -139,7 +140,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 							populateIl.Emit(OpCodes.Pop);
 							populateIl.Emit(OpCodes.Ldc_I4, (int)MemberTypes.Field);
 							populateIl.Emit(OpCodes.Ldstr, field.Name);
-							populateIl.Emit(OpCodes.Call, method_BuildNullFieldException.MakeGenericMethod(new[] {commonType}));
+							populateIl.Emit(OpCodes.Call, method_BuildNullFieldException);
 							populateIl.Emit(OpCodes.Throw);
 							populateIl.MarkLabel(notNull);
 						}
@@ -160,13 +161,18 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 								populateIl.Emit(OpCodes.Brtrue, notNull);
 								populateIl.Emit(OpCodes.Pop);
 								populateIl.Emit(OpCodes.Pop);
-								populateIl.Emit(OpCodes.Ldc_I4, (int)MemberTypes.Field);
+								populateIl.Emit(OpCodes.Ldc_I4, (int)MemberTypes.Property);
 								populateIl.Emit(OpCodes.Ldstr, property.Name);
-								populateIl.Emit(OpCodes.Call, method_BuildNullFieldException.MakeGenericMethod(new[] {commonType}));
+								populateIl.Emit(OpCodes.Call, method_BuildNullFieldException);
 								populateIl.Emit(OpCodes.Throw);
 								populateIl.MarkLabel(notNull);
 							}
 							populateIl.Emit(OpCodes.Unbox_Any, property.PropertyType);
+							if (commonType.IsValueType) {
+								populateIl.Emit(OpCodes.Constrained, commonType);
+								extractIl.Emit(OpCodes.Constrained, commonType);
+								getMemberIl.Emit(OpCodes.Constrained, commonType);
+							}
 							populateIl.Emit(OpCodes.Callvirt, NotNull(property.GetSetMethod(true)));
 							extractIl.Emit(OpCodes.Callvirt, NotNull(property.GetGetMethod(true)));
 							getMemberIl.Emit(OpCodes.Callvirt, NotNull(property.GetGetMethod(true)));
