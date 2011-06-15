@@ -71,8 +71,18 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private struct Struct {
 #pragma warning disable 169
-			private int a;
+			private readonly int a;
 #pragma warning restore 169
+
+			public Struct(int a) {
+				this.a = a;
+			}
+
+			public int A {
+				get {
+					return a;
+				}
+			}
 		}
 
 		private static readonly MemberInfo[] members = GetMemberFields<Members>();
@@ -101,6 +111,14 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			Expect(data[0], EqualTo(x.A));
 			Expect(data[1], EqualTo(x.B));
 			Expect(data[2], EqualTo(x.C));
+		}
+
+		[Test]
+		public void ExtractStructMembers() {
+			Struct x = new Struct(1);
+			object[] data = new object[1];
+			MembersMethods.Get(GetMemberFields<Struct>()).ExtractMembers(x, data);
+			Expect(data[0], EqualTo(x.A));
 		}
 
 		[Test]

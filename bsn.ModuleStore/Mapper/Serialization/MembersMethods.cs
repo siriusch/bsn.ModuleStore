@@ -44,6 +44,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private static Exception BuildNullFieldException<T>(MemberTypes memberType, string memberName) {
 			return new NullReferenceException(string.Format("{0} {1}.{2} cannot store a null value", memberType, typeof(T).FullName, memberName));
 		}
+
 		// ReSharper restore UnusedMember.Local
 
 		public static MembersMethods Get(MemberInfo[] members) {
@@ -89,14 +90,14 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				ILGenerator getMemberIl = getMemberMethod.GetILGenerator();
 				Label[] memberLabels = new Label[members.Length];
 				populateIl.Emit(OpCodes.Ldarg_1);
-				populateIl.Emit(OpCodes.Castclass, commonType);
+				populateIl.Emit(OpCodes.Unbox_Any, commonType);
 				extractIl.Emit(OpCodes.Ldarg_1);
-				extractIl.Emit(OpCodes.Castclass, commonType);
+				extractIl.Emit(OpCodes.Unbox_Any, commonType);
 				for (int i = 0; i < memberLabels.Length; i++) {
 					memberLabels[i] = getMemberIl.DefineLabel();
 				}
 				getMemberIl.Emit(OpCodes.Ldarg_1);
-				getMemberIl.Emit(OpCodes.Castclass, commonType);
+				getMemberIl.Emit(OpCodes.Unbox_Any, commonType);
 				OpCode loadInstance;
 				if (commonType != arg0Type) {
 					populateIl.DeclareLocal(commonType);
