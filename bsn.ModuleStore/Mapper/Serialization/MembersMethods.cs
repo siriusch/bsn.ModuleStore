@@ -29,20 +29,22 @@
 //  
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Reflection;
 using System.Reflection.Emit;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	internal struct MembersMethods {
-		private static ConstructorInfo ctor_ArgumentOutOfRangeException_string = NotNull(typeof(ArgumentOutOfRangeException).GetConstructor(new[] { typeof(string) }));
-		private static MethodInfo method_BuidNullFieldException = NotNull(typeof(MembersMethods).GetMethod("BuidNullFieldException", BindingFlags.Static|BindingFlags.NonPublic, null, new[] { typeof(MemberTypes), typeof(string) }, null));
+		private static readonly MethodInfo method_BuildNullFieldException = NotNull(typeof(MembersMethods).GetMethod("BuildNullFieldException", BindingFlags.Static|BindingFlags.NonPublic, null, new[] {typeof(MemberTypes), typeof(string)}, null));
+		private static readonly Dictionary<MembersKey, MembersMethods> methods = new Dictionary<MembersKey, MembersMethods>();
+		private static ConstructorInfo ctor_ArgumentOutOfRangeException_string = NotNull(typeof(ArgumentOutOfRangeException).GetConstructor(new[] {typeof(string)}));
 
-		private static Exception BuidNullFieldException<T>(MemberTypes memberType, string memberName) {
+		private static void ArrayNone(object instance, object[] data) {}
+
+		// ReSharper disable UnusedMember.Local
+		private static Exception BuildNullFieldException<T>(MemberTypes memberType, string memberName) {
 			return new NullReferenceException(string.Format("{0} {1}.{2} cannot store a null value", memberType, typeof(T).FullName, memberName));
 		}
-
-		private static readonly Dictionary<MembersKey, MembersMethods> methods = new Dictionary<MembersKey, MembersMethods>();
+		// ReSharper restore UnusedMember.Local
 
 		public static MembersMethods Get(MemberInfo[] members) {
 			MembersKey key = new MembersKey(members);
@@ -67,8 +69,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			return value;
 		}
 
-		private static void ArrayNone(object instance, object[] data) {}
-
 		private readonly Type commonType;
 		private readonly Action<object, object[]> extractMembers;
 		private readonly Func<object, int, object> getMember;
@@ -82,8 +82,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				commonType = MembersKey.GetCommonType(members);
 				Type arg0Type = commonType.IsValueType ? typeof(object) : commonType;
 				DynamicMethod populateMethod = new DynamicMethod(String.Format("{0}.PopulateMembers", commonType.FullName), null, new[] {arg0Type, typeof(object), typeof(object[])}, commonType, true);
-				DynamicMethod extractMethod = new DynamicMethod(String.Format("{0}.ExtractMembers", commonType.FullName), null, new[] { arg0Type, typeof(object), typeof(object[]) }, commonType, true);
-				DynamicMethod getMemberMethod = new DynamicMethod(String.Format("{0}.GetMember", commonType.FullName), typeof(object), new[] { arg0Type, typeof(object), typeof(int) }, commonType, true);
+				DynamicMethod extractMethod = new DynamicMethod(String.Format("{0}.ExtractMembers", commonType.FullName), null, new[] {arg0Type, typeof(object), typeof(object[])}, commonType, true);
+				DynamicMethod getMemberMethod = new DynamicMethod(String.Format("{0}.GetMember", commonType.FullName), typeof(object), new[] {arg0Type, typeof(object), typeof(int)}, commonType, true);
 				ILGenerator populateIl = populateMethod.GetILGenerator();
 				ILGenerator extractIl = extractMethod.GetILGenerator();
 				ILGenerator getMemberIl = getMemberMethod.GetILGenerator();
@@ -138,7 +138,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 							populateIl.Emit(OpCodes.Pop);
 							populateIl.Emit(OpCodes.Ldc_I4, (int)MemberTypes.Field);
 							populateIl.Emit(OpCodes.Ldstr, field.Name);
-							populateIl.Emit(OpCodes.Call, method_BuidNullFieldException.MakeGenericMethod(new[] { commonType }));
+							populateIl.Emit(OpCodes.Call, method_BuildNullFieldException.MakeGenericMethod(new[] {commonType}));
 							populateIl.Emit(OpCodes.Throw);
 							populateIl.MarkLabel(notNull);
 						}
@@ -161,7 +161,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 								populateIl.Emit(OpCodes.Pop);
 								populateIl.Emit(OpCodes.Ldc_I4, (int)MemberTypes.Field);
 								populateIl.Emit(OpCodes.Ldstr, property.Name);
-								populateIl.Emit(OpCodes.Call, method_BuidNullFieldException.MakeGenericMethod(new[] { commonType }));
+								populateIl.Emit(OpCodes.Call, method_BuildNullFieldException.MakeGenericMethod(new[] {commonType}));
 								populateIl.Emit(OpCodes.Throw);
 								populateIl.MarkLabel(notNull);
 							}
