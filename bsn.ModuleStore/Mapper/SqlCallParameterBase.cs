@@ -42,7 +42,11 @@ namespace bsn.ModuleStore.Mapper {
 
 		private static Dictionary<string, SqlDbType> GetKnownDbTypes() {
 			Dictionary<string, SqlDbType> result = Enum.GetValues(typeof(SqlDbType)).Cast<SqlDbType>().ToDictionary(x => x.ToString(), x => x, StringComparer.OrdinalIgnoreCase);
+			result.Remove(SqlDbType.Udt.ToString());
+			result.Remove(SqlDbType.Variant.ToString());
+			result.Remove(SqlDbType.Structured.ToString());
 			result.Add(@"sysname", SqlDbType.NVarChar);
+			result.Add(@"sql_variant", SqlDbType.Variant);
 			return result;
 		}
 
