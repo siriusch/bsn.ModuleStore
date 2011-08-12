@@ -27,15 +27,16 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-using bsn.ModuleStore.Sql.Script;
-
 using NUnit.Framework;
+
+using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	[TestFixture]
@@ -209,6 +210,11 @@ FROM varchar(11) NOT NULL ;", 1);
 		[Test]
 		public void DateTime2Variable() {
 			ParseWithRoundtrip(@"DECLARE @dt datetime2", 1);
+		}
+
+		[Test]
+		public void DeclareVariant() {
+			ParseWithRoundtrip(@"DECLARE @v sql_variant", 1);
 		}
 
 		[Test]
