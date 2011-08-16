@@ -27,9 +27,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 
 using bsn.ModuleStore.Mapper.Serialization;
 
@@ -53,6 +55,14 @@ namespace bsn.ModuleStore.Mapper {
 	}
 
 	public class ResultSet<T>: ResultSetBase<T> {
+		public ResultSet() {}
+
+		public ResultSet(IEnumerable<T> items): this() {
+			Items = items.ToList();
+		}
+
+		public ResultSet(params T[] items): this((IEnumerable<T>)items) {}
+
 		protected internal override void Load(SqlDataReader reader, IInstanceProvider provider) {
 			if (reader.HasRows) {
 				List<T> result = new List<T>(512);
@@ -70,6 +80,15 @@ namespace bsn.ModuleStore.Mapper {
 
 	public class ResultSet<T, TInner>: ResultSet<T> where TInner: ResultSet, new() {
 		private readonly TInner inner = new TInner();
+
+		public ResultSet() {}
+
+		public ResultSet(TInner inner, IEnumerable<T> items): this() {
+			this.inner = inner;
+			Items = items.ToList();
+		}
+
+		public ResultSet(TInner inner, params T[] items): this(inner, (IEnumerable<T>)items) {}
 
 		public TInner Inner {
 			get {
