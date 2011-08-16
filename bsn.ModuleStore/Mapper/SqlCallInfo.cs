@@ -36,30 +36,13 @@ using System.Runtime.Remoting.Messaging;
 using System.Xml;
 
 using bsn.ModuleStore.Mapper.Serialization;
-using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper {
-	internal class SqlCallInfo {
-		private static readonly Dictionary<Type, SqlCallInfo> knownTypes = new Dictionary<Type, SqlCallInfo>();
-
-		public static SqlCallInfo Get(Type interfaceType) {
-			if (interfaceType == null) {
-				throw new ArgumentNullException("interfaceType");
-			}
-			lock (knownTypes) {
-				SqlCallInfo result;
-				if (!knownTypes.TryGetValue(interfaceType, out result)) {
-					result = new SqlCallInfo(interfaceType);
-					knownTypes.Add(interfaceType, result);
-				}
-				return result;
-			}
-		}
-
+	internal class SqlCallInfo: ISqlCallInfo {
 		private readonly Type interfaceType;
 		private readonly Dictionary<MethodBase, SqlCallProcedureInfo> methods = new Dictionary<MethodBase, SqlCallProcedureInfo>();
 
-		private SqlCallInfo(Type interfaceType) {
+		internal SqlCallInfo(Type interfaceType) {
 			Debug.Assert(interfaceType != null);
 			if ((!interfaceType.IsInterface) || (interfaceType.IsGenericTypeDefinition) || (!typeof(IStoredProcedures).IsAssignableFrom(interfaceType))) {
 				throw new ArgumentException("The interface must inherit from IStoredProcedures", "interfaceType");
@@ -85,8 +68,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public IEnumerable<SqlCommand> CreateCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out SqlParameter[] outParameters, out SqlSerializationTypeInfo returnTypeInfo, out SqlProcedureAttribute procInfo, out XmlNameTable xmlNameTable,
-		                                IList<IDisposable> disposeList) {
+		public IEnumerable<SqlCommand> CreateCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out SqlParameter[] outParameters, out SqlSerializationTypeInfo returnTypeInfo, out ICallDeserializationInfo procInfo, out XmlNameTable xmlNameTable, IList<IDisposable> disposeList) {
 			return methods[mcm.MethodBase].GetCommands(mcm, connection, schemaName, out returnValue, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList);
 		}
 

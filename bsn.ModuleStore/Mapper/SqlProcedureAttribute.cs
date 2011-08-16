@@ -38,7 +38,7 @@ namespace bsn.ModuleStore.Mapper {
 	/// <br/><br/>
 	/// Information which can be specified includes the <see cref="SqlColumnAttribute.Name"/>, <see cref="Timeout"/>, <see cref="UseReturnValue"/>, <see cref="DeserializeRowLimit"/>, <see cref="DeserializeReturnNullOnEmptyReader"/> and <see cref="DeserializeCallConstructor"/>.
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public sealed class SqlProcedureAttribute: SqlSetupScriptAttributeBase {
+	public sealed class SqlProcedureAttribute: SqlSetupScriptAttributeBase, ICallDeserializationInfo {
 		private bool deserializeCallConstructor;
 		private bool deserializeReturnNullOnEmptyReader;
 		private int deserializeRowLimit = int.MaxValue;

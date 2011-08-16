@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 
@@ -83,7 +83,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 					return (TI)proxy;
 				}
 				AssertIsUpToDate();
-				TI result = SqlCallProxy.Create<TI>(owner.Owner.CreateConnectionProvider(module.Schema));
+				TI result = SqlCallProxy.Create<TI>(owner.Owner, owner.Owner.CreateConnectionProvider(module.Schema));
 				proxies.Add(typeof(TI), result);
 				return result;
 			}

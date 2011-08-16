@@ -57,6 +57,9 @@
     <Compile Include="Bootstrapper\DatabaseObject.cs" />
     <Compile Include="Bootstrapper\ModuleAssemblyInfo.cs" />
     <Compile Include="Mapper\CachePolicy.cs" />
+    <Compile Include="Mapper\ICallDeserializationInfo.cs" />
+    <Compile Include="Mapper\IMetadataProvider.cs" />
+    <Compile Include="Mapper\ISqlCallInfo.cs" />
     <Compile Include="Mapper\IVersioned.cs" />
     <Compile Include="Mapper\Serialization\CachedMemberConverter.cs" />
     <Compile Include="Mapper\ConnectionProvider.cs" />
@@ -142,6 +145,7 @@
     <Compile Include="Mapper\Serialization\SqlDeserializer.cs" />
     <Compile Include="Mapper\SqlNameTableAttribute.cs" />
     <Compile Include="Mapper\SqlCallParameterConstant.cs" />
+    <Compile Include="SqlExceptionMappingAttribute.cs" />
     <Compile Include="SqlManifestResourceAttribute.cs" />
     <Compile Include="Mapper\SqlProcedureAttribute.cs" />
     <Compile Include="Mapper\SqlReturnValue.cs" />
@@ -160,6 +164,7 @@
     <Compile Include="Sql\AssemblyInventory.cs" />
     <Compile Include="Sql\DatabaseInventory.cs" />
     <Compile Include="Sql\DependencyResolver.cs" />
+    <Compile Include="IHasDeclaringMember.cs" />
     <Compile Include="Sql\InstallableInventory.cs" />
     <Compile Include="Sql\InventoryObjectDifference.cs" />
     <Compile Include="Sql\IAssemblyHandle.cs" />

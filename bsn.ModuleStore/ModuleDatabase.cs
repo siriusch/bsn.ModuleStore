@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -43,17 +43,8 @@ using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore {
-	public class ModuleDatabase: IDisposable {
-		public static DatabaseType GetDatabaseType(string connectionString) {
-			using (SqlConnection connection = new SqlConnection(connectionString)) {
-				connection.Open();
-				return GetDatabaseType(connection);
-			}
-		}
-
-		public static DatabaseType GetDatabaseType(SqlConnection connection) {
-			return Bootstrap.GetDatabaseType(connection);
-		}
+	public class ModuleDatabase: IDisposable, IMetadataProvider {
+		private static readonly Dictionary<Type, SqlCallInfo> knownTypes = new Dictionary<Type, SqlCallInfo>();
 
 		[Conditional("DEBUG")]
 		private static void DebugWriteFirstLines(string sql) {
@@ -81,6 +72,17 @@ namespace bsn.ModuleStore {
 			}
 		}
 
+		public static DatabaseType GetDatabaseType(string connectionString) {
+			using (SqlConnection connection = new SqlConnection(connectionString)) {
+				connection.Open();
+				return GetDatabaseType(connection);
+			}
+		}
+
+		public static DatabaseType GetDatabaseType(SqlConnection connection) {
+			return Bootstrap.GetDatabaseType(connection);
+		}
+
 		private readonly bool autoUpdate;
 		private readonly string connectionString;
 		private readonly Dictionary<Assembly, ModuleInstanceCache> instances = new Dictionary<Assembly, ModuleInstanceCache>();
@@ -95,7 +97,7 @@ namespace bsn.ModuleStore {
 			this.connectionString = connectionString;
 			this.autoUpdate = autoUpdate;
 			managementConnectionProvider = new ManagementConnectionProvider(connectionString, "ModuleStore");
-			moduleStore = SqlCallProxy.Create<IModules>(managementConnectionProvider);
+			moduleStore = SqlCallProxy.Create<IModules>(this, managementConnectionProvider);
 			Bootstrap.InitializeModuleStore(this);
 		}
 
@@ -176,7 +178,7 @@ namespace bsn.ModuleStore {
 			if (inventory == null) {
 				throw new ArgumentNullException("inventory");
 			}
-			if (string.IsNullOrEmpty(moduleSchema)) {
+			if (String.IsNullOrEmpty(moduleSchema)) {
 				throw new ArgumentNullException("moduleSchema");
 			}
 			AssertSmoTransaction();
@@ -221,7 +223,7 @@ namespace bsn.ModuleStore {
 						message.Append(module.Schema);
 						message.Append(" update failed for");
 						do {
-							Trace.WriteLine(enumerator.Current.Key, string.Format("SQL object {0}.{1} is {2}", module.Schema, enumerator.Current.Key.ObjectName, enumerator.Current.Value));
+							Trace.WriteLine(enumerator.Current.Key, String.Format("SQL object {0}.{1} is {2}", module.Schema, enumerator.Current.Key.ObjectName, enumerator.Current.Value));
 							message.Append(' ');
 							message.Append(enumerator.Current.Key.ObjectName);
 						} while (enumerator.MoveNext());
@@ -266,6 +268,20 @@ namespace bsn.ModuleStore {
 		public void Dispose() {
 			GC.SuppressFinalize(this);
 			Dispose(true);
+		}
+
+		ISqlCallInfo IMetadataProvider.GetCallInfo(Type interfaceType) {
+			if (interfaceType == null) {
+				throw new ArgumentNullException("interfaceType");
+			}
+			lock (knownTypes) {
+				SqlCallInfo result;
+				if (!knownTypes.TryGetValue(interfaceType, out result)) {
+					result = new SqlCallInfo(interfaceType);
+					knownTypes.Add(interfaceType, result);
+				}
+				return result;
+			}
 		}
 	}
 }

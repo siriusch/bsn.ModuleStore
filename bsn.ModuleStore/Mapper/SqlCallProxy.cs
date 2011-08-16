@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -108,8 +108,8 @@ namespace bsn.ModuleStore.Mapper {
 		/// An instance of the type requested by <typeparamref name="I"/>.
 		/// </returns>
 		// ReSharper disable InconsistentNaming
-		public static I Create<I>(IConnectionProvider connectionProvider) where I: IStoredProcedures {
-			return (I)(new SqlCallProxy(connectionProvider, typeof(I))).GetTransparentProxy();
+		public static I Create<I>(IMetadataProvider metadataProvider, IConnectionProvider connectionProvider) where I: IStoredProcedures {
+			return (I)(new SqlCallProxy(metadataProvider, connectionProvider, typeof(I))).GetTransparentProxy();
 		}
 
 		// ReSharper restore InconsistentNaming
@@ -129,16 +129,16 @@ namespace bsn.ModuleStore.Mapper {
 			return result;
 		}
 
-		private readonly SqlCallInfo callInfo;
+		private readonly ISqlCallInfo callInfo;
 		private readonly IConnectionProvider connectionProvider;
 		private IInstanceProvider provider;
 
-		private SqlCallProxy(IConnectionProvider connectionProvider, Type interfaceToProxy): base(interfaceToProxy) {
+		private SqlCallProxy(IMetadataProvider metadataProvider, IConnectionProvider connectionProvider, Type interfaceToProxy): base(interfaceToProxy) {
 			if (connectionProvider == null) {
 				throw new ArgumentNullException("connectionProvider");
 			}
 			this.connectionProvider = connectionProvider;
-			callInfo = SqlCallInfo.Get(interfaceToProxy);
+			callInfo = metadataProvider.GetCallInfo(interfaceToProxy);
 		}
 
 		/// <summary>
@@ -187,7 +187,7 @@ namespace bsn.ModuleStore.Mapper {
 					SqlParameter returnParameter;
 					SqlParameter[] outParameters;
 					SqlSerializationTypeInfo returnTypeInfo;
-					SqlProcedureAttribute procInfo;
+					ICallDeserializationInfo procInfo;
 					IList<IDisposable> disposeList = new List<IDisposable>(0);
 					XmlNameTable xmlNameTable;
 					using (IEnumerator<SqlCommand> commandEnumerator = callInfo.CreateCommands(mcm, connection, connectionProvider.SchemaName, out returnParameter, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList).GetEnumerator()) {
