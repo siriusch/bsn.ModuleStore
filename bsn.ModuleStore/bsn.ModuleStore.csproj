@@ -66,6 +66,7 @@
     <Compile Include="Mapper\Serialization\ConvertibleMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\DateTimeMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\DateTimeOffsetMemberConverter.cs" />
+    <Compile Include="Mapper\Serialization\SqlDeserializationContext.cs" />
     <Compile Include="Mapper\Serialization\EnumMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\MembersKey.cs" />
     <Compile Include="Mapper\Serialization\MembersMethods.cs" />

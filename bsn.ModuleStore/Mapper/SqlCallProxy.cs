@@ -228,16 +228,18 @@ namespace bsn.ModuleStore.Mapper {
 								} else if (typeof(ResultSet).IsAssignableFrom(returnType)) {
 									reader = command.ExecuteReader(CommandBehavior.Default);
 									profiler.Fetch();
-									returnValue = Activator.CreateInstance(returnType);
-									((ResultSet)returnValue).Load(reader, provider);
-									if (reader.NextResult()) {
-										throw new InvalidOperationException("The reader contains more result sets than expected");
-									}
-									reader.Dispose();
-									reader = null;
-									ISqlDeserializationHook hook = returnValue as ISqlDeserializationHook;
-									if (hook != null) {
-										hook.AfterDeserialization();
+									using (SqlDeserializationContext context = new SqlDeserializationContext(provider)) {
+										returnValue = Activator.CreateInstance(returnType);
+										((ResultSet)returnValue).Load(context, reader);
+										if (reader.NextResult()) {
+											throw new InvalidOperationException("The reader contains more result sets than expected");
+										}
+										reader.Dispose();
+										reader = null;
+										ISqlDeserializationHook hook = returnValue as ISqlDeserializationHook;
+										if (hook != null) {
+											hook.AfterDeserialization();
+										}
 									}
 								} else {
 									bool isTypedDataReader = typeof(ITypedDataReader).IsAssignableFrom(returnType);
@@ -273,21 +275,22 @@ namespace bsn.ModuleStore.Mapper {
 												throw new InvalidOperationException("The stored procedure did not return any result, but a result was required for object deserialization");
 											}
 										} else {
-											if (returnTypeInfo.SimpleConverter != null) {
-												using (SqlDeserializer.DeserializerContext context = new SqlDeserializer.DeserializerContext(reader, provider, xmlNameTable)) {
+											using (SqlDeserializationContext context = new SqlDeserializationContext(provider)) {
+												if (returnTypeInfo.SimpleConverter != null) {
+													SqlDeserializer.DeserializerContext deserializerContext = new SqlDeserializer.DeserializerContext(context, reader, procInfo.DeserializeCallConstructor, xmlNameTable);
 													if (returnTypeInfo.IsCollection) {
 														IList list = returnTypeInfo.CreateList();
 														for (int row = procInfo.DeserializeRowLimit; reader.Read() && (row > 0); row--) {
-															list.Add(returnTypeInfo.SimpleConverter.ProcessFromDb(context, 0));
+															list.Add(returnTypeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0));
 														}
 														returnValue = returnTypeInfo.FinalizeList(list);
 													} else {
 														reader.Read();
-														returnValue = returnTypeInfo.SimpleConverter.ProcessFromDb(context, 0);
+														returnValue = returnTypeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0);
 													}
+												} else {
+													returnValue = new SqlDeserializer(context, reader, returnType, false).DeserializeInternal(procInfo.DeserializeRowLimit, procInfo.DeserializeCallConstructor, xmlNameTable);
 												}
-											} else {
-												returnValue = new SqlDeserializer(reader, returnType, false).DeserializeInternal(procInfo.DeserializeRowLimit, provider, procInfo.DeserializeCallConstructor, xmlNameTable);
 											}
 										}
 										reader.Dispose();

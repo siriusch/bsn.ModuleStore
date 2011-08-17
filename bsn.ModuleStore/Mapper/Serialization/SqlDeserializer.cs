@@ -27,12 +27,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
 
@@ -58,7 +58,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		/// <remarks>Disposing the DbDeserializer will also dispose the reader. Also, you must not continue to use the Deserializer afterwards if you call <see cref="SqlDataReader.NextResult"/>.</remarks>
 		/// <param name="reader">The SqlDataReader to read data from. The DbDeserializer will take ownership of the reader.</param>
 		/// <param name="callConstructor">If true, the normal default constructor is called instead of creating empty instances. Empty instances, however, are much faster.</param>
-		public SqlDeserializer(SqlDataReader reader, bool callConstructor): base(reader, typeof(T), true) {
+		public SqlDeserializer(SqlDeserializationContext context, SqlDataReader reader, bool callConstructor): base(context, reader, typeof(T), true) {
 			this.callConstructor = callConstructor;
 		}
 
@@ -67,47 +67,45 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		/// </summary>
 		/// <remarks>Disposing the DbDeserializer will also dispose the reader. Also, you must not continue to use the Deserializer afterwards if you call <see cref="SqlDataReader.NextResult"/>.</remarks>
 		/// <param name="reader">The SqlDataReader to read data from. The DbDeserializer will take ownership of the reader.</param>
-		public SqlDeserializer(SqlDataReader reader): this(reader, false) {}
+		public SqlDeserializer(SqlDeserializationContext context, SqlDataReader reader): this(context, reader, false) {}
 
 		/// <summary>
 		/// Deserialize one row into a new instance, or all available rows for lists. If <typeparamref name="T"/> is not a list (supported types for lists: <see cref="List{T}"/>, <see cref="IList{T}"/>, <see cref="ICollection{T}"/> or <typeparamref name="T"/>[].
 		/// </summary>
 		/// <returns>An instance of <typeparamref name="T"/></returns>
-		public T Deserialize(IInstanceProvider provider) {
-			return Deserialize(provider, int.MaxValue);
+		public T Deserialize() {
+			return Deserialize(int.MaxValue);
 		}
 
 		/// <summary>
 		/// Deserialize one row into a new instance, or all available rows for lists. If <typeparamref name="T"/> is not a list (supported types for lists: <see cref="List{T}"/>, <see cref="IList{T}"/>, <see cref="ICollection{T}"/> or <typeparamref name="T"/>[].
 		/// </summary>
-		/// <param name="provider">The provider.</param>
 		/// <param name="maxRows">The maximal number of rows to read (for lists).</param>
 		/// <returns>An instance of <typeparamref name="T"/></returns>
-		public T Deserialize(IInstanceProvider provider, int maxRows) {
-			return (T)DeserializeInternal(maxRows, provider, callConstructor, null);
+		public T Deserialize(int maxRows) {
+			return (T)DeserializeInternal(maxRows, callConstructor, null);
 		}
 
 		/// <summary>
 		/// Deserialize all rows as enumeration of instances.
 		/// </summary>
 		/// <returns>An enumeration of instances of <typeparamref name="T"/></returns>
-		public IEnumerable<T> DeserializeInstances(IInstanceProvider provider) {
-			return DeserializeInstances(provider, Int32.MaxValue);
+		public IEnumerable<T> DeserializeInstances() {
+			return DeserializeInstances(Int32.MaxValue);
 		}
 
 		/// <summary>
 		/// Deserialize the given number of rows as enumeration of instances.
 		/// </summary>
-		/// <param name="provider">The provider.</param>
 		/// <param name="maxRows">The maximal number of rows to read.</param>
 		/// <returns>
 		/// An enumeration of instances of <typeparamref name="T"/>
 		/// </returns>
-		public IEnumerable<T> DeserializeInstances(IInstanceProvider provider, int maxRows) {
+		public IEnumerable<T> DeserializeInstances(int maxRows) {
 			if (TypeInfo.IsCollection) {
 				throw new NotSupportedException("Collections cannot be deserialized as instances");
 			}
-			return DeserializeInstancesInternal<T>(maxRows, provider, callConstructor, null);
+			return DeserializeInstancesInternal<T>(maxRows, callConstructor, null);
 		}
 	}
 
@@ -116,33 +114,19 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	/// </summary>
 	/// <seealso cref="SqlDeserializer{T}"/>
 	public class SqlDeserializer: IDisposable {
-		protected internal class DeserializerContext: IDisposable {
+		protected internal class DeserializerContext {
 			private readonly IDictionary<SqlDeserializer, object[]> buffers = new Dictionary<SqlDeserializer, object[]>();
 			private readonly bool callConstructor;
+			private readonly SqlDeserializationContext context;
 			private readonly SqlDataReader dataReader;
-			private readonly Dictionary<object, bool> deserialized = new Dictionary<object, bool>(ReferenceEqualityComparer<object>.Default);
-			private readonly IInstanceProvider provider;
-			private readonly IDictionary<string, object> state;
-			private readonly IDeserializationStateProvider stateProvider;
 			private XmlNameTable nameTable;
 			private XmlDocument xmlDocument;
 
-			public DeserializerContext(SqlDataReader dataReader, IInstanceProvider provider, XmlNameTable nameTable) {
-				this.provider = provider;
+			public DeserializerContext(SqlDeserializationContext context, SqlDataReader dataReader, bool callConstructor, XmlNameTable nameTable) {
 				this.dataReader = dataReader;
-				this.nameTable = nameTable;
-			}
-
-			public DeserializerContext(SqlDeserializer deserializer, IInstanceProvider provider, bool callConstructor, XmlNameTable nameTable) {
-				this.provider = provider;
+				this.context = context;
 				this.callConstructor = callConstructor;
 				this.nameTable = nameTable;
-				dataReader = deserializer.reader;
-				stateProvider = provider as IDeserializationStateProvider;
-				if (stateProvider != null) {
-					state = new SortedDictionary<string, object>(StringComparer.Ordinal);
-					stateProvider.BeginDeserialize(state);
-				}
 			}
 
 			public SqlDataReader DataReader {
@@ -169,27 +153,17 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 			}
 
-			public void ForgetInstance(Type type, object identity) {
-				if (provider != null) {
-					provider.ForgetInstance(state, type, identity);
-				}
-			}
-
 			public object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin) {
-				if (provider != null) {
-					object result;
-					if (provider.TryGetInstance(state, instanceType, identity, out result, out instanceOrigin)) {
-						return result;
-					}
+				object result;
+				if (!context.TryGetInstance(instanceType, identity, out result, out instanceOrigin)) {
+					instanceOrigin = InstanceOrigin.New;
+					result = (callConstructor) ? Activator.CreateInstance(instanceType, true) : FormatterServices.GetUninitializedObject(instanceType);
 				}
-				instanceOrigin = InstanceOrigin.New;
-				return callConstructor ? Activator.CreateInstance(instanceType, true) : FormatterServices.GetUninitializedObject(instanceType);
+				return result;
 			}
 
-			public void RequireDeserialization(object instance) {
-				if (!deserialized.ContainsKey(instance)) {
-					deserialized.Add(instance, false);
-				}
+			public void RequireDeserialization(object obj) {
+				context.AssertDeserialization(obj);
 			}
 
 			internal object[] GetBuffer(SqlDeserializer deserializer) {
@@ -200,40 +174,26 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 				return result;
 			}
-
-			internal void NotifyInstancePopulated(object instance) {
-				if (stateProvider != null) {
-					stateProvider.InstanceDeserialized(state, instance);
-				}
-				deserialized[instance] = true;
-			}
-
-			public void Dispose() {
-				if (stateProvider != null) {
-					stateProvider.EndDeserialize(state);
-				}
-				if (deserialized.ContainsValue(false)) {
-					foreach (KeyValuePair<Type, int> pair in deserialized.Where(p => !p.Value).Select(p => p.Key).GroupBy(o => o.GetType(), (t, o) => new KeyValuePair<Type, int>(t, o.Count()))) {
-						Debug.WriteLine(string.Format("Found {0} unresolved forward references of the type {1} in resultset", pair.Value, pair.Key));
-					}
-					throw new InvalidOperationException("Some objects were created as forward reference but were missing in the result set");
-				}
-			}
 		}
 
 		private readonly SortedList<int, MemberConverter> columnConverters;
+		private readonly SqlDeserializationContext context;
 		private readonly Dictionary<NestedMemberConverter, SqlDeserializer> nestedDeserializers;
 		private readonly SqlDataReader reader;
 		private readonly SqlSerializationTypeInfo typeInfo;
 		private bool disposeReader;
 
-		internal SqlDeserializer(SqlDataReader reader, Type type, bool disposeReader) {
+		internal SqlDeserializer(SqlDeserializationContext context, SqlDataReader reader, Type type, bool disposeReader) {
+			if (context == null) {
+				throw new ArgumentNullException("context");
+			}
 			if (reader == null) {
 				throw new ArgumentNullException("reader");
 			}
 			if (type.IsAbstract || type.IsInterface || type.IsPrimitive || type.IsPointer || typeof(ResultSet).IsAssignableFrom(type)) {
 				throw new NotSupportedException("Deserialization only supports normal classes and structs.");
 			}
+			this.context = context;
 			this.reader = reader;
 			this.disposeReader = disposeReader;
 			typeInfo = SqlSerializationTypeInfo.Get(type);
@@ -244,7 +204,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 						nestedDeserializers = new Dictionary<NestedMemberConverter, SqlDeserializer>();
 					}
 #warning Cyclic nested members would cause a stack overflow here
-					SqlDeserializer nestedDeserializer = new SqlDeserializer(reader, nestedConverter.Type, false);
+					SqlDeserializer nestedDeserializer = new SqlDeserializer(context, reader, nestedConverter.Type, false);
 					NestedListMemberConverter nestedListConverter = nestedConverter as NestedListMemberConverter;
 					nestedDeserializers.Add(nestedListConverter ?? nestedConverter, nestedDeserializer);
 				} else {
@@ -313,7 +273,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if ((result != null)) {
 				if (instanceOrigin != InstanceOrigin.ResultSet) {
 					TypeInfo.Mapping.PopulateInstanceMembers(result, buffer);
-					context.NotifyInstancePopulated(result);
+					this.context.NotifyInstancePopulated(result);
 					if (typeInfo.RequiresNotification) {
 						((ISqlDeserializationHook)result).AfterDeserialization();
 					}
@@ -337,48 +297,46 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			return result;
 		}
 
-		internal IEnumerable<T> DeserializeInstancesInternal<T>(int maxRows, IInstanceProvider provider, bool callConstructor, XmlNameTable nameTable) {
+		internal IEnumerable<T> DeserializeInstancesInternal<T>(int maxRows, bool callConstructor, XmlNameTable nameTable) {
 			Debug.Assert(typeof(T).IsAssignableFrom(TypeInfo.InstanceType));
-			using (DeserializerContext context = new DeserializerContext(this, provider, callConstructor, nameTable)) {
-				while (maxRows > 0) {
-					if (!reader.Read()) {
-						break;
-					}
-					if (typeInfo.SimpleConverter != null) {
-						yield return (T)typeInfo.SimpleConverter.ProcessFromDb(context, 0);
-					} else {
-						InstanceOrigin instanceOrigin;
-						T instance = (T)CreateInstance(context, out instanceOrigin);
-						if (instanceOrigin != InstanceOrigin.ResultSet) {
-							yield return instance;
-						}
-					}
-					maxRows--;
+			DeserializerContext context = new DeserializerContext(this.context, reader, callConstructor, nameTable);
+			while (maxRows > 0) {
+				if (!reader.Read()) {
+					break;
 				}
+				if (typeInfo.SimpleConverter != null) {
+					yield return (T)typeInfo.SimpleConverter.ProcessFromDb(context, 0);
+				} else {
+					InstanceOrigin instanceOrigin;
+					T instance = (T)CreateInstance(context, out instanceOrigin);
+					if (instanceOrigin != InstanceOrigin.ResultSet) {
+						yield return instance;
+					}
+				}
+				maxRows--;
 			}
 		}
 
-		internal object DeserializeInternal(int maxRows, IInstanceProvider provider, bool callConstructor, XmlNameTable nameTable) {
+		internal object DeserializeInternal(int maxRows, bool callConstructor, XmlNameTable nameTable) {
 			if (maxRows < 0) {
 				throw new ArgumentOutOfRangeException("maxRows");
 			}
 			if (typeInfo.IsCollection) {
 				IList list = typeInfo.CreateList();
-				foreach (object instance in DeserializeInstancesInternal<object>(maxRows, provider, callConstructor, nameTable)) {
+				foreach (object instance in DeserializeInstancesInternal<object>(maxRows, callConstructor, nameTable)) {
 					list.Add(instance);
 				}
 				return typeInfo.FinalizeList(list);
 			}
-			using (DeserializerContext deserializerContext = new DeserializerContext(this, provider, callConstructor, nameTable)) {
-				if (!reader.Read()) {
-					throw new InvalidOperationException("No more rows");
-				}
-				if (typeInfo.SimpleConverter != null) {
-					return typeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0);
-				}
-				InstanceOrigin instanceOrigin;
-				return CreateInstance(deserializerContext, out instanceOrigin);
+			if (!reader.Read()) {
+				throw new InvalidOperationException("No more rows");
 			}
+			DeserializerContext deserializerContext = new DeserializerContext(context, reader, callConstructor, nameTable);
+			if (typeInfo.SimpleConverter != null) {
+				return typeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0);
+			}
+			InstanceOrigin instanceOrigin;
+			return CreateInstance(deserializerContext, out instanceOrigin);
 		}
 
 		/// <summary>
