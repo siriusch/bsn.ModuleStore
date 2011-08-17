@@ -35,7 +35,8 @@ namespace bsn.ModuleStore {
 	public sealed class SqlExceptionMappingAttribute: SqlAssemblyAttribute, IHasDeclaringMember, IComparable<SqlExceptionMappingAttribute> {
 		private readonly Type targetException;
 		private MemberInfo declaredOn;
-		private int? messageId;
+		private string message;
+		private int? number;
 		private bool @readonly;
 		private byte? severity;
 		private byte? state;
@@ -44,13 +45,23 @@ namespace bsn.ModuleStore {
 			this.targetException = targetException;
 		}
 
-		public int? MessageId {
+		public string Message {
 			get {
-				return messageId;
+				return message;
 			}
 			set {
 				AssertNotReadonly();
-				messageId = value;
+				message = value;
+			}
+		}
+
+		public int? Number {
+			get {
+				return number;
+			}
+			set {
+				AssertNotReadonly();
+				number = value;
 			}
 		}
 
@@ -87,7 +98,7 @@ namespace bsn.ModuleStore {
 			} else if (declaredOn is MethodInfo) {
 				result += 0x10000;
 			}
-			if (messageId.HasValue) {
+			if (number.HasValue) {
 				result += 0x4000;
 			}
 			if (severity.HasValue) {

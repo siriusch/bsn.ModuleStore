@@ -232,8 +232,8 @@ namespace bsn.ModuleStore.Mapper {
 
 		public Exception MapException(SqlException ex) {
 			foreach (SqlExceptionMappingAttribute mapping in exceptionMappings) {
-				if (mapping.MessageId.GetValueOrDefault(ex.Number).Equals(ex.Number) && mapping.Severity.GetValueOrDefault(ex.Class).Equals(ex.Class) && mapping.State.GetValueOrDefault(ex.State).Equals(ex.State)) {
-					return (Exception)Activator.CreateInstance(mapping.TargetException, ex.Message, ex);
+				if (mapping.Number.GetValueOrDefault(ex.Number).Equals(ex.Number) && mapping.Severity.GetValueOrDefault(ex.Class).Equals(ex.Class) && mapping.State.GetValueOrDefault(ex.State).Equals(ex.State)) {
+					return (Exception)Activator.CreateInstance(mapping.TargetException, mapping.Message ?? ex.Message, ex);
 				}
 			}
 			return ex;
