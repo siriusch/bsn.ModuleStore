@@ -45,5 +45,7 @@ namespace bsn.ModuleStore.Mapper {
 		                                       IList<IDisposable> disposeList);
 
 		string GetProcedureName(IMethodCallMessage mcm, string schemaName);
+
+		IMessage HandleException(IMethodCallMessage mcm, SqlException exception);
 	}
 }

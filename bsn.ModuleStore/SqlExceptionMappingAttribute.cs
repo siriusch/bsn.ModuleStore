@@ -32,12 +32,13 @@ using System.Reflection;
 
 namespace bsn.ModuleStore {
 	[AttributeUsage(AttributeTargets.Assembly|AttributeTargets.Interface|AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-	public sealed class SqlExceptionMappingAttribute: SqlAssemblyAttribute, IHasDeclaringMember {
+	public sealed class SqlExceptionMappingAttribute: SqlAssemblyAttribute, IHasDeclaringMember, IComparable<SqlExceptionMappingAttribute> {
 		private readonly Type targetException;
 		private MemberInfo declaredOn;
 		private int? messageId;
-		private int? severity;
-		private int? state;
+		private bool @readonly;
+		private byte? severity;
+		private byte? state;
 
 		public SqlExceptionMappingAttribute(Type targetException) {
 			this.targetException = targetException;
@@ -48,24 +49,27 @@ namespace bsn.ModuleStore {
 				return messageId;
 			}
 			set {
+				AssertNotReadonly();
 				messageId = value;
 			}
 		}
 
-		public int? Severity {
+		public byte? Severity {
 			get {
 				return severity;
 			}
 			set {
+				AssertNotReadonly();
 				severity = value;
 			}
 		}
 
-		public int? State {
+		public byte? State {
 			get {
 				return state;
 			}
 			set {
+				AssertNotReadonly();
 				state = value;
 			}
 		}
@@ -79,20 +83,30 @@ namespace bsn.ModuleStore {
 		internal int ComputeSpecificity() {
 			int result = 0;
 			if (declaredOn is Type) {
-				result += 0x4000;
-			} else if (declaredOn is MethodInfo) {
 				result += 0x8000;
+			} else if (declaredOn is MethodInfo) {
+				result += 0x10000;
 			}
 			if (messageId.HasValue) {
-				result += 0x2000;
+				result += 0x4000;
 			}
 			if (severity.HasValue) {
-				result += (severity.Value+1)*0x100; // max 26*0x100 = 0x1A00
+				result += Math.Min(26, severity.Value+1)*0x200; // max 26*0x200 = 0x3400
 			}
 			if (state.HasValue) {
-				result += state.Value;
+				result += state.Value+1;
 			}
 			return result;
+		}
+
+		private void AssertNotReadonly() {
+			if (@readonly) {
+				throw new InvalidOperationException("THe attribute is readonly");
+			}
+		}
+
+		int IComparable<SqlExceptionMappingAttribute>.CompareTo(SqlExceptionMappingAttribute other) {
+			return ComputeSpecificity()-other.ComputeSpecificity();
 		}
 
 		public MemberInfo DeclaredOn {
@@ -102,7 +116,9 @@ namespace bsn.ModuleStore {
 		}
 
 		void IHasDeclaringMember.SetDeclaringMember(MemberInfo member) {
+			AssertNotReadonly();
 			declaredOn = member;
+			@readonly = true;
 		}
 	}
 }

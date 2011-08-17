@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -58,6 +58,7 @@ namespace bsn.ModuleStore.Sql {
 
 		private readonly IAssemblyHandle assembly;
 		private readonly ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> attributes;
+		private readonly List<SqlExceptionMappingAttribute> exceptionMappings = new List<SqlExceptionMappingAttribute>();
 		private readonly HashSet<string> processedManifestStreamKeys = new HashSet<string>(StringComparer.Ordinal);
 		private readonly int requiredEngineVersion = 9;
 		private readonly SortedList<int, Statement[]> updateStatements = new SortedList<int, Statement[]>();
@@ -97,7 +98,12 @@ namespace bsn.ModuleStore.Sql {
 								updateVersion = Math.Max(updateVersion, updateScriptAttribute.Version);
 							}
 						} else {
-							Debug.WriteLine(attribute.Key.GetType(), "Unrecognized assembly SQL attribute");
+							SqlExceptionMappingAttribute exceptionMappingAttribute = attribute.Key as SqlExceptionMappingAttribute;
+							if (exceptionMappingAttribute != null) {
+								exceptionMappings.Add(exceptionMappingAttribute);
+							} else {
+								Debug.WriteLine(attribute.Key.GetType(), "Unrecognized assembly SQL attribute");
+							}
 						}
 					}
 				}
@@ -109,6 +115,7 @@ namespace bsn.ModuleStore.Sql {
 				expectedVersion = update.Key+1;
 			}
 			AdditionalSetupStatementSetSchemaOverride();
+			exceptionMappings.Sort((x, y) => x.ComputeSpecificity()-y.ComputeSpecificity());
 		}
 
 		public AssemblyName AssemblyName {
@@ -120,6 +127,12 @@ namespace bsn.ModuleStore.Sql {
 		public ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> Attributes {
 			get {
 				return attributes;
+			}
+		}
+
+		public List<SqlExceptionMappingAttribute> ExceptionMappings {
+			get {
+				return exceptionMappings;
 			}
 		}
 

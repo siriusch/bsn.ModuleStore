@@ -277,7 +277,7 @@ namespace bsn.ModuleStore {
 			lock (knownTypes) {
 				SqlCallInfo result;
 				if (!knownTypes.TryGetValue(interfaceType, out result)) {
-					result = new SqlCallInfo(interfaceType);
+					result = new SqlCallInfo(GetModuleInstanceCache(interfaceType.Assembly).AssemblyInfo.Inventory, interfaceType);
 					knownTypes.Add(interfaceType, result);
 				}
 				return result;

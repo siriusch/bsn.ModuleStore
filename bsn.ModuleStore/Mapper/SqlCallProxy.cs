@@ -321,7 +321,12 @@ namespace bsn.ModuleStore.Mapper {
 					profiler.End();
 				}
 			} catch (Exception ex) {
-				return new ReturnMessage(ex, mcm);
+				IMessage result = null;
+				SqlException sqlEx = ex as SqlException;
+				if (sqlEx != null) {
+					result = callInfo.HandleException(mcm, sqlEx);
+				}
+				return result ?? new ReturnMessage(ex, mcm);
 			}
 		}
 	}

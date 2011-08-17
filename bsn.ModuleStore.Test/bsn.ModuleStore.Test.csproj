@@ -55,6 +55,7 @@
     <Compile Include="Mapper\Serialization\MembersKeyTest.cs" />
     <Compile Include="Mapper\Serialization\MembersMethodsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlExceptionMappingAttributeTest.cs" />
     <Compile Include="Sql\DatabaseInventoryTest.cs" />
     <Compile Include="Sql\ScriptParserTest.cs" />
     <Compile Include="Sql\Script\SemanticActionsTest.cs" />

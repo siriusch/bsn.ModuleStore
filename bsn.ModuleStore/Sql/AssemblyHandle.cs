@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,19 +35,29 @@ using System.Reflection;
 
 namespace bsn.ModuleStore.Sql {
 	public class AssemblyHandle: IAssemblyHandle {
+		private static void ApplyDeclaringMember(object attribute, MemberInfo member) {
+			IHasDeclaringMember apply = attribute as IHasDeclaringMember;
+			if (apply != null) {
+				apply.SetDeclaringMember(member);
+			}
+		}
+
 		internal static KeyValuePair<T, string>[] FindCustomAttributes<T>(Assembly assembly, Func<Assembly, IEnumerable<T>> forAssembly, Func<MemberInfo, IEnumerable<T>> forMember) {
 			List<KeyValuePair<T, string>> result = new List<KeyValuePair<T, string>>();
 			string assemblyName = assembly.GetName().Name;
 			foreach (T attribute in forAssembly(assembly)) {
+				ApplyDeclaringMember(attribute, null);
 				result.Add(new KeyValuePair<T, string>(attribute, assemblyName));
 			}
 			foreach (Type type in assembly.GetTypes()) {
 				string typePrefix = type.Namespace;
 				foreach (T attribute in forMember(type)) {
+					ApplyDeclaringMember(attribute, type);
 					result.Add(new KeyValuePair<T, string>(attribute, typePrefix));
 				}
 				foreach (MemberInfo member in type.GetMembers(BindingFlags.Instance|BindingFlags.DeclaredOnly|BindingFlags.Public)) {
 					foreach (T attribute in forMember(member)) {
+						ApplyDeclaringMember(attribute, member);
 						result.Add(new KeyValuePair<T, string>(attribute, typePrefix));
 					}
 				}

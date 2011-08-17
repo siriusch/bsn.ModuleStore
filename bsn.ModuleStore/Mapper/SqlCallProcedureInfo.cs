@@ -83,6 +83,8 @@ namespace bsn.ModuleStore.Mapper {
 			return result;
 		}
 
+		private readonly IEnumerable<SqlExceptionMappingAttribute> exceptionMappings;
+
 		private readonly int outArgCount;
 		private readonly SqlCallParameterBase[] parameters;
 		private readonly Statement[] preCallStatements;
@@ -93,7 +95,7 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly ParameterInfo xmlNameTableParameter;
 		private SchemaName schemaNameOverride;
 
-		public SqlCallProcedureInfo(MethodInfo method) {
+		public SqlCallProcedureInfo(AssemblyInventory inventory, MethodInfo method) {
 			foreach (SqlProcedureAttribute attribute in method.GetCustomAttributes(typeof(SqlProcedureAttribute), false)) {
 				proc = attribute;
 			}
@@ -169,6 +171,7 @@ namespace bsn.ModuleStore.Mapper {
 			if ((proc.UseReturnValue != SqlReturnValue.Auto) || (method.ReturnType != typeof(void))) {
 				useReturnValue = (proc.UseReturnValue == SqlReturnValue.ReturnValue) || ((proc.UseReturnValue == SqlReturnValue.Auto) && (SqlSerializationTypeMapping.GetTypeMapping(method.ReturnType) == SqlDbType.Int));
 			}
+			exceptionMappings = inventory.ExceptionMappings.Where(a => (a.DeclaredOn == null) || (a.DeclaredOn == method.DeclaringType) || (a.DeclaredOn == method)).OrderByDescending(a => a.ComputeSpecificity()).ToArray();
 		}
 
 		public string ProcedureName {
@@ -225,6 +228,15 @@ namespace bsn.ModuleStore.Mapper {
 			procInfo = proc;
 			commands[commands.Length-1] = callCommand;
 			return commands;
+		}
+
+		public Exception MapException(SqlException ex) {
+			foreach (SqlExceptionMappingAttribute mapping in exceptionMappings) {
+				if (mapping.MessageId.GetValueOrDefault(ex.Number).Equals(ex.Number) && mapping.Severity.GetValueOrDefault(ex.Class).Equals(ex.Class) && mapping.State.GetValueOrDefault(ex.State).Equals(ex.State)) {
+					return (Exception)Activator.CreateInstance(mapping.TargetException, ex.Message, ex);
+				}
+			}
+			return ex;
 		}
 
 		[Conditional("DEBUG")]
