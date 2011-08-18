@@ -94,10 +94,14 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		private static readonly MethodInfo getAssembly = typeof(IStoredProcedures).GetProperty("Assembly").GetGetMethod();
-		private static readonly MethodInfo getInstanceName = typeof(IStoredProcedures).GetProperty("InstanceName").GetGetMethod();
-		private static readonly MethodInfo getProvider = typeof(IStoredProcedures).GetProperty("Provider").GetGetMethod();
-		private static readonly MethodInfo setProvider = typeof(IStoredProcedures).GetProperty("Provider").GetSetMethod();
+		private static readonly MethodInfo equals = typeof(object).GetMethod("Equals", BindingFlags.Public|BindingFlags.Instance);
+		private static readonly MethodInfo getAssembly = typeof(IStoredProcedures).GetProperty("Assembly", BindingFlags.Public|BindingFlags.Instance).GetGetMethod();
+		private static readonly MethodInfo getHashCode = typeof(object).GetMethod("GetHashCode", BindingFlags.Public|BindingFlags.Instance);
+		private static readonly MethodInfo getInstanceName = typeof(IStoredProcedures).GetProperty("InstanceName", BindingFlags.Public|BindingFlags.Instance).GetGetMethod();
+		private static readonly MethodInfo getProvider = typeof(IStoredProcedures).GetProperty("Provider", BindingFlags.Public|BindingFlags.Instance).GetGetMethod();
+		private static readonly MethodInfo getType = typeof(object).GetMethod("GetType", BindingFlags.Public|BindingFlags.Instance);
+		private static readonly MethodInfo setProvider = typeof(IStoredProcedures).GetProperty("Provider", BindingFlags.Public|BindingFlags.Instance).GetSetMethod();
+		private static readonly MethodInfo toString = typeof(object).GetMethod("ToString", BindingFlags.Public|BindingFlags.Instance);
 
 		/// <summary>
 		/// Create a new proxy to be used for stored procedure calls, which can be called through the interface specified by <typeparamref name="I"/>.
@@ -131,6 +135,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		private readonly ISqlCallInfo callInfo;
 		private readonly IConnectionProvider connectionProvider;
+		private readonly Dictionary<MethodBase, Func<IMethodCallMessage, IMessage>> methods = new Dictionary<MethodBase, Func<IMethodCallMessage, IMessage>>(8);
 		private IInstanceProvider provider;
 
 		private SqlCallProxy(IMetadataProvider metadataProvider, IConnectionProvider connectionProvider, Type interfaceToProxy): base(interfaceToProxy) {
@@ -139,6 +144,14 @@ namespace bsn.ModuleStore.Mapper {
 			}
 			this.connectionProvider = connectionProvider;
 			callInfo = metadataProvider.GetCallInfo(interfaceToProxy);
+			methods.Add(equals, ProxyEquals);
+			methods.Add(getAssembly, ProxyGetAssembly);
+			methods.Add(getHashCode, ProxyGetHashCode);
+			methods.Add(getInstanceName, ProxyGetInstanceName);
+			methods.Add(getProvider, ProxyGetProvider);
+			methods.Add(getType, ProxyGetType);
+			methods.Add(setProvider, ProxySetProvider);
+			methods.Add(toString, ProxyToString);
 		}
 
 		/// <summary>
@@ -148,18 +161,9 @@ namespace bsn.ModuleStore.Mapper {
 			Profiler profiler = new Profiler();
 			IMethodCallMessage mcm = (IMethodCallMessage)msg;
 			try {
-				if (mcm.MethodBase == getInstanceName) {
-					return new ReturnMessage(connectionProvider.SchemaName, null, 0, mcm.LogicalCallContext, mcm);
-				}
-				if (mcm.MethodBase == getAssembly) {
-					return new ReturnMessage(callInfo.InterfaceType.Assembly, null, 0, mcm.LogicalCallContext, mcm);
-				}
-				if (mcm.MethodBase == getProvider) {
-					return new ReturnMessage(provider, null, 0, mcm.LogicalCallContext, mcm);
-				}
-				if (mcm.MethodBase == setProvider) {
-					provider = (IInstanceProvider)mcm.Args[0];
-					return new ReturnMessage(null, null, 0, mcm.LogicalCallContext, mcm);
+				Func<IMethodCallMessage, IMessage> method;
+				if (methods.TryGetValue(mcm.MethodBase, out method)) {
+					return method(mcm);
 				}
 				bool ownsConnection = false;
 				SqlConnection connection;
@@ -331,6 +335,39 @@ namespace bsn.ModuleStore.Mapper {
 				}
 				return result ?? new ReturnMessage(ex, mcm);
 			}
+		}
+
+		private IMessage ProxyEquals(IMethodCallMessage mcm) {
+			return new ReturnMessage(GetTransparentProxy() == mcm.Args[0], null, 0, mcm.LogicalCallContext, mcm);
+		}
+
+		private IMessage ProxyGetAssembly(IMethodCallMessage mcm) {
+			return new ReturnMessage(callInfo.InterfaceType.Assembly, null, 0, mcm.LogicalCallContext, mcm);
+		}
+
+		private IMessage ProxyGetHashCode(IMethodCallMessage mcm) {
+			return new ReturnMessage(GetHashCode(), null, 0, mcm.LogicalCallContext, mcm);
+		}
+
+		private IMessage ProxyGetInstanceName(IMethodCallMessage mcm) {
+			return new ReturnMessage(connectionProvider.SchemaName, null, 0, mcm.LogicalCallContext, mcm);
+		}
+
+		private IMessage ProxyGetProvider(IMethodCallMessage mcm) {
+			return new ReturnMessage(provider, null, 0, mcm.LogicalCallContext, mcm);
+		}
+
+		private IMessage ProxyGetType(IMethodCallMessage mcm) {
+			return new ReturnMessage(callInfo.InterfaceType, null, 0, mcm.LogicalCallContext, mcm);
+		}
+
+		private IMessage ProxySetProvider(IMethodCallMessage mcm) {
+			provider = (IInstanceProvider)mcm.Args[0];
+			return new ReturnMessage(null, null, 0, mcm.LogicalCallContext, mcm);
+		}
+
+		private IMessage ProxyToString(IMethodCallMessage mcm) {
+			return new ReturnMessage(string.Format("{0}@{1}", callInfo.InterfaceType.FullName, connectionProvider.SchemaName), null, 0, mcm.LogicalCallContext, mcm);
 		}
 	}
 }
