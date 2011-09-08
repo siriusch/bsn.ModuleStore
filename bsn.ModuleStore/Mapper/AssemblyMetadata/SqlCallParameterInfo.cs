@@ -27,6 +27,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -44,7 +45,7 @@ using bsn.ModuleStore.Mapper.Serialization;
 using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
 
-namespace bsn.ModuleStore.Mapper {
+namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 	internal class SqlCallParameterInfo: SqlCallParameterBase {
 		private static bool GetParameterNullable(ParameterInfo param) {
 			Type parameterType = param.ParameterType;

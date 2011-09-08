@@ -27,28 +27,29 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
 
-namespace bsn.ModuleStore.Mapper {
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
-	public sealed class SqlParameterAttribute: Attribute {
-		private readonly string parameterName;
-		private readonly object value;
+namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
+	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true, Inherited = true)]
+	public sealed class SqlMappingAttribute: Attribute {
+		private readonly string sqlColumn;
+		private readonly string tableTypeColumn;
 
-		public SqlParameterAttribute(string parameterName, object value) {
-			this.parameterName = parameterName;
-			this.value = value;
+		public SqlMappingAttribute(string sqlColumn, string tableTypeColumn) {
+			this.sqlColumn = sqlColumn;
+			this.tableTypeColumn = tableTypeColumn;
 		}
 
-		public string ParameterName {
+		public string SqlColumn {
 			get {
-				return parameterName;
+				return sqlColumn;
 			}
 		}
 
-		public object Value {
+		public string TableTypeColumn {
 			get {
-				return value;
+				return tableTypeColumn;
 			}
 		}
 	}

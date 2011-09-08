@@ -27,6 +27,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -36,7 +37,7 @@ using System.Runtime.Remoting.Messaging;
 
 using bsn.ModuleStore.Sql.Script;
 
-namespace bsn.ModuleStore.Mapper {
+namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 	internal abstract class SqlCallParameterBase {
 		private static readonly Dictionary<string, SqlDbType> knownDbTypes = GetKnownDbTypes();
 

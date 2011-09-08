@@ -27,29 +27,24 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Runtime.Remoting.Messaging;
 
-namespace bsn.ModuleStore.Mapper {
-	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true, Inherited = true)]
-	public sealed class SqlMappingAttribute: Attribute {
-		private readonly string sqlColumn;
-		private readonly string tableTypeColumn;
+using bsn.ModuleStore.Sql.Script;
 
-		public SqlMappingAttribute(string sqlColumn, string tableTypeColumn) {
-			this.sqlColumn = sqlColumn;
-			this.tableTypeColumn = tableTypeColumn;
+namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
+	internal class SqlCallParameterConstant: SqlCallParameterBase {
+		private readonly object value;
+
+		public SqlCallParameterConstant(ProcedureParameter parameter, object value): base(parameter, ParameterDirection.Input, value == null, false) {
+			this.value = value;
 		}
 
-		public string SqlColumn {
-			get {
-				return sqlColumn;
-			}
-		}
-
-		public string TableTypeColumn {
-			get {
-				return tableTypeColumn;
-			}
+		protected override object SetParameterValue(IMethodCallMessage mcm, IList<IDisposable> disposables) {
+			return value;
 		}
 	}
 }

@@ -96,7 +96,7 @@
     </Compile>
     <Compile Include="Mapper\Serialization\XNodeMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\XPathNavigableMemberConverter.cs" />
-    <Compile Include="Mapper\SqlCallParameterBase.cs" />
+    <Compile Include="Mapper\AssemblyMetadata\SqlCallParameterBase.cs" />
     <Compile Include="Mapper\ManagedInstanceProvider.cs" />
     <Compile Include="Mapper\MetadataBase.cs" />
     <Compile Include="Mapper\MetadataBoolean.cs" />
@@ -130,8 +130,8 @@
     <Compile Include="Mapper\Serialization\XmlReaderMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\XmlReaderMemberConverterBase.cs" />
     <Compile Include="Mapper\Serialization\XPathDocumentMemberConverter.cs" />
-    <Compile Include="Mapper\SqlMappingAttribute.cs" />
-    <Compile Include="Mapper\SqlParameterAttribute.cs" />
+    <Compile Include="Mapper\AssemblyMetadata\SqlMappingAttribute.cs" />
+    <Compile Include="Mapper\AssemblyMetadata\SqlParameterAttribute.cs" />
     <Compile Include="Mapper\TypeExtensionMethods.cs" />
     <Compile Include="Mapper\VersionedInstance.cs" />
     <Compile Include="ModuleDatabase.cs" />
@@ -142,19 +142,19 @@
     <Compile Include="Bootstrapper\ModuleInstanceCache.cs" />
     <Compile Include="Mapper\DataReaderProxy.cs" />
     <Compile Include="Mapper\IStoredProcedures.cs" />
-    <Compile Include="Mapper\SqlCallInfo.cs" />
-    <Compile Include="Mapper\SqlCallParameterInfo.cs" />
-    <Compile Include="Mapper\SqlCallProcedureInfo.cs" />
+    <Compile Include="Mapper\AssemblyMetadata\SqlCallInfo.cs" />
+    <Compile Include="Mapper\AssemblyMetadata\SqlCallParameterInfo.cs" />
+    <Compile Include="Mapper\AssemblyMetadata\SqlCallProcedureInfo.cs" />
     <Compile Include="Mapper\SqlCallProxy.cs" />
     <Compile Include="SqlAssemblyAttribute.cs" />
     <Compile Include="Mapper\SqlColumnAttribute.cs" />
     <Compile Include="Mapper\SqlDeserializeAttribute.cs" />
     <Compile Include="Mapper\Serialization\SqlDeserializer.cs" />
-    <Compile Include="Mapper\SqlNameTableAttribute.cs" />
-    <Compile Include="Mapper\SqlCallParameterConstant.cs" />
+    <Compile Include="Mapper\AssemblyMetadata\SqlNameTableAttribute.cs" />
+    <Compile Include="Mapper\AssemblyMetadata\SqlCallParameterConstant.cs" />
     <Compile Include="SqlExceptionMappingAttribute.cs" />
     <Compile Include="SqlManifestResourceAttribute.cs" />
-    <Compile Include="Mapper\SqlProcedureAttribute.cs" />
+    <Compile Include="Mapper\AssemblyMetadata\SqlProcedureAttribute.cs" />
     <Compile Include="Mapper\SqlReturnValue.cs" />
     <Compile Include="Mapper\ISqlDeserializationHook.cs" />
     <Compile Include="Mapper\ITypedDataReader.cs" />

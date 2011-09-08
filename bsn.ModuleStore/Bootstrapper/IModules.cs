@@ -30,6 +30,7 @@
 using System;
 
 using bsn.ModuleStore.Mapper;
+using bsn.ModuleStore.Mapper.AssemblyMetadata;
 
 namespace bsn.ModuleStore.Bootstrapper {
 	internal interface IModules: IStoredProcedures {

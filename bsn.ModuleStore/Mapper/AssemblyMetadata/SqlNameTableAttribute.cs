@@ -27,23 +27,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Runtime.Remoting.Messaging;
 
-using bsn.ModuleStore.Sql.Script;
-
-namespace bsn.ModuleStore.Mapper {
-	internal class SqlCallParameterConstant: SqlCallParameterBase {
-		private readonly object value;
-
-		public SqlCallParameterConstant(ProcedureParameter parameter, object value): base(parameter, ParameterDirection.Input, value == null, false) {
-			this.value = value;
-		}
-
-		protected override object SetParameterValue(IMethodCallMessage mcm, IList<IDisposable> disposables) {
-			return value;
-		}
-	}
+namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
+	/// <summary>
+	/// The SqlNameTableAttribute attribute is used to specify the XML nametable to use for XML-based return values.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
+	public sealed class SqlNameTableAttribute: Attribute {}
 }

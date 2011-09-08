@@ -38,9 +38,8 @@ using System.Xml;
 using bsn.ModuleStore.Mapper.Serialization;
 using bsn.ModuleStore.Sql;
 
-namespace bsn.ModuleStore.Mapper {
+namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 	internal class SqlCallInfo: ISqlCallInfo {
-		private readonly ISerializationTypeInfoProvider serializationTypeInfoProvider;
 		private readonly Type interfaceType;
 		private readonly Dictionary<MethodBase, SqlCallProcedureInfo> methods = new Dictionary<MethodBase, SqlCallProcedureInfo>();
 
@@ -55,7 +54,6 @@ namespace bsn.ModuleStore.Mapper {
 			if ((!interfaceType.IsInterface) || (interfaceType.IsGenericTypeDefinition) || (!typeof(IStoredProcedures).IsAssignableFrom(interfaceType))) {
 				throw new ArgumentException("The interface must inherit from IStoredProcedures", "interfaceType");
 			}
-			this.serializationTypeInfoProvider = serializationTypeInfoProvider;
 			this.interfaceType = interfaceType;
 			foreach (Type innerInterface in interfaceType.GetInterfaces()) {
 				if (innerInterface != typeof(IStoredProcedures)) {

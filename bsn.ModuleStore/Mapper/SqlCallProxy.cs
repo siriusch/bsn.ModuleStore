@@ -40,6 +40,7 @@ using System.Runtime.Remoting.Proxies;
 using System.Xml;
 using System.Xml.XPath;
 
+using bsn.ModuleStore.Mapper.AssemblyMetadata;
 using bsn.ModuleStore.Mapper.Serialization;
 
 namespace bsn.ModuleStore.Mapper {

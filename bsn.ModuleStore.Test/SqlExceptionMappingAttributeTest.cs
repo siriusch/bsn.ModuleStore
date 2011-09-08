@@ -34,7 +34,7 @@ using System.Reflection;
 using NUnit.Framework;
 
 using bsn.ModuleStore.Bootstrapper;
-using bsn.ModuleStore.Mapper;
+using bsn.ModuleStore.Mapper.AssemblyMetadata;
 
 namespace bsn.ModuleStore {
 	[TestFixture]

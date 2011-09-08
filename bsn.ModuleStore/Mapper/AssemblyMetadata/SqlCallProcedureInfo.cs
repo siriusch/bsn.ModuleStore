@@ -44,7 +44,7 @@ using bsn.ModuleStore.Mapper.Serialization;
 using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
 
-namespace bsn.ModuleStore.Mapper {
+namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 	internal class SqlCallProcedureInfo: IQualified<SchemaName> {
 		private static readonly Regex rxUncomment = new Regex(@"(?<=^/\*\s*)\S.*?(?=\s*\*/$)|(?<=^--\s*)\S.*?(?=\s*$)", RegexOptions.CultureInvariant|RegexOptions.ExplicitCapture|RegexOptions.Singleline);
 		private static readonly Dictionary<string, CreateProcedureStatement> statements = new Dictionary<string, CreateProcedureStatement>(StringComparer.Ordinal);
@@ -107,14 +107,14 @@ namespace bsn.ModuleStore.Mapper {
 				throw new FileNotFoundException(String.Format("The embedded script for the method {0}.{1} could not be found", method.DeclaringType.FullName, method.Name), proc.ManifestResourceName);
 			}
 			if (proc.ExecuteFirstCommentBeforeInvocation && (script.Comments.Count > 0)) {
-				List<Statement> preCallStatements = new List<Statement>(ScriptParser.Parse(rxUncomment.Match(script.Comments.First()).Value));
-				if (preCallStatements.Count > 0) {
-					foreach (Statement preCallStatement in preCallStatements) {
+				List<Statement> callStatements = new List<Statement>(ScriptParser.Parse(rxUncomment.Match(script.Comments.First()).Value));
+				if (callStatements.Count > 0) {
+					foreach (Statement preCallStatement in callStatements) {
 						foreach (IQualifiedName<SchemaName> qualifiedName in preCallStatement.GetObjectSchemaQualifiedNames(script.ObjectSchema)) {
 							qualifiedName.SetOverride(this);
 						}
 					}
-					this.preCallStatements = preCallStatements.ToArray();
+					preCallStatements = callStatements.ToArray();
 				}
 			}
 			parameters = new SqlCallParameterBase[script.Parameters.Count];

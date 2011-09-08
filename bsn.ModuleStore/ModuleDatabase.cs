@@ -39,6 +39,7 @@ using System.Text;
 
 using bsn.ModuleStore.Bootstrapper;
 using bsn.ModuleStore.Mapper;
+using bsn.ModuleStore.Mapper.AssemblyMetadata;
 using bsn.ModuleStore.Mapper.Serialization;
 using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
