@@ -354,7 +354,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			} else if (schema.ExtractMembers != null) {
 				schema.ExtractMembers(instance, data);
 				for (int i = 0; i < data.Length; i++) {
-					MemberConverter converter = schema.MappedColumns[i].Converter;
+					IMemberConverter converter = schema.MappedColumns[i].Converter;
 					data[i] = ((converter != null) ? converter.ProcessToDb(data[i]) : data[i]) ?? DBNull.Value;
 				}
 			} else {

@@ -32,14 +32,15 @@ using System.Data;
 using System.Reflection;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class SqlColumnInfo {
+	public class SqlColumnInfo
+	{
 		private readonly Type clrType;
-		private readonly MemberConverter converter;
+		private readonly IMemberConverter converter;
 		private readonly MemberInfo memberInfo;
 		private readonly string name;
 		private readonly string userDefinedTypeName;
 
-		public SqlColumnInfo(Type memberType, string columnName, MemberConverter converter) {
+		public SqlColumnInfo(Type memberType, string columnName, IMemberConverter converter) {
 			if (string.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
@@ -52,12 +53,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			this.converter = converter;
 		}
 
-		public SqlColumnInfo(MemberInfo memberInfo, string columnName, MemberConverter converter): this(SqlSerializationTypeMapping.GetMemberType(memberInfo), columnName, converter) {
+		public SqlColumnInfo(MemberInfo memberInfo, string columnName, IMemberConverter converter): this(SqlSerializationTypeMapping.GetMemberType(memberInfo), columnName, converter) {
 #warning SqlSerializationTypeMapping.GetClrUserDefinedTypeName(memberInfo.DeclaringType, columnAttribute);
 			this.memberInfo = memberInfo;
 		}
 
-		public MemberConverter Converter {
+		public IMemberConverter Converter {
 			get {
 				return converter;
 			}

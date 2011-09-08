@@ -89,13 +89,13 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly SqlCallParameterBase[] parameters;
 		private readonly Statement[] preCallStatements;
 		private readonly SqlProcedureAttribute proc;
-		private readonly SqlSerializationTypeInfo returnTypeInfo;
+		private readonly ISerializationTypeInfo returnTypeInfo;
 		private readonly CreateProcedureStatement script;
 		private readonly bool useReturnValue;
 		private readonly ParameterInfo xmlNameTableParameter;
 		private SchemaName schemaNameOverride;
 
-		public SqlCallProcedureInfo(AssemblyInventory inventory, MethodInfo method) {
+		public SqlCallProcedureInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, MethodInfo method) {
 			foreach (SqlProcedureAttribute attribute in method.GetCustomAttributes(typeof(SqlProcedureAttribute), false)) {
 				proc = attribute;
 			}
@@ -157,7 +157,7 @@ namespace bsn.ModuleStore.Mapper {
 					if (index >= parameters.Length) {
 						throw new InvalidOperationException(String.Format("The method {0}.{1} has more parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
 					}
-					SqlCallParameterInfo callParameterInfo = new SqlCallParameterInfo(parameterInfo, script.Parameters[index]);
+					SqlCallParameterInfo callParameterInfo = new SqlCallParameterInfo(serializationTypeInfoProvider, parameterInfo, script.Parameters[index]);
 					if (callParameterInfo.Direction != ParameterDirection.Input) {
 						outArgCount = methodParameters.Length;
 					}
@@ -167,7 +167,7 @@ namespace bsn.ModuleStore.Mapper {
 			if (parameters.Any(p => p == null)) {
 				throw new InvalidOperationException(String.Format("The method {0}.{1} has less parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
 			}
-			returnTypeInfo = SqlSerializationTypeInfo.Get(method.ReturnType);
+			returnTypeInfo = serializationTypeInfoProvider.GetSerializationTypeInfo(method.ReturnType);
 			if ((proc.UseReturnValue != SqlReturnValue.Auto) || (method.ReturnType != typeof(void))) {
 				useReturnValue = (proc.UseReturnValue == SqlReturnValue.ReturnValue) || ((proc.UseReturnValue == SqlReturnValue.Auto) && (SqlSerializationTypeMapping.GetTypeMapping(method.ReturnType) == SqlDbType.Int));
 			}
@@ -180,7 +180,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public ICollection<SqlCommand> GetCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out SqlParameter[] outArgs, out SqlSerializationTypeInfo returnTypeInfo, out ICallDeserializationInfo procInfo, out XmlNameTable xmlNameTable,
+		public ICollection<SqlCommand> GetCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out SqlParameter[] outArgs, out ISerializationTypeInfo returnTypeInfo, out ICallDeserializationInfo procInfo, out XmlNameTable xmlNameTable,
 		                                           IList<IDisposable> disposeList) {
 			if (String.IsNullOrEmpty(schemaName)) {
 				throw new ArgumentNullException("schemaName");

@@ -66,6 +66,10 @@
     <Compile Include="Mapper\Serialization\ConvertibleMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\DateTimeMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\DateTimeOffsetMemberConverter.cs" />
+    <Compile Include="Mapper\Serialization\DeserializerContext.cs" />
+    <Compile Include="Mapper\Serialization\IMemberConverter.cs" />
+    <Compile Include="Mapper\Serialization\ISerializationTypeInfo.cs" />
+    <Compile Include="Mapper\Serialization\ISerializationTypeInfoProvider.cs" />
     <Compile Include="Mapper\Serialization\SqlDeserializationContext.cs" />
     <Compile Include="Mapper\Serialization\EnumMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\MembersKey.cs" />
@@ -74,6 +78,7 @@
     <Compile Include="Mapper\Serialization\SqlColumnInfo.cs" />
     <Compile Include="Mapper\Serialization\SqlSerializationTypeInfo.cs" />
     <Compile Include="Mapper\Serialization\SqlSerializationTypeMapping.cs" />
+    <Compile Include="Mapper\Serialization\StaticSerializationTypeInfoProvider.cs" />
     <Compile Include="Mapper\Serialization\StructuredParameterReader.cs" />
     <Compile Include="Mapper\DistinctInstanceProvider.cs" />
     <Compile Include="Mapper\IConnectionProvider.cs" />
@@ -127,6 +132,7 @@
     <Compile Include="Mapper\Serialization\XPathDocumentMemberConverter.cs" />
     <Compile Include="Mapper\SqlMappingAttribute.cs" />
     <Compile Include="Mapper\SqlParameterAttribute.cs" />
+    <Compile Include="Mapper\TypeExtensionMethods.cs" />
     <Compile Include="Mapper\VersionedInstance.cs" />
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />

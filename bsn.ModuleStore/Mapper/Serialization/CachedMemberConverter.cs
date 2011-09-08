@@ -59,7 +59,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private readonly IdentifiableGetter getter;
-		private readonly MemberConverter identityMember;
+		private readonly IMemberConverter identityMember;
 
 		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
 			foreach (MemberInfo member in SqlSerializationTypeMapping.GetAllFieldsAndProperties(type)) {
@@ -91,7 +91,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public override object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
+		public override object ProcessFromDb(DeserializerContext context, int column) {
 			object identity = identityMember.ProcessFromDb(context, column);
 			if (identity != null) {
 				InstanceOrigin instanceOrigin;

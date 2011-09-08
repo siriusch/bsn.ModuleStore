@@ -71,17 +71,17 @@ namespace bsn.ModuleStore.Mapper {
 
 		private static bool GetParameterEnumerable(ParameterInfo param) {
 			Type structuredType;
-			return SqlSerializationTypeInfo.TryGetIEnumerableElementType(param.ParameterType, out structuredType);
+			return param.ParameterType.TryGetIEnumerableElementType(out structuredType);
 		}
 
 		private readonly ParameterInfo parameterInfo;
 		private readonly StructuredParameterSchema structuredSchema;
 
-		public SqlCallParameterInfo(ParameterInfo param, ProcedureParameter script): base(script, GetParameterDirection(param), GetParameterNullable(param), GetParameterEnumerable(param)) {
+		public SqlCallParameterInfo(ISerializationTypeInfoProvider serializationTypeInfoProvider, ParameterInfo param, ProcedureParameter script): base(script, GetParameterDirection(param), GetParameterNullable(param), GetParameterEnumerable(param)) {
 			parameterInfo = param;
 			if (SqlType == SqlDbType.Structured) {
 				Type structuredType;
-				if (!SqlSerializationTypeInfo.TryGetIEnumerableElementType(param.ParameterType, out structuredType)) {
+				if (!param.ParameterType.TryGetIEnumerableElementType(out structuredType)) {
 					throw new ArgumentException("The given parameter must implement IEnumerable<> in order to be used as SQL structured parameter");
 				}
 				CreateTypeAsTableStatement createTableTypeScript;
@@ -89,7 +89,7 @@ namespace bsn.ModuleStore.Mapper {
 					throw new ArgumentException(string.Format("The given structured parameter table type {0} cannot be found in the inventory", script.ParameterTypeName));
 				}
 				IDictionary<string, SqlColumnInfo> columnInfos;
-				SqlSerializationTypeInfo info = SqlSerializationTypeInfo.Get(structuredType);
+				ISerializationTypeInfo info = serializationTypeInfoProvider.GetSerializationTypeInfo(structuredType);
 				if (info.SimpleConverter != null) {
 					string columnName = createTableTypeScript.TableDefinitions.OfType<TableColumnDefinition>().First(d => d.ColumnDefinition is TypedColumnDefinition).ColumnName.Value;
 					columnInfos = new Dictionary<string, SqlColumnInfo>(1);

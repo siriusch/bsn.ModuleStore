@@ -114,73 +114,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	/// </summary>
 	/// <seealso cref="SqlDeserializer{T}"/>
 	public class SqlDeserializer: IDisposable {
-		protected internal class DeserializerContext {
-			private readonly IDictionary<SqlDeserializer, object[]> buffers = new Dictionary<SqlDeserializer, object[]>();
-			private readonly bool callConstructor;
-			private readonly SqlDeserializationContext context;
-			private readonly SqlDataReader dataReader;
-			private XmlNameTable nameTable;
-			private XmlDocument xmlDocument;
-
-			public DeserializerContext(SqlDeserializationContext context, SqlDataReader dataReader, bool callConstructor, XmlNameTable nameTable) {
-				this.dataReader = dataReader;
-				this.context = context;
-				this.callConstructor = callConstructor;
-				this.nameTable = nameTable;
-			}
-
-			public SqlDataReader DataReader {
-				get {
-					return dataReader;
-				}
-			}
-
-			public XmlNameTable NameTable {
-				get {
-					if (nameTable == null) {
-						nameTable = new NameTable();
-					}
-					return nameTable;
-				}
-			}
-
-			public XmlDocument XmlDocument {
-				get {
-					if (xmlDocument == null) {
-						xmlDocument = new XmlDocument(NameTable);
-					}
-					return xmlDocument;
-				}
-			}
-
-			public object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin) {
-				object result;
-				if (!context.TryGetInstance(instanceType, identity, out result, out instanceOrigin)) {
-					instanceOrigin = InstanceOrigin.New;
-					result = (callConstructor) ? Activator.CreateInstance(instanceType, true) : FormatterServices.GetUninitializedObject(instanceType);
-				}
-				return result;
-			}
-
-			public void RequireDeserialization(object obj) {
-				context.AssertDeserialization(obj);
-			}
-
-			internal object[] GetBuffer(SqlDeserializer deserializer) {
-				object[] result;
-				if (!buffers.TryGetValue(deserializer, out result)) {
-					result = new object[deserializer.TypeInfo.Mapping.MemberCount];
-					buffers.Add(deserializer, result);
-				}
-				return result;
-			}
-		}
-
 		private readonly SortedList<int, MemberConverter> columnConverters;
 		private readonly SqlDeserializationContext context;
 		private readonly Dictionary<NestedMemberConverter, SqlDeserializer> nestedDeserializers;
 		private readonly SqlDataReader reader;
-		private readonly SqlSerializationTypeInfo typeInfo;
+		private readonly ISerializationTypeInfo typeInfo;
 		private bool disposeReader;
 
 		internal SqlDeserializer(SqlDeserializationContext context, SqlDataReader reader, Type type, bool disposeReader) {
@@ -196,7 +134,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			this.context = context;
 			this.reader = reader;
 			this.disposeReader = disposeReader;
-			typeInfo = SqlSerializationTypeInfo.Get(type);
+			typeInfo = context.GetSerializationTypeInfo(type);
 			foreach (MemberConverter converter in typeInfo.Mapping.Converters) {
 				NestedMemberConverter nestedConverter = converter as NestedMemberConverter;
 				if (nestedConverter != null) {
@@ -239,7 +177,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		/// Gets the type information used for deserialization.
 		/// </summary>
 		/// <value>The type info.</value>
-		public SqlSerializationTypeInfo TypeInfo {
+		public ISerializationTypeInfo TypeInfo {
 			get {
 				return typeInfo;
 			}

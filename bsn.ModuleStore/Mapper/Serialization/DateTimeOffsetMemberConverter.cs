@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			this.dateTimeKind = dateTimeKind;
 		}
 
-		public override object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
+		public override object ProcessFromDb(DeserializerContext context, int column) {
 			object result = base.ProcessFromDb(context, column);
 			if ((result != null) && (!(result is DateTimeOffset))) {
 				result = new DateTimeOffset(DateTime.SpecifyKind(Convert.ToDateTime(result), dateTimeKind));

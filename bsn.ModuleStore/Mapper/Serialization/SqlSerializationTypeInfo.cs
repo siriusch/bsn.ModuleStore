@@ -33,16 +33,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	public class SqlSerializationTypeInfo {
+	public class SqlSerializationTypeInfo: ISerializationTypeInfo {
 		private static class ToArray<T> {
 #pragma warning disable 169
+// ReSharper disable StaticFieldInGenericType
 			// this field is used via reflection
 			public static readonly Func<object, Array> ToArrayInvoker = CreateToArrayInvoker();
+// ReSharper restore StaticFieldInGenericType
 #pragma warning restore 169
 
 			private static Func<object, Array> CreateToArrayInvoker() {
@@ -60,7 +59,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		private static readonly Dictionary<Type, SqlSerializationTypeInfo> infos = new Dictionary<Type, SqlSerializationTypeInfo>();
 
 // ReSharper disable UnusedMember.Local
 		private static Array ToArrayGeneric<T>(IEnumerable enumerable) {
@@ -72,60 +70,16 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			return list.ToArray();
 		}
 
-		public static SqlSerializationTypeInfo Get(Type type) {
-			SqlSerializationTypeInfo result;
-			lock (infos) {
-				if (!infos.TryGetValue(type, out result)) {
-					result = new SqlSerializationTypeInfo(type);
-					infos.Add(type, result);
-				}
-			}
-			return result;
-		}
-
-		private static Type GetElementTypeOfIEnumerable(Type type) {
-			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) {
-				return type.GetGenericArguments()[0];
-			}
-			return null;
-		}
-
-		public static bool TryGetIEnumerableElementType(Type type, out Type elementType) {
-			elementType = GetElementTypeOfIEnumerable(type);
-			if (elementType != null) {
-				return true;
-			}
-			foreach (Type interfaceType in type.GetInterfaces()) {
-				elementType = GetElementTypeOfIEnumerable(interfaceType);
-				if (elementType != null) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Returns true if the type given is a known XML type.
-		/// </summary>
-		/// <param name="type">Te type to be checked.</param>
-		/// <returns>True if the type is recognized as XML type.</returns>
-		public static bool IsXmlType(Type type) {
-			if (type == null) {
-				throw new ArgumentNullException("type");
-			}
-			return typeof(XContainer).IsAssignableFrom(type) || typeof(XmlReader).IsAssignableFrom(type) || typeof(XPathNavigator).IsAssignableFrom(type) || typeof(IXPathNavigable).IsAssignableFrom(type);
-		}
-
 		private readonly Type instanceType;
 		private readonly bool isXmlType;
 		private readonly Func<object, Array> listToArray;
 		private readonly Type listType;
 		private readonly SqlSerializationTypeMapping mapping;
 		private readonly bool requiresNotification;
-		private readonly MemberConverter simpleConverter;
+		private readonly IMemberConverter simpleConverter;
 		private readonly Type type;
 
-		private SqlSerializationTypeInfo(Type type) {
+		public SqlSerializationTypeInfo(Type type) {
 			this.type = type;
 			if (type.IsArray) {
 				if (type.GetArrayRank() != 1) {
@@ -133,7 +87,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 				instanceType = type.GetElementType();
 				Debug.Assert(instanceType != null);
-			} else if ((type == typeof(string)) || (!TryGetIEnumerableElementType(type, out instanceType))) {
+			} else if ((type == typeof(string)) || (!type.TryGetIEnumerableElementType(out instanceType))) {
 				instanceType = type;
 			}
 			if (instanceType.IsArray) {
@@ -154,7 +108,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					}
 				}
 			}
-			isXmlType = IsXmlType(instanceType);
+			isXmlType = instanceType.IsXmlType();
 			if (isXmlType || (Nullable.GetUnderlyingType(instanceType) != null) || instanceType.IsPrimitive || SqlSerializationTypeMapping.IsNativeType(instanceType)) {
 				simpleConverter = MemberConverter.Get(instanceType, false, null, 0, DateTimeKind.Unspecified);
 			}
@@ -196,13 +150,14 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		internal SqlSerializationTypeMapping Mapping {
+		public SqlSerializationTypeMapping Mapping
+		{
 			get {
 				return mapping;
 			}
 		}
 
-		internal MemberConverter SimpleConverter {
+		public IMemberConverter SimpleConverter {
 			get {
 				return simpleConverter;
 			}

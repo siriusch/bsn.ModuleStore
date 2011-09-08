@@ -1,7 +1,7 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -26,22 +26,47 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+// 
+
 using System;
-using System.Xml;
+using System.Collections;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class XmlElementMemberConverter: XmlReaderMemberConverterBase {
-		public XmlElementMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
-
-		protected override object GetXmlObject(DeserializerContext context, XmlReader reader) {
-			if (HasContent(reader)) {
-				context.XmlDocument.Load(reader);
-				XmlElement result = context.XmlDocument.DocumentElement;
-				context.XmlDocument.RemoveAll();
-				return result;
-			}
-			return null;
+	public interface ISerializationTypeInfo {
+		Type InstanceType {
+			get;
 		}
+
+		bool IsCollection {
+			get;
+		}
+
+		bool IsXmlInstanceType {
+			get;
+		}
+
+		Type ListType {
+			get;
+		}
+
+		bool RequiresNotification {
+			get;
+		}
+
+		Type Type {
+			get;
+		}
+
+		SqlSerializationTypeMapping Mapping {
+			get;
+		}
+
+		IMemberConverter SimpleConverter {
+			get;
+		}
+
+		IList CreateList();
+
+		object FinalizeList(IList list);
 	}
 }

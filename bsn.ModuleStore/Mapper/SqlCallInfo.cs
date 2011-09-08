@@ -40,14 +40,22 @@ using bsn.ModuleStore.Sql;
 
 namespace bsn.ModuleStore.Mapper {
 	internal class SqlCallInfo: ISqlCallInfo {
+		private readonly ISerializationTypeInfoProvider serializationTypeInfoProvider;
 		private readonly Type interfaceType;
 		private readonly Dictionary<MethodBase, SqlCallProcedureInfo> methods = new Dictionary<MethodBase, SqlCallProcedureInfo>();
 
-		internal SqlCallInfo(AssemblyInventory inventory, Type interfaceType) {
+		internal SqlCallInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, Type interfaceType) {
+			if (inventory == null) {
+				throw new ArgumentNullException("inventory");
+			}
+			if (serializationTypeInfoProvider == null) {
+				throw new ArgumentNullException("serializationTypeInfoProvider");
+			}
 			Debug.Assert(interfaceType != null);
 			if ((!interfaceType.IsInterface) || (interfaceType.IsGenericTypeDefinition) || (!typeof(IStoredProcedures).IsAssignableFrom(interfaceType))) {
 				throw new ArgumentException("The interface must inherit from IStoredProcedures", "interfaceType");
 			}
+			this.serializationTypeInfoProvider = serializationTypeInfoProvider;
 			this.interfaceType = interfaceType;
 			foreach (Type innerInterface in interfaceType.GetInterfaces()) {
 				if (innerInterface != typeof(IStoredProcedures)) {
@@ -59,7 +67,7 @@ namespace bsn.ModuleStore.Mapper {
 				if (methodInfo == null) {
 					throw new ArgumentException("Only methods are supported on the IStoredProcedures interfaces", "interfaceType");
 				}
-				methods.Add(methodInfo, new SqlCallProcedureInfo(inventory, methodInfo));
+				methods.Add(methodInfo, new SqlCallProcedureInfo(inventory, serializationTypeInfoProvider, methodInfo));
 			}
 		}
 
@@ -69,7 +77,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public IEnumerable<SqlCommand> CreateCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out SqlParameter[] outParameters, out SqlSerializationTypeInfo returnTypeInfo, out ICallDeserializationInfo procInfo, out XmlNameTable xmlNameTable,
+		public IEnumerable<SqlCommand> CreateCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out SqlParameter[] outParameters, out ISerializationTypeInfo returnTypeInfo, out ICallDeserializationInfo procInfo, out XmlNameTable xmlNameTable,
 		                                              IList<IDisposable> disposeList) {
 			return methods[mcm.MethodBase].GetCommands(mcm, connection, schemaName, out returnValue, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList);
 		}

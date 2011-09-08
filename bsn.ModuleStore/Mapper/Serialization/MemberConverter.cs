@@ -33,8 +33,8 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class MemberConverter {
-		public static MemberConverter Get(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind) {
+	public class MemberConverter: IMemberConverter {
+		public static IMemberConverter Get(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
@@ -114,7 +114,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public virtual object ProcessFromDb(SqlDeserializer.DeserializerContext context, int column) {
+		public virtual object ProcessFromDb(DeserializerContext context, int column) {
 			object result = context.DataReader.GetValue(column);
 			if (result == DBNull.Value) {
 				return null;

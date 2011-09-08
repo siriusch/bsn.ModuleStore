@@ -39,7 +39,8 @@ using System.Reflection;
 using Microsoft.SqlServer.Server;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class SqlSerializationTypeMapping {
+	public class SqlSerializationTypeMapping
+	{
 		private static readonly Dictionary<Type, SqlDbType> dbTypeMapping = new Dictionary<Type, SqlDbType> {
 		                                                                                                    		{typeof(long), SqlDbType.BigInt},
 		                                                                                                    		{typeof(byte[]), SqlDbType.VarBinary},
@@ -119,11 +120,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					if (dbTypeMapping.TryGetValue(type, out result)) {
 						return result;
 					}
-					if (SqlSerializationTypeInfo.IsXmlType(type)) {
+					if (type.IsXmlType()) {
 						result = SqlDbType.Xml;
 					} else {
 						Type dummyType;
-						if (SqlSerializationTypeInfo.TryGetIEnumerableElementType(type, out dummyType)) {
+						if (type.TryGetIEnumerableElementType(out dummyType)) {
 							result = SqlDbType.Structured;
 						} else {
 							if (type.IsDefined(typeof(SqlUserDefinedTypeAttribute), false)) {
@@ -151,7 +152,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private readonly Dictionary<string, SqlColumnInfo> columns = new Dictionary<string, SqlColumnInfo>(StringComparer.OrdinalIgnoreCase);
-		private readonly ReadOnlyCollection<MemberConverter> converters;
+		private readonly ReadOnlyCollection<IMemberConverter> converters;
 		private readonly bool hasNestedSerializers;
 		private readonly MemberInfo[] members;
 		private readonly MembersMethods methods;
@@ -160,7 +161,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
-			List<MemberConverter> memberConverters = new List<MemberConverter>();
+			List<IMemberConverter> memberConverters = new List<IMemberConverter>();
 			List<MemberInfo> memberInfos = new List<MemberInfo>();
 			if (!(type.IsPrimitive || type.IsInterface || (typeof(string) == type))) {
 				bool hasIdentity = false;
@@ -170,7 +171,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					if (columnAttribute != null) {
 						AssertValidMember(member);
 						bool isIdentity = (!hasIdentity) && (hasIdentity |= columnAttribute.Identity);
-						MemberConverter memberConverter;
+						IMemberConverter memberConverter;
 						if (columnAttribute.GetCachedByIdentity) {
 							memberConverter = new CachedMemberConverter(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
 						} else {
@@ -205,7 +206,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public ReadOnlyCollection<MemberConverter> Converters {
+		public ReadOnlyCollection<IMemberConverter> Converters {
 			get {
 				return converters;
 			}

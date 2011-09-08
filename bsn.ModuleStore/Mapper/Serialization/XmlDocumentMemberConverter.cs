@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class XmlDocumentMemberConverter: XPathNavigableMemberConverter {
 		public XmlDocumentMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
-		protected override object GetXmlObject(SqlDeserializer.DeserializerContext context, XmlReader reader) {
+		protected override object GetXmlObject(DeserializerContext context, XmlReader reader) {
 			XmlDocument doc = new XmlDocument(context.NameTable);
 			doc.Load(reader);
 			return doc;
