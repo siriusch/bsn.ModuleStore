@@ -35,6 +35,8 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
 
+using bsn.ModuleStore.Mapper.Serialization;
+
 namespace bsn.ModuleStore.Mapper {
 	/// <summary>
 	/// The DataReaderProxy class allows the creation of transparent proxies to access data in a <see cref="IDataReader"/> in a typesafe manner.
@@ -50,22 +52,29 @@ namespace bsn.ModuleStore.Mapper {
 		/// <remarks>The reader will be owned by the ITypedDataReader instance until it is released via <see cref="ITypedDataReader.NextResult"/>. Therefore, it will be closed if the ITypedDataReader instance is disposed before transferring the ownership using NextResult.</remarks>
 		/// <typeparam name="I">An interface which implements <see cref="ITypedDataReader"/>.</typeparam>
 		/// <param name="reader">The <see cref="IDataReader"/> to use as data source. The proxy will take ownership of the data reader.</param>
+		/// <param name="serializationTypeMappingProvider"></param>
 		/// <returns>An instance of the type requested by <typeparamref name="I"/>.</returns>
-		public static I Create<I>(IDataReader reader) where I: ITypedDataReader {
-			return (I)(new DataReaderProxy(reader, typeof(I))).GetTransparentProxy();
+		public static I Create<I>(IDataReader reader, ISerializationTypeMappingProvider serializationTypeMappingProvider) where I : ITypedDataReader
+		{
+			return (I)(new DataReaderProxy(reader, typeof(I), serializationTypeMappingProvider)).GetTransparentProxy();
 		}
 
 		private readonly Dictionary<string, KeyValuePair<int, Type>> columns;
 		private readonly IDataReader reader;
+		private readonly ISerializationTypeMappingProvider serializationTypeMappingProvider;
 		private readonly TypedDataReaderInfo readerInfo;
 		private bool disposed;
 
-		internal DataReaderProxy(IDataReader reader, Type type): base(type) {
+		internal DataReaderProxy(IDataReader reader, Type type, ISerializationTypeMappingProvider serializationTypeMappingProvider): base(type) {
 			if (reader == null) {
 				throw new ArgumentNullException("reader");
 			}
+			if (serializationTypeMappingProvider == null) {
+				throw new ArgumentNullException("serializationTypeMappingProvider");
+			}
 			this.reader = reader;
-			readerInfo = TypedDataReaderInfo.Get(type);
+			this.serializationTypeMappingProvider = serializationTypeMappingProvider;
+			readerInfo = TypedDataReaderInfo.Get(type, serializationTypeMappingProvider);
 			columns = new Dictionary<string, KeyValuePair<int, Type>>(readerInfo.ColumnCount);
 		}
 
@@ -97,7 +106,7 @@ namespace bsn.ModuleStore.Mapper {
 							if (methodBase.IsGenericMethod) {
 								Type[] genericArguments = methodBase.GetGenericArguments();
 								if ((genericArguments.Length == 1) && typeof(ITypedDataReader).IsAssignableFrom(genericArguments[0])) {
-									return new ReturnMessage(new DataReaderProxy(reader, genericArguments[0]).GetTransparentProxy(), null, 0, mcm.LogicalCallContext, mcm);
+									return new ReturnMessage(new DataReaderProxy(reader, genericArguments[0], serializationTypeMappingProvider).GetTransparentProxy(), null, 0, mcm.LogicalCallContext, mcm);
 								}
 							}
 						} catch {

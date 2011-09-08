@@ -59,10 +59,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 #pragma warning restore 169
 		}
 
-		private static readonly MemberInfo[] membersA = SqlSerializationTypeMapping.GetAllFieldsAndProperties(typeof(MembersA)).ToArray();
-		private static readonly MemberInfo[] membersB = SqlSerializationTypeMapping.GetAllFieldsAndProperties(typeof(MembersB)).ToArray();
-		private static readonly MemberInfo[] membersC = SqlSerializationTypeMapping.GetAllFieldsAndProperties(typeof(MembersC)).ToArray();
-		private static readonly MemberInfo[] membersD = SqlSerializationTypeMapping.GetAllFieldsAndProperties(typeof(MembersD)).ToArray();
+		private static readonly MemberInfo[] membersA = typeof(MembersA).GetAllFieldsAndProperties().ToArray();
+		private static readonly MemberInfo[] membersB = typeof(MembersB).GetAllFieldsAndProperties().ToArray();
+		private static readonly MemberInfo[] membersC = typeof(MembersC).GetAllFieldsAndProperties().ToArray();
+		private static readonly MemberInfo[] membersD = typeof(MembersD).GetAllFieldsAndProperties().ToArray();
 
 		[Test]
 		public void CommonType() {

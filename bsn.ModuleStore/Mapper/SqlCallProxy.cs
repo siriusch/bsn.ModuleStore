@@ -141,11 +141,17 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly ISerializationTypeInfoProvider serializationTypeInfoProvider;
 
 		private SqlCallProxy(IMetadataProvider metadataProvider, IConnectionProvider connectionProvider, Type interfaceToProxy): base(interfaceToProxy) {
+			if (metadataProvider == null) {
+				throw new ArgumentNullException("metadataProvider");
+			}
 			if (connectionProvider == null) {
 				throw new ArgumentNullException("connectionProvider");
 			}
 			this.connectionProvider = connectionProvider;
-			serializationTypeInfoProvider = metadataProvider.GetSerializationTypeInfoProvider() ?? new StaticSerializationTypeInfoProvider();
+			serializationTypeInfoProvider = metadataProvider.SerializationTypeInfoProvider;
+			if (serializationTypeInfoProvider == null) {
+				throw new ArgumentException("The metadata provider does not provide a serializationTypeInfoProvider. Please check the implementation.", "metadataProvider");
+			}
 			callInfo = metadataProvider.GetCallInfo(interfaceToProxy);
 			methods.Add(equals, ProxyEquals);
 			methods.Add(getAssembly, ProxyGetAssembly);
@@ -260,7 +266,7 @@ namespace bsn.ModuleStore.Mapper {
 										connection = null;
 										if (isTypedDataReader) {
 											try {
-												returnValue = new DataReaderProxy(reader, returnType).GetTransparentProxy();
+												returnValue = new DataReaderProxy(reader, returnType, serializationTypeInfoProvider.TypeMappingProvider).GetTransparentProxy();
 											} catch {
 												reader.Dispose();
 												throw;

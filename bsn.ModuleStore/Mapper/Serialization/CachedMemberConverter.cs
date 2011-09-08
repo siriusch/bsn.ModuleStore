@@ -27,6 +27,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
 using System.Reflection;
 
@@ -61,11 +62,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private readonly IdentifiableGetter getter;
 		private readonly IMemberConverter identityMember;
 
-		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
-			foreach (MemberInfo member in SqlSerializationTypeMapping.GetAllFieldsAndProperties(type)) {
-				SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetColumnAttribute(member, false);
+		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind, ISerializationTypeMappingProvider typeMappingProvider): base(type, isIdentity, columnName, memberIndex) {
+			foreach (MemberInfo member in type.GetAllFieldsAndProperties()) {
+				SqlColumnAttribute columnAttribute = typeMappingProvider.GetSqlColumnAttribute(member, false);
 				if ((columnAttribute != null) && columnAttribute.Identity) {
-					identityMember = Get(SqlSerializationTypeMapping.GetMemberType(member), false, columnName, memberIndex, dateTimeKind);
+					identityMember = Get(member.GetMemberType(), false, columnName, memberIndex, dateTimeKind);
 					break;
 				}
 			}

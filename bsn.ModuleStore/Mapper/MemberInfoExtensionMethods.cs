@@ -26,17 +26,26 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+//  
 using System;
-
-using bsn.ModuleStore.Mapper.Serialization;
+using System.Reflection;
 
 namespace bsn.ModuleStore.Mapper {
-	public interface IMetadataProvider {
-		ISqlCallInfo GetCallInfo(Type interfaceToProxy);
-
-		ISerializationTypeInfoProvider SerializationTypeInfoProvider {
-			get;
+	internal static class MemberInfoExtensionMethods {
+		public static Type GetMemberType(this MemberInfo memberInfo)
+		{
+			if (memberInfo == null) {
+				throw new ArgumentNullException("memberInfo");
+			}
+			FieldInfo fieldInfo = memberInfo as FieldInfo;
+			if (fieldInfo != null) {
+				return fieldInfo.FieldType;
+			}
+			PropertyInfo propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null) {
+				return propertyInfo.PropertyType;
+			}
+			throw new ArgumentException("Only fields and properties are supported", "memberInfo");
 		}
 	}
 }

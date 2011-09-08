@@ -32,18 +32,35 @@ using System;
 using System.Collections.Generic;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	public class StaticSerializationTypeInfoProvider: ISerializationTypeInfoProvider {
-		private static readonly Dictionary<Type, SqlSerializationTypeInfo> infos = new Dictionary<Type, SqlSerializationTypeInfo>();
+	public class SerializationTypeInfoProvider: ISerializationTypeInfoProvider {
+		private static readonly Dictionary<Type, SerializationTypeInfo> infos = new Dictionary<Type, SerializationTypeInfo>();
+
+		private readonly ISerializationTypeMappingProvider mappingProvider;
+
+		public SerializationTypeInfoProvider():this(new SerializationTypeMappingProvider()) {}
+
+		public SerializationTypeInfoProvider(ISerializationTypeMappingProvider mappingProvider) {
+			if (mappingProvider == null) {
+				throw new ArgumentNullException("mappingProvider");
+			}
+			this.mappingProvider = mappingProvider;
+		}
 
 		public ISerializationTypeInfo GetSerializationTypeInfo(Type type) {
-			SqlSerializationTypeInfo result;
+			SerializationTypeInfo result;
 			lock (infos) {
 				if (!infos.TryGetValue(type, out result)) {
-					result = new SqlSerializationTypeInfo(type);
+					result = new SerializationTypeInfo(type, mappingProvider);
 					infos.Add(type, result);
 				}
 			}
 			return result;
+		}
+
+		public ISerializationTypeMappingProvider TypeMappingProvider {
+			get {
+				return mappingProvider;
+			}
 		}
 	}
 }

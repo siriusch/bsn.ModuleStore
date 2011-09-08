@@ -279,15 +279,18 @@ namespace bsn.ModuleStore {
 			lock (knownTypes) {
 				SqlCallInfo result;
 				if (!knownTypes.TryGetValue(interfaceType, out result)) {
-					result = new SqlCallInfo(GetModuleInstanceCache(interfaceType.Assembly).AssemblyInfo.Inventory, ((IMetadataProvider)this).GetSerializationTypeInfoProvider(), interfaceType);
+					ISerializationTypeInfoProvider serializationTypeInfoProvider = ((IMetadataProvider)this).SerializationTypeInfoProvider;
+					result = new SqlCallInfo(GetModuleInstanceCache(interfaceType.Assembly).AssemblyInfo.Inventory, serializationTypeInfoProvider, interfaceType, serializationTypeInfoProvider.TypeMappingProvider);
 					knownTypes.Add(interfaceType, result);
 				}
 				return result;
 			}
 		}
 
-		ISerializationTypeInfoProvider IMetadataProvider.GetSerializationTypeInfoProvider() {
-			return new StaticSerializationTypeInfoProvider();
+		ISerializationTypeInfoProvider IMetadataProvider.SerializationTypeInfoProvider {
+			get {
+				return new SerializationTypeInfoProvider();
+			}
 		}
 	}
 }

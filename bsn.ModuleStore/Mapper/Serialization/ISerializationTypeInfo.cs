@@ -57,7 +57,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			get;
 		}
 
-		SqlSerializationTypeMapping Mapping {
+		ISqlSerializationTypeMapping Mapping {
 			get;
 		}
 

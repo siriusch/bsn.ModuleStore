@@ -43,7 +43,8 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		private readonly Type interfaceType;
 		private readonly Dictionary<MethodBase, SqlCallProcedureInfo> methods = new Dictionary<MethodBase, SqlCallProcedureInfo>();
 
-		internal SqlCallInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, Type interfaceType) {
+		internal SqlCallInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, Type interfaceType, ISerializationTypeMappingProvider typeMappingProvider)
+		{
 			if (inventory == null) {
 				throw new ArgumentNullException("inventory");
 			}
@@ -65,7 +66,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 				if (methodInfo == null) {
 					throw new ArgumentException("Only methods are supported on the IStoredProcedures interfaces", "interfaceType");
 				}
-				methods.Add(methodInfo, new SqlCallProcedureInfo(inventory, serializationTypeInfoProvider, methodInfo));
+				methods.Add(methodInfo, new SqlCallProcedureInfo(inventory, serializationTypeInfoProvider, methodInfo, typeMappingProvider));
 			}
 		}
 

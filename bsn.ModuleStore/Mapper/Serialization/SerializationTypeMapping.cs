@@ -39,7 +39,7 @@ using System.Reflection;
 using Microsoft.SqlServer.Server;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	public class SqlSerializationTypeMapping
+	public class SerializationTypeMapping : ISqlSerializationTypeMapping
 	{
 		private static readonly Dictionary<Type, SqlDbType> dbTypeMapping = new Dictionary<Type, SqlDbType> {
 		                                                                                                    		{typeof(long), SqlDbType.BigInt},
@@ -59,55 +59,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		                                                                                                    		{typeof(Guid), SqlDbType.UniqueIdentifier}
 		                                                                                                    };
 
-		private static readonly Dictionary<Type, SqlSerializationTypeMapping> mappings = new Dictionary<Type, SqlSerializationTypeMapping>();
-
-		public static SqlSerializationTypeMapping Get(Type type) {
-			if (type == null) {
-				throw new ArgumentNullException("type");
-			}
-			SqlSerializationTypeMapping result;
-			lock (mappings) {
-				if (!mappings.TryGetValue(type, out result)) {
-					result = new SqlSerializationTypeMapping(type);
-					mappings.Add(type, result);
-				}
-			}
-			return result;
-		}
-
-		internal static IEnumerable<MemberInfo> GetAllFieldsAndProperties(Type type) {
-			while (type != null) {
-				foreach (FieldInfo field in type.GetFields(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
-					yield return field;
-				}
-				foreach (PropertyInfo property in type.GetProperties(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
-					yield return property;
-				}
-				type = type.BaseType;
-			}
-		}
-
-		public static Type GetMemberType(MemberInfo memberInfo) {
-			if (memberInfo == null) {
-				throw new ArgumentNullException("memberInfo");
-			}
-			FieldInfo fieldInfo = memberInfo as FieldInfo;
-			if (fieldInfo != null) {
-				return fieldInfo.FieldType;
-			}
-			PropertyInfo propertyInfo = memberInfo as PropertyInfo;
-			if (propertyInfo != null) {
-				return propertyInfo.PropertyType;
-			}
-			throw new ArgumentException("Only fields and properties are supported", "memberInfo");
-		}
-
-		/// <summary>
-		/// Get the matching <see cref="DbType"/> for the given type.
-		/// </summary>
-		/// <param name="type">The .NET type to match.</param>
-		/// <returns>The <see cref="DbType"/> best matching the given .NET type, or <see cref="DbType.Object"/> otherwise.</returns>
-		public static SqlDbType GetTypeMapping(Type type) {
+		private static SqlDbType GetTypeMapping(Type type)
+		{
 			if (type != null) {
 				if (type.IsByRef && type.HasElementType) {
 					type = type.GetElementType();
@@ -141,7 +94,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			return SqlDbType.Variant;
 		}
 
-		internal static bool IsNativeType(Type type) {
+		private static bool CheckNativeType(Type type)
+		{
 			lock (dbTypeMapping) {
 				SqlDbType dbType;
 				if (dbTypeMapping.TryGetValue(type, out dbType)) {
@@ -150,36 +104,41 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 			return false;
 		}
-
 		private readonly Dictionary<string, SqlColumnInfo> columns = new Dictionary<string, SqlColumnInfo>(StringComparer.OrdinalIgnoreCase);
 		private readonly ReadOnlyCollection<IMemberConverter> converters;
 		private readonly bool hasNestedSerializers;
 		private readonly MemberInfo[] members;
 		private readonly MembersMethods methods;
+		private readonly bool isNativeType;
+		private readonly SqlDbType dbType;
 
-		private SqlSerializationTypeMapping(Type type) {
+		public SerializationTypeMapping(Type type, ISerializationTypeMappingProvider typeMappingProvider)  {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
+
 			List<IMemberConverter> memberConverters = new List<IMemberConverter>();
 			List<MemberInfo> memberInfos = new List<MemberInfo>();
+			isNativeType = CheckNativeType(type);
+			dbType = GetTypeMapping(type);
+
 			if (!(type.IsPrimitive || type.IsInterface || (typeof(string) == type))) {
 				bool hasIdentity = false;
-				foreach (MemberInfo member in GetAllFieldsAndProperties(type)) {
-					SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetColumnAttribute(member, false);
-					Type memberType = GetMemberType(member);
+				foreach (MemberInfo member in type.GetAllFieldsAndProperties()) {
+					SqlColumnAttribute columnAttribute = typeMappingProvider.GetSqlColumnAttribute(member, false);
+					Type memberType = member.GetMemberType();
 					if (columnAttribute != null) {
 						AssertValidMember(member);
 						bool isIdentity = (!hasIdentity) && (hasIdentity |= columnAttribute.Identity);
 						IMemberConverter memberConverter;
 						if (columnAttribute.GetCachedByIdentity) {
-							memberConverter = new CachedMemberConverter(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
+							memberConverter = new CachedMemberConverter(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind, typeMappingProvider);
 						} else {
 							memberConverter = MemberConverter.Get(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
 						}
 						memberConverters.Add(memberConverter);
 						memberInfos.Add(member);
-						columns.Add(columnAttribute.Name, new SqlColumnInfo(member, columnAttribute.Name, memberConverter));
+						columns.Add(columnAttribute.Name, new SqlColumnInfo(member, columnAttribute.Name, memberConverter, typeMappingProvider.GetMapping(member.DeclaringType)));
 					} else if (member.IsDefined(typeof(SqlDeserializeAttribute), true)) {
 						AssertValidMember(member);
 						NestedMemberConverter nestedMemberConverter;
@@ -200,36 +159,57 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			methods = MembersMethods.Get(members);
 		}
 
+		public SqlDbType DbType
+		{
+			get
+			{
+				return dbType;
+			}
+		}
+
+		public bool IsNativeType
+		{
+			get
+			{
+				return isNativeType;
+			}
+		}
+
 		public IDictionary<string, SqlColumnInfo> Columns {
 			get {
 				return columns;
 			}
 		}
 
-		public ReadOnlyCollection<IMemberConverter> Converters {
+		public ReadOnlyCollection<IMemberConverter> Converters
+		{
 			get {
 				return converters;
 			}
 		}
 
-		public bool HasNestedSerializers {
+		public bool HasNestedSerializers
+		{
 			get {
 				return hasNestedSerializers;
 			}
 		}
 
-		public int MemberCount {
+		public int MemberCount
+		{
 			get {
 				return members.Length;
 			}
 		}
 
-		public object GetMember(object instance, int index) {
+		public object GetMember(object instance, int index)
+		{
 			Debug.Assert((instance != null) && (index >= 0) && (methods.GetMember != null));
 			return methods.GetMember(instance, index);
 		}
 
-		public void PopulateInstanceMembers(object result, object[] buffer) {
+		public void PopulateInstanceMembers(object result, object[] buffer)
+		{
 			Debug.Assert((result != null) && (buffer != null) && (methods.PopulateMembers != null));
 			methods.PopulateMembers(result, buffer);
 		}

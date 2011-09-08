@@ -27,14 +27,28 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper {
 	internal static class TypeExtensionMethods {
+		public static IEnumerable<MemberInfo> GetAllFieldsAndProperties(this Type type) {
+			while (type != null) {
+				foreach (FieldInfo field in type.GetFields(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
+					yield return field;
+				}
+				foreach (PropertyInfo property in type.GetProperties(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
+					yield return property;
+				}
+				type = type.BaseType;
+			}
+		}
+
 		private static Type GetElementTypeOfIEnumerable(Type type) {
 			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) {
 				return type.GetGenericArguments()[0];

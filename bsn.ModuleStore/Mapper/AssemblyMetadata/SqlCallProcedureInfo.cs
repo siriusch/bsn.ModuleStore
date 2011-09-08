@@ -95,7 +95,8 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		private readonly ParameterInfo xmlNameTableParameter;
 		private SchemaName schemaNameOverride;
 
-		public SqlCallProcedureInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, MethodInfo method) {
+		public SqlCallProcedureInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, MethodInfo method, ISerializationTypeMappingProvider typeMappingProvider)
+		{
 			foreach (SqlProcedureAttribute attribute in method.GetCustomAttributes(typeof(SqlProcedureAttribute), false)) {
 				proc = attribute;
 			}
@@ -157,7 +158,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 					if (index >= parameters.Length) {
 						throw new InvalidOperationException(String.Format("The method {0}.{1} has more parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
 					}
-					SqlCallParameterInfo callParameterInfo = new SqlCallParameterInfo(serializationTypeInfoProvider, parameterInfo, script.Parameters[index]);
+					SqlCallParameterInfo callParameterInfo = new SqlCallParameterInfo(serializationTypeInfoProvider, parameterInfo, script.Parameters[index], typeMappingProvider);
 					if (callParameterInfo.Direction != ParameterDirection.Input) {
 						outArgCount = methodParameters.Length;
 					}
@@ -169,7 +170,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			}
 			returnTypeInfo = serializationTypeInfoProvider.GetSerializationTypeInfo(method.ReturnType);
 			if ((proc.UseReturnValue != SqlReturnValue.Auto) || (method.ReturnType != typeof(void))) {
-				useReturnValue = (proc.UseReturnValue == SqlReturnValue.ReturnValue) || ((proc.UseReturnValue == SqlReturnValue.Auto) && (SqlSerializationTypeMapping.GetTypeMapping(method.ReturnType) == SqlDbType.Int));
+				useReturnValue = (proc.UseReturnValue == SqlReturnValue.ReturnValue) || ((proc.UseReturnValue == SqlReturnValue.Auto) && (typeMappingProvider.GetMapping(method.ReturnType).DbType == SqlDbType.Int));
 			}
 			exceptionMappings = inventory.ExceptionMappings.Where(a => (a.DeclaredOn == null) || (a.DeclaredOn == method.DeclaringType) || (a.DeclaredOn == method)).OrderByDescending(a => a.ComputeSpecificity()).ToArray();
 		}

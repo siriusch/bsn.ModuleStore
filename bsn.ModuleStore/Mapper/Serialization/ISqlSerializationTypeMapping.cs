@@ -26,17 +26,41 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 
-using bsn.ModuleStore.Mapper.Serialization;
-
-namespace bsn.ModuleStore.Mapper {
-	public interface IMetadataProvider {
-		ISqlCallInfo GetCallInfo(Type interfaceToProxy);
-
-		ISerializationTypeInfoProvider SerializationTypeInfoProvider {
+namespace bsn.ModuleStore.Mapper.Serialization {
+	public interface ISqlSerializationTypeMapping {
+		IDictionary<string, SqlColumnInfo> Columns {
 			get;
 		}
+
+		ReadOnlyCollection<IMemberConverter> Converters {
+			get;
+		}
+
+		bool HasNestedSerializers {
+			get;
+		}
+
+		int MemberCount {
+			get;
+		}
+
+		bool IsNativeType {
+			get;
+		}
+
+		SqlDbType DbType {
+			get;
+		}
+
+		object GetMember(object instance, int index);
+
+		void PopulateInstanceMembers(object result, object[] buffer);
 	}
 }

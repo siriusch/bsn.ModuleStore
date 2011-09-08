@@ -27,9 +27,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
+
 using System;
 using System.ComponentModel;
-using System.Reflection;
 
 using bsn.ModuleStore.Mapper.Serialization;
 
@@ -38,31 +38,7 @@ namespace bsn.ModuleStore.Mapper {
 	/// The <see cref="SqlColumnAttribute"/> is used to change the binding name on <see cref="ITypedDataReader"/> interfaces, or to specify the fields to be deserialized when the <see cref="SqlDeserializer"/> is used.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Field|AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-	public sealed class SqlColumnAttribute: Attribute {
-		/// <summary>
-		/// Get a single <see cref="SqlColumnAttribute"/> instance.
-		/// </summary>
-		/// <param name="info">The <see cref="MemberInfo"/> to query for the <see cref="SqlColumnAttribute"/> attribute.</param>
-		/// <param name="autoCreate">If true, a <see cref="SqlColumnAttribute"/> is inferred from the MemberInfo when no attribute is found. Otherwise, null is returned in this situation.</param>
-		/// <returns>The <see cref="SqlColumnAttribute"/> for the member.</returns>
-		public static SqlColumnAttribute GetColumnAttribute(MemberInfo info, bool autoCreate) {
-			if (info == null) {
-				throw new ArgumentNullException("info");
-			}
-			SqlColumnAttribute[] columnAttributes = (SqlColumnAttribute[])info.GetCustomAttributes(typeof(SqlColumnAttribute), true);
-			if (columnAttributes.Length > 0) {
-				SqlColumnAttribute result = columnAttributes[0];
-				if (string.IsNullOrEmpty(result.Name)) {
-					result = result.CloneWithName(info.Name);
-				}
-				return result;
-			}
-			if (autoCreate) {
-				return new SqlColumnAttribute(info.Name);
-			}
-			return null;
-		}
-
+	public class SqlColumnAttribute: Attribute {
 		private DateTimeKind dateTimeKind = DateTimeKind.Unspecified;
 		private bool getCachedByIdentity;
 		private bool identity;
@@ -127,7 +103,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		internal SqlColumnAttribute CloneWithName(string newName) {
+		public virtual SqlColumnAttribute CloneWithName(string newName) {
 			SqlColumnAttribute result = (SqlColumnAttribute)MemberwiseClone();
 			result.name = newName;
 			return result;

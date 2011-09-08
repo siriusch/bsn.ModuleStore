@@ -78,7 +78,9 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		private readonly ParameterInfo parameterInfo;
 		private readonly StructuredParameterSchema structuredSchema;
 
-		public SqlCallParameterInfo(ISerializationTypeInfoProvider serializationTypeInfoProvider, ParameterInfo param, ProcedureParameter script): base(script, GetParameterDirection(param), GetParameterNullable(param), GetParameterEnumerable(param)) {
+		public SqlCallParameterInfo(ISerializationTypeInfoProvider serializationTypeInfoProvider, ParameterInfo param, ProcedureParameter script, ISerializationTypeMappingProvider typeMappingProvider)
+			: base(script, GetParameterDirection(param), GetParameterNullable(param), GetParameterEnumerable(param))
+		{
 			parameterInfo = param;
 			if (SqlType == SqlDbType.Structured) {
 				Type structuredType;
@@ -94,9 +96,9 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 				if (info.SimpleConverter != null) {
 					string columnName = createTableTypeScript.TableDefinitions.OfType<TableColumnDefinition>().First(d => d.ColumnDefinition is TypedColumnDefinition).ColumnName.Value;
 					columnInfos = new Dictionary<string, SqlColumnInfo>(1);
-					columnInfos.Add(columnName, new SqlColumnInfo(structuredType, columnName, info.SimpleConverter));
+					columnInfos.Add(columnName, new SqlColumnInfo(typeMappingProvider.GetMapping(structuredType), columnName, info.SimpleConverter));
 				} else {
-					columnInfos = SqlSerializationTypeMapping.Get(structuredType).Columns;
+					columnInfos = typeMappingProvider.GetMapping(structuredType).Columns;
 					Attribute[] mappingAttributes = Attribute.GetCustomAttributes(param, typeof(SqlMappingAttribute), true);
 					if ((mappingAttributes != null) && (mappingAttributes.Length > 0)) {
 						IDictionary<string, SqlColumnInfo> mappedColumnInfos = new Dictionary<string, SqlColumnInfo>(columnInfos);

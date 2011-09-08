@@ -33,5 +33,9 @@ using System;
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public interface ISerializationTypeInfoProvider {
 		ISerializationTypeInfo GetSerializationTypeInfo(Type type);
+
+		ISerializationTypeMappingProvider TypeMappingProvider {
+			get;
+		}
 	}
 }

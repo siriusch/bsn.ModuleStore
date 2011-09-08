@@ -111,7 +111,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private static readonly MemberInfo[] members = GetMemberFields<Members>();
 
 		private static FieldInfo[] GetMemberFields<T>() {
-			FieldInfo[] result = SqlSerializationTypeMapping.GetAllFieldsAndProperties(typeof(T)).OfType<FieldInfo>().ToArray();
+			FieldInfo[] result = typeof(T).GetAllFieldsAndProperties().OfType<FieldInfo>().ToArray();
 			Array.Sort(result, (x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.Name, y.Name)); // sort alphabetically
 			return result;
 		}

@@ -35,7 +35,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	public class SqlSerializationTypeInfo: ISerializationTypeInfo {
+	public class SerializationTypeInfo: ISerializationTypeInfo {
 		private static class ToArray<T> {
 #pragma warning disable 169
 // ReSharper disable StaticFieldInGenericType
@@ -74,12 +74,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private readonly bool isXmlType;
 		private readonly Func<object, Array> listToArray;
 		private readonly Type listType;
-		private readonly SqlSerializationTypeMapping mapping;
+		private readonly ISqlSerializationTypeMapping mapping;
 		private readonly bool requiresNotification;
 		private readonly IMemberConverter simpleConverter;
 		private readonly Type type;
 
-		public SqlSerializationTypeInfo(Type type) {
+		public SerializationTypeInfo(Type type, ISerializationTypeMappingProvider typeMappingProvider) {
 			this.type = type;
 			if (type.IsArray) {
 				if (type.GetArrayRank() != 1) {
@@ -94,7 +94,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				throw new NotSupportedException("Nested arrays cannot be deserialized by the DbDeserializer");
 			}
 			requiresNotification = typeof(ISqlDeserializationHook).IsAssignableFrom(instanceType);
-			mapping = SqlSerializationTypeMapping.Get(instanceType);
+			mapping = typeMappingProvider.GetMapping(instanceType);
 			if (IsCollection) {
 				listType = (type.IsInterface || type.IsArray) ? typeof(List<>).MakeGenericType(instanceType) : type;
 				if (type.IsArray) {
@@ -104,12 +104,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 // ReSharper restore AssignNullToNotNullAttribute
 // ReSharper restore PossibleNullReferenceException
 					if (listToArray == null) {
-						listToArray = (Func<object, Array>)Delegate.CreateDelegate(typeof(Func<object, Array>), typeof(SqlSerializationTypeInfo).GetMethod("ToArrayGeneric").MakeGenericMethod(instanceType));
+						listToArray = (Func<object, Array>)Delegate.CreateDelegate(typeof(Func<object, Array>), typeof(SerializationTypeInfo).GetMethod("ToArrayGeneric").MakeGenericMethod(instanceType));
 					}
 				}
 			}
 			isXmlType = instanceType.IsXmlType();
-			if (isXmlType || (Nullable.GetUnderlyingType(instanceType) != null) || instanceType.IsPrimitive || SqlSerializationTypeMapping.IsNativeType(instanceType)) {
+			if (isXmlType || (Nullable.GetUnderlyingType(instanceType) != null) || instanceType.IsPrimitive || mapping.IsNativeType) {
 				simpleConverter = MemberConverter.Get(instanceType, false, null, 0, DateTimeKind.Unspecified);
 			}
 		}
@@ -150,7 +150,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public SqlSerializationTypeMapping Mapping
+		public ISqlSerializationTypeMapping Mapping
 		{
 			get {
 				return mapping;
