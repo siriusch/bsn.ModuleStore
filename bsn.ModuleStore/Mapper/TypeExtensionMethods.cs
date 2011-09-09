@@ -37,6 +37,19 @@ using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper {
 	internal static class TypeExtensionMethods {
+		/// <summary>
+		/// Returns true if the type given is a nullable type (that is, <see cref="Nullable{T}"/>).
+		/// </summary>
+		/// <param name="type">The type to be checked.</param>
+		/// <returns>True if the type is recognized as nullable type.</returns>
+		public static bool IsNullableType(this Type type)
+		{
+			if (type == null) {
+				throw new ArgumentNullException("type");
+			}
+			return type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(Nullable<>));
+		}
+
 		public static IEnumerable<MemberInfo> GetAllFieldsAndProperties(this Type type) {
 			while (type != null) {
 				foreach (FieldInfo field in type.GetFields(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {

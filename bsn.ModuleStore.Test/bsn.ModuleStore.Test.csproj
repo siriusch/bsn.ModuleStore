@@ -52,6 +52,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mapper\InterfaceMetadata\ConnectionProvider.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\IDataProvider.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\NUnitSetup.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\SimpleTestData.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\TestChild.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\TestChildWithoutParent.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\TestParent.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\TestParentWithChildren.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\TestSqlCallProxy.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\TestSqlCallProxyBase.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\TestSqlCallProxyWithInstanceProvider.cs" />
     <Compile Include="Mapper\Serialization\MembersKeyTest.cs" />
     <Compile Include="Mapper\Serialization\MembersMethodsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,6 +86,7 @@
       <Name>bsn.ModuleStore</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

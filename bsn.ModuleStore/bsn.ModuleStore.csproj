@@ -59,6 +59,16 @@
     <Compile Include="Mapper\CachePolicy.cs" />
     <Compile Include="Mapper\ICallDeserializationInfo.cs" />
     <Compile Include="Mapper\IMetadataProvider.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\ReflectionMetadataProvider.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\SqlArgAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Mapper\InterfaceMetadata\SqlCallInfo.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\SqlCallParameterInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Mapper\InterfaceMetadata\SqlCallProcedureInfo.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\SqlProcAttribute.cs" />
     <Compile Include="Mapper\ISqlCallInfo.cs" />
     <Compile Include="Mapper\IVersioned.cs" />
     <Compile Include="Mapper\MemberInfoExtensionMethods.cs" />
@@ -83,6 +93,7 @@
     <Compile Include="Mapper\Serialization\SerializationTypeMapping.cs" />
     <Compile Include="Mapper\Serialization\SerializationTypeInfoProvider.cs" />
     <Compile Include="Mapper\Serialization\SerializationTypeMappingProvider.cs" />
+    <Compile Include="Mapper\Serialization\SqlTableValueParameterAttribute.cs" />
     <Compile Include="Mapper\Serialization\StructuredParameterReader.cs" />
     <Compile Include="Mapper\DistinctInstanceProvider.cs" />
     <Compile Include="Mapper\IConnectionProvider.cs" />
@@ -204,9 +215,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Sql\UserObjectScripter.xslt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Mapper\InterfaceMetadata\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
