@@ -74,7 +74,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private readonly bool isXmlType;
 		private readonly Func<object, Array> listToArray;
 		private readonly Type listType;
-		private readonly ISqlSerializationTypeMapping mapping;
+		private readonly ISerializationTypeMapping mapping;
 		private readonly bool requiresNotification;
 		private readonly IMemberConverter simpleConverter;
 		private readonly Type type;
@@ -150,7 +150,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public ISqlSerializationTypeMapping Mapping
+		public ISerializationTypeMapping Mapping
 		{
 			get {
 				return mapping;

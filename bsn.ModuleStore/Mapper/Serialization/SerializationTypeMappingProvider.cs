@@ -35,7 +35,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SerializationTypeMappingProvider: ISerializationTypeMappingProvider {
 		private static readonly Dictionary<Type, SerializationTypeMapping> mappings = new Dictionary<Type, SerializationTypeMapping>();
 
-		public ISqlSerializationTypeMapping GetMapping(Type type) {
+		public ISerializationTypeMapping GetMapping(Type type) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}

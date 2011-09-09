@@ -34,7 +34,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	public interface ISqlSerializationTypeMapping {
+	public interface ISerializationTypeMapping {
 		IDictionary<string, SqlColumnInfo> Columns {
 			get;
 		}

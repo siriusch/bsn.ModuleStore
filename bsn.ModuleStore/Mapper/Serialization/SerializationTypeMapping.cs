@@ -39,7 +39,7 @@ using System.Reflection;
 using Microsoft.SqlServer.Server;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	public class SerializationTypeMapping : ISqlSerializationTypeMapping
+	public class SerializationTypeMapping : ISerializationTypeMapping
 	{
 		private static readonly Dictionary<Type, SqlDbType> dbTypeMapping = new Dictionary<Type, SqlDbType> {
 		                                                                                                    		{typeof(long), SqlDbType.BigInt},
@@ -138,7 +138,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 						}
 						memberConverters.Add(memberConverter);
 						memberInfos.Add(member);
-						columns.Add(columnAttribute.Name, new SqlColumnInfo(member, columnAttribute.Name, memberConverter, typeMappingProvider.GetMapping(member.DeclaringType)));
+						columns.Add(columnAttribute.Name, new SqlColumnInfo(member, columnAttribute.Name, memberConverter, this));
 					} else if (member.IsDefined(typeof(SqlDeserializeAttribute), true)) {
 						AssertValidMember(member);
 						NestedMemberConverter nestedMemberConverter;

@@ -37,10 +37,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private readonly IMemberConverter converter;
 		private readonly MemberInfo memberInfo;
 		private readonly string name;
-		private readonly ISqlSerializationTypeMapping typeMapping;
+		private readonly ISerializationTypeMapping typeMapping;
 		private readonly string userDefinedTypeName;
 
-		public SqlColumnInfo(ISqlSerializationTypeMapping typeMapping, string columnName, IMemberConverter converter) {
+		public SqlColumnInfo(ISerializationTypeMapping typeMapping, string columnName, IMemberConverter converter) {
 			if (string.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
@@ -56,7 +56,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			this.typeMapping = typeMapping;
 		}
 
-		public SqlColumnInfo(MemberInfo memberInfo, string columnName, IMemberConverter converter, ISqlSerializationTypeMapping typeMapping): this(typeMapping, columnName, converter) {
+		public SqlColumnInfo(MemberInfo memberInfo, string columnName, IMemberConverter converter, ISerializationTypeMapping typeMapping): this(typeMapping, columnName, converter) {
 			if (memberInfo == null) {
 				throw new ArgumentNullException("memberInfo");
 			}

@@ -32,7 +32,7 @@ using System.Reflection;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public interface ISerializationTypeMappingProvider {
-		ISqlSerializationTypeMapping GetMapping(Type type);
+		ISerializationTypeMapping GetMapping(Type type);
 
 		SqlColumnAttribute GetSqlColumnAttribute(MemberInfo member, bool autoCreate);
 	}
