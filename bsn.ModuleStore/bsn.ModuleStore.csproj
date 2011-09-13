@@ -59,7 +59,7 @@
     <Compile Include="Mapper\CachePolicy.cs" />
     <Compile Include="Mapper\ICallDeserializationInfo.cs" />
     <Compile Include="Mapper\IMetadataProvider.cs" />
-    <Compile Include="Mapper\InterfaceMetadata\ReflectionMetadataProvider.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\InterfaceMetadataProvider.cs" />
     <Compile Include="Mapper\InterfaceMetadata\SqlArgAttribute.cs">
       <SubType>Code</SubType>
     </Compile>

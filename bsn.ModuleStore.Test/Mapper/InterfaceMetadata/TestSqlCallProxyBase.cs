@@ -91,7 +91,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			nUnitSetup = new NUnitSetup("Data Source=tmp3dev;Initial Catalog=SqlCallProxyNunitTest;Integrated Security=True;");
 			nUnitSetup.SetupTestEnvironment();
 			IConnectionProvider connectionProvider = new ConnectionProvider(nUnitSetup.ConnectionString);
-			dataProvider = SqlCallProxy.Create<IDataProvider>(new ReflectionMetadataProvider(), connectionProvider);
+			dataProvider = SqlCallProxy.Create<IDataProvider>(new InterfaceMetadataProvider(), connectionProvider);
 			testData = new List<SimpleTestData>();
 			for (int i = 0; i < 100; i++) {
 				testData.Add(new SimpleTestData(Guid.NewGuid(), string.Format("key_{0}", i), i));
