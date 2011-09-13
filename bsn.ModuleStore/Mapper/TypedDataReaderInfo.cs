@@ -38,17 +38,14 @@ namespace bsn.ModuleStore.Mapper {
 	internal class TypedDataReaderInfo {
 		private static readonly Dictionary<Type, TypedDataReaderInfo> infos = new Dictionary<Type, TypedDataReaderInfo>();
 
-		public static TypedDataReaderInfo Get(Type type, ISerializationTypeMappingProvider serializationTypeMappingProvider) {
+		public static TypedDataReaderInfo Get(Type type) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
-			}
-			if (serializationTypeMappingProvider == null) {
-				throw new ArgumentNullException("serializationTypeMappingProvider");
 			}
 			TypedDataReaderInfo result;
 			lock (infos) {
 				if (!infos.TryGetValue(type, out result)) {
-					result = new TypedDataReaderInfo(type, serializationTypeMappingProvider);
+					result = new TypedDataReaderInfo(type);
 					infos.Add(type, result);
 				}
 			}
@@ -57,7 +54,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		private readonly Dictionary<string, KeyValuePair<string, Type>> properties;
 
-		private TypedDataReaderInfo(Type type, ISerializationTypeMappingProvider serializationTypeMappingProvider) {
+		private TypedDataReaderInfo(Type type) {
 			if (!typeof(ITypedDataReader).IsAssignableFrom(type)) {
 				throw new ArgumentException("The interface must inherit from ITypedDataReader");
 			}
@@ -67,7 +64,7 @@ namespace bsn.ModuleStore.Mapper {
 				if ((!property.CanRead) || (property.CanWrite)) {
 					throw new NotSupportedException("Properties for the typed data reader must be read-only.");
 				}
-				properties.Add(property.GetGetMethod().Name, new KeyValuePair<string, Type>(serializationTypeMappingProvider.GetSqlColumnAttribute(property, true).Name, property.PropertyType));
+				properties.Add(property.GetGetMethod().Name, new KeyValuePair<string, Type>(SqlColumnAttribute.GetSqlColumnAttribute(property, true).Name, property.PropertyType));
 			}
 		}
 

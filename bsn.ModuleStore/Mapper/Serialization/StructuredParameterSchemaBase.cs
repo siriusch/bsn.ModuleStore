@@ -1,7 +1,7 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2011 by Ars�ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -29,19 +29,14 @@
 //  
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-
-using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class StructuredParameterSchema: DataTable {
-		private struct ColumnInfo {
+	internal abstract class StructuredParameterSchemaBase: DataTable {
+		protected struct ColumnInfo {
 			private readonly string columnName;
 			private readonly Type dataType;
 			private readonly int? fieldIndex;
@@ -79,17 +74,70 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		private readonly ColumnInfo[] columns;
-		private readonly Action<object, object[]> extractMembers;
-		private readonly ReadOnlyCollection<SqlColumnInfo> mappedColumns;
+		private ColumnInfo[] columnInfos;
+		private Action<object, object[]> extractMembers;
+		private ReadOnlyCollection<SqlColumnInfo> mappedColumns;
 
-		public StructuredParameterSchema(CreateTypeAsTableStatement script, IDictionary<string, SqlColumnInfo> columnInfos) {
-			if (script == null) {
-				throw new ArgumentNullException("script");
+		public int ColumnCount {
+			get {
+				return columnInfos.Length;
 			}
-			if (columnInfos == null) {
-				throw new ArgumentNullException("columnInfos");
+		}
+
+		public Action<object, object[]> ExtractMembers {
+			get {
+				return extractMembers;
 			}
+			protected set {
+				extractMembers = value;
+			}
+		}
+
+		public ReadOnlyCollection<SqlColumnInfo> MappedColumns {
+			get {
+				return mappedColumns;
+			}
+			protected set {
+				mappedColumns = value;
+			}
+		}
+
+		protected ColumnInfo[] ColumnsInfos {
+			get {
+				return columnInfos;
+			}
+			set {
+				columnInfos = value;
+			}
+		}
+
+		public DbDataReader CreateReader(IEnumerable items) {
+			return new StructuredParameterReader(this, items);
+		}
+
+		public Type GetColumnDataType(int columnIndex) {
+			return columnInfos[columnIndex].DataType;
+		}
+
+		public string GetColumnName(int columnIndex) {
+			return columnInfos[columnIndex].ColumnName;
+		}
+
+		public string GetColumnTypeName(int columnIndex) {
+			return columnInfos[columnIndex].TypeName;
+		}
+
+		public bool TryGetFieldIndexOfColumn(int columnIndex, out int fieldIndex) {
+			if ((columnIndex >= 0) && (columnIndex < columnInfos.Length)) {
+				int? result = columnInfos[columnIndex].FieldIndex;
+				fieldIndex = result.GetValueOrDefault();
+				return result.HasValue;
+			}
+			fieldIndex = 0;
+			return false;
+		}
+
+		protected void SetupColumns(string tableName, string schemaname) {
 			/* The following colums are returned in a data reader created by an query to sql server but they do not exist in the framework column definitions!
 			 * schemaTable.Columns.Add("IsIdentity", typeof(Boolean));
 			 * schemaTable.Columns.Add("DataTypeName", typeof(String));
@@ -127,8 +175,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			DataColumn baseColumnNamespace = new DataColumn(SchemaTableOptionalColumn.BaseColumnNamespace, typeof(string));
 			DataColumn nonVersionedProviderType = new DataColumn(SchemaTableColumn.NonVersionedProviderType, typeof(int));
 			columnSize.DefaultValue = -1;
-			baseTableName.DefaultValue = script.ObjectName;
-			baseSchemaName.DefaultValue = script.ObjectSchema;
+			baseTableName.DefaultValue = tableName;
+			baseSchemaName.DefaultValue = schemaname;
 			isRowVersion.DefaultValue = false;
 			isLong.DefaultValue = false;
 			isReadOnly.DefaultValue = true;
@@ -163,122 +211,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			Columns.Add(baseTableNamespace);
 			Columns.Add(baseColumnNamespace);
 			Columns.Add(nonVersionedProviderType);
-			//			if (schema.HasNestedSerializers) {
-			//				throw new NotSupportedException("Nested serialization is not supported for table valued parameters!");
-			//			}
-			List<SqlColumnInfo> sqlColumnInfos = new List<SqlColumnInfo>();
-			List<ColumnInfo> columns = new List<ColumnInfo>();
-			foreach (TableColumnDefinition column in script.TableDefinitions.OfType<TableColumnDefinition>()) {
-				int? fieldIndex = null;
-				string columnType = null;
-				Type columnDataType = typeof(object);
-				DataRow row = NewRow();
-				row[columnName] = column.ColumnName.Value;
-				bool notNull = column.ColumnDefinition.Constraints.OfType<ColumnNotNullableConstraint>().Any();
-				row[allowDbNull] = !notNull;
-				SqlColumnInfo info;
-				if (columnInfos.TryGetValue(column.ColumnName.Value, out info)) {
-					columnDataType = info.Converter.DbClrType;
-				} else if (notNull) {
-					throw new InvalidOperationException(string.Format("The column {0} on the table type {1} is not nullable, but the re is no matching column for it", column.ColumnName, script.ObjectName));
-				} else {
-					Debug.Fail(string.Format("No matching field for column {0} of table type {1}", column.ColumnName, script.ObjectName));
-				}
-				row[dataType] = columnDataType;
-				TypedColumnDefinition typedColumn = column.ColumnDefinition as TypedColumnDefinition;
-				if (typedColumn != null) {
-					columnType = typedColumn.ColumnType.ToString();
-					switch (info.DbType) {
-					case SqlDbType.Decimal:
-						TypeNameWithScale scaledType = typedColumn.ColumnType.Name as TypeNameWithScale;
-						if (scaledType != null) {
-							row[numericScale] = scaledType.Scale;
-						}
-						goto case SqlDbType.Float;
-					case SqlDbType.Float:
-						TypeNameWithPrecision precisionType = typedColumn.ColumnType.Name as TypeNameWithPrecision;
-						if (precisionType != null) {
-							row[numericPrecision] = precisionType.Precision;
-						}
-						break;
-					case SqlDbType.Binary:
-					case SqlDbType.VarBinary:
-					case SqlDbType.Char:
-					case SqlDbType.VarChar:
-					case SqlDbType.NChar:
-					case SqlDbType.NVarChar:
-						TypeNameNamedExtension extendedType = typedColumn.ColumnType.Name as TypeNameNamedExtension;
-						if (extendedType != null) {
-							if (string.Equals("MAX", extendedType.Extension.Value, StringComparison.OrdinalIgnoreCase)) {
-								row[columnSize] = -1;
-							}
-						}
-						TypeNameWithPrecision lengthType = typedColumn.ColumnType.Name as TypeNameWithPrecision;
-						if (lengthType != null) {
-							row[columnSize] = lengthType.Precision;
-						}
-						break;
-					}
-					fieldIndex = sqlColumnInfos.Count;
-					sqlColumnInfos.Add(info);
-				}
-				row[baseColumnName] = info.Name;
-				row[providerType] = (int)info.DbType;
-				row[nonVersionedProviderType] = (int)info.DbType;
-				row[columnOrdinal] = columns.Count;
-				Rows.Add(row);
-				columns.Add(new ColumnInfo(fieldIndex, column.ColumnName.Value, columnType, columnDataType));
-			}
-			mappedColumns = sqlColumnInfos.AsReadOnly();
-			this.columns = columns.ToArray();
-			if ((mappedColumns.Count != 1) || (mappedColumns[0].MemberInfo != null)) {
-				extractMembers = MembersMethods.Get(mappedColumns.Select(c => c.MemberInfo).ToArray()).ExtractMembers;
-			}
-			AcceptChanges();
-		}
-
-		public int ColumnCount {
-			get {
-				return columns.Length;
-			}
-		}
-
-		public Action<object, object[]> ExtractMembers {
-			get {
-				return extractMembers;
-			}
-		}
-
-		public ReadOnlyCollection<SqlColumnInfo> MappedColumns {
-			get {
-				return mappedColumns;
-			}
-		}
-
-		public DbDataReader CreateReader(IEnumerable items) {
-			return new StructuredParameterReader(this, items);
-		}
-
-		public Type GetColumnDataType(int columnIndex) {
-			return columns[columnIndex].DataType;
-		}
-
-		public string GetColumnName(int columnIndex) {
-			return columns[columnIndex].ColumnName;
-		}
-
-		public string GetColumnTypeName(int columnIndex) {
-			return columns[columnIndex].TypeName;
-		}
-
-		public bool TryGetFieldIndexOfColumn(int columnIndex, out int fieldIndex) {
-			if ((columnIndex >= 0) && (columnIndex < columns.Length)) {
-				int? result = columns[columnIndex].FieldIndex;
-				fieldIndex = result.GetValueOrDefault();
-				return result.HasValue;
-			}
-			fieldIndex = 0;
-			return false;
 		}
 	}
 }

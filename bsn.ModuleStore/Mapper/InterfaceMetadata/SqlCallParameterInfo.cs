@@ -1,4 +1,33 @@
-﻿using System;
+﻿// bsn ModuleStore database versioning
+// -----------------------------------
+// 
+// Copyright 2011 by Arsène von Wyss - avw@gmx.ch
+// 
+// Development has been supported by Sirius Technologies AG, Basel
+// 
+// Source:
+// 
+// https://bsn-modulestore.googlecode.com/hg/
+// 
+// License:
+// 
+// The library is distributed under the GNU Lesser General Public License:
+// http://www.gnu.org/licenses/lgpl.html
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -16,6 +45,19 @@ using bsn.ModuleStore.Mapper.Serialization;
 
 namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 	internal class SqlCallParameterInfo {
+		internal static string GetClrUserDefinedTypeName(Type type) {
+			//string schemaName = ((argInfo != null) && !String.IsNullOrEmpty(argInfo.SchemaName)) ? argInfo.SchemaName.Replace("[", "").Replace("]", "") : "dbo";
+#warning check schemaname handling on GetClrUserDefinedTypeName
+			string schemaName = "dbo";
+			Type clrType = type.IsNullableType() ? type.GetGenericArguments()[0] : type;
+			SqlUserDefinedTypeAttribute[] attributes = (SqlUserDefinedTypeAttribute[])clrType.GetCustomAttributes(typeof(SqlUserDefinedTypeAttribute), false);
+			if (attributes.Length > 0) {
+				string typeName = attributes[0].Name.Replace("[", "").Replace("]", "");
+				return String.Format("[{0}].[{1}]", schemaName, typeName);
+			}
+			return String.Empty;
+		}
+
 		private static SqlArgAttribute GetSqlArgAttribute(ParameterInfo parameter) {
 			SqlArgAttribute arg = null;
 			foreach (SqlArgAttribute attribute in parameter.GetCustomAttributes(typeof(SqlArgAttribute), false)) {
@@ -27,14 +69,6 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				arg = (SqlArgAttribute)arg.CloneWithName(parameter.Name);
 			}
 			return arg;
-		}
-
-		private static SqlTableValueParameterAttribute GetSqlTablevalueParameterAttribute(ParameterInfo parameter) {
-			SqlTableValueParameterAttribute tvp = null;
-			foreach (SqlTableValueParameterAttribute attribute in parameter.GetCustomAttributes(typeof(SqlTableValueParameterAttribute), false)) {
-				tvp = attribute;
-			}
-			return tvp;
 		}
 
 		private static object GetXmlValue(object value, IList<IDisposable> disposeList) {
@@ -61,20 +95,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			return new SqlXml(reader);
 		}
 
-		private static string GetClrUserDefinedTypeName(Type type, SqlTableValueParameterAttribute tvpAttribute)
-		{
-			string schemaName = ((tvpAttribute != null) && !String.IsNullOrEmpty(tvpAttribute.SchemaName)) ? tvpAttribute.SchemaName.Replace("[", "").Replace("]", "") : "dbo";
-			Type clrType = type.IsNullableType() ? type.GetGenericArguments()[0] : type;
-			SqlUserDefinedTypeAttribute[] attributes = (SqlUserDefinedTypeAttribute[])clrType.GetCustomAttributes(typeof(SqlUserDefinedTypeAttribute), false);
-			if (attributes.Length > 0) {
-				string typeName = attributes[0].Name.Replace("[", "").Replace("]", "");
-				return String.Format("[{0}].[{1}]", schemaName, typeName);
-			}
-			return String.Empty;
-		}
-
 		private readonly ParameterDirection direction = ParameterDirection.Input;
-		private readonly Type listElementType;
 		private readonly bool nullable;
 		private readonly int outArgPosition;
 		private readonly string parameterName;
@@ -84,6 +105,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		private readonly SqlDbType sqlType;
 		private readonly ISerializationTypeInfoProvider typeInfoProvider;
 		private readonly string userDefinedTypeName;
+		private readonly StructuredParameterSchemaBase structuredSchema;
 
 		public SqlCallParameterInfo(ParameterInfo parameter, ISerializationTypeInfoProvider typeInfoProvider, ref int outArgCount) {
 			if (parameter == null) {
@@ -120,18 +142,11 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			if (direction != ParameterDirection.Input) {
 				outArgPosition = outArgCount++;
 			}
-			if ((sqlType == SqlDbType.Structured) && (listElementType == null)) {
-				listElementType = parameterType.GetGenericArguments()[0];
+			if (sqlType == SqlDbType.Structured) {
+				structuredSchema = new StructuredParameterSchema(typeInfoProvider.GetSerializationTypeInfo(parameterType.GetGenericArguments()[0]));
 			}
 			if ((sqlType == SqlDbType.Udt) && string.IsNullOrEmpty(arg.UserDefinedTypeName)) {
-				SqlTableValueParameterAttribute sqlTableValueParameterAttribute = GetSqlTablevalueParameterAttribute(parameter);
-				userDefinedTypeName = GetClrUserDefinedTypeName(parameter.ParameterType, sqlTableValueParameterAttribute);
-			}
-		}
-
-		public int OutArgPosition {
-			get {
-				return outArgPosition;
+				userDefinedTypeName = GetClrUserDefinedTypeName(parameter.ParameterType);
 			}
 		}
 
@@ -202,11 +217,9 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			if (values == null) {
 				throw new ArgumentException(string.Format("The value passed in for parameter '{0}' is castable to IEnumerable", parameterName));
 			}
-			//SqlTableValuedParameterReader dataReader = new SqlTableValuedParameterReader(typeInfoProvider.GetSerializationTypeInfo(this.listElementType), values);
-			//disposeList.Add(dataReader);
-			//return dataReader;
-#warning ReEnable TVP support with TableValueParameterReader
-			return value;
+			StructuredParameterReader dataReader = new StructuredParameterReader(structuredSchema, values);
+			disposeList.Add(dataReader);
+			return dataReader;
 		}
 	}
 }

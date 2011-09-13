@@ -69,6 +69,9 @@
     </Compile>
     <Compile Include="Mapper\InterfaceMetadata\SqlCallProcedureInfo.cs" />
     <Compile Include="Mapper\InterfaceMetadata\SqlProcAttribute.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\StructuredParameterSchema.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Mapper\ISqlCallInfo.cs" />
     <Compile Include="Mapper\IVersioned.cs" />
     <Compile Include="Mapper\MemberInfoExtensionMethods.cs" />
@@ -93,7 +96,7 @@
     <Compile Include="Mapper\Serialization\SerializationTypeMapping.cs" />
     <Compile Include="Mapper\Serialization\SerializationTypeInfoProvider.cs" />
     <Compile Include="Mapper\Serialization\SerializationTypeMappingProvider.cs" />
-    <Compile Include="Mapper\Serialization\SqlTableValueParameterAttribute.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\StructuredParameterAttribute.cs" />
     <Compile Include="Mapper\Serialization\StructuredParameterReader.cs" />
     <Compile Include="Mapper\DistinctInstanceProvider.cs" />
     <Compile Include="Mapper\IConnectionProvider.cs" />
@@ -106,7 +109,10 @@
     <Compile Include="Mapper\InstanceCacheAttribute.cs" />
     <Compile Include="Mapper\InstanceManager.cs" />
     <Compile Include="Mapper\InstanceOrigin.cs" />
-    <Compile Include="Mapper\Serialization\StructuredParameterSchema.cs">
+    <Compile Include="Mapper\AssemblyMetadata\StructuredParameterSchema.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mapper\Serialization\StructuredParameterSchemaBase.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Mapper\Serialization\XNodeMemberConverter.cs" />

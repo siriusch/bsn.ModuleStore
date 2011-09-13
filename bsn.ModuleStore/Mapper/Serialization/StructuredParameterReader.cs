@@ -41,11 +41,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class StructuredParameterReader: DbDataReader {
 		private readonly object[] data;
 		private readonly IEnumerator enumerator;
-		private readonly StructuredParameterSchema schema;
+		private readonly StructuredParameterSchemaBase schema;
 		private bool isClosed;
 		private int rowCount;
 
-		public StructuredParameterReader(StructuredParameterSchema schema, IEnumerable values) {
+		public StructuredParameterReader(StructuredParameterSchemaBase schema, IEnumerable values) {
 			if (schema == null) {
 				throw new ArgumentNullException("schema");
 			}

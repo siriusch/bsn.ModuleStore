@@ -2,20 +2,18 @@
 
 using System;
 
-using bsn.ModuleStore.Mapper.Serialization;
-
 namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 	internal class SimpleTestData: IEquatable<SimpleTestData> {
 		[SqlColumn("iData")]
-		[SqlTableValueParameter(Index = 2)]
+		[StructuredParameter(Position = 2)]
 		private int data;
 
 		[SqlColumn("uidKey")]
-		[SqlTableValueParameter(Index = 0)]
+		[StructuredParameter(Position = 0)]
 		private Guid id;
 
 		[SqlColumn("sKey")]
-		[SqlTableValueParameter(Index = 1)]
+		[StructuredParameter(Position = 1)]
 		private string key;
 
 		public SimpleTestData(Guid id, string key, int data) {

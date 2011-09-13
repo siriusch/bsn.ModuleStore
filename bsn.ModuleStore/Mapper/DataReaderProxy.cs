@@ -74,7 +74,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 			this.reader = reader;
 			this.serializationTypeMappingProvider = serializationTypeMappingProvider;
-			readerInfo = TypedDataReaderInfo.Get(type, serializationTypeMappingProvider);
+			readerInfo = TypedDataReaderInfo.Get(type);
 			columns = new Dictionary<string, KeyValuePair<int, Type>>(readerInfo.ColumnCount);
 		}
 

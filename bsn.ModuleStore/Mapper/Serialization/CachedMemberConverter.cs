@@ -62,9 +62,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private readonly IdentifiableGetter getter;
 		private readonly IMemberConverter identityMember;
 
-		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind, ISerializationTypeMappingProvider typeMappingProvider): base(type, isIdentity, columnName, memberIndex) {
+		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
 			foreach (MemberInfo member in type.GetAllFieldsAndProperties()) {
-				SqlColumnAttribute columnAttribute = typeMappingProvider.GetSqlColumnAttribute(member, false);
+				SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetSqlColumnAttribute(member, false);
 				if ((columnAttribute != null) && columnAttribute.Identity) {
 					identityMember = Get(member.GetMemberType(), false, columnName, memberIndex, dateTimeKind);
 					break;

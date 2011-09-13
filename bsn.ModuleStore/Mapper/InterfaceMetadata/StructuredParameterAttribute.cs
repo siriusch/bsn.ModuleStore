@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2011 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -26,47 +26,25 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//  
 
 using System;
-using System.Collections;
+using System.Reflection;
 
-namespace bsn.ModuleStore.Mapper.Serialization {
-	public interface ISerializationTypeInfo {
-		Type InstanceType {
-			get;
+namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
+	[AttributeUsage(AttributeTargets.Property|AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+	public class StructuredParameterAttribute: Attribute {
+		public static StructuredParameterAttribute GetStructuredParameterAttribute(MemberInfo memberInfo) {
+			StructuredParameterAttribute[] attributes = (StructuredParameterAttribute[])memberInfo.GetCustomAttributes(typeof(StructuredParameterAttribute), true);
+			if (attributes.Length > 0) {
+				return attributes[0];
+			}
+			return null;
 		}
 
-		bool IsCollection {
+		public int Position {
 			get;
+			set;
 		}
-
-		bool IsXmlInstanceType {
-			get;
-		}
-
-		Type ListType {
-			get;
-		}
-
-		ISerializationTypeMapping Mapping {
-			get;
-		}
-
-		bool RequiresNotification {
-			get;
-		}
-
-		IMemberConverter SimpleConverter {
-			get;
-		}
-
-		Type Type {
-			get;
-		}
-
-		IList CreateList();
-
-		object FinalizeList(IList list);
 	}
 }

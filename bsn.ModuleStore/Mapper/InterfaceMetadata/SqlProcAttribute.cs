@@ -6,7 +6,7 @@ using bsn.ModuleStore.Mapper.Serialization;
 namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 	/// The SqlProcAttribute attribute is used to specify an explicit database procedure binding on an interface.
 	/// <br/><br/>
-	/// Information which can be specified includes the <see cref="SqlNameAttribute.Name"/>, <see cref="Timeout"/>, <see cref="UseReturnValue"/>, <see cref="DeserializeRowLimit"/>, <see cref="DeserializeReturnNullOnEmptyReader"/> and <see cref="DeserializeCallConstructor"/>.
+	/// Information which can be specified includes the <see cref="Timeout"/>, <see cref="UseReturnValue"/>, <see cref="DeserializeRowLimit"/>, <see cref="DeserializeReturnNullOnEmptyReader"/> and <see cref="DeserializeCallConstructor"/>.
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 	public sealed class SqlProcAttribute : Attribute {
 		internal SqlProcAttribute CloneWithName(string newName)

@@ -47,6 +47,12 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			Debug.WriteLine("TestList: getting testdata...");
 			List<SimpleTestData> simpleTestDatas = dataProvider.spListSimpleTypes(null);
 			Assert.AreEqual(testData.Count, simpleTestDatas.Count);
+			foreach (SimpleTestData t in testData) {
+				Assert.True(simpleTestDatas.Contains(t));
+			}
+			foreach (SimpleTestData t in simpleTestDatas) {
+				Assert.True(testData.Contains(t));
+			}
 		}
 
 		protected void RunGetObject() {

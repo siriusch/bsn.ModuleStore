@@ -125,20 +125,20 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if (!(type.IsPrimitive || type.IsInterface || (typeof(string) == type))) {
 				bool hasIdentity = false;
 				foreach (MemberInfo member in type.GetAllFieldsAndProperties()) {
-					SqlColumnAttribute columnAttribute = typeMappingProvider.GetSqlColumnAttribute(member, false);
+					SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetSqlColumnAttribute(member, false);
 					Type memberType = member.GetMemberType();
 					if (columnAttribute != null) {
 						AssertValidMember(member);
 						bool isIdentity = (!hasIdentity) && (hasIdentity |= columnAttribute.Identity);
 						IMemberConverter memberConverter;
 						if (columnAttribute.GetCachedByIdentity) {
-							memberConverter = new CachedMemberConverter(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind, typeMappingProvider);
+							memberConverter = new CachedMemberConverter(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
 						} else {
 							memberConverter = MemberConverter.Get(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
 						}
 						memberConverters.Add(memberConverter);
 						memberInfos.Add(member);
-						columns.Add(columnAttribute.Name, new SqlColumnInfo(member, columnAttribute.Name, memberConverter, this));
+						columns.Add(columnAttribute.Name, new SqlColumnInfo(member, columnAttribute.Name, memberConverter, typeMappingProvider.GetMapping(memberType)));
 					} else if (member.IsDefined(typeof(SqlDeserializeAttribute), true)) {
 						AssertValidMember(member);
 						NestedMemberConverter nestedMemberConverter;

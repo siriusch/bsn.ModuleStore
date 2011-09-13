@@ -30,6 +30,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Reflection;
 
 using bsn.ModuleStore.Mapper.Serialization;
 
@@ -39,6 +40,30 @@ namespace bsn.ModuleStore.Mapper {
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Field|AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 	public class SqlColumnAttribute: Attribute {
+		/// <summary>
+		/// Get a single <see cref="SqlColumnAttribute"/> instance.
+		/// </summary>
+		/// <param name="member">The <see cref="MemberInfo"/> to query for the <see cref="SqlColumnAttribute"/> attribute.</param>
+		/// <param name="autoCreate">If true, a <see cref="SqlColumnAttribute"/> is inferred from the MemberInfo when no attribute is found. Otherwise, null is returned in this situation.</param>
+		/// <returns>The <see cref="SqlColumnAttribute"/> for the member.</returns>
+		public static SqlColumnAttribute GetSqlColumnAttribute(MemberInfo member, bool autoCreate) {
+			if (member == null) {
+				throw new ArgumentNullException("member");
+			}
+			SqlColumnAttribute[] columnAttributes = (SqlColumnAttribute[])member.GetCustomAttributes(typeof(SqlColumnAttribute), true);
+			if (columnAttributes.Length > 0) {
+				SqlColumnAttribute result = columnAttributes[0];
+				if (string.IsNullOrEmpty(result.Name)) {
+					result = result.CloneWithName(member.Name);
+				}
+				return result;
+			}
+			if (autoCreate) {
+				return new SqlColumnAttribute(member.Name);
+			}
+			return null;
+		}
+
 		private DateTimeKind dateTimeKind = DateTimeKind.Unspecified;
 		private bool getCachedByIdentity;
 		private bool identity;
