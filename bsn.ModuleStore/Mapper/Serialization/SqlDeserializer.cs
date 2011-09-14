@@ -113,9 +113,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	/// The DbDeserializer class is the base class for the generic <see cref="SqlDeserializer{T}"/> class. Please use the generic version, this class is for internal use only by <see cref="SqlCallProxy"/>.
 	/// </summary>
 	/// <seealso cref="SqlDeserializer{T}"/>
-	internal class SqlDeserializer: IDisposable {
-		internal class DeserializerContext : IDeserializerContext
-		{
+	public class SqlDeserializer: IDisposable {
+		protected internal class DeserializerContext: IDeserializerContext {
 			private readonly IDictionary<SqlDeserializer, object[]> buffers = new Dictionary<SqlDeserializer, object[]>();
 			private readonly bool callConstructor;
 			private readonly SqlDeserializationContext context;
@@ -123,26 +122,30 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			private XmlNameTable nameTable;
 			private XmlDocument xmlDocument;
 
-			internal DeserializerContext(SqlDeserializationContext context, SqlDataReader dataReader, bool callConstructor, XmlNameTable nameTable)
-			{
+			internal DeserializerContext(SqlDeserializationContext context, SqlDataReader dataReader, bool callConstructor, XmlNameTable nameTable) {
 				this.dataReader = dataReader;
 				this.context = context;
 				this.callConstructor = callConstructor;
 				this.nameTable = nameTable;
 			}
 
-			public SqlDataReader DataReader
-			{
-				get
-				{
+			internal object[] GetBuffer(SqlDeserializer deserializer) {
+				object[] result;
+				if (!buffers.TryGetValue(deserializer, out result)) {
+					result = new object[deserializer.TypeInfo.Mapping.MemberCount];
+					buffers.Add(deserializer, result);
+				}
+				return result;
+			}
+
+			public SqlDataReader DataReader {
+				get {
 					return dataReader;
 				}
 			}
 
-			public XmlNameTable NameTable
-			{
-				get
-				{
+			public XmlNameTable NameTable {
+				get {
 					if (nameTable == null) {
 						nameTable = new NameTable();
 					}
@@ -150,10 +153,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 			}
 
-			public XmlDocument XmlDocument
-			{
-				get
-				{
+			public XmlDocument XmlDocument {
+				get {
 					if (xmlDocument == null) {
 						xmlDocument = new XmlDocument(NameTable);
 					}
@@ -170,28 +171,15 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				return result;
 			}
 
-			public bool IsDeserialized(object obj) {
-				return context.IsDeserialized(obj);
-			}
-
+			public void RequireDeserialization(object obj) {
 				context.AssertDeserialization(obj);
 			}
 
-			public bool IsDeserialized(object obj)
-			{
+			public bool IsDeserialized(object obj) {
 				return context.IsDeserialized(obj);
 			}
-
-			internal object[] GetBuffer(SqlDeserializer deserializer)
-			{
-				object[] result;
-				if (!buffers.TryGetValue(deserializer, out result)) {
-					result = new object[deserializer.TypeInfo.Mapping.MemberCount];
-					buffers.Add(deserializer, result);
-				}
-				return result;
-			}
 		}
+
 		private readonly SortedList<int, MemberConverter> columnConverters;
 		private readonly SqlDeserializationContext context;
 		private readonly Dictionary<NestedMemberConverter, SqlDeserializer> nestedDeserializers;
