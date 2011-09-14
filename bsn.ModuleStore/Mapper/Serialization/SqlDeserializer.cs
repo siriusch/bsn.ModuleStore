@@ -162,6 +162,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				return result;
 			}
 
+			public bool IsDeserialized(object obj) {
+				return context.IsDeserialized(obj);
+			}
+
 			public void RequireDeserialization(object obj) {
 				context.AssertDeserialization(obj);
 			}
@@ -270,8 +274,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 			}
 			object result = context.GetInstance(typeInfo.InstanceType, identity, out instanceOrigin);
-			if ((result != null)) {
-				if (instanceOrigin != InstanceOrigin.ResultSet) {
+			if (result != null) {
+				if (!context.IsDeserialized(result)) {
+					if (instanceOrigin == InstanceOrigin.ResultSet) {
+						// this was a forward-created reference (see CachedMemberConverter.ProcessFromDb), thus mark it as being new
+						instanceOrigin = InstanceOrigin.New;
+					}
 					TypeInfo.Mapping.PopulateInstanceMembers(result, buffer);
 					this.context.NotifyInstancePopulated(result);
 					if (typeInfo.RequiresNotification) {

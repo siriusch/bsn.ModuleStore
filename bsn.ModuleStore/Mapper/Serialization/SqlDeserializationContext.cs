@@ -61,6 +61,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
+		public bool IsDeserialized(object obj) {
+			bool result;
+			return deserialized.TryGetValue(obj, out result) && result;
+		}
+
 		public bool TryGetInstance(Type instanceType, object identity, out object result, out InstanceOrigin instanceOrigin) {
 			if (provider != null) {
 				return provider.TryGetInstance(state, instanceType, identity, out result, out instanceOrigin);
