@@ -61,18 +61,15 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public bool IsDeserialized(object instance) {
-			bool isDeserialized;
-			if (deserialized.TryGetValue(instance, out isDeserialized)) {
-				return isDeserialized;
-			}
-			return false;
-		}
-
 		public void ForgetInstance(Type type, object identity) {
 			if (provider != null) {
 				provider.ForgetInstance(state, type, identity);
 			}
+		}
+
+		public bool IsDeserialized(object obj) {
+			bool result;
+			return deserialized.TryGetValue(obj, out result) && result;
 		}
 
 		public bool TryGetInstance(Type instanceType, object identity, out object result, out InstanceOrigin instanceOrigin) {

@@ -1,6 +1,8 @@
 ﻿! -----------------------------------------------------------------------------------
-! T-SQL Script Analyzer
+! T-SQL Grammar
 ! -----------------------------------------------------------------------------------
+! In exception to the overall bsn ModuleStore project, this grammar file is licensed
+! under LGPL and MIT license - http://www.opensource.org/licenses/mit-license.php
 
 "Name"         = 'T-SQL 2008 (strict subset)'
 "Version"      = '2008'

@@ -49,7 +49,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	/// <seealso cref="SqlDeserializeAttribute"/>
 	/// <seealso cref="ISqlDeserializationHook"/>
 	/// <typeparam name="T">The type of the object to be deserialized to.</typeparam>
-	internal class SqlDeserializer<T>: SqlDeserializer {
+	public class SqlDeserializer<T>: SqlDeserializer {
 		private readonly bool callConstructor;
 
 		/// <summary>
@@ -161,8 +161,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 			}
 
-			public object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin)
-			{
+			public object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin) {
 				object result;
 				if (!context.TryGetInstance(instanceType, identity, out result, out instanceOrigin)) {
 					instanceOrigin = InstanceOrigin.New;
@@ -171,8 +170,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				return result;
 			}
 
-			public void RequireDeserialization(object obj)
-			{
+			public bool IsDeserialized(object obj) {
+				return context.IsDeserialized(obj);
+			}
+
 				context.AssertDeserialization(obj);
 			}
 
@@ -285,13 +286,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 			}
 			object result = context.GetInstance(typeInfo.InstanceType, identity, out instanceOrigin);
-			if ((result != null)) {
-				if ((instanceOrigin == InstanceOrigin.ResultSet) && !context.IsDeserialized(result)) {
-					// If the instance was created during forward instance creation, it will be of origin ResultSet but has
-					// not been deserialized so far. In this case we change the origin to new to force deserialization.
-					instanceOrigin = InstanceOrigin.New;
-				}
-				if (instanceOrigin != InstanceOrigin.ResultSet) {
+			if (result != null) {
+				if (!context.IsDeserialized(result)) {
+					if (instanceOrigin == InstanceOrigin.ResultSet) {
+						// this was a forward-created reference (see CachedMemberConverter.ProcessFromDb), thus mark it as being new
+						instanceOrigin = InstanceOrigin.New;
+					}
 					TypeInfo.Mapping.PopulateInstanceMembers(result, buffer);
 					this.context.NotifyInstancePopulated(result);
 					if (typeInfo.RequiresNotification) {
