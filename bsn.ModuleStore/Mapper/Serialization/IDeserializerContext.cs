@@ -1,7 +1,7 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -28,16 +28,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
 using System;
+using System.Data.SqlClient;
 using System.Xml;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class XmlDocumentMemberConverter: XPathNavigableMemberConverter {
-		public XmlDocumentMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
-
-		protected override object GetXmlObject(IDeserializerContext context, XmlReader reader) {
-			XmlDocument doc = new XmlDocument(context.NameTable);
-			doc.Load(reader);
-			return doc;
+	public interface IDeserializerContext {
+		SqlDataReader DataReader {
+			get;
 		}
+
+		XmlNameTable NameTable {
+			get;
+		}
+
+		XmlDocument XmlDocument {
+			get;
+		}
+
+		object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin);
+
+		void RequireDeserialization(object obj);
+
+		bool IsDeserialized(object obj);
 	}
 }

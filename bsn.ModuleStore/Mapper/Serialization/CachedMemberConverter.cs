@@ -92,7 +92,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public override object ProcessFromDb(DeserializerContext context, int column) {
+		public override object ProcessFromDb(IDeserializerContext context, int column) {
 			object identity = identityMember.ProcessFromDb(context, column);
 			if (identity != null) {
 				InstanceOrigin instanceOrigin;

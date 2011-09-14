@@ -57,8 +57,10 @@
     <Compile Include="Mapper\InterfaceMetadata\NUnitSetup.cs" />
     <Compile Include="Mapper\InterfaceMetadata\SimpleTestData.cs" />
     <Compile Include="Mapper\InterfaceMetadata\TestChild.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\TestChildMultiResultsets.cs" />
     <Compile Include="Mapper\InterfaceMetadata\TestChildWithoutParent.cs" />
     <Compile Include="Mapper\InterfaceMetadata\TestParent.cs" />
+    <Compile Include="Mapper\InterfaceMetadata\TestParentMultiResultsets.cs" />
     <Compile Include="Mapper\InterfaceMetadata\TestParentWithChildren.cs" />
     <Compile Include="Mapper\InterfaceMetadata\TestSqlCallProxy.cs" />
     <Compile Include="Mapper\InterfaceMetadata\TestSqlCallProxyBase.cs" />

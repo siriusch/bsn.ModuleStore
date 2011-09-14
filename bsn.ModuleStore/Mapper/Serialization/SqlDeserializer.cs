@@ -49,7 +49,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	/// <seealso cref="SqlDeserializeAttribute"/>
 	/// <seealso cref="ISqlDeserializationHook"/>
 	/// <typeparam name="T">The type of the object to be deserialized to.</typeparam>
-	public class SqlDeserializer<T>: SqlDeserializer {
+	internal class SqlDeserializer<T>: SqlDeserializer {
 		private readonly bool callConstructor;
 
 		/// <summary>
@@ -113,7 +113,84 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	/// The DbDeserializer class is the base class for the generic <see cref="SqlDeserializer{T}"/> class. Please use the generic version, this class is for internal use only by <see cref="SqlCallProxy"/>.
 	/// </summary>
 	/// <seealso cref="SqlDeserializer{T}"/>
-	public class SqlDeserializer: IDisposable {
+	internal class SqlDeserializer: IDisposable {
+		internal class DeserializerContext : IDeserializerContext
+		{
+			private readonly IDictionary<SqlDeserializer, object[]> buffers = new Dictionary<SqlDeserializer, object[]>();
+			private readonly bool callConstructor;
+			private readonly SqlDeserializationContext context;
+			private readonly SqlDataReader dataReader;
+			private XmlNameTable nameTable;
+			private XmlDocument xmlDocument;
+
+			internal DeserializerContext(SqlDeserializationContext context, SqlDataReader dataReader, bool callConstructor, XmlNameTable nameTable)
+			{
+				this.dataReader = dataReader;
+				this.context = context;
+				this.callConstructor = callConstructor;
+				this.nameTable = nameTable;
+			}
+
+			public SqlDataReader DataReader
+			{
+				get
+				{
+					return dataReader;
+				}
+			}
+
+			public XmlNameTable NameTable
+			{
+				get
+				{
+					if (nameTable == null) {
+						nameTable = new NameTable();
+					}
+					return nameTable;
+				}
+			}
+
+			public XmlDocument XmlDocument
+			{
+				get
+				{
+					if (xmlDocument == null) {
+						xmlDocument = new XmlDocument(NameTable);
+					}
+					return xmlDocument;
+				}
+			}
+
+			public object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin)
+			{
+				object result;
+				if (!context.TryGetInstance(instanceType, identity, out result, out instanceOrigin)) {
+					instanceOrigin = InstanceOrigin.New;
+					result = (callConstructor) ? Activator.CreateInstance(instanceType, true) : FormatterServices.GetUninitializedObject(instanceType);
+				}
+				return result;
+			}
+
+			public void RequireDeserialization(object obj)
+			{
+				context.AssertDeserialization(obj);
+			}
+
+			public bool IsDeserialized(object obj)
+			{
+				return context.IsDeserialized(obj);
+			}
+
+			internal object[] GetBuffer(SqlDeserializer deserializer)
+			{
+				object[] result;
+				if (!buffers.TryGetValue(deserializer, out result)) {
+					result = new object[deserializer.TypeInfo.Mapping.MemberCount];
+					buffers.Add(deserializer, result);
+				}
+				return result;
+			}
+		}
 		private readonly SortedList<int, MemberConverter> columnConverters;
 		private readonly SqlDeserializationContext context;
 		private readonly Dictionary<NestedMemberConverter, SqlDeserializer> nestedDeserializers;
@@ -209,6 +286,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 			object result = context.GetInstance(typeInfo.InstanceType, identity, out instanceOrigin);
 			if ((result != null)) {
+				if ((instanceOrigin == InstanceOrigin.ResultSet) && !context.IsDeserialized(result)) {
+					// If the instance was created during forward instance creation, it will be of origin ResultSet but has
+					// not been deserialized so far. In this case we change the origin to new to force deserialization.
+					instanceOrigin = InstanceOrigin.New;
+				}
 				if (instanceOrigin != InstanceOrigin.ResultSet) {
 					TypeInfo.Mapping.PopulateInstanceMembers(result, buffer);
 					this.context.NotifyInstancePopulated(result);
@@ -237,16 +319,16 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		internal IEnumerable<T> DeserializeInstancesInternal<T>(int maxRows, bool callConstructor, XmlNameTable nameTable) {
 			Debug.Assert(typeof(T).IsAssignableFrom(TypeInfo.InstanceType));
-			DeserializerContext context = new DeserializerContext(this.context, reader, callConstructor, nameTable);
+			DeserializerContext deserializerContext = new DeserializerContext(context, reader, callConstructor, nameTable);
 			while (maxRows > 0) {
 				if (!reader.Read()) {
 					break;
 				}
 				if (typeInfo.SimpleConverter != null) {
-					yield return (T)typeInfo.SimpleConverter.ProcessFromDb(context, 0);
+					yield return (T)typeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0);
 				} else {
 					InstanceOrigin instanceOrigin;
-					T instance = (T)CreateInstance(context, out instanceOrigin);
+					T instance = (T)CreateInstance(deserializerContext, out instanceOrigin);
 					if (instanceOrigin != InstanceOrigin.ResultSet) {
 						yield return instance;
 					}

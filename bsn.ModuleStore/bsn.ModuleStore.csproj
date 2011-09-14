@@ -80,7 +80,7 @@
     <Compile Include="Mapper\Serialization\ConvertibleMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\DateTimeMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\DateTimeOffsetMemberConverter.cs" />
-    <Compile Include="Mapper\Serialization\DeserializerContext.cs" />
+    <Compile Include="Mapper\Serialization\IDeserializerContext.cs" />
     <Compile Include="Mapper\Serialization\IMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\ISerializationTypeInfo.cs" />
     <Compile Include="Mapper\Serialization\ISerializationTypeInfoProvider.cs" />

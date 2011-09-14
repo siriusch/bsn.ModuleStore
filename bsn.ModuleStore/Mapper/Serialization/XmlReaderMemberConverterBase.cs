@@ -44,9 +44,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		protected XmlReaderMemberConverterBase(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
-		protected abstract object GetXmlObject(DeserializerContext context, XmlReader reader);
+		protected abstract object GetXmlObject(IDeserializerContext context, XmlReader reader);
 
-		protected override sealed object ProcessXmlReader(DeserializerContext context, XmlReader xmlReader) {
+		protected override sealed object ProcessXmlReader(IDeserializerContext context, XmlReader xmlReader) {
 			using (xmlReader) {
 				return GetXmlObject(context, xmlReader);
 			}

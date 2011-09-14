@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using NUnit.Framework;
 
@@ -12,7 +13,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		[TestFixtureSetUp]
 		public void Setup() {
 			SetupTests();
-			DataProvider.Provider = new DistinctInstanceProvider<Guid>();
+			DataProvider.Provider = new SingleInstanceProvider<Guid>();
 		}
 
 		[TestFixtureTearDown]
@@ -74,6 +75,28 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		[Test(Description = "Tests a sp call without a parameter and without input")]
 		public void TestSimpleSpCall() {
 			RunSimpleSpCall();
+		}
+
+		[Test(Description = "Tests multiple resultsets with parent and child without relation")]
+		public void RunMulitResultSetParentChildNoRelation()
+		{
+			ResultSet<TestChildWithoutParent, ResultSet<TestParent>> result = DataProvider.spListParentChildMultiResultsWithoutRelation();
+			Assert.AreEqual(6, result.Count);
+			Assert.AreEqual(2, result.Inner.Count);
+		}
+
+		[Test(Description = "Tests multiple resultsets with child to parent relationship")]
+		public void RunMulitResultSetParentChildNonCircularParent()
+		{
+			try {
+				ResultSet<TestChildMultiResultsets, ResultSet<TestParentMultiResultsets>> result = DataProvider.spListParentChildMultiResultsChildParent();
+				Assert.AreEqual(6, result.Count);
+				Assert.AreEqual(2, result.Inner.Count);
+			} catch (Exception ex) {
+				Debug.WriteLine(ex.ToString());
+				throw new ApplicationException("rethrown", ex);
+			}
+
 		}
 	}
 }

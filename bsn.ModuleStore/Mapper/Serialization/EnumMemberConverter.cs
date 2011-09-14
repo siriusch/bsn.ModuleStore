@@ -39,7 +39,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			Debug.Assert(underlyingType != null);
 		}
 
-		public override object ProcessFromDb(DeserializerContext context, int column) {
+		public override object ProcessFromDb(IDeserializerContext context, int column) {
 			object result = base.ProcessFromDb(context, column);
 			if (result != null) {
 				switch (Type.GetTypeCode(result.GetType())) {

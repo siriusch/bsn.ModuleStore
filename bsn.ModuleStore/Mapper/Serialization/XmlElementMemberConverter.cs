@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class XmlElementMemberConverter: XmlReaderMemberConverterBase {
 		public XmlElementMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
-		protected override object GetXmlObject(DeserializerContext context, XmlReader reader) {
+		protected override object GetXmlObject(IDeserializerContext context, XmlReader reader) {
 			if (HasContent(reader)) {
 				context.XmlDocument.Load(reader);
 				XmlElement result = context.XmlDocument.DocumentElement;

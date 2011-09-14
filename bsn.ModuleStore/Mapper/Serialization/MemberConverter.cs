@@ -114,7 +114,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public virtual object ProcessFromDb(DeserializerContext context, int column) {
+		public virtual object ProcessFromDb(IDeserializerContext context, int column) {
 			object result = context.DataReader.GetValue(column);
 			if (result == DBNull.Value) {
 				return null;

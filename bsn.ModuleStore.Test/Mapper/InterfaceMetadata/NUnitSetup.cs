@@ -93,6 +93,24 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("ORDER BY [p].[uidParent]");
 			sb.AppendLine("END");
 			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
+			sb.AppendLine("CREATE PROCEDURE [dbo].[spListParentChildMultiResultsWithoutRelation]");
+			sb.AppendLine("AS BEGIN");
+			sb.AppendLine("SET NOCOUNT ON ;");
+			sb.AppendLine("SELECT [uidChild], [sKey] sKeyChild, [uidParent] FROM [dbo].[tblChild] AS c ORDER BY [sKey]");
+			sb.AppendLine("SELECT [p].[uidParent] ,[p].[sKey] sKeyParent FROM [dbo].[tblParent] AS p ORDER BY [sKey]");
+			sb.AppendLine("END");
+			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
+			sb.AppendLine("CREATE PROCEDURE [dbo].[spListParentChildMultiResultsChildParent]");
+			sb.AppendLine("AS BEGIN");
+			sb.AppendLine("SET NOCOUNT ON ;");
+			sb.AppendLine("SELECT [uidChild], [sKey] sKeyChild, [uidParent] FROM [dbo].[tblChild] AS c ORDER BY [sKey]");
+			sb.AppendLine("SELECT  [p].[uidParent] ,[p].[sKey] sKeyParent ,[c].[uidChild]");
+			sb.AppendLine("FROM    [dbo].[tblParent] AS p JOIN [dbo].[tblChild] AS c ON [p].[uidParent] = [c].[uidParent]");
+			sb.AppendLine("ORDER BY p.[sKey]");
+			sb.AppendLine("END");
+			ExecuteSqlStatement(sb.ToString());
 		}
 
 		private void CreateTables() {
@@ -107,6 +125,25 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine(")WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY] ");
 			sb.AppendLine(") ON [PRIMARY] ");
 			sb.AppendLine("ALTER TABLE [dbo].[tblSimpleTypes] ADD  CONSTRAINT [DF_tblSimpleTypes_uidKey]  DEFAULT (newid()) FOR [uidKey] ");
+			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
+			sb.AppendLine("CREATE TABLE [dbo].[tblParent](");
+			sb.AppendLine("[uidParent] [uniqueidentifier] ROWGUIDCOL  NOT NULL, [sKey] [nvarchar](50) NOT NULL,");
+			sb.AppendLine("CONSTRAINT [PK_tblParent] PRIMARY KEY CLUSTERED (	[uidParent] ASC )");
+			sb.AppendLine("WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]");
+			sb.AppendLine(") ON [PRIMARY]");
+			sb.AppendLine("ALTER TABLE [dbo].[tblParent] ADD  CONSTRAINT [DF_tblParent_uidParent]  DEFAULT (newid()) FOR [uidParent]");
+			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
+			sb.AppendLine("CREATE TABLE [dbo].[tblChild](");
+			sb.AppendLine("[uidChild] [uniqueidentifier] ROWGUIDCOL  NOT NULL,	[sKey] [nvarchar](50) NOT NULL,	[uidParent] [uniqueidentifier] NOT NULL,");
+			sb.AppendLine("CONSTRAINT [PK_tblChild] PRIMARY KEY CLUSTERED ( [uidChild] ASC )");
+			sb.AppendLine("WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]");
+			sb.AppendLine(") ON [PRIMARY]");
+			sb.AppendLine("ALTER TABLE [dbo].[tblChild]  WITH CHECK ADD  CONSTRAINT [FK_tblChild_tblParent] FOREIGN KEY([uidParent])");
+			sb.AppendLine("REFERENCES [dbo].[tblParent] ([uidParent])");
+			sb.AppendLine("ALTER TABLE [dbo].[tblChild] CHECK CONSTRAINT [FK_tblChild_tblParent]");
+			sb.AppendLine("ALTER TABLE [dbo].[tblChild] ADD  CONSTRAINT [DF_tblChild_uidChild]  DEFAULT (newid()) FOR [uidChild]");
 			ExecuteSqlStatement(sb.ToString());
 		}
 
@@ -145,6 +182,12 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spListParentChild]') AND type in (N'P', N'PC')) BEGIN");
 			sb.AppendLine("DROP PROCEDURE [dbo].[spListParentChild]");
 			sb.AppendLine("END");
+			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spListParentChildMultiResultsWithoutRelation]') AND type in (N'P', N'PC')) BEGIN");
+			sb.AppendLine("DROP PROCEDURE [dbo].[spListParentChildMultiResultsWithoutRelation]");
+			sb.AppendLine("END");
+			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spListParentChildMultiResultsChildParent]') AND type in (N'P', N'PC')) BEGIN");
+			sb.AppendLine("DROP PROCEDURE [dbo].[spListParentChildMultiResultsChildParent]");
+			sb.AppendLine("END");
 			ExecuteSqlStatement(sb.ToString());
 		}
 
@@ -152,6 +195,25 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[tblSimpleTypes]') AND type in (N'U')) begin ");
 			sb.AppendLine("DROP TABLE [dbo].[tblSimpleTypes]");
+			sb.AppendLine("END");
+			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
+			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_tblChild_tblParent]') AND parent_object_id = OBJECT_ID(N'[dbo].[tblChild]')) BEGIN");
+			sb.AppendLine("ALTER TABLE [dbo].[tblChild] DROP CONSTRAINT [FK_tblChild_tblParent]");
+			sb.AppendLine("END");
+			sb.AppendLine("IF  EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[DF_tblChild_uidChild]') AND type = 'D') BEGIN");
+			sb.AppendLine("ALTER TABLE [dbo].[tblChild] DROP CONSTRAINT [DF_tblChild_uidChild]");
+			sb.AppendLine("END");
+			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[tblChild]') AND type in (N'U')) BEGIN");
+			sb.AppendLine("DROP TABLE [dbo].[tblChild]");
+			sb.AppendLine("END");
+			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
+			sb.AppendLine("IF  EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[DF_tblParent_uidParent]') AND type = 'D') BEGIN");
+			sb.AppendLine("ALTER TABLE [dbo].[tblParent] DROP CONSTRAINT [DF_tblParent_uidParent]");
+			sb.AppendLine("END");
+			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[tblParent]') AND type in (N'U')) BEGIN");
+			sb.AppendLine("DROP TABLE [dbo].[tblParent]");
 			sb.AppendLine("END");
 			ExecuteSqlStatement(sb.ToString());
 		}

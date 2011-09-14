@@ -61,6 +61,14 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
+		public bool IsDeserialized(object instance) {
+			bool isDeserialized;
+			if (deserialized.TryGetValue(instance, out isDeserialized)) {
+				return isDeserialized;
+			}
+			return false;
+		}
+
 		public void ForgetInstance(Type type, object identity) {
 			if (provider != null) {
 				provider.ForgetInstance(state, type, identity);

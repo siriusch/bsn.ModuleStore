@@ -51,7 +51,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			get;
 		}
 
-		object ProcessFromDb(DeserializerContext context, int column);
+		object ProcessFromDb(IDeserializerContext context, int column);
 
 		object ProcessToDb(object value);
 	}

@@ -1,17 +1,15 @@
-﻿#if DEBUG
-
-using System;
+﻿using System;
 
 namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
-	internal class TestChildWithoutParent: IEquatable<TestChildWithoutParent>, IIdentifiable<Guid> {
+	internal class TestChildMultiResultsets: IIdentifiable<Guid>, IEquatable<TestChildMultiResultsets> {
 		[SqlColumn("uidChild", Identity = true)]
 		private Guid id;
 
 		[SqlColumn("sKeyChild")]
 		private string key;
 
-		[SqlColumn("uidParent")]
-		private Guid parentId;
+		[SqlColumn("uidParent", GetCachedByIdentity = true)]
+		private TestParentMultiResultsets parent;
 
 		public string Key {
 			get {
@@ -22,12 +20,12 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			}
 		}
 
-		public Guid ParentId {
+		public TestParentMultiResultsets Parent {
 			get {
-				return parentId;
+				return parent;
 			}
 			set {
-				parentId = value;
+				parent = value;
 			}
 		}
 
@@ -38,17 +36,17 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			if (ReferenceEquals(this, obj)) {
 				return true;
 			}
-			if (obj.GetType() != typeof(TestChildWithoutParent)) {
+			if (obj.GetType() != typeof(TestChildMultiResultsets)) {
 				return false;
 			}
-			return Equals((TestChildWithoutParent)obj);
+			return Equals((TestChildMultiResultsets)obj);
 		}
 
 		public override int GetHashCode() {
 			return id.GetHashCode();
 		}
 
-		public bool Equals(TestChildWithoutParent other) {
+		public bool Equals(TestChildMultiResultsets other) {
 			if (ReferenceEquals(null, other)) {
 				return false;
 			}
@@ -68,5 +66,3 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		}
 	}
 }
-
-#endif

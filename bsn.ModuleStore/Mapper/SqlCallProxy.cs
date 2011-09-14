@@ -290,7 +290,7 @@ namespace bsn.ModuleStore.Mapper {
 										} else {
 											using (SqlDeserializationContext context = new SqlDeserializationContext(provider, serializationTypeInfoProvider)) {
 												if (returnTypeInfo.SimpleConverter != null) {
-													DeserializerContext deserializerContext = new DeserializerContext(context, reader, procInfo.DeserializeCallConstructor, xmlNameTable);
+													SqlDeserializer.DeserializerContext deserializerContext = new SqlDeserializer.DeserializerContext(context, reader, procInfo.DeserializeCallConstructor, xmlNameTable);
 													if (returnTypeInfo.IsCollection) {
 														IList list = returnTypeInfo.CreateList();
 														for (int row = procInfo.DeserializeRowLimit; reader.Read() && (row > 0); row--) {
