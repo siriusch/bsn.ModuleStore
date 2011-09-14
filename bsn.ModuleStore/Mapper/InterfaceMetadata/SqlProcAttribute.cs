@@ -32,9 +32,6 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		/// <param name="name">The name to be used as binding.</param>
 		/// <param name="schemaName"></param>
 		public SqlProcAttribute(string name, string schemaName) {
-			if (string.IsNullOrEmpty(name)) {
-				throw new ArgumentNullException("name");
-			}
 			Name = name;
 			SchemaName = string.IsNullOrEmpty(schemaName) ? "dbo" : schemaName.Replace("[","").Replace("]","");
 			DeserializeRowLimit = int.MaxValue;
