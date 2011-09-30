@@ -59,13 +59,32 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			}
 		}
 
-		[Test(Description = "Tests parents with nested list of children marked with SqlDeserializeAttribute")]
+		[Test(Description = "Tests parents with nested list of children marked with SqlDeserializeAttribute and no null children")]
 		public void TestNestedObjectsWithEndDeserialization() {
 			List<TestParentWithChildren> parents = DataProvider.spListParentWithChildren();
 			Assert.AreEqual(2, parents.Count);
 			foreach (TestParentWithChildren testParent in parents) {
 				Assert.NotNull(testParent.Children);
 				Assert.AreEqual(3, testParent.Children.Count);
+				foreach (TestChildWithoutParent testChild in testParent.Children) {
+					Assert.AreEqual(testParent.Id, testChild.ParentId);
+				}
+			}
+		}
+
+		[Test(Description = "Tests parents with nested list of children marked with SqlDeserializeAttribute with null children")]
+		public void TestNestedObjectsWithEndDeserializationWithNullChildren()
+		{
+			List<TestParentWithChildren> parents = DataProvider.spListParentWithChildrenWithNull();
+			Guid emptyChildrenParent = new Guid("F475E4B4-09F6-4334-8C1F-EB53E26B0280");
+			Assert.AreEqual(3, parents.Count);
+			foreach (TestParentWithChildren testParent in parents) {
+				Assert.NotNull(testParent.Children);
+				if (testParent.Id == emptyChildrenParent) {
+					Assert.AreEqual(0, testParent.Children.Count);
+				} else {
+					Assert.AreEqual(3, testParent.Children.Count);
+				}
 				foreach (TestChildWithoutParent testChild in testParent.Children) {
 					Assert.AreEqual(testParent.Id, testChild.ParentId);
 				}
@@ -82,7 +101,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		{
 			ResultSet<TestChildWithoutParent, ResultSet<TestParent>> result = DataProvider.spListParentChildMultiResultsWithoutRelation();
 			Assert.AreEqual(6, result.Count);
-			Assert.AreEqual(2, result.Inner.Count);
+			Assert.AreEqual(3, result.Inner.Count);
 		}
 
 		[Test(Description = "Tests multiple resultsets with child to parent relationship")]

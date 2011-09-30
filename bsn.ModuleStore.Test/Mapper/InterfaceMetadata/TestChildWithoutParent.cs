@@ -10,7 +10,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		[SqlColumn("sKeyChild")]
 		private string key;
 
-		[SqlColumn("uidParent")]
+		[SqlColumn("uidChildParent")]
 		private Guid parentId;
 
 		public string Key {

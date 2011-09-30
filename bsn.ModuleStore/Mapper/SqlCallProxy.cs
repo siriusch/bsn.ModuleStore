@@ -302,7 +302,7 @@ namespace bsn.ModuleStore.Mapper {
 														returnValue = returnTypeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0);
 													}
 												} else {
-													returnValue = new SqlDeserializer(context, reader, returnType, false).DeserializeInternal(procInfo.DeserializeRowLimit, procInfo.DeserializeCallConstructor, xmlNameTable);
+													returnValue = new SqlDeserializer(context, reader, returnType, false, false).DeserializeInternal(procInfo.DeserializeRowLimit, procInfo.DeserializeCallConstructor, xmlNameTable);
 												}
 											}
 										}

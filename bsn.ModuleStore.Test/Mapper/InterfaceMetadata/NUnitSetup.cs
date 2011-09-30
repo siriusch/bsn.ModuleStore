@@ -76,6 +76,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("DELETE FROM [dbo].[tblParent];");
 			sb.AppendLine("INSERT  INTO [dbo].[tblParent] ( [uidParent],[sKey] ) VALUES  ( '63129E3A-A32A-4CBC-B869-1E185C56BBEB',N'Parent 1')");
 			sb.AppendLine("INSERT  INTO [dbo].[tblParent] ( [uidParent],[sKey] ) VALUES  ( '2900945C-AF46-45CB-A881-5763EB474A88',N'Parent 2')");
+			sb.AppendLine("INSERT  INTO [dbo].[tblParent] ( [uidParent],[sKey] ) VALUES  ( 'F475E4B4-09F6-4334-8C1F-EB53E26B0280',N'Parent 3')");
 			sb.AppendLine("INSERT INTO [dbo].[tblChild] ( [uidChild], [sKey], [uidParent] ) VALUES  ( 'EF8F2CC5-3F5C-4799-96B0-8D1055BD05C3', N'Child 1.1', '63129E3A-A32A-4CBC-B869-1E185C56BBEB' )");
 			sb.AppendLine("INSERT INTO [dbo].[tblChild] ( [uidChild], [sKey], [uidParent] ) VALUES  ( 'DBE1A912-E3B0-449E-A5D8-F5000B6C453B', N'Child 1.2', '63129E3A-A32A-4CBC-B869-1E185C56BBEB' )");
 			sb.AppendLine("INSERT INTO [dbo].[tblChild] ( [uidChild], [sKey], [uidParent] ) VALUES  ( '516FE5D1-99DD-45ED-934E-DA0DD38192FF', N'Child 1.3', '63129E3A-A32A-4CBC-B869-1E185C56BBEB' )");
@@ -88,8 +89,17 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("CREATE PROCEDURE [dbo].[spListParentChild]");
 			sb.AppendLine("AS BEGIN");
 			sb.AppendLine("SET NOCOUNT ON ;");
-			sb.AppendLine("SELECT  [p].[uidParent] uidParent,[p].[sKey] sKeyParent,[uidChild] uidChild,[c].[sKey] sKeyChild");
+			sb.AppendLine("SELECT  [p].[uidParent] uidParent,[p].[sKey] sKeyParent,[c].[uidParent] uidChildParent,[uidChild] uidChild,[c].[sKey] sKeyChild");
 			sb.AppendLine("FROM    [dbo].[tblChild] AS c JOIN [dbo].[tblParent] AS p ON [c].[uidParent] = [p].[uidParent]");
+			sb.AppendLine("ORDER BY [p].[uidParent]");
+			sb.AppendLine("END");
+			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
+			sb.AppendLine("CREATE PROCEDURE [dbo].[spListParentChildWithNull]");
+			sb.AppendLine("AS BEGIN");
+			sb.AppendLine("SET NOCOUNT ON ;");
+			sb.AppendLine("SELECT  [p].[uidParent] uidParent,[p].[sKey] sKeyParent,[c].[uidParent] uidChildParent,[uidChild] uidChild,[c].[sKey] sKeyChild");
+			sb.AppendLine("FROM    [dbo].[tblParent] AS p LEFT JOIN [dbo].[tblChild] AS c ON [c].[uidParent] = [p].[uidParent]");
 			sb.AppendLine("ORDER BY [p].[uidParent]");
 			sb.AppendLine("END");
 			ExecuteSqlStatement(sb.ToString());
@@ -97,7 +107,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("CREATE PROCEDURE [dbo].[spListParentChildMultiResultsWithoutRelation]");
 			sb.AppendLine("AS BEGIN");
 			sb.AppendLine("SET NOCOUNT ON ;");
-			sb.AppendLine("SELECT [uidChild], [sKey] sKeyChild, [uidParent] FROM [dbo].[tblChild] AS c ORDER BY [sKey]");
+			sb.AppendLine("SELECT [uidChild], [sKey] sKeyChild,[uidParent] uidChildParent FROM [dbo].[tblChild] AS c ORDER BY [sKey]");
 			sb.AppendLine("SELECT [p].[uidParent] ,[p].[sKey] sKeyParent FROM [dbo].[tblParent] AS p ORDER BY [sKey]");
 			sb.AppendLine("END");
 			ExecuteSqlStatement(sb.ToString());
@@ -181,6 +191,9 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("END");
 			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spListParentChild]') AND type in (N'P', N'PC')) BEGIN");
 			sb.AppendLine("DROP PROCEDURE [dbo].[spListParentChild]");
+			sb.AppendLine("END");
+			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spListParentChildWithNull]') AND type in (N'P', N'PC')) BEGIN");
+			sb.AppendLine("DROP PROCEDURE [dbo].[spListParentChildWithNull]");
 			sb.AppendLine("END");
 			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spListParentChildMultiResultsWithoutRelation]') AND type in (N'P', N'PC')) BEGIN");
 			sb.AppendLine("DROP PROCEDURE [dbo].[spListParentChildMultiResultsWithoutRelation]");

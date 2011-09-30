@@ -58,7 +58,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		/// <remarks>Disposing the DbDeserializer will also dispose the reader. Also, you must not continue to use the Deserializer afterwards if you call <see cref="SqlDataReader.NextResult"/>.</remarks>
 		/// <param name="reader">The SqlDataReader to read data from. The DbDeserializer will take ownership of the reader.</param>
 		/// <param name="callConstructor">If true, the normal default constructor is called instead of creating empty instances. Empty instances, however, are much faster.</param>
-		public SqlDeserializer(SqlDeserializationContext context, SqlDataReader reader, bool callConstructor): base(context, reader, typeof(T), true) {
+		public SqlDeserializer(SqlDeserializationContext context, SqlDataReader reader, bool callConstructor): base(context, reader, typeof(T), true, false) {
 			this.callConstructor = callConstructor;
 		}
 
@@ -180,14 +180,23 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
+		private static bool AreAllBufferElementsNull(object[] buffer) {
+			bool allBufferElementsNull = true;
+			for (int i = 0; (i < buffer.Length) && (allBufferElementsNull); i++) {
+				allBufferElementsNull &= (buffer[i] == null);
+			}
+			return allBufferElementsNull;
+		}
+
 		private readonly SortedList<int, MemberConverter> columnConverters;
 		private readonly SqlDeserializationContext context;
 		private readonly Dictionary<NestedMemberConverter, SqlDeserializer> nestedDeserializers;
 		private readonly SqlDataReader reader;
+		private readonly bool returnNullOnEmptyBuffer;
 		private readonly ISerializationTypeInfo typeInfo;
 		private bool disposeReader;
 
-		internal SqlDeserializer(SqlDeserializationContext context, SqlDataReader reader, Type type, bool disposeReader) {
+		internal SqlDeserializer(SqlDeserializationContext context, SqlDataReader reader, Type type, bool disposeReader, bool returnNullOnEmptyBuffer) {
 			if (context == null) {
 				throw new ArgumentNullException("context");
 			}
@@ -197,6 +206,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if (type.IsAbstract || type.IsInterface || type.IsPrimitive || type.IsPointer || typeof(ResultSet).IsAssignableFrom(type)) {
 				throw new NotSupportedException("Deserialization only supports normal classes and structs.");
 			}
+			this.returnNullOnEmptyBuffer = returnNullOnEmptyBuffer;
 			this.context = context;
 			this.reader = reader;
 			this.disposeReader = disposeReader;
@@ -208,7 +218,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 						nestedDeserializers = new Dictionary<NestedMemberConverter, SqlDeserializer>();
 					}
 #warning Cyclic nested members would cause a stack overflow here
-					SqlDeserializer nestedDeserializer = new SqlDeserializer(context, reader, nestedConverter.Type, false);
+					SqlDeserializer nestedDeserializer = new SqlDeserializer(context, reader, nestedConverter.Type, false, true);
 					NestedListMemberConverter nestedListConverter = nestedConverter as NestedListMemberConverter;
 					nestedDeserializers.Add(nestedListConverter ?? nestedConverter, nestedDeserializer);
 				} else {
@@ -268,9 +278,17 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					buffer[nested.Key.MemberIndex] = nested.Value.CreateInstance(context, out nestedOrigin);
 					if (nested.Key is NestedListMemberConverter) {
 						IList list = nested.Value.TypeInfo.CreateList();
-						list.Add(buffer[nested.Key.MemberIndex]);
+						if (buffer[nested.Key.MemberIndex] != null) {
+							list.Add(buffer[nested.Key.MemberIndex]);
+						}
 						buffer[nested.Key.MemberIndex] = list;
 					}
+				}
+			}
+			if (returnNullOnEmptyBuffer) {
+				if (AreAllBufferElementsNull(buffer)) {
+					instanceOrigin = InstanceOrigin.None;
+					return null;
 				}
 			}
 			object result = context.GetInstance(typeInfo.InstanceType, identity, out instanceOrigin);

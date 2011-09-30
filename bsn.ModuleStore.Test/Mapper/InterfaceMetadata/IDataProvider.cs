@@ -24,6 +24,9 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		[SqlProc("spListParentChild")]
 		List<TestParentWithChildren> spListParentWithChildren();
 
+		[SqlProc("spListParentChildWithNull")]
+		List<TestParentWithChildren> spListParentWithChildrenWithNull();
+
 		[SqlProc("spListSimpleTypes")]
 		List<SimpleTestData> spListSimpleTypes(string sKey);
 
