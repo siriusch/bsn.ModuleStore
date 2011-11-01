@@ -153,6 +153,7 @@
     <Compile Include="Mapper\Serialization\XPathDocumentMemberConverter.cs" />
     <Compile Include="Mapper\AssemblyMetadata\SqlMappingAttribute.cs" />
     <Compile Include="Mapper\AssemblyMetadata\SqlParameterAttribute.cs" />
+    <Compile Include="Mapper\SqlColumnAttributeBase.cs" />
     <Compile Include="Mapper\TypeExtensionMethods.cs" />
     <Compile Include="Mapper\VersionedInstance.cs" />
     <Compile Include="ModuleDatabase.cs" />

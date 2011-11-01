@@ -12,7 +12,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 	/// </summary>
 	/// <remarks>XML arguments are supported if they are <see cref="XmlReader"/>, <see cref="XPathNavigator"/> or <see cref="IXPathNavigable"/></remarks>
 	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
-	public sealed class SqlArgAttribute: SqlColumnAttribute {
+	public sealed class SqlArgAttribute: SqlColumnAttributeBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlArgAttribute"/> class.
 		/// </summary>

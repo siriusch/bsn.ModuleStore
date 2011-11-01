@@ -64,7 +64,7 @@ namespace bsn.ModuleStore.Mapper {
 				if ((!property.CanRead) || (property.CanWrite)) {
 					throw new NotSupportedException("Properties for the typed data reader must be read-only.");
 				}
-				properties.Add(property.GetGetMethod().Name, new KeyValuePair<string, Type>(SqlColumnAttribute.GetSqlColumnAttribute(property, true).Name, property.PropertyType));
+				properties.Add(property.GetGetMethod().Name, new KeyValuePair<string, Type>(SqlColumnAttributeBase.Get<SqlColumnAttribute>(property, true).Name, property.PropertyType));
 			}
 		}
 

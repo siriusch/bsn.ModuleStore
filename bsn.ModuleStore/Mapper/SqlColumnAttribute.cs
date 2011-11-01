@@ -27,10 +27,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  
-
 using System;
-using System.ComponentModel;
-using System.Reflection;
 
 using bsn.ModuleStore.Mapper.Serialization;
 
@@ -39,35 +36,14 @@ namespace bsn.ModuleStore.Mapper {
 	/// The <see cref="SqlColumnAttribute"/> is used to change the binding name on <see cref="ITypedDataReader"/> interfaces, or to specify the fields to be deserialized when the <see cref="SqlDeserializer"/> is used.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Field|AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-	public class SqlColumnAttribute: Attribute {
-		/// <summary>
-		/// Get a single <see cref="SqlColumnAttribute"/> instance.
-		/// </summary>
-		/// <param name="member">The <see cref="MemberInfo"/> to query for the <see cref="SqlColumnAttribute"/> attribute.</param>
-		/// <param name="autoCreate">If true, a <see cref="SqlColumnAttribute"/> is inferred from the MemberInfo when no attribute is found. Otherwise, null is returned in this situation.</param>
-		/// <returns>The <see cref="SqlColumnAttribute"/> for the member.</returns>
-		public static SqlColumnAttribute GetSqlColumnAttribute(MemberInfo member, bool autoCreate) {
-			if (member == null) {
-				throw new ArgumentNullException("member");
-			}
-			SqlColumnAttribute[] columnAttributes = (SqlColumnAttribute[])member.GetCustomAttributes(typeof(SqlColumnAttribute), true);
-			if (columnAttributes.Length > 0) {
-				SqlColumnAttribute result = columnAttributes[0];
-				if (string.IsNullOrEmpty(result.Name)) {
-					result = result.CloneWithName(member.Name);
-				}
-				return result;
-			}
-			if (autoCreate) {
-				return new SqlColumnAttribute(member.Name);
-			}
-			return null;
-		}
+	public class SqlColumnAttribute: SqlColumnAttributeBase {
+		private bool notNull;
 
-		private DateTimeKind dateTimeKind = DateTimeKind.Unspecified;
-		private bool getCachedByIdentity;
-		private bool identity;
-		private string name;
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SqlColumnAttribute"/> class, specifying a column name for the mapping.
+		/// </summary>
+		/// <param name="name">The SQL column name to be used for mapping this member</param>
+		public SqlColumnAttribute(string name): base(name) {}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlColumnAttribute"/> class.
@@ -75,63 +51,15 @@ namespace bsn.ModuleStore.Mapper {
 		public SqlColumnAttribute(): this(null) {}
 
 		/// <summary>
-		/// Create a new <see cref="SqlColumnAttribute"/>.
+		/// Determine whether a column is allowed to be null
 		/// </summary>
-		/// <param name="name">The DB column name to bind to.</param>
-		public SqlColumnAttribute([Localizable(false)] string name) {
-			this.name = name;
-		}
-
-		/// <summary>
-		/// Gets or sets the kind of the DateTime, if the instance is one.
-		/// </summary>
-		/// <value>The kind of the date time.</value>
-		public DateTimeKind DateTimeKind {
+		public bool NotNull {
 			get {
-				return dateTimeKind;
+				return notNull;
 			}
 			set {
-				dateTimeKind = value;
+				notNull = value;
 			}
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the column <see cref="SqlColumnAttribute"/> is a foreign key to an instance cached by identity in the provider.
-		/// </summary>
-		public bool GetCachedByIdentity {
-			get {
-				return getCachedByIdentity;
-			}
-			set {
-				getCachedByIdentity = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the column <see cref="SqlColumnAttribute"/> is an identity column for this data type.
-		/// </summary>
-		public bool Identity {
-			get {
-				return identity;
-			}
-			set {
-				identity = value;
-			}
-		}
-
-		/// <summary>
-		/// The name for the database binding.
-		/// </summary>
-		public string Name {
-			get {
-				return name;
-			}
-		}
-
-		public virtual SqlColumnAttribute CloneWithName(string newName) {
-			SqlColumnAttribute result = (SqlColumnAttribute)MemberwiseClone();
-			result.name = newName;
-			return result;
 		}
 	}
 }

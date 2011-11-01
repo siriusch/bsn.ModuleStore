@@ -35,7 +35,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class CachedMemberConverter: MemberConverter {
 		private abstract class IdentifiableGetter {
 			internal sealed class Generic<T>: IdentifiableGetter where T: struct, IEquatable<T> {
+// ReSharper disable StaticFieldInGenericType
+// ReSharper disable UnusedMember.Local
 				public static readonly Generic<T> Default = new Generic<T>();
+// ReSharper restore UnusedMember.Local
+// ReSharper restore StaticFieldInGenericType
 
 				public override Type Type {
 					get {
@@ -64,7 +68,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
 			foreach (MemberInfo member in type.GetAllFieldsAndProperties()) {
-				SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetSqlColumnAttribute(member, false);
+				SqlColumnAttribute columnAttribute = SqlColumnAttributeBase.Get<SqlColumnAttribute>(member, false);
 				if ((columnAttribute != null) && columnAttribute.Identity) {
 					identityMember = Get(member.GetMemberType(), false, columnName, memberIndex, dateTimeKind);
 					break;
