@@ -58,7 +58,9 @@ namespace bsn.ModuleStore.Console {
 			}
 
 			public KeyValuePair<CustomAttributeInfo, string>[] GetAssemblyCustomAttributeData() {
-				return AssemblyHandle.FindCustomAttributes(assembly, CustomAssemblyAttributes, CustomMemberAttributes);
+// ReSharper disable RedundantTypeArgumentsOfMethod
+				return AssemblyHandle.FindCustomAttributes<CustomAttributeInfo>(assembly, CustomAssemblyAttributes, CustomMemberAttributes);
+// ReSharper restore RedundantTypeArgumentsOfMethod
 			}
 
 			public string[] GetManifestResourceNames() {
