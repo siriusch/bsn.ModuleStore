@@ -26,7 +26,6 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
 
 using System;
 using System.Collections;
@@ -39,28 +38,34 @@ using System.Reflection;
 using Microsoft.SqlServer.Server;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	public class SerializationTypeMapping : ISerializationTypeMapping
-	{
-		private static readonly Dictionary<Type, SqlDbType> dbTypeMapping = new Dictionary<Type, SqlDbType> {
-		                                                                                                    		{typeof(long), SqlDbType.BigInt},
-		                                                                                                    		{typeof(byte[]), SqlDbType.VarBinary},
-		                                                                                                    		{typeof(bool), SqlDbType.Bit},
-		                                                                                                    		{typeof(char), SqlDbType.NChar},
-		                                                                                                    		{typeof(char[]), SqlDbType.NVarChar},
-		                                                                                                    		{typeof(string), SqlDbType.NVarChar},
-		                                                                                                    		{typeof(DateTime), SqlDbType.DateTime},
-		                                                                                                    		{typeof(DateTimeOffset), SqlDbType.DateTimeOffset},
-		                                                                                                    		{typeof(decimal), SqlDbType.Decimal},
-		                                                                                                    		{typeof(float), SqlDbType.Real},
-		                                                                                                    		{typeof(double), SqlDbType.Float},
-		                                                                                                    		{typeof(int), SqlDbType.Int},
-		                                                                                                    		{typeof(short), SqlDbType.SmallInt},
-		                                                                                                    		{typeof(byte), SqlDbType.TinyInt},
-		                                                                                                    		{typeof(Guid), SqlDbType.UniqueIdentifier}
-		                                                                                                    };
+	public class SerializationTypeMapping: ISerializationTypeMapping {
+		// the boolean specifies whether this is a native type or not
+		private static readonly Dictionary<Type, KeyValuePair<SqlDbType, bool>> dbTypeMapping = new Dictionary<Type, KeyValuePair<SqlDbType, bool>> {
+				{typeof(long), new KeyValuePair<SqlDbType, bool>(SqlDbType.BigInt, true)},
+				{typeof(byte[]), new KeyValuePair<SqlDbType, bool>(SqlDbType.VarBinary, true)},
+				{typeof(bool), new KeyValuePair<SqlDbType, bool>(SqlDbType.Bit, true)},
+				{typeof(char), new KeyValuePair<SqlDbType, bool>(SqlDbType.NChar, true)},
+				{typeof(char[]), new KeyValuePair<SqlDbType, bool>(SqlDbType.NVarChar, true)},
+				{typeof(string), new KeyValuePair<SqlDbType, bool>(SqlDbType.NVarChar, true)},
+				{typeof(DateTime), new KeyValuePair<SqlDbType, bool>(SqlDbType.DateTime, true)},
+				{typeof(DateTimeOffset), new KeyValuePair<SqlDbType, bool>(SqlDbType.DateTimeOffset, true)},
+				{typeof(decimal), new KeyValuePair<SqlDbType, bool>(SqlDbType.Decimal, true)},
+				{typeof(float), new KeyValuePair<SqlDbType, bool>(SqlDbType.Real, true)},
+				{typeof(double), new KeyValuePair<SqlDbType, bool>(SqlDbType.Float, true)},
+				{typeof(int), new KeyValuePair<SqlDbType, bool>(SqlDbType.Int, true)},
+				{typeof(short), new KeyValuePair<SqlDbType, bool>(SqlDbType.SmallInt, true)},
+				{typeof(byte), new KeyValuePair<SqlDbType, bool>(SqlDbType.TinyInt, true)},
+				{typeof(Guid), new KeyValuePair<SqlDbType, bool>(SqlDbType.UniqueIdentifier, true)}
+		};
 
-		private static SqlDbType GetTypeMapping(Type type)
-		{
+		private static bool CheckNativeType(Type type) {
+			lock (dbTypeMapping) {
+				KeyValuePair<SqlDbType, bool> dbType;
+				return dbTypeMapping.TryGetValue(type, out dbType) && dbType.Value;
+			}
+		}
+
+		private static SqlDbType GetTypeMapping(Type type) {
 			if (type != null) {
 				if (type.IsByRef && type.HasElementType) {
 					type = type.GetElementType();
@@ -68,64 +73,55 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				} else {
 					type = Nullable.GetUnderlyingType(type) ?? type;
 				}
-				SqlDbType result;
+				KeyValuePair<SqlDbType, bool> mapping;
 				lock (dbTypeMapping) {
-					if (dbTypeMapping.TryGetValue(type, out result)) {
-						return result;
+					if (dbTypeMapping.TryGetValue(type, out mapping)) {
+						return mapping.Key;
 					}
-					if (type.IsXmlType()) {
-						result = SqlDbType.Xml;
+					SqlDbType result;
+					if (type.IsDefined(typeof(SqlUserDefinedTypeAttribute), false)) {
+						result = SqlDbType.Udt;
 					} else {
-						Type dummyType;
-						if (type.TryGetIEnumerableElementType(out dummyType)) {
-							result = SqlDbType.Structured;
+						if (type.IsXmlType()) {
+							result = SqlDbType.Xml;
 						} else {
-							if (type.IsDefined(typeof(SqlUserDefinedTypeAttribute), false)) {
-								result = SqlDbType.Udt;
+							Type dummyType;
+							if (type.TryGetIEnumerableElementType(out dummyType)) {
+								result = SqlDbType.Structured;
 							} else {
 								result = SqlDbType.Variant;
 							}
 						}
 					}
-					dbTypeMapping.Add(type, result);
+					dbTypeMapping.Add(type, new KeyValuePair<SqlDbType, bool>(result, result == SqlDbType.Xml));
+					return result;
 				}
-				return result;
 			}
 			return SqlDbType.Variant;
 		}
 
-		private static bool CheckNativeType(Type type)
-		{
-			lock (dbTypeMapping) {
-				SqlDbType dbType;
-				if (dbTypeMapping.TryGetValue(type, out dbType)) {
-					return dbType != SqlDbType.Variant;
-				}
-			}
-			return false;
-		}
 		private readonly Dictionary<string, SqlColumnInfo> columns = new Dictionary<string, SqlColumnInfo>(StringComparer.OrdinalIgnoreCase);
 		private readonly ReadOnlyCollection<IMemberConverter> converters;
+		private readonly SqlDbType dbType;
 		private readonly bool hasNestedSerializers;
+		private readonly bool isNativeType;
 		private readonly MemberInfo[] members;
 		private readonly MembersMethods methods;
-		private readonly bool isNativeType;
-		private readonly SqlDbType dbType;
 
-		public SerializationTypeMapping(Type type, ISerializationTypeMappingProvider typeMappingProvider)  {
+		public SerializationTypeMapping(Type type, ISerializationTypeMappingProvider typeMappingProvider) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
-
+			// required to enable recursive resolution of mappings
+			typeMappingProvider.RegisterMapping(type, this);
 			List<IMemberConverter> memberConverters = new List<IMemberConverter>();
 			List<MemberInfo> memberInfos = new List<MemberInfo>();
 			isNativeType = CheckNativeType(type);
 			dbType = GetTypeMapping(type);
-
 			if (!(type.IsPrimitive || type.IsInterface || (typeof(string) == type))) {
 				bool hasIdentity = false;
 				foreach (MemberInfo member in type.GetAllFieldsAndProperties()) {
-					SqlColumnAttribute columnAttribute = SqlColumnAttribute.GetSqlColumnAttribute(member, false);
+					SqlColumnAttribute columnAttribute = SqlColumnAttributeBase.Get<SqlColumnAttribute>(member, false);
 					Type memberType = member.GetMemberType();
 					if (columnAttribute != null) {
 						AssertValidMember(member);
@@ -159,61 +155,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			methods = MembersMethods.Get(members);
 		}
 
-		public SqlDbType DbType
-		{
-			get
-			{
-				return dbType;
-			}
-		}
-
-		public bool IsNativeType
-		{
-			get
-			{
-				return isNativeType;
-			}
-		}
-
-		public IDictionary<string, SqlColumnInfo> Columns {
-			get {
-				return columns;
-			}
-		}
-
-		public ReadOnlyCollection<IMemberConverter> Converters
-		{
-			get {
-				return converters;
-			}
-		}
-
-		public bool HasNestedSerializers
-		{
-			get {
-				return hasNestedSerializers;
-			}
-		}
-
-		public int MemberCount
-		{
-			get {
-				return members.Length;
-			}
-		}
-
-		public object GetMember(object instance, int index)
-		{
-			Debug.Assert((instance != null) && (index >= 0) && (methods.GetMember != null));
-			return methods.GetMember(instance, index);
-		}
-
-		public void PopulateInstanceMembers(object result, object[] buffer)
-		{
-			Debug.Assert((result != null) && (buffer != null) && (methods.PopulateMembers != null));
-			methods.PopulateMembers(result, buffer);
-		}
-
 		private void AssertValidMember(MemberInfo memberInfo) {
 			FieldInfo fieldInfo = memberInfo as FieldInfo;
 			if (fieldInfo != null) {
@@ -236,6 +177,52 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					throw new ArgumentException("Only fields and properties are supported", "memberInfo");
 				}
 			}
+		}
+
+		public SqlDbType DbType {
+			get {
+				return dbType;
+			}
+		}
+
+		public bool IsNativeType {
+			get {
+				return isNativeType;
+			}
+		}
+
+		public IDictionary<string, SqlColumnInfo> Columns {
+			get {
+				return columns;
+			}
+		}
+
+		public ReadOnlyCollection<IMemberConverter> Converters {
+			get {
+				return converters;
+			}
+		}
+
+		public bool HasNestedSerializers {
+			get {
+				return hasNestedSerializers;
+			}
+		}
+
+		public int MemberCount {
+			get {
+				return members.Length;
+			}
+		}
+
+		public object GetMember(object instance, int index) {
+			Debug.Assert((instance != null) && (index >= 0) && (methods.GetMember != null));
+			return methods.GetMember(instance, index);
+		}
+
+		public void PopulateInstanceMembers(object result, object[] buffer) {
+			Debug.Assert((result != null) && (buffer != null) && (methods.PopulateMembers != null));
+			methods.PopulateMembers(result, buffer);
 		}
 	}
 }

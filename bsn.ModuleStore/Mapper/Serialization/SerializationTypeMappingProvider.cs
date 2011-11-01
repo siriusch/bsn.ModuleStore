@@ -26,28 +26,34 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SerializationTypeMappingProvider: ISerializationTypeMappingProvider {
-		private static readonly Dictionary<Type, SerializationTypeMapping> mappings = new Dictionary<Type, SerializationTypeMapping>();
+		private static readonly Dictionary<Type, ISerializationTypeMapping> mappings = new Dictionary<Type, ISerializationTypeMapping>();
 
 		public ISerializationTypeMapping GetMapping(Type type) {
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
-			SerializationTypeMapping result;
+			ISerializationTypeMapping result;
 			lock (mappings) {
 				if (!mappings.TryGetValue(type, out result)) {
 					result = new SerializationTypeMapping(type, this);
-					mappings.Add(type, result);
+					if (!mappings.ContainsKey(type)) {
+						mappings.Add(type, result);
+					}
 				}
 			}
 			return result;
 		}
 
+		public void RegisterMapping(Type type, ISerializationTypeMapping mapping) {
+			lock (mappings) {
+				mappings.Add(type, mapping);
+			}
+		}
 	}
 }
