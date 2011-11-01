@@ -21,10 +21,23 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			TeardownTests();
 		}
 
-		[Test(Description = "Tests the insert of multiple records using table value parameters")]
-		public void TestTvpInsert()
-		{
-			RunTvpInsert();
+		[Test(Description = "Tests multiple resultsets with parent and child without relation")]
+		public void RunMulitResultSetParentChildNoRelation() {
+			ResultSet<TestChildWithoutParent, ResultSet<TestParent>> result = DataProvider.spListParentChildMultiResultsWithoutRelation();
+			Assert.AreEqual(6, result.Count);
+			Assert.AreEqual(3, result.Inner.Count);
+		}
+
+		[Test(Description = "Tests multiple resultsets with child to parent relationship")]
+		public void RunMulitResultSetParentChildNonCircularParent() {
+			try {
+				ResultSet<TestChildMultiResultsets, ResultSet<TestParentMultiResultsets>> result = DataProvider.spListParentChildMultiResultsChildParent();
+				Assert.AreEqual(6, result.Count);
+				Assert.AreEqual(2, result.Inner.Count);
+			} catch (Exception ex) {
+				Debug.WriteLine(ex.ToString());
+				throw new ApplicationException("rethrown", ex);
+			}
 		}
 
 		[Test(Description = "Tests a sp call and receive a list of the table value")]
@@ -73,8 +86,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		}
 
 		[Test(Description = "Tests parents with nested list of children marked with SqlDeserializeAttribute with null children")]
-		public void TestNestedObjectsWithEndDeserializationWithNullChildren()
-		{
+		public void TestNestedObjectsWithEndDeserializationWithNullChildren() {
 			List<TestParentWithChildren> parents = DataProvider.spListParentWithChildrenWithNull();
 			Guid emptyChildrenParent = new Guid("F475E4B4-09F6-4334-8C1F-EB53E26B0280");
 			Assert.AreEqual(3, parents.Count);
@@ -96,26 +108,9 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			RunSimpleSpCall();
 		}
 
-		[Test(Description = "Tests multiple resultsets with parent and child without relation")]
-		public void RunMulitResultSetParentChildNoRelation()
-		{
-			ResultSet<TestChildWithoutParent, ResultSet<TestParent>> result = DataProvider.spListParentChildMultiResultsWithoutRelation();
-			Assert.AreEqual(6, result.Count);
-			Assert.AreEqual(3, result.Inner.Count);
-		}
-
-		[Test(Description = "Tests multiple resultsets with child to parent relationship")]
-		public void RunMulitResultSetParentChildNonCircularParent()
-		{
-			try {
-				ResultSet<TestChildMultiResultsets, ResultSet<TestParentMultiResultsets>> result = DataProvider.spListParentChildMultiResultsChildParent();
-				Assert.AreEqual(6, result.Count);
-				Assert.AreEqual(2, result.Inner.Count);
-			} catch (Exception ex) {
-				Debug.WriteLine(ex.ToString());
-				throw new ApplicationException("rethrown", ex);
-			}
-
+		[Test(Description = "Tests the insert of multiple records using table value parameters")]
+		public void TestTvpInsert() {
+			RunTvpInsert();
 		}
 	}
 }

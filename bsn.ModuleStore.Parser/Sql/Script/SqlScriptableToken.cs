@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.IO;
 
@@ -36,6 +36,16 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override bool Equals(object obj) {
 			return base.Equals(obj as SqlScriptableToken);
+		}
+
+		public bool Equals(SqlScriptableToken other, DatabaseEngine engine) {
+			if (other == this) {
+				return true;
+			}
+			if ((other != null) && (other.GetType() == GetType())) {
+				return HashWriter.HashEqual(GetHash(engine), other.GetHash(engine));
+			}
+			return false;
 		}
 
 		public byte[] GetHash(DatabaseEngine engine) {
@@ -71,16 +81,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public bool Equals(SqlScriptableToken other) {
 			return Equals(other, DatabaseEngine.Unknown);
-		}
-
-		public bool Equals(SqlScriptableToken other, DatabaseEngine engine) {
-			if ((object)other == this) {
-				return true;
-			}
-			if ((other != null) && (other.GetType() == GetType())) {
-				return HashWriter.HashEqual(GetHash(engine), other.GetHash(engine));
-			}
-			return false;
 		}
 	}
 }

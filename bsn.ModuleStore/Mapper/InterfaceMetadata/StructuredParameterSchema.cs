@@ -21,7 +21,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			DataColumn columnName = Columns[SchemaTableColumn.ColumnName];
 			DataColumn allowDbNull = Columns[SchemaTableColumn.AllowDBNull];
 			DataColumn dataType = Columns[SchemaTableColumn.DataType];
-/*			DataColumn numericScale = Columns[SchemaTableColumn.NumericScale];
+			/* DataColumn numericScale = Columns[SchemaTableColumn.NumericScale];
 			DataColumn numericPrecision = Columns[SchemaTableColumn.NumericPrecision];
 			DataColumn columnSize = Columns[SchemaTableColumn.ColumnSize]; */
 			DataColumn baseColumnName = Columns[SchemaTableColumn.BaseColumnName];

@@ -100,9 +100,9 @@ namespace bsn.ModuleStore.Mapper {
 		private static readonly MethodInfo getHashCode = typeof(object).GetMethod("GetHashCode", BindingFlags.Public|BindingFlags.Instance);
 		private static readonly MethodInfo getInstanceName = typeof(IStoredProcedures).GetProperty("InstanceName", BindingFlags.Public|BindingFlags.Instance).GetGetMethod();
 		private static readonly MethodInfo getProvider = typeof(IStoredProcedures).GetProperty("Provider", BindingFlags.Public|BindingFlags.Instance).GetGetMethod();
-		private static readonly MethodInfo getType = typeof(object).GetMethod("GetType", BindingFlags.Public | BindingFlags.Instance);
+		private static readonly MethodInfo getType = typeof(object).GetMethod("GetType", BindingFlags.Public|BindingFlags.Instance);
 		private static readonly MethodInfo setProvider = typeof(IStoredProcedures).GetProperty("Provider", BindingFlags.Public|BindingFlags.Instance).GetSetMethod();
-		private static readonly MethodInfo toString = typeof(object).GetMethod("ToString", BindingFlags.Public | BindingFlags.Instance);
+		private static readonly MethodInfo toString = typeof(object).GetMethod("ToString", BindingFlags.Public|BindingFlags.Instance);
 
 		/// <summary>
 		/// Create a new proxy to be used for stored procedure calls, which can be called through the interface specified by <typeparamref name="I"/>.
@@ -117,6 +117,7 @@ namespace bsn.ModuleStore.Mapper {
 		public static I Create<I>(IMetadataProvider metadataProvider, IConnectionProvider connectionProvider) where I: IStoredProcedures {
 			return (I)(new SqlCallProxy(metadataProvider, connectionProvider, typeof(I))).GetTransparentProxy();
 		}
+
 		// ReSharper restore InconsistentNaming
 
 		private static object[] GetOutArgValues(SqlParameter[] dbParams) {
@@ -137,8 +138,8 @@ namespace bsn.ModuleStore.Mapper {
 		private readonly ISqlCallInfo callInfo;
 		private readonly IConnectionProvider connectionProvider;
 		private readonly Dictionary<MethodBase, Func<IMethodCallMessage, IMessage>> methods = new Dictionary<MethodBase, Func<IMethodCallMessage, IMessage>>(8);
-		private IInstanceProvider provider;
 		private readonly ISerializationTypeInfoProvider serializationTypeInfoProvider;
+		private IInstanceProvider provider;
 
 		private SqlCallProxy(IMetadataProvider metadataProvider, IConnectionProvider connectionProvider, Type interfaceToProxy): base(interfaceToProxy) {
 			if (metadataProvider == null) {

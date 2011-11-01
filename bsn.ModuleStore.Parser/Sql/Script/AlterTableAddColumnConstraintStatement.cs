@@ -48,7 +48,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(columnName, WhitespacePadding.None);
 		}
 
-
 		IQualifiedName<SchemaName> IApplicableTo<CreateTableStatement>.QualifiedName {
 			get {
 				return TableName;

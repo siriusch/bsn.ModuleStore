@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -43,18 +43,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		internal AlterTableDropConstraintStatement CreateDropStatement(Qualified<SchemaName, TableName> tableName) {
-			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
-			}
-			return new AlterTableDropConstraintStatement(tableName, ConstraintName);
-		}
-
 		public override void WriteTo(SqlWriter writer) {
 			if (constraintName != null) {
 				writer.Write("CONSTRAINT ");
 				writer.WriteScript(constraintName, WhitespacePadding.SpaceAfter);
 			}
+		}
+
+		internal AlterTableDropConstraintStatement CreateDropStatement(Qualified<SchemaName, TableName> tableName) {
+			if (tableName == null) {
+				throw new ArgumentNullException("tableName");
+			}
+			return new AlterTableDropConstraintStatement(tableName, ConstraintName);
 		}
 	}
 }

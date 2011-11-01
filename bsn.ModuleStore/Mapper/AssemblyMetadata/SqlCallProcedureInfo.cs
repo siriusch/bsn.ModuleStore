@@ -95,8 +95,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		private readonly ParameterInfo xmlNameTableParameter;
 		private SchemaName schemaNameOverride;
 
-		public SqlCallProcedureInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, MethodInfo method, ISerializationTypeMappingProvider typeMappingProvider)
-		{
+		public SqlCallProcedureInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, MethodInfo method, ISerializationTypeMappingProvider typeMappingProvider) {
 			foreach (SqlProcedureAttribute attribute in method.GetCustomAttributes(typeof(SqlProcedureAttribute), false)) {
 				proc = attribute;
 			}

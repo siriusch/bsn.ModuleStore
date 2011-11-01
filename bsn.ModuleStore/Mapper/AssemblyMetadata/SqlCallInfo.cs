@@ -43,8 +43,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		private readonly Type interfaceType;
 		private readonly Dictionary<MethodBase, SqlCallProcedureInfo> methods = new Dictionary<MethodBase, SqlCallProcedureInfo>();
 
-		internal SqlCallInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, Type interfaceType, ISerializationTypeMappingProvider typeMappingProvider)
-		{
+		internal SqlCallInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, Type interfaceType, ISerializationTypeMappingProvider typeMappingProvider) {
 			if (inventory == null) {
 				throw new ArgumentNullException("inventory");
 			}

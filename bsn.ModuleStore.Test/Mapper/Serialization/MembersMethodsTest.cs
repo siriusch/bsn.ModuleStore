@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -38,9 +38,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	[TestFixture]
 	public class MembersMethodsTest: AssertionHelper {
 		private class Members {
-			private readonly int a;
-			private readonly Guid? b;
-			private readonly object c;
+			// ReSharper disable FieldCanBeMadeReadOnly.Local
+			private int a;
+			private Guid? b;
+			private object c;
+			// ReSharper restore FieldCanBeMadeReadOnly.Local
 
 			public Members() {}
 
@@ -71,7 +73,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private struct Struct {
 #pragma warning disable 169
-			private readonly int a;
+			// ReSharper disable FieldCanBeMadeReadOnly.Local
+			private int a;
+			// ReSharper restore FieldCanBeMadeReadOnly.Local
 #pragma warning restore 169
 
 			public Struct(int a) {
@@ -85,28 +89,30 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-	public struct GuidStruct {
-		private Guid a;
+		public struct GuidStruct {
+			// ReSharper disable FieldCanBeMadeReadOnly.Local
+			private Guid a;
 
-		private Guid b;
+			private Guid b;
+			// ReSharper restore FieldCanBeMadeReadOnly.Local
 
-		public GuidStruct(Guid a, Guid b) {
-			this.a = a;
-			this.b = b;
-		}
+			public GuidStruct(Guid a, Guid b) {
+				this.a = a;
+				this.b = b;
+			}
 
-		public Guid A {
-			get {
-				return a;
+			public Guid A {
+				get {
+					return a;
+				}
+			}
+
+			public Guid B {
+				get {
+					return b;
+				}
 			}
 		}
-
-		public Guid B {
-			get {
-				return b;
-			}
-		}
-	}
 
 		private static readonly MemberInfo[] members = GetMemberFields<Members>();
 
@@ -196,17 +202,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		[Test]
-		public void PopulateMembersStruct() {
-			object o = new GuidStruct();
-			Guid guid1 = Guid.NewGuid();
-			Guid guid2 = Guid.NewGuid();
-			MembersMethods.Get(GetMemberFields<GuidStruct>()).PopulateMembers(o, new object[] { guid1, guid2 });
-			GuidStruct x = (GuidStruct)o;
-			Expect(x.A, EqualTo(guid1));
-			Expect(x.B, EqualTo(guid2));
-		}
-
-		[Test]
 		public void PopulateMembersOverride() {
 			Members x = new Members();
 			MembersMethods membersMethods = MembersMethods.Get(members);
@@ -218,15 +213,26 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		[Test]
+		public void PopulateMembersStruct() {
+			object o = new GuidStruct();
+			Guid guid1 = Guid.NewGuid();
+			Guid guid2 = Guid.NewGuid();
+			MembersMethods.Get(GetMemberFields<GuidStruct>()).PopulateMembers(o, new object[] {guid1, guid2});
+			GuidStruct x = (GuidStruct)o;
+			Expect(x.A, EqualTo(guid1));
+			Expect(x.B, EqualTo(guid2));
+		}
+
+		[Test]
 		public void PopulateNullInNonNullField() {
 			Assert.Throws<NullReferenceException>(delegate {
-			                                      	try {
-			                                      		MembersMethods.Get(members).PopulateMembers(new Members(), new object[] {null, null, null});
-			                                      	} catch (Exception ex) {
-			                                      		Trace.WriteLine(ex);
-			                                      		throw;
-			                                      	}
-			                                      });
+				try {
+					MembersMethods.Get(members).PopulateMembers(new Members(), new object[] {null, null, null});
+				} catch (Exception ex) {
+					Trace.WriteLine(ex);
+					throw;
+				}
+			});
 		}
 	}
 }

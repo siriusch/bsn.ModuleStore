@@ -19,12 +19,6 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			TeardownTests();
 		}
 
-		[Test(Description = "Tests the insert of multiple records using table value parameters")]
-		public void TestTvpInsert()
-		{
-			RunTvpInsert();
-		}
-
 		[Test(Description = "Tests a sp call and receive a list of the table value")]
 		public void TestGetList() {
 			RunGetList();
@@ -61,6 +55,11 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		[Test(Description = "Tests a sp call without a parameter and without input")]
 		public void TestSimpleSpCall() {
 			RunSimpleSpCall();
+		}
+
+		[Test(Description = "Tests the insert of multiple records using table value parameters")]
+		public void TestTvpInsert() {
+			RunTvpInsert();
 		}
 	}
 }

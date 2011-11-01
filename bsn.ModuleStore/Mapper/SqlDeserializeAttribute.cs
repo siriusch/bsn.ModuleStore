@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 
 namespace bsn.ModuleStore.Mapper {
@@ -50,5 +50,16 @@ namespace bsn.ModuleStore.Mapper {
 	/// </code>
 	/// </example>
 	[AttributeUsage(AttributeTargets.Field)]
-	public sealed class SqlDeserializeAttribute: Attribute {}
+	public sealed class SqlDeserializeAttribute: Attribute {
+		private bool notNull;
+
+		public bool NotNull {
+			get {
+				return notNull;
+			}
+			set {
+				notNull = value;
+			}
+		}
+	}
 }

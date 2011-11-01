@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Diagnostics;
 
@@ -66,20 +66,21 @@ namespace bsn.ModuleStore.Sql.Script {
 			// See http://stackoverflow.com/questions/1383494/alter-user-defined-type-in-sql-server#answer-1383509
 			return base.CreateAlterStatement();
 		}
+
 		// ReSharper restore RedundantOverridenMember
 
 		public override DropStatement CreateDropStatement() {
 			return new DropTypeStatement(typeName);
 		}
 
-		protected override string GetObjectSchema() {
-			return typeName.IsQualified ? typeName.Qualification.Value : string.Empty;
-		}
-
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("CREATE TYPE ");
 			writer.WriteScript(typeName, WhitespacePadding.SpaceAfter);
+		}
+
+		protected override string GetObjectSchema() {
+			return typeName.IsQualified ? typeName.Qualification.Value : string.Empty;
 		}
 	}
 }

@@ -8,13 +8,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 	/// <br/><br/>
 	/// Information which can be specified includes the <see cref="Timeout"/>, <see cref="UseReturnValue"/>, <see cref="DeserializeRowLimit"/>, <see cref="DeserializeReturnNullOnEmptyReader"/> and <see cref="DeserializeCallConstructor"/>.
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public sealed class SqlProcAttribute : Attribute {
-		internal SqlProcAttribute CloneWithName(string newName)
-		{
-			SqlProcAttribute result = (SqlProcAttribute)MemberwiseClone();
-			result.Name = newName;
-			return result;
-		}
+	public sealed class SqlProcAttribute: Attribute {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlProcAttribute"/> class.
 		/// </summary>
@@ -33,7 +27,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		/// <param name="schemaName"></param>
 		public SqlProcAttribute(string name, string schemaName) {
 			Name = name;
-			SchemaName = string.IsNullOrEmpty(schemaName) ? "dbo" : schemaName.Replace("[","").Replace("]","");
+			SchemaName = string.IsNullOrEmpty(schemaName) ? "dbo" : schemaName.Replace("[", "").Replace("]", "");
 			DeserializeRowLimit = int.MaxValue;
 			UseReturnValue = SqlReturnValue.Auto;
 		}
@@ -65,19 +59,9 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		/// <summary>
 		/// The name for the database binding.
 		/// </summary>
-		public string Name
-		{
+		public string Name {
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// The name for the database binding.
-		/// </summary>
-		public string SchemaName
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
@@ -88,6 +72,14 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			get {
 				return string.IsNullOrEmpty(SchemaName) ? '['+Name+']' : '['+SchemaName+"].["+Name+']';
 			}
+		}
+
+		/// <summary>
+		/// The name for the database binding.
+		/// </summary>
+		public string SchemaName {
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -105,6 +97,12 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		public SqlReturnValue UseReturnValue {
 			get;
 			set;
+		}
+
+		internal SqlProcAttribute CloneWithName(string newName) {
+			SqlProcAttribute result = (SqlProcAttribute)MemberwiseClone();
+			result.Name = newName;
+			return result;
 		}
 	}
 }

@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -57,10 +57,10 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private static readonly ICollection<Type> objectsToRename = new HashSet<Type> {
-		                                                                              		typeof(CreateFunctionStatement),
-		                                                                              		typeof(CreateProcedureStatement),
-		                                                                              		typeof(CreateTriggerStatement)
-		                                                                              };
+				typeof(CreateFunctionStatement),
+				typeof(CreateProcedureStatement),
+				typeof(CreateTriggerStatement)
+		};
 
 		private static readonly XslCompiledTransform scripter = LoadTransform("UserObjectScripter.xslt");
 		private static readonly XslCompiledTransform userObjectList = LoadTransform("UserObjectList.xslt");
@@ -116,8 +116,8 @@ namespace bsn.ModuleStore.Sql {
 							try {
 								using (StringReader scriptReader = new StringReader(builder.ToString())) {
 									CreateStatement objectStatement = ProcessSingleScript(scriptReader, statement => {
-									                                                                                	throw CreateException("Cannot process statement:", statement, TargetEngine);
-									                                                                                }).SingleOrDefault(statement => objectsToRename.Any(t => t.IsAssignableFrom(statement.GetType())));
+										throw CreateException("Cannot process statement:", statement, TargetEngine);
+									}).SingleOrDefault(statement => objectsToRename.Any(t => t.IsAssignableFrom(statement.GetType())));
 									if (objectStatement != null) {
 										objectStatement.ObjectName = reader.GetString(nameColumn);
 									}
@@ -133,14 +133,6 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 			}
-		}
-
-		protected override void AddObject(CreateStatement createStatement) {
-			if (createStatement == null) {
-				throw new ArgumentNullException("createStatement");
-			}
-			createStatement.ObjectSchema = schemaName;
-			base.AddObject(createStatement);
 		}
 
 		public string SchemaName {
@@ -194,6 +186,14 @@ namespace bsn.ModuleStore.Sql {
 			} finally {
 				UnsetQualification();
 			}
+		}
+
+		protected override void AddObject(CreateStatement createStatement) {
+			if (createStatement == null) {
+				throw new ArgumentNullException("createStatement");
+			}
+			createStatement.ObjectSchema = schemaName;
+			base.AddObject(createStatement);
 		}
 
 		private XsltArgumentList CreateArguments(ManagementConnectionProvider database) {

@@ -26,23 +26,24 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 
 namespace bsn.ModuleStore.Mapper {
-	public abstract class VersionedInstance<TId, TManager>: Instance<TId, TManager>, ISqlDeserializationHook, IVersioned where TId: struct, IEquatable<TId> where TManager: InstanceManager<TId, TManager> {
+	public abstract class VersionedInstance<TId, TManager>: Instance<TId, TManager>, ISqlDeserializationHook, IVersioned where TId: struct, IEquatable<TId>
+	                                                                                                                     where TManager: InstanceManager<TId, TManager> {
 		private int version;
 
 		protected VersionedInstance(TManager owner): base(owner) {}
+
+		void ISqlDeserializationHook.AfterDeserialization() {
+			version++;
+		}
 
 		int IVersioned.Version {
 			get {
 				return version;
 			}
 		}
-
-		void ISqlDeserializationHook.AfterDeserialization() {
-			version++;
-		}
-	}
+	                                                                                                                     }
 }

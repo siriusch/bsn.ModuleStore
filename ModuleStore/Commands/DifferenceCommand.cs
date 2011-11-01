@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 
@@ -51,16 +51,16 @@ namespace bsn.ModuleStore.Console.Commands {
 			}
 		}
 
+		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
+			yield return new Tag<ExecutionContext, Entities.Source>("source", "The source for the comparison.").SetDefault(context => context.Assembly != null ? Entities.Source.Assembly : Entities.Source.Files);
+			yield return new Tag<ExecutionContext, Entities.Source>("target", "The target for the comparison.").SetDefault(context => context.Connected ? Entities.Source.Database : Entities.Source.Files);
+		}
+
 		private void GetDatabaseEngine(Inventory sourceInventory, ref DatabaseEngine engine) {
 			DatabaseInventory databaseInventory = sourceInventory as DatabaseInventory;
 			if (databaseInventory != null) {
 				engine = databaseInventory.TargetEngine;
 			}
-		}
-
-		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
-			yield return new Tag<ExecutionContext, Entities.Source>("source", "The source for the comparison.").SetDefault(context => context.Assembly != null ? Entities.Source.Assembly : Entities.Source.Files);
-			yield return new Tag<ExecutionContext, Entities.Source>("target", "The target for the comparison.").SetDefault(context => context.Connected ? Entities.Source.Database : Entities.Source.Files);
 		}
 	}
 }

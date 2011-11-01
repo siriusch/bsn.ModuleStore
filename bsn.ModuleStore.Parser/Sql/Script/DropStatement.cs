@@ -26,11 +26,9 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class DropStatement: DdlStatement {
-		protected DropStatement() {}
-	}
+	public abstract class DropStatement: DdlStatement {}
 }

@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 namespace bsn.ModuleStore.Sql.Script {
 	public class KeywordToken: SqlScriptableToken {
 		private readonly string keyword;

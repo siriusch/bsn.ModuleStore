@@ -26,7 +26,6 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
 
 using System;
 using System.Reflection;
@@ -35,11 +34,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	internal class CachedMemberConverter: MemberConverter {
 		private abstract class IdentifiableGetter {
 			internal sealed class Generic<T>: IdentifiableGetter where T: struct, IEquatable<T> {
-// ReSharper disable StaticFieldInGenericType
-// ReSharper disable UnusedMember.Local
+				// ReSharper disable StaticFieldInGenericType
+				// ReSharper disable UnusedMember.Local
 				public static readonly Generic<T> Default = new Generic<T>();
-// ReSharper restore UnusedMember.Local
-// ReSharper restore StaticFieldInGenericType
+				// ReSharper restore UnusedMember.Local
+				// ReSharper restore StaticFieldInGenericType
 
 				public override Type Type {
 					get {

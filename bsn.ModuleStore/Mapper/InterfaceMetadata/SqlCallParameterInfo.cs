@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -103,9 +103,9 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		private readonly int position;
 		private readonly int size;
 		private readonly SqlDbType sqlType;
+		private readonly StructuredParameterSchemaBase structuredSchema;
 		private readonly ISerializationTypeInfoProvider typeInfoProvider;
 		private readonly string userDefinedTypeName;
-		private readonly StructuredParameterSchemaBase structuredSchema;
 
 		public SqlCallParameterInfo(ParameterInfo parameter, ISerializationTypeInfoProvider typeInfoProvider, ref int outArgCount) {
 			if (parameter == null) {

@@ -37,9 +37,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SqlDeserializationContext: IDisposable {
 		private readonly Dictionary<object, bool> deserialized = new Dictionary<object, bool>(ReferenceEqualityComparer<object>.Default);
 		private readonly IInstanceProvider provider;
-		private readonly ISerializationTypeInfoProvider typeInfoProvider;
 		private readonly IDictionary<string, object> state;
 		private readonly IDeserializationStateProvider stateProvider;
+		private readonly ISerializationTypeInfoProvider typeInfoProvider;
 
 		internal SqlDeserializationContext(IInstanceProvider provider, ISerializationTypeInfoProvider typeInfoProvider) {
 			this.provider = provider;
@@ -49,10 +49,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				state = new SortedDictionary<string, object>(StringComparer.Ordinal);
 				stateProvider.BeginDeserialize(state);
 			}
-		}
-
-		public ISerializationTypeInfo GetSerializationTypeInfo(Type type) {
-			return typeInfoProvider.GetSerializationTypeInfo(type);
 		}
 
 		public void AssertDeserialization(object instance) {
@@ -65,6 +61,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if (provider != null) {
 				provider.ForgetInstance(state, type, identity);
 			}
+		}
+
+		public ISerializationTypeInfo GetSerializationTypeInfo(Type type) {
+			return typeInfoProvider.GetSerializationTypeInfo(type);
 		}
 
 		public bool IsDeserialized(object obj) {

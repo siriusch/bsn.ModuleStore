@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Diagnostics;
 
@@ -45,6 +45,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			Debug.Assert(operation != null);
 			this.predicate = predicate;
 			this.operation = operation;
+		}
+
+		public virtual string NotMatchedBy {
+			get {
+				return string.Empty;
+			}
 		}
 
 		public MergeOperation Operation {
@@ -67,12 +73,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteLine(" THEN");
 			writer.WriteScript(operation, WhitespacePadding.None);
 			writer.DecreaseIndent();
-		}
-
-		public virtual string NotMatchedBy {
-			get {
-				return string.Empty;
-			}
 		}
 
 		protected virtual void WriteMatchedTo(SqlWriter writer) {

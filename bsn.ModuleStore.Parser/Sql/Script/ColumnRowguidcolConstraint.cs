@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 
 using bsn.GoldParser.Semantic;
@@ -34,8 +34,6 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("ROWGUIDCOL")]
 	public sealed class ColumnRowguidcolConstraint: ColumnConstraint {
-		public ColumnRowguidcolConstraint() {}
-
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write("ROWGUIDCOL");
 		}

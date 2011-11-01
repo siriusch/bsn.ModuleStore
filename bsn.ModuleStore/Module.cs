@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Diagnostics;
 
@@ -36,6 +36,7 @@ using bsn.ModuleStore.Sql;
 
 namespace bsn.ModuleStore {
 	public class Module {
+		// ReSharper disable FieldCanBeMadeReadOnly.Local
 #pragma warning disable 649
 		[SqlColumn("uidAssemblyGuid")]
 		private Guid assemblyGuid;
@@ -61,6 +62,7 @@ namespace bsn.ModuleStore {
 		[SqlColumn("iUpdateVersion")]
 		private int updateVersion;
 #pragma warning restore 649
+		// ReSharper restore FieldCanBeMadeReadOnly.Local
 
 		private ModuleInstanceCache owner;
 

@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -58,7 +58,7 @@ namespace bsn.ModuleStore.Console {
 			}
 
 			public KeyValuePair<CustomAttributeInfo, string>[] GetAssemblyCustomAttributeData() {
-				return AssemblyHandle.FindCustomAttributes<CustomAttributeInfo>(assembly, CustomAssemblyAttributes, CustomMemberAttributes);
+				return AssemblyHandle.FindCustomAttributes(assembly, CustomAssemblyAttributes, CustomMemberAttributes);
 			}
 
 			public string[] GetManifestResourceNames() {
@@ -151,10 +151,6 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		~AssemblyHandler() {
-			DisposeIfNotDisposed(false);
-		}
-
 		public KeyValuePair<T, string>[] GetCustomAttributes<T>() where T: Attribute {
 			KeyValuePair<CustomAttributeInfo, string>[] assemblyCustomAttributeData = handle.GetAssemblyCustomAttributeData();
 			if (assemblyCustomAttributeData.Length == 0) {
@@ -214,6 +210,10 @@ namespace bsn.ModuleStore.Console {
 		public void Dispose() {
 			GC.SuppressFinalize(this);
 			DisposeIfNotDisposed(true);
+		}
+
+		~AssemblyHandler() {
+			DisposeIfNotDisposed(false);
 		}
 	}
 }

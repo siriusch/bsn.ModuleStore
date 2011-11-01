@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -42,12 +42,30 @@ using bsn.ModuleStore.Sql;
 
 namespace bsn.ModuleStore.Console {
 	internal class ExecutionContext: CommandLineContext<ExecutionContext, ModuleStoreContext>, IDisposable {
+		public static string BuildConnectionString(string server, string database, string databaseUser, string databasePassword) {
+			StringBuilder connectionString = new StringBuilder();
+			if (string.IsNullOrEmpty(databaseUser)) {
+				connectionString.AppendFormat("Data Source={0};", server);
+				if (!string.IsNullOrEmpty(database)) {
+					connectionString.AppendFormat("Initial Catalog={0};", database);
+				}
+				connectionString.Append("Integrated Security=SSPI;");
+			} else {
+				connectionString.AppendFormat("Server=tcp:{0};", server);
+				if (!string.IsNullOrEmpty(database)) {
+					connectionString.AppendFormat("Database={0};", database);
+				}
+				connectionString.AppendFormat("User ID={0};Password={1};Trusted_Connection=False;Encrypt=True;", databaseUser, databasePassword);
+			}
+			return connectionString.ToString();
+		}
+
+		private readonly SqlConnection connection;
 		private AssemblyHandler assembly;
-		private SqlConnection connection;
+		private string databasePassword;
+		private string databaseUser;
 		private string schemaName;
 		private string serverName = ".";
-		private string databaseUser;
-		private string databasePassword;
 
 		public ExecutionContext(TextReader input, TextWriter output): base(new ModuleStoreContext(), input, output) {
 			// trigger async initialization on app start
@@ -73,6 +91,12 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
+		public SqlConnection Connection {
+			get {
+				return connection;
+			}
+		}
+
 		public string Database {
 			get {
 				return connection.Database;
@@ -85,32 +109,15 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public void SetDatabaseAuthentication(string databaseUser, string databasePassword) {
-			Disconnect();
-			if (string.IsNullOrEmpty(databaseUser)) {
-				this.databaseUser = null;
-				this.databasePassword = null;
-			} else {
-				this.databaseUser = databaseUser;
-				this.databasePassword = databasePassword;
-			}
-		}
-
-		public string DatabaseUser {
-			get {
-				return databaseUser;
-			}
-		}
-
 		public string DatabasePassword {
 			get {
 				return databasePassword;
 			}
 		}
 
-		public SqlConnection Connection {
+		public string DatabaseUser {
 			get {
-				return connection;
+				return databaseUser;
 			}
 		}
 
@@ -186,24 +193,6 @@ namespace bsn.ModuleStore.Console {
 			return BuildConnectionString(Server, Database, DatabaseUser, DatabasePassword);
 		}
 
-		public static string BuildConnectionString(string server, string database, string databaseUser, string databasePassword) {
-			StringBuilder connectionString = new StringBuilder();
-			if (string.IsNullOrEmpty(databaseUser)) {
-				connectionString.AppendFormat("Data Source={0};", server);
-				if (!string.IsNullOrEmpty(database)) {
-					connectionString.AppendFormat("Initial Catalog={0};", database);
-				}
-				connectionString.Append("Integrated Security=SSPI;");
-			} else {
-				connectionString.AppendFormat("Server=tcp:{0};", server);
-				if (!string.IsNullOrEmpty(database)) {
-					connectionString.AppendFormat("Database={0};", database);
-				}
-				connectionString.AppendFormat("User ID={0};Password={1};Trusted_Connection=False;Encrypt=True;", databaseUser, databasePassword);
-			}
-			return connectionString.ToString();
-		}
-
 		public Inventory GetInventory(Source inventorySource) {
 			Inventory inventory;
 			switch (inventorySource) {
@@ -222,6 +211,17 @@ namespace bsn.ModuleStore.Console {
 				throw new InvalidOperationException("No valid source specified");
 			}
 			return inventory;
+		}
+
+		public void SetDatabaseAuthentication(string databaseUser, string databasePassword) {
+			Disconnect();
+			if (string.IsNullOrEmpty(databaseUser)) {
+				this.databaseUser = null;
+				this.databasePassword = null;
+			} else {
+				this.databaseUser = databaseUser;
+				this.databasePassword = databasePassword;
+			}
 		}
 
 		protected virtual void Dispose(bool disposing) {

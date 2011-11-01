@@ -26,7 +26,6 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
 
 using System;
 using System.ComponentModel;
@@ -49,6 +48,43 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		private SqlReturnValue useReturnValue = SqlReturnValue.Auto;
 
 		public SqlProcedureAttribute([Localizable(false)] string embeddedResourceName): base(null, embeddedResourceName) {}
+
+		/// <summary>
+		/// Sometimes specific statements (such as creating temporary tables) need to be executed before the SP is called. These statements can be put in a leading comment.
+		/// </summary>
+		public bool ExecuteFirstCommentBeforeInvocation {
+			get {
+				return executeFirstCommentBeforeInvocation;
+			}
+			set {
+				executeFirstCommentBeforeInvocation = value;
+			}
+		}
+
+		/// <summary>
+		/// Controls the <see cref="DbCommand.CommandTimeout"/> to set on the <see cref="DbCommand"/>.
+		/// </summary>
+		public int Timeout {
+			get {
+				return timeout;
+			}
+			set {
+				timeout = value;
+			}
+		}
+
+		/// <summary>
+		/// Controls the handling of the return value. If set to <see cref="SqlReturnValue.Auto"/>, it uses the SP return value for <see cref="int"/> and a scalar execution for all other data types.
+		/// </summary>
+		/// <seealso cref="SqlReturnValue"/>
+		public SqlReturnValue UseReturnValue {
+			get {
+				return useReturnValue;
+			}
+			set {
+				useReturnValue = value;
+			}
+		}
 
 		/// <summary>
 		/// If true, the default constructor will be called instead of creating empty instances. For best performance, leave this setting on false. This corresponds to the parameter passed to <see cref="SqlDeserializer{T}"/> constructor.
@@ -87,18 +123,6 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		}
 
 		/// <summary>
-		/// Sometimes specific statements (such as creating temporary tables) need to be executed before the SP is called. These statements can be put in a leading comment.
-		/// </summary>
-		public bool ExecuteFirstCommentBeforeInvocation {
-			get {
-				return executeFirstCommentBeforeInvocation;
-			}
-			set {
-				executeFirstCommentBeforeInvocation = value;
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether a transaction is required to execute this stored procedure. The transaction will not be created, but checked only.
 		/// </summary>
 		public bool RequireTransaction {
@@ -107,31 +131,6 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			}
 			set {
 				requireTransaction = value;
-			}
-		}
-
-		/// <summary>
-		/// Controls the <see cref="DbCommand.CommandTimeout"/> to set on the <see cref="DbCommand"/>.
-		/// </summary>
-		public int Timeout {
-			get {
-				return timeout;
-			}
-			set {
-				timeout = value;
-			}
-		}
-
-		/// <summary>
-		/// Controls the handling of the return value. If set to <see cref="SqlReturnValue.Auto"/>, it uses the SP return value for <see cref="int"/> and a scalar execution for all other data types.
-		/// </summary>
-		/// <seealso cref="SqlReturnValue"/>
-		public SqlReturnValue UseReturnValue {
-			get {
-				return useReturnValue;
-			}
-			set {
-				useReturnValue = value;
 			}
 		}
 	}

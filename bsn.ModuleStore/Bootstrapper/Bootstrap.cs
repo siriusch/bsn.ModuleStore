@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -34,6 +34,28 @@ using System.Diagnostics;
 
 namespace bsn.ModuleStore.Bootstrapper {
 	internal static class Bootstrap {
+		private static void CreateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {
+			database.ManagementConnectionProvider.BeginTransaction();
+			bool commit = false;
+			try {
+				database.CreateInstanceDatabaseSchema(cache.AssemblyInfo.Inventory, "ModuleStore");
+				using (SqlCommand command = database.ManagementConnectionProvider.GetConnection().CreateCommand()) {
+					command.Transaction = database.ManagementConnectionProvider.GetTransaction();
+					command.CommandType = CommandType.Text;
+					command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
+					command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyInfo.AssemblyGuid);
+					command.Parameters.AddWithValue("@sAssemblyName", cache.AssemblyInfo.Assembly.FullName);
+					command.Parameters.AddWithValue("@binSetupHash", cache.AssemblyInfo.Inventory.GetInventoryHash(database.ManagementConnectionProvider.Engine));
+					command.Parameters.AddWithValue("@iUpdateVersion", cache.AssemblyInfo.Inventory.UpdateVersion);
+					command.ExecuteNonQuery();
+				}
+				commit = true;
+			} finally {
+				database.ManagementConnectionProvider.EndTransaction(commit);
+			}
+			Trace.WriteLine(string.Format("Installed ModuleStore in database {0}", dbName));
+		}
+
 		internal static DatabaseType GetDatabaseType(string connectionString, out string dbName) {
 			using (SqlConnection connection = new SqlConnection(connectionString)) {
 				dbName = connection.Database;
@@ -108,28 +130,6 @@ namespace bsn.ModuleStore.Bootstrapper {
 				database.ManagementConnectionProvider.EndTransaction(commit);
 			}
 			Debug.WriteLine(DateTime.Now, "End DB initialization");
-		}
-
-		private static void CreateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {
-			database.ManagementConnectionProvider.BeginTransaction();
-			bool commit = false;
-			try {
-				database.CreateInstanceDatabaseSchema(cache.AssemblyInfo.Inventory, "ModuleStore");
-				using (SqlCommand command = database.ManagementConnectionProvider.GetConnection().CreateCommand()) {
-					command.Transaction = database.ManagementConnectionProvider.GetTransaction();
-					command.CommandType = CommandType.Text;
-					command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
-					command.Parameters.AddWithValue("@uidAssemblyGuid", cache.AssemblyInfo.AssemblyGuid);
-					command.Parameters.AddWithValue("@sAssemblyName", cache.AssemblyInfo.Assembly.FullName);
-					command.Parameters.AddWithValue("@binSetupHash", cache.AssemblyInfo.Inventory.GetInventoryHash(database.ManagementConnectionProvider.Engine));
-					command.Parameters.AddWithValue("@iUpdateVersion", cache.AssemblyInfo.Inventory.UpdateVersion);
-					command.ExecuteNonQuery();
-				}
-				commit = true;
-			} finally {
-				database.ManagementConnectionProvider.EndTransaction(commit);
-			}
-			Trace.WriteLine(string.Format("Installed ModuleStore in database {0}", dbName));
 		}
 
 		private static void UpdateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {

@@ -8,10 +8,6 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		// ReSharper disable InconsistentNaming
 		void spAddSimpleTypes(Guid uidKey, string sKey, int iData);
 
-		ResultSet<TestChildWithoutParent, ResultSet<TestParent>> spListParentChildMultiResultsWithoutRelation();
-
-		ResultSet<TestChildMultiResultsets, ResultSet<TestParentMultiResultsets>> spListParentChildMultiResultsChildParent();
-
 		void spClearSimpleTypes();
 
 		string spGetKey(Guid uidKey);
@@ -20,6 +16,10 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		SimpleTestData spGetSimpleType(string sKey);
 
 		List<TestChild> spListParentChild();
+
+		ResultSet<TestChildMultiResultsets, ResultSet<TestParentMultiResultsets>> spListParentChildMultiResultsChildParent();
+
+		ResultSet<TestChildWithoutParent, ResultSet<TestParent>> spListParentChildMultiResultsWithoutRelation();
 
 		[SqlProc("spListParentChild")]
 		List<TestParentWithChildren> spListParentWithChildren();

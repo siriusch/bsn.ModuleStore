@@ -30,13 +30,6 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			}
 		}
 
-		protected void RunTvpInsert() {
-			Debug.WriteLine("TestList: clearing table...");
-			dataProvider.spClearSimpleTypes();
-			Debug.WriteLine("TestList: adding testdata...");
-			dataProvider.spSaveSimpleTypes(testData);
-		}
-
 		protected void RunGetList() {
 			Debug.WriteLine("TestList: clearing table...");
 			dataProvider.spClearSimpleTypes();
@@ -85,6 +78,13 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		protected void RunSimpleSpCall() {
 			Debug.WriteLine("TestSimpleSpCall: clearing table...");
 			dataProvider.spClearSimpleTypes();
+		}
+
+		protected void RunTvpInsert() {
+			Debug.WriteLine("TestList: clearing table...");
+			dataProvider.spClearSimpleTypes();
+			Debug.WriteLine("TestList: adding testdata...");
+			dataProvider.spSaveSimpleTypes(testData);
 		}
 
 		protected void SetupTests() {

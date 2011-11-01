@@ -26,7 +26,6 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
 
 using System;
 using System.Collections;
@@ -47,16 +46,6 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 	internal class SqlCallParameterInfo: SqlCallParameterBase {
-		private static bool GetParameterNullable(ParameterInfo param) {
-			Type parameterType = param.ParameterType;
-			if (parameterType.IsByRef) {
-				parameterType = parameterType.GetElementType();
-				Debug.Assert(parameterType != null);
-			}
-#warning Maybe implement a non-null attribute on the parameter?
-			return (!parameterType.IsValueType) || (System.Nullable.GetUnderlyingType(parameterType) != null);
-		}
-
 		private static ParameterDirection GetParameterDirection(ParameterInfo param) {
 			if (param == null) {
 				throw new ArgumentNullException("param");
@@ -75,12 +64,20 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			return param.ParameterType.TryGetIEnumerableElementType(out structuredType);
 		}
 
+		private static bool GetParameterNullable(ParameterInfo param) {
+			Type parameterType = param.ParameterType;
+			if (parameterType.IsByRef) {
+				parameterType = parameterType.GetElementType();
+				Debug.Assert(parameterType != null);
+			}
+#warning Maybe implement a non-null attribute on the parameter?
+			return (!parameterType.IsValueType) || (System.Nullable.GetUnderlyingType(parameterType) != null);
+		}
+
 		private readonly ParameterInfo parameterInfo;
 		private readonly StructuredParameterSchema structuredSchema;
 
-		public SqlCallParameterInfo(ISerializationTypeInfoProvider serializationTypeInfoProvider, ParameterInfo param, ProcedureParameter script, ISerializationTypeMappingProvider typeMappingProvider)
-			: base(script, GetParameterDirection(param), GetParameterNullable(param), GetParameterEnumerable(param))
-		{
+		public SqlCallParameterInfo(ISerializationTypeInfoProvider serializationTypeInfoProvider, ParameterInfo param, ProcedureParameter script, ISerializationTypeMappingProvider typeMappingProvider): base(script, GetParameterDirection(param), GetParameterNullable(param), GetParameterEnumerable(param)) {
 			parameterInfo = param;
 			if (SqlType == SqlDbType.Structured) {
 				Type structuredType;

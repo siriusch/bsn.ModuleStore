@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,13 +66,13 @@ namespace bsn.ModuleStore.Sql {
 								resolver.AddExistingObject(statement.ObjectName);
 								sqlWriter.WriteLine();
 								createTable.WriteTo(sqlWriter, delegate(TableDefinition definition) {
-								                               	AlterTableAddStatement alterTableStatement = new AlterTableAddStatement(createTable.TableName, new TableWithNocheckToken(), new Sequence<TableDefinition>(definition));
-								                               	if (alterTableStatement.GetReferencedObjectNames<FunctionName>().Any()) {
-								                               		resolver.Add(alterTableStatement);
-								                               		return null;
-								                               	}
-								                               	return definition;
-								                               });
+									AlterTableAddStatement alterTableStatement = new AlterTableAddStatement(createTable.TableName, new TableWithNocheckToken(), new Sequence<TableDefinition>(definition));
+									if (alterTableStatement.GetReferencedObjectNames<FunctionName>().Any()) {
+										resolver.Add(alterTableStatement);
+										return null;
+									}
+									return definition;
+								});
 							} else {
 								resolver.Add(statement);
 							}

@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -54,15 +54,14 @@ namespace bsn.ModuleStore.Mapper {
 		/// <param name="reader">The <see cref="IDataReader"/> to use as data source. The proxy will take ownership of the data reader.</param>
 		/// <param name="serializationTypeMappingProvider"></param>
 		/// <returns>An instance of the type requested by <typeparamref name="I"/>.</returns>
-		public static I Create<I>(IDataReader reader, ISerializationTypeMappingProvider serializationTypeMappingProvider) where I : ITypedDataReader
-		{
+		public static I Create<I>(IDataReader reader, ISerializationTypeMappingProvider serializationTypeMappingProvider) where I: ITypedDataReader {
 			return (I)(new DataReaderProxy(reader, typeof(I), serializationTypeMappingProvider)).GetTransparentProxy();
 		}
 
 		private readonly Dictionary<string, KeyValuePair<int, Type>> columns;
 		private readonly IDataReader reader;
-		private readonly ISerializationTypeMappingProvider serializationTypeMappingProvider;
 		private readonly TypedDataReaderInfo readerInfo;
+		private readonly ISerializationTypeMappingProvider serializationTypeMappingProvider;
 		private bool disposed;
 
 		internal DataReaderProxy(IDataReader reader, Type type, ISerializationTypeMappingProvider serializationTypeMappingProvider): base(type) {

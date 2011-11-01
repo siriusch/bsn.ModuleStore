@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Data.SqlClient;
 using System.Xml;
@@ -47,8 +47,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin);
 
-		void RequireDeserialization(object obj);
-
 		bool IsDeserialized(object obj);
+
+		void RequireDeserialization(object obj);
 	}
 }

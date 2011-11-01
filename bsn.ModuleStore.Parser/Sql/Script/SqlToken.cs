@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -44,31 +44,31 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal IEnumerable<IQualifiedName<SchemaName>> GetInnerSchemaQualifiedNames(Predicate<string> checkSchemaName) {
 			return GetInnerTokens(delegate(IQualifiedName<SchemaName> name, CommonTableExpressionScope scope) {
-			                      	if (!name.LockedOverride) {
-			                      		SchemaName qualification = name.Qualification;
-			                      		if (qualification != null) {
-			                      			Debug.Assert(!string.IsNullOrEmpty(qualification.Value));
-			                      			return checkSchemaName(qualification.Value);
-			                      		}
-			                      		TableName tableName = name.Name as TableName;
-			                      		if (((tableName != null) || (name.Name is ViewName)) && scope.ContainsName(name.Name.Value)) {
-			                      			return false;
-			                      		}
-			                      		if (tableName != null) {
-			                      			return !tableName.Value.StartsWith("#");
-			                      		}
-			                      		TypeName typeName = name.Name as TypeName;
-			                      		if (typeName != null) {
-			                      			return !typeName.IsBuiltinType;
-			                      		}
-			                      		FunctionName functionName = name.Name as FunctionName;
-			                      		if (functionName != null) {
-			                      			return !functionName.IsBuiltinFunction;
-			                      		}
-			                      		return true;
-			                      	}
-			                      	return false;
-			                      }, null);
+				if (!name.LockedOverride) {
+					SchemaName qualification = name.Qualification;
+					if (qualification != null) {
+						Debug.Assert(!string.IsNullOrEmpty(qualification.Value));
+						return checkSchemaName(qualification.Value);
+					}
+					TableName tableName = name.Name as TableName;
+					if (((tableName != null) || (name.Name is ViewName)) && scope.ContainsName(name.Name.Value)) {
+						return false;
+					}
+					if (tableName != null) {
+						return !tableName.Value.StartsWith("#");
+					}
+					TypeName typeName = name.Name as TypeName;
+					if (typeName != null) {
+						return !typeName.IsBuiltinType;
+					}
+					FunctionName functionName = name.Name as FunctionName;
+					if (functionName != null) {
+						return !functionName.IsBuiltinFunction;
+					}
+					return true;
+				}
+				return false;
+			}, null);
 		}
 
 		internal IEnumerable<T> GetInnerTokens<T>(Func<T, CommonTableExpressionScope, bool> predicate, Type skipNestedOfType) where T: class {

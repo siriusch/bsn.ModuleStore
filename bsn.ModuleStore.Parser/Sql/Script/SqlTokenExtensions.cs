@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 
@@ -37,6 +37,10 @@ namespace bsn.ModuleStore.Sql.Script {
 	public static class SqlTokenExtensions {
 		internal static Identifier CreateIdentifier(this IToken token, Symbol identifierSymbol, string text) {
 			return new Identifier(text, identifierSymbol, token.Position);
+		}
+
+		public static bool HasValue<T>(this Optional<T> optional) where T: SqlToken {
+			return (optional != null) && (optional.Value != null);
 		}
 
 		public static T[] ToArray<T>(this Optional<Sequence<T>> sequence) where T: SqlToken {
@@ -63,10 +67,6 @@ namespace bsn.ModuleStore.Sql.Script {
 				result.AddRange(sequence);
 			}
 			return result;
-		}
-
-		public static bool HasValue<T>(this Optional<T> optional) where T: SqlToken {
-			return (optional != null) && (optional.Value != null);
 		}
 	}
 }

@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 
 namespace bsn.ModuleStore.Mapper {
@@ -38,10 +38,12 @@ namespace bsn.ModuleStore.Mapper {
 		/// Uses the return value for <see cref="int"/> and a <see cref="Scalar"/> execution otherwise.
 		/// </summary>
 		Auto,
+
 		/// <summary>
 		/// Always use a scalar execution (value of first column of first row of first rowset).
 		/// </summary>
 		Scalar,
+
 		/// <summary>
 		/// Always use the return parameter.
 		/// </summary>

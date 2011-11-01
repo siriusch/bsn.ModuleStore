@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,6 +46,33 @@ namespace bsn.ModuleStore.Sql {
 		private static readonly object sync = new object();
 		private static CompiledGrammar compiledGrammar;
 		private static SemanticTypeActions<SqlToken> semanticActions;
+
+		internal static CompiledGrammar GetGrammar() {
+			lock (sync) {
+				if (compiledGrammar == null) {
+					compiledGrammar = CompiledGrammar.Load(typeof(ScriptParser), "ModuleStoreSQL.cgt");
+				}
+				return compiledGrammar;
+			}
+		}
+
+		public static SemanticTypeActions<SqlToken> GetSemanticActions() {
+			lock (sync) {
+				if (semanticActions == null) {
+					semanticActions = new SemanticTypeActions<SqlToken>(GetGrammar());
+					semanticActions.Initialize();
+				}
+				return semanticActions;
+			}
+		}
+
+		public static bool IsBuiltinFunctionName(string functionName) {
+			return builtinFunctions.ContainsKey(functionName);
+		}
+
+		public static bool IsReservedWord(string name) {
+			return reservedWords.ContainsKey(name);
+		}
 
 		private static Dictionary<string, string> LoadFromFile(string filename) {
 			Dictionary<string, string> result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -67,51 +94,6 @@ namespace bsn.ModuleStore.Sql {
 			return result;
 		}
 
-		internal static CompiledGrammar GetGrammar() {
-			lock (sync) {
-				if (compiledGrammar == null) {
-					compiledGrammar = CompiledGrammar.Load(typeof(ScriptParser), "ModuleStoreSQL.cgt");
-				}
-				return compiledGrammar;
-			}
-		}
-
-		public static SemanticTypeActions<SqlToken> GetSemanticActions() {
-			lock (sync) {
-				if (semanticActions == null) {
-					semanticActions = new SemanticTypeActions<SqlToken>(GetGrammar());
-					semanticActions.Initialize();
-				}
-				return semanticActions;
-			}
-		}
-
-		public static bool IsReservedWord(string name) {
-			return reservedWords.ContainsKey(name);
-		}
-
-		internal static bool TryGetReservedWord(ref string word) {
-			string result;
-			if (reservedWords.TryGetValue(word, out result)) {
-				word = result;
-				return true;
-			}
-			return false;
-		}
-
-		public static bool IsBuiltinFunctionName(string functionName) {
-			return builtinFunctions.ContainsKey(functionName);
-		}
-
-		internal static bool TryGetBuiltinFunctionName(ref string name) {
-			string result;
-			if (builtinFunctions.TryGetValue(name, out result)) {
-				name = result;
-				return true;
-			}
-			return false;
-		}
-
 		public static IEnumerable<Statement> Parse(string sql) {
 			using (StringReader reader = new StringReader(sql)) {
 				return Parse(reader);
@@ -130,6 +112,24 @@ namespace bsn.ModuleStore.Sql {
 				throw new ParseException("The supplied SQL could not be parsed", parseMessage, ((IToken)processor.CurrentToken).Position);
 			}
 			return (IEnumerable<Statement>)processor.CurrentToken;
+		}
+
+		internal static bool TryGetBuiltinFunctionName(ref string name) {
+			string result;
+			if (builtinFunctions.TryGetValue(name, out result)) {
+				name = result;
+				return true;
+			}
+			return false;
+		}
+
+		internal static bool TryGetReservedWord(ref string word) {
+			string result;
+			if (reservedWords.TryGetValue(word, out result)) {
+				word = result;
+				return true;
+			}
+			return false;
 		}
 	}
 }

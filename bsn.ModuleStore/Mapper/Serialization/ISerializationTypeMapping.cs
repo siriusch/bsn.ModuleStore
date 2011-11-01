@@ -26,7 +26,6 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
 
 using System;
 using System.Collections.Generic;
@@ -43,11 +42,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			get;
 		}
 
-		bool HasNestedSerializers {
+		SqlDbType DbType {
 			get;
 		}
 
-		int MemberCount {
+		bool HasNestedSerializers {
 			get;
 		}
 
@@ -55,7 +54,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			get;
 		}
 
-		SqlDbType DbType {
+		int MemberCount {
 			get;
 		}
 

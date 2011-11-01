@@ -26,14 +26,13 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Reflection;
 
 namespace bsn.ModuleStore.Mapper {
 	internal static class MemberInfoExtensionMethods {
-		public static Type GetMemberType(this MemberInfo memberInfo)
-		{
+		public static Type GetMemberType(this MemberInfo memberInfo) {
 			if (memberInfo == null) {
 				throw new ArgumentNullException("memberInfo");
 			}

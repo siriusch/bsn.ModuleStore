@@ -26,16 +26,15 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-// 
 
 using System;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public interface ISerializationTypeInfoProvider {
-		ISerializationTypeInfo GetSerializationTypeInfo(Type type);
-
 		ISerializationTypeMappingProvider TypeMappingProvider {
 			get;
 		}
+
+		ISerializationTypeInfo GetSerializationTypeInfo(Type type);
 	}
 }

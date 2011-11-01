@@ -26,8 +26,9 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
+using System.Collections.Generic;
 
 using bsn.CommandLine;
 using bsn.CommandLine.Context;
@@ -37,7 +38,7 @@ namespace bsn.ModuleStore.Console.Commands {
 	internal class DisconnectCommand: CommandBase<ExecutionContext> {
 		public DisconnectCommand(ContextBase<ExecutionContext> owner): base(owner) {}
 
-		public override void Execute(ExecutionContext executionContext, System.Collections.Generic.IDictionary<string, object> tags) {
+		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
 			executionContext.Disconnect();
 			executionContext.Output.WriteLine("Disconnected from server {0}", executionContext.Server);
 		}

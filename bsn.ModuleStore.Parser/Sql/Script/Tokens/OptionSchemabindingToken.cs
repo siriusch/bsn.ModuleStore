@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 
 using bsn.GoldParser.Semantic;
@@ -35,8 +35,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 	public sealed class OptionSchemabindingToken: OptionToken {
 		[Rule("<OptionalFunctionOption> ::= ~WITH ~SCHEMABINDING")]
 		[Rule("<ViewOptionalAttribute> ::= ~WITH ~SCHEMABINDING")]
-		public OptionSchemabindingToken() {
-		}
+		public OptionSchemabindingToken() {}
 
 		protected override string OptionSpecifier {
 			get {

@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Diagnostics;
 
@@ -61,7 +61,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (other == null) {
 				return 1;
 			}
-			if ((object)other == this) {
+			if (other == this) {
 				return 0;
 			}
 			int diff = StringComparer.OrdinalIgnoreCase.Compare(value, other.value);
@@ -73,7 +73,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public bool Equals(SqlName other) {
 			if (other != null) {
-				if ((object)other == this) {
+				if (other == this) {
 					return true;
 				}
 				if (GetType() == other.GetType()) {

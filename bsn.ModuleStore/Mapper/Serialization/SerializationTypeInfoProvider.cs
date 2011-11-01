@@ -26,7 +26,6 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-// 
 
 using System;
 using System.Collections.Generic;
@@ -37,7 +36,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private readonly ISerializationTypeMappingProvider mappingProvider;
 
-		public SerializationTypeInfoProvider():this(new SerializationTypeMappingProvider()) {}
+		public SerializationTypeInfoProvider(): this(new SerializationTypeMappingProvider()) {}
 
 		public SerializationTypeInfoProvider(ISerializationTypeMappingProvider mappingProvider) {
 			if (mappingProvider == null) {

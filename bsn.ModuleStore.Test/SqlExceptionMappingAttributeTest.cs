@@ -49,10 +49,10 @@ namespace bsn.ModuleStore {
 
 		private static SqlExceptionMappingAttribute Create<T>(Level level, int? message, byte? severity, byte? state) where T: Exception {
 			SqlExceptionMappingAttribute result = new SqlExceptionMappingAttribute(typeof(T)) {
-			                                                                                  		Number = message,
-			                                                                                  		Severity = severity,
-			                                                                                  		State = state
-			                                                                                  };
+					Number = message,
+					Severity = severity,
+					State = state
+			};
 			MemberInfo appliedOn;
 			switch (level) {
 			case Level.Method:

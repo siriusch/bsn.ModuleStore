@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -40,10 +40,10 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql {
 	public class SqlWriter {
 		private static readonly HashSet<string> azureUnsupportedIndexOption = new HashSet<string> {
-		                                                                                          		"PAD_INDEX",
-		                                                                                          		"ALLOW_ROW_LOCKS",
-		                                                                                          		"ALLOW_PAGE_LOCKS"
-		                                                                                          };
+				"PAD_INDEX",
+				"ALLOW_ROW_LOCKS",
+				"ALLOW_PAGE_LOCKS"
+		};
 
 		private readonly bool emitComments;
 		private readonly DatabaseEngine engine;

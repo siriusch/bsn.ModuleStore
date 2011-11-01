@@ -33,10 +33,10 @@ using bsn.ModuleStore.Mapper.Serialization;
 
 namespace bsn.ModuleStore.Mapper {
 	public interface IMetadataProvider {
-		ISqlCallInfo GetCallInfo(Type interfaceToProxy);
-
 		ISerializationTypeInfoProvider SerializationTypeInfoProvider {
 			get;
 		}
+
+		ISqlCallInfo GetCallInfo(Type interfaceToProxy);
 	}
 }

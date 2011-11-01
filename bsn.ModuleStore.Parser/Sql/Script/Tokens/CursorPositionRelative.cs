@@ -26,14 +26,13 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script.Tokens {
 	public sealed class CursorPositionRelative<TOffset>: CursorPositionOffset<TOffset> where TOffset: SqlScriptableToken {
 		[Rule("<CursorPosition> ::= ~RELATIVE <IntegerLiteral> ~FROM", typeof(IntegerLiteral))]
 		[Rule("<CursorPosition> ::= ~RELATIVE <VariableName> ~FROM", typeof(VariableName))]
-		public CursorPositionRelative(TOffset offset) : base(CursorPosition.Relative, offset) {
-		}
+		public CursorPositionRelative(TOffset offset): base(CursorPosition.Relative, offset) {}
 	}
 }

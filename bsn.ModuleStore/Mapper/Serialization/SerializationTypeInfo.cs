@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,10 +38,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SerializationTypeInfo: ISerializationTypeInfo {
 		private static class ToArray<T> {
 #pragma warning disable 169
-// ReSharper disable StaticFieldInGenericType
+			// ReSharper disable StaticFieldInGenericType
 			// this field is used via reflection
 			public static readonly Func<object, Array> ToArrayInvoker = CreateToArrayInvoker();
-// ReSharper restore StaticFieldInGenericType
+			// ReSharper restore StaticFieldInGenericType
 #pragma warning restore 169
 
 			private static Func<object, Array> CreateToArrayInvoker() {
@@ -49,7 +49,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				if (toArrayMethod == null) {
 					return null;
 				}
-				DynamicMethod method = new DynamicMethod(string.Format("{0}.ToArray`Invoke", typeof(T).FullName), typeof(Array), new[] { typeof(object) }, false);
+				DynamicMethod method = new DynamicMethod(string.Format("{0}.ToArray`Invoke", typeof(T).FullName), typeof(Array), new[] {typeof(object)}, false);
 				ILGenerator il = method.GetILGenerator();
 				il.Emit(OpCodes.Ldarg_0);
 				il.Emit(OpCodes.Castclass, typeof(T));
@@ -59,10 +59,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-
-// ReSharper disable UnusedMember.Local
+		// ReSharper disable UnusedMember.Local
 		private static Array ToArrayGeneric<T>(IEnumerable enumerable) {
-// ReSharper restore UnusedMember.Local
+			// ReSharper restore UnusedMember.Local
 			List<T> list = new List<T>();
 			foreach (object obj in enumerable) {
 				list.Add((T)obj);
@@ -98,11 +97,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if (IsCollection) {
 				listType = (type.IsInterface || type.IsArray) ? typeof(List<>).MakeGenericType(instanceType) : type;
 				if (type.IsArray) {
-// ReSharper disable PossibleNullReferenceException
-// ReSharper disable AssignNullToNotNullAttribute
+					// ReSharper disable PossibleNullReferenceException
+					// ReSharper disable AssignNullToNotNullAttribute
 					listToArray = (Func<object, Array>)typeof(ToArray<>).MakeGenericType(listType).GetField("ToArrayInvoker", BindingFlags.Public|BindingFlags.Static).GetValue(null);
-// ReSharper restore AssignNullToNotNullAttribute
-// ReSharper restore PossibleNullReferenceException
+					// ReSharper restore AssignNullToNotNullAttribute
+					// ReSharper restore PossibleNullReferenceException
 					if (listToArray == null) {
 						listToArray = (Func<object, Array>)Delegate.CreateDelegate(typeof(Func<object, Array>), typeof(SerializationTypeInfo).GetMethod("ToArrayGeneric").MakeGenericMethod(instanceType));
 					}
@@ -150,8 +149,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public ISerializationTypeMapping Mapping
-		{
+		public ISerializationTypeMapping Mapping {
 			get {
 				return mapping;
 			}

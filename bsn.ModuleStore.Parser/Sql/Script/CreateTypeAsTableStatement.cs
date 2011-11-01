@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System.Collections.Generic;
 
 using bsn.GoldParser.Semantic;
@@ -36,8 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly List<TableDefinition> tableDefinitions;
 
 		[Rule("<CreateTypeStatement> ::= ~CREATE ~TYPE <SimpleTypeNameQualified> ~AS ~TABLE <TableDefinitionGroup>")]
-		public CreateTypeAsTableStatement(Qualified<SchemaName, TypeName> typeName, Sequence<TableDefinition> tableDefinitions)
-			: base(typeName) {
+		public CreateTypeAsTableStatement(Qualified<SchemaName, TypeName> typeName, Sequence<TableDefinition> tableDefinitions): base(typeName) {
 			this.tableDefinitions = tableDefinitions.ToList();
 		}
 

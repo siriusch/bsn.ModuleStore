@@ -26,7 +26,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//  
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -53,12 +53,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		string IObjectBoundStatement.ObjectName {
-			get {
-				return TableName.Name.Value;
-			}
-		}
-
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.WriteEnum(check, WhitespacePadding.SpaceAfter);
@@ -74,6 +68,12 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public void ApplyTo(CreateTableStatement instance) {
 			instance.Definitions.AddRange(definitions);
+		}
+
+		string IObjectBoundStatement.ObjectName {
+			get {
+				return TableName.Name.Value;
+			}
 		}
 	}
 }
