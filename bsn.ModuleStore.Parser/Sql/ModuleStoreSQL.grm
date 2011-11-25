@@ -1316,16 +1316,6 @@ _ACTION = '$ACTION'
 <Predicate> ::= <PredicateOr>
 
 <PredicateOr> ::= <PredicateAnd> OR <PredicateOr>
-                | <Expression> BETWEEN <Expression> AND <Expression>
-                | <Expression> NOT BETWEEN <Expression> AND <Expression>
-                | <Expression> IS NULL
-                | <Expression> IS NOT NULL
-                | <Expression> LIKE <Expression>
-                | <Expression> LIKE <Expression> ESCAPE StringLiteral
-                | <Expression> NOT LIKE <Expression>
-                | <Expression> NOT LIKE <Expression> ESCAPE StringLiteral
-                | <Expression> IN <Tuple>
-                | <Expression> NOT IN <Tuple>
                 | <PredicateAnd>
 
 ! support for SOME/ANY/ALL comparisons on sets is missing: http://msdn.microsoft.com/en-US/library/ms175064(v=SQL.90).aspx
@@ -1345,6 +1335,16 @@ _ACTION = '$ACTION'
                      | <Expression> '!=' <Expression>
                      | <Expression> '!<' <Expression>
                      | <Expression> '!>' <Expression>
+                     | <Expression> BETWEEN <Expression> AND <Expression>
+                     | <Expression> NOT BETWEEN <Expression> AND <Expression>
+                     | <Expression> IS NULL
+                     | <Expression> IS NOT NULL
+                     | <Expression> LIKE <Expression>
+                     | <Expression> LIKE <Expression> ESCAPE StringLiteral
+                     | <Expression> NOT LIKE <Expression>
+                     | <Expression> NOT LIKE <Expression> ESCAPE StringLiteral
+                     | <Expression> IN <Tuple>
+                     | <Expression> NOT IN <Tuple>
                      | <PredicateFunction>
 
 <Tuple> ::= '(' <SelectQuery> ')'

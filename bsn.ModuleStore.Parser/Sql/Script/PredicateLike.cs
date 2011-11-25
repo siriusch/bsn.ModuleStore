@@ -38,10 +38,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression pattern;
 		private readonly Expression valueExpression;
 
-		[Rule("<PredicateOr> ::= <Expression> ~LIKE <Expression>")]
+		[Rule("<PredicateCompare> ::= <Expression> ~LIKE <Expression>")]
 		public PredicateLike(Expression valueExpression, Expression pattern): this(valueExpression, false, pattern, null) {}
 
-		[Rule("<PredicateOr> ::= <Expression> ~LIKE <Expression> ~ESCAPE StringLiteral")]
+		[Rule("<PredicateCompare> ::= <Expression> ~LIKE <Expression> ~ESCAPE StringLiteral")]
 		public PredicateLike(Expression valueExpression, Expression pattern, StringLiteral escape): this(valueExpression, false, pattern, escape) {}
 
 		protected PredicateLike(Expression valueExpression, bool not, Expression pattern, StringLiteral escape): base(not) {
