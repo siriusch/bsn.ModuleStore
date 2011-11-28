@@ -247,9 +247,9 @@ namespace bsn.ModuleStore.Sql {
 			if ((result == null) && (attribute.ManifestResourceType == null) && (!string.IsNullOrEmpty(optionalPrefix))) {
 				manifestStreamKey = optionalPrefix+Type.Delimiter+attribute.ManifestResourceName;
 				result = assembly.GetManifestResourceStream(null, manifestStreamKey);
-				if (result == null) {
-					throw new FileNotFoundException("The embedded SQL file was not found", attribute.ManifestResourceName);
-				}
+			}
+			if (result == null) {
+				throw new FileNotFoundException("The embedded SQL file was not found", attribute.ManifestResourceName);
 			}
 			return result;
 		}
