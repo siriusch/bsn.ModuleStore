@@ -234,7 +234,7 @@ namespace bsn.ModuleStore.Sql {
 
 		public void WriteScriptSequence<T>(IEnumerable<T> sequence, WhitespacePadding itemPadding, string itemSeparator) where T: SqlScriptableToken {
 			if (sequence != null) {
-				IEnumerator<T> enumerator = sequence.GetEnumerator();
+				IEnumerator<T> enumerator = sequence.Where(x => x != null).GetEnumerator();
 				if (enumerator.MoveNext()) {
 					PaddingBefore(itemPadding);
 					WriteScript(enumerator.Current, WhitespacePadding.None);
