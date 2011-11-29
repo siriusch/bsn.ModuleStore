@@ -74,19 +74,32 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override Statement CreateAlterStatement() {
-			throw new NotSupportedException("Tables must be altered via change scripts");
-		}
-
-		public override DropStatement CreateDropStatement() {
-			return new DropTableStatement(tableName);
+		public override IEnumerable<IAlterableCreateStatement> CreateStatementFragments(bool newSchema) {
+			List<TableDefinition> definitions = new List<TableDefinition>();
+			List<TableConstraint> constraints = new List<TableConstraint>();
+			foreach (TableDefinition definition in Definitions) {
+				TableConstraint constraint = definition as TableConstraint;
+				if ((constraint == null) || (newSchema && constraint.IsPartOfSchemaDefinition)) {
+					definitions.Add(definition);
+				} else {
+					constraints.Add(constraint);
+				}
+			}
+			yield return new CreateTableFragment(this, definitions);
+			foreach (TableConstraint constraint in constraints) {
+				yield return new AlterTableAddConstraintFragment(this, constraint);
+			}
 		}
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteTo(writer, definition => definition);
 		}
 
-		public void WriteTo(SqlWriter writer, Func<TableDefinition, TableDefinition> definitionRewriter) {
+		protected override string GetObjectSchema() {
+			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
+		}
+
+		internal void WriteTo(SqlWriter writer, Func<TableDefinition, TableDefinition> definitionRewriter) {
 			if (definitionRewriter == null) {
 				throw new ArgumentNullException("definitionRewriter");
 			}
@@ -99,10 +112,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');
-		}
-
-		protected override string GetObjectSchema() {
-			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
 		}
 	}
 }

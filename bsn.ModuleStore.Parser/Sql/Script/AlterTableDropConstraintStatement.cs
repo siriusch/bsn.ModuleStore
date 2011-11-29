@@ -33,7 +33,7 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class AlterTableDropConstraintStatement: AlterTableStatement {
+	public sealed class AlterTableDropConstraintStatement: AlterTableStatement, IInstallStatement {
 		private readonly ConstraintName constraintName;
 
 		[Rule("<AlterTableStatement> ::= ~ALTER ~TABLE <TableNameQualified> ~DROP <ConstraintName>")]
@@ -53,6 +53,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			base.WriteTo(writer);
 			writer.Write("DROP CONSTRAINT ");
 			writer.WriteScript(constraintName, WhitespacePadding.None);
+		}
+
+		string IObjectBoundStatement.ObjectName {
+			get {
+				return constraintName.Value;
+			}
+		}
+
+		bool IInstallStatement.IsPartOfSchemaDefinition {
+			get {
+				return false;
+			}
 		}
 	}
 }

@@ -218,8 +218,8 @@ namespace bsn.ModuleStore {
 			}
 			if (hasChanges) {
 				databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
-				IEnumerable<KeyValuePair<CreateStatement, InventoryObjectDifference>> differences = Inventory.Compare(inventory, databaseInventory, managementConnectionProvider.Engine).Where(pair => pair.Value != InventoryObjectDifference.None);
-				using (IEnumerator<KeyValuePair<CreateStatement, InventoryObjectDifference>> enumerator = differences.GetEnumerator()) {
+				IEnumerable<KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>> differences = Inventory.Compare(inventory, databaseInventory, managementConnectionProvider.Engine).Where(pair => pair.Value != InventoryObjectDifference.None);
+				using (IEnumerator<KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>> enumerator = differences.GetEnumerator()) {
 					if (enumerator.MoveNext()) {
 						StringBuilder message = new StringBuilder("Schema ");
 						message.Append(module.Schema);

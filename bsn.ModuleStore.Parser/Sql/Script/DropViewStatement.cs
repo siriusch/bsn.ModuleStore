@@ -42,6 +42,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.viewName = viewName;
 		}
 
+		public override string ObjectName {
+			get {
+				return viewName.Name.Value;
+			}
+		}
+
 		public Qualified<SchemaName, ViewName> ViewName {
 			get {
 				return viewName;

@@ -46,7 +46,7 @@ namespace bsn.ModuleStore.Console.Commands {
 			GetDatabaseEngine(sourceInventory, ref engine);
 			Inventory targetInventory = executionContext.GetInventory((Entities.Source)tags["target"]);
 			GetDatabaseEngine(sourceInventory, ref engine);
-			foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> difference in Inventory.Compare(sourceInventory, targetInventory, engine)) {
+			foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> difference in Inventory.Compare(sourceInventory, targetInventory, engine)) {
 				executionContext.Output.WriteLine(string.Format(" {0} {1}: {2}", difference.Key.ObjectCategory, difference.Key.ObjectName, difference.Value));
 			}
 		}

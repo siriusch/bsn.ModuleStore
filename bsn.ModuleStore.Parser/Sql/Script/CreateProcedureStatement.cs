@@ -36,7 +36,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateProcedureStatement: CreateStatement, ICreateOrAlterStatement {
+	public sealed class CreateProcedureStatement: AlterableCreateStatement, ICreateOrAlterStatement {
 		private readonly StatementBlock body;
 		private readonly OptionToken option;
 		private readonly List<ProcedureParameter> parameters;
@@ -99,16 +99,16 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override Statement CreateAlterStatement() {
+		public override void WriteTo(SqlWriter writer) {
+			WriteToInternal(writer, "CREATE");
+		}
+
+		protected override IInstallStatement CreateAlterStatement() {
 			return new AlterOfCreateStatement<CreateProcedureStatement>(this);
 		}
 
-		public override DropStatement CreateDropStatement() {
+		protected override IInstallStatement CreateDropStatement() {
 			return new DropProcedureStatement(procedureName);
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			WriteToInternal(writer, "CREATE");
 		}
 
 		protected override string GetObjectSchema() {

@@ -27,37 +27,45 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Diagnostics;
-
-using bsn.GoldParser.Semantic;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DropProcedureStatement: DropStatement {
-		private readonly Qualified<SchemaName, ProcedureName> procedureName;
+	public class CompoundInstallStatement: SqlScriptableToken, IInstallStatement {
+		private readonly string objectName;
+		private readonly IScriptableStatement[] statements;
 
-		[Rule("<DropProcedureStatement> ::= ~DROP ~PROCEDURE <ProcedureNameQualified>")]
-		public DropProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName) {
-			Debug.Assert(procedureName != null);
-			this.procedureName = procedureName;
+		public CompoundInstallStatement(string objectName, params IScriptableStatement[] statements) {
+			this.objectName = objectName;
+			this.statements = statements;
 		}
 
-		public override string ObjectName {
-			get {
-				return procedureName.Name.Value;
-			}
-		}
-
-		public Qualified<SchemaName, ProcedureName> ProcedureName {
-			get {
-				return procedureName;
-			}
+		public IEnumerable<T> GetReferencedObjectNames<T>() where T: SqlName {
+			return statements.SelectMany(s => s.GetReferencedObjectNames<T>()).Distinct();
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
-			writer.Write("DROP PROCEDURE ");
-			writer.WriteScript(procedureName, WhitespacePadding.None);
+			bool first = true;
+			foreach (IScriptableStatement statement in statements) {
+				if (first) {
+					first = false;
+				} else {
+					writer.WriteLine(";");
+				}
+				statement.WriteTo(writer);
+			}
+		}
+
+		public string ObjectName {
+			get {
+				return objectName;
+			}
+		}
+
+		public bool IsPartOfSchemaDefinition {
+			get {
+				return false;
+			}
 		}
 	}
 }

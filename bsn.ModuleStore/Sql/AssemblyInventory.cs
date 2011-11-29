@@ -162,18 +162,17 @@ namespace bsn.ModuleStore.Sql {
 			inventory.SetQualification(inventory.SchemaName);
 			try {
 				DependencyResolver resolver = new DependencyResolver();
-				List<CreateTableStatement> tables = new List<CreateTableStatement>();
-				List<DropStatement> dropStatements = new List<DropStatement>();
+				List<IInstallStatement> alterUsingUpdateScript = new List<IInstallStatement>();
+				List<IScriptableStatement> dropStatements = new List<IScriptableStatement>();
 				HashSet<string> newObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-				foreach (KeyValuePair<CreateStatement, InventoryObjectDifference> pair in Compare(inventory, this, inventory.TargetEngine)) {
+				foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> pair in Compare(inventory, this, inventory.TargetEngine)) {
 					switch (pair.Value) {
 					case InventoryObjectDifference.None:
 						resolver.AddExistingObject(pair.Key.ObjectName);
 						break;
 					case InventoryObjectDifference.Different:
-						CreateTableStatement createTable = pair.Key as CreateTableStatement;
-						if (createTable != null) {
-							tables.Add(createTable);
+						if (pair.Key.AlterUsingUpdateScript) {
+							alterUsingUpdateScript.Add(pair.Key);
 						} else {
 							resolver.Add(pair.Key.ObjectName, pair.Key.CreateAlterStatement());
 						}
@@ -183,18 +182,15 @@ namespace bsn.ModuleStore.Sql {
 						break;
 					case InventoryObjectDifference.TargetOnly:
 						resolver.Add(pair.Key);
-						switch (pair.Key.ObjectCategory) {
-						case ObjectCategory.Table:
-						case ObjectCategory.View:
+						if (pair.Key.IsPartOfSchemaDefinition) {
 							newObjectNames.Add(pair.Key.ObjectName);
-							break;
 						}
 						break;
 					}
 				}
 				StringBuilder builder = new StringBuilder(4096);
 				// first perform all possible actions which do not rely on tables which are altered
-				foreach (Statement statement in resolver.GetInOrder(false)) {
+				foreach (IInstallStatement statement in resolver.GetInOrder(false)) {
 					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// then perform updates (if any)
@@ -204,7 +200,7 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				// now that the update scripts have updated the tables, mark the tables in the dependency resolver
-				foreach (CreateTableStatement createTableStatement in tables) {
+				foreach (IInstallStatement createTableStatement in alterUsingUpdateScript) {
 					resolver.AddExistingObject(createTableStatement.ObjectName);
 				}
 				// try to perform the remaining actions
@@ -222,7 +218,7 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				// finally drop objects which are no longer used
-				foreach (DropStatement dropStatement in dropStatements) {
+				foreach (IScriptableStatement dropStatement in dropStatements) {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
 			} finally {

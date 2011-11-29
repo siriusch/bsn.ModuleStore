@@ -39,6 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		Function,
 		Procedure,
 		XmlSchema,
-		Type
+		Type,
+		Constraint
 	}
 }

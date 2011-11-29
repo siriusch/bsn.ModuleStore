@@ -42,6 +42,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.xmlSchemaCollectionName = xmlSchemaCollectionName;
 		}
 
+		public override string ObjectName {
+			get {
+				return xmlSchemaCollectionName.Name.Value;
+			}
+		}
+
 		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName {
 			get {
 				return xmlSchemaCollectionName;

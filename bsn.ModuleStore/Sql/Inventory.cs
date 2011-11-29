@@ -40,48 +40,48 @@ namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory: IQualified<SchemaName> {
 		private static readonly byte[] hashXor = new byte[] {0xDA, 0x39, 0xA3, 0xEE, 0x5E, 0x6B, 0x4B, 0x0D, 0x32, 0x55, 0xBF, 0xEF, 0x95, 0x60, 0x18, 0x90, 0xAF, 0xD8, 0x07, 0x09};
 
-		public static IEnumerable<KeyValuePair<CreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target, DatabaseEngine engine) {
+		public static IEnumerable<KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target, DatabaseEngine engine) {
 			if (source == null) {
 				throw new ArgumentNullException("source");
 			}
 			if (target == null) {
 				throw new ArgumentNullException("target");
 			}
-			using (IEnumerator<CreateStatement> sourceEnumerator = source.Objects.GetEnumerator()) {
-				using (IEnumerator<CreateStatement> targetEnumerator = target.Objects.GetEnumerator()) {
+			using (IEnumerator<IAlterableCreateStatement> sourceEnumerator = source.Objects.SelectMany(s => s.CreateStatementFragments(false)).OrderBy(s => s.ObjectName).GetEnumerator()) {
+				using (IEnumerator<IAlterableCreateStatement> targetEnumerator = target.Objects.SelectMany(s => s.CreateStatementFragments(false)).OrderBy(s => s.ObjectName).GetEnumerator()) {
 					bool hasSource = sourceEnumerator.MoveNext();
 					bool hasTarget = targetEnumerator.MoveNext();
 					while (hasSource && hasTarget) {
-						CreateStatement sourceStatement = sourceEnumerator.Current;
+						IAlterableCreateStatement sourceStatement = sourceEnumerator.Current;
 						Debug.Assert(sourceStatement != null);
-						CreateStatement targetStatement = targetEnumerator.Current;
+						IAlterableCreateStatement targetStatement = targetEnumerator.Current;
 						Debug.Assert(targetStatement != null);
 						int diff = string.Compare(sourceStatement.ObjectName, targetStatement.ObjectName, StringComparison.OrdinalIgnoreCase);
 						if (diff < 0) {
-							yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(sourceStatement, InventoryObjectDifference.SourceOnly);
+							yield return new KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>(sourceStatement, InventoryObjectDifference.SourceOnly);
 							hasSource = sourceEnumerator.MoveNext();
 						} else if (diff > 0) {
-							yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(targetStatement, InventoryObjectDifference.TargetOnly);
+							yield return new KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>(targetStatement, InventoryObjectDifference.TargetOnly);
 							hasTarget = targetEnumerator.MoveNext();
 						} else {
-							yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(targetStatement, targetStatement.Equals(sourceStatement, engine) ? InventoryObjectDifference.None : InventoryObjectDifference.Different);
+							yield return new KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>(targetStatement, targetStatement.Equals(sourceStatement, engine) ? InventoryObjectDifference.None : InventoryObjectDifference.Different);
 							hasSource = sourceEnumerator.MoveNext();
 							hasTarget = targetEnumerator.MoveNext();
 						}
 					}
 					while (hasSource) {
-						yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(sourceEnumerator.Current, InventoryObjectDifference.SourceOnly);
+						yield return new KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>(sourceEnumerator.Current, InventoryObjectDifference.SourceOnly);
 						hasSource = sourceEnumerator.MoveNext();
 					}
 					while (hasTarget) {
-						yield return new KeyValuePair<CreateStatement, InventoryObjectDifference>(targetEnumerator.Current, InventoryObjectDifference.TargetOnly);
+						yield return new KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>(targetEnumerator.Current, InventoryObjectDifference.TargetOnly);
 						hasTarget = targetEnumerator.MoveNext();
 					}
 				}
 			}
 		}
 
-		protected static string WriteStatement(Statement statement, StringBuilder buffer, DatabaseEngine targetEngine) {
+		protected static string WriteStatement(IScriptableStatement statement, StringBuilder buffer, DatabaseEngine targetEngine) {
 			buffer.Length = 0;
 			using (StringWriter writer = new StringWriter(buffer)) {
 				statement.WriteTo(new SqlWriter(writer, targetEngine));

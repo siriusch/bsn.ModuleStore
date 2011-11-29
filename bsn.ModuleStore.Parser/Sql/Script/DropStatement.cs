@@ -30,5 +30,15 @@
 using System;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class DropStatement: DdlStatement {}
+	public abstract class DropStatement: DdlStatement, IInstallStatement {
+		public abstract string ObjectName {
+			get;
+		}
+
+		bool IInstallStatement.IsPartOfSchemaDefinition {
+			get {
+				return false;
+			}
+		}
+	}
 }

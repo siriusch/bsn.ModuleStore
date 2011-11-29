@@ -66,6 +66,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
+		internal override bool IsPartOfSchemaDefinition {
+			get {
+				return true;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.Write(UniqueKindName);

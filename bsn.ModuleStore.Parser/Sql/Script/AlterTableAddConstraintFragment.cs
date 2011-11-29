@@ -27,37 +27,40 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Diagnostics;
-
-using bsn.GoldParser.Semantic;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DropProcedureStatement: DropStatement {
-		private readonly Qualified<SchemaName, ProcedureName> procedureName;
+	internal class AlterTableAddConstraintFragment: StatementFragment<CreateTableStatement> {
+		private readonly TableConstraint constraint;
 
-		[Rule("<DropProcedureStatement> ::= ~DROP ~PROCEDURE <ProcedureNameQualified>")]
-		public DropProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName) {
-			Debug.Assert(procedureName != null);
-			this.procedureName = procedureName;
+		public AlterTableAddConstraintFragment(CreateTableStatement owner, TableConstraint constraint): base(owner) {
+			this.constraint = constraint;
+		}
+
+		public TableConstraint Constraint {
+			get {
+				return constraint;
+			}
+		}
+
+		public override ObjectCategory ObjectCategory {
+			get {
+				return ObjectCategory.Constraint;
+			}
 		}
 
 		public override string ObjectName {
 			get {
-				return procedureName.Name.Value;
+				return constraint.ConstraintName.Value;
 			}
 		}
 
-		public Qualified<SchemaName, ProcedureName> ProcedureName {
-			get {
-				return procedureName;
-			}
+		public override IInstallStatement CreateDropStatement() {
+			return new AlterTableDropConstraintStatement(Owner.TableName, constraint.ConstraintName);
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
-			writer.Write("DROP PROCEDURE ");
-			writer.WriteScript(procedureName, WhitespacePadding.None);
+			new AlterTableAddStatement(Owner.TableName, new TableWithCheckToken(), new Sequence<TableDefinition>(constraint)).WriteTo(writer);
 		}
 	}
 }

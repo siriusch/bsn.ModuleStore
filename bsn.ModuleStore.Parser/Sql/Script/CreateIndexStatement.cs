@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateIndexStatement: CreateStatement {
+	public abstract class CreateIndexStatement: AlterableCreateStatement {
 		private readonly List<IndexOption> indexOptions;
 		private readonly Qualified<SchemaName, TableName> tableName;
 		private IndexName indexName;
@@ -78,7 +78,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override DropStatement CreateDropStatement() {
+		protected override IInstallStatement CreateDropStatement() {
 			return new DropIndexStatement(indexName, tableName, null);
 		}
 

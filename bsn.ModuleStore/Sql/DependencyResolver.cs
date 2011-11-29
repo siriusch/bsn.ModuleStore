@@ -48,9 +48,9 @@ namespace bsn.ModuleStore.Sql {
 
 			private readonly HashSet<string> edges = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			private readonly string objectName;
-			private readonly Statement statement;
+			private readonly IInstallStatement statement;
 
-			public DependencyNode(string objectName, Statement statement) {
+			public DependencyNode(string objectName, IInstallStatement statement) {
 				this.objectName = objectName;
 				this.statement = statement;
 				foreach (SqlName referencedObjectName in statement.GetReferencedObjectNames<SqlName>().Where(n => !(IsLocalName(n) || n.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase)))) {
@@ -70,7 +70,7 @@ namespace bsn.ModuleStore.Sql {
 				}
 			}
 
-			public Statement Statement {
+			public IInstallStatement Statement {
 				get {
 					return statement;
 				}
@@ -86,14 +86,14 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void Add<T>(T statement) where T: Statement, IObjectBoundStatement {
+		public void Add(IAlterableCreateStatement statement) {
 			if (statement == null) {
 				throw new ArgumentNullException("statement");
 			}
 			Add(statement.ObjectName, statement);
 		}
 
-		public void Add(string objectName, Statement statement) {
+		public void Add(string objectName, IInstallStatement statement) {
 			AddDependency(objectName, statement);
 		}
 
@@ -101,8 +101,8 @@ namespace bsn.ModuleStore.Sql {
 			existingObjectNames.Add(objectName);
 		}
 
-		public IEnumerable<Statement> GetInOrder(bool throwOnCycle) {
-			Queue<DependencyNode> nodes = new Queue<DependencyNode>(dependencies.Values.SelectMany(n => n));
+		public IEnumerable<IInstallStatement> GetInOrder(bool throwOnCycle) {
+			Queue<DependencyNode> nodes = new Queue<DependencyNode>(dependencies.Values.SelectMany(n => n).OrderBy(n => n.ObjectName, StringComparer.OrdinalIgnoreCase));
 			// we start with obvious "direct dependencies"
 			HashSet<DependencyNode> directDependencies = GetDirectDependencies(nodes, n => existingObjectNames.Contains(n.Value));
 			int skipCount = 0;
@@ -111,37 +111,10 @@ namespace bsn.ModuleStore.Sql {
 				if (((directDependencies.Count == 0) || (directDependencies.Contains(node))) && CheckDependenciesExist(node)) {
 					RemoveDependency(node);
 					skipCount = 0;
-					StatementBlock block = node.Statement as StatementBlock;
-					if (block != null) {
-						Stack<IEnumerator<Statement>> blockStack = new Stack<IEnumerator<Statement>>();
-						try {
-							blockStack.Push(block.Statements.GetEnumerator());
-							do {
-								IEnumerator<Statement> enumerator = blockStack.Pop();
-								if (enumerator.MoveNext()) {
-									blockStack.Push(enumerator);
-									block = enumerator.Current as StatementBlock;
-									if (block != null) {
-										blockStack.Push(block.Statements.GetEnumerator());
-									} else {
-										yield return enumerator.Current;
-									}
-								} else {
-									enumerator.Dispose();
-								}
-							} while (blockStack.Count > 0);
-						} finally {
-							while (blockStack.Count > 0) {
-								blockStack.Pop().Dispose();
-							}
-						}
-					} else {
-						CreateStatement createStatement = node.Statement as CreateStatement;
-						if ((createStatement is CreateViewStatement) || (createStatement is CreateTableStatement)) {
-							directDependencies.UnionWith(GetDirectDependencies(nodes, n => n.Value.Equals(node.ObjectName, StringComparison.OrdinalIgnoreCase)));
-						}
-						yield return node.Statement;
+					if (node.Statement.IsPartOfSchemaDefinition) {
+						directDependencies.UnionWith(GetDirectDependencies(nodes, n => n.Value.Equals(node.ObjectName, StringComparison.OrdinalIgnoreCase)));
 					}
+					yield return node.Statement;
 					directDependencies.IntersectWith(nodes);
 				} else {
 					nodes.Enqueue(node);
@@ -168,7 +141,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		private void AddDependency(string objectName, Statement statement) {
+		private void AddDependency(string objectName, IInstallStatement statement) {
 			if (statement == null) {
 				throw new ArgumentNullException("statement");
 			}

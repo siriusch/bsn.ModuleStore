@@ -58,9 +58,9 @@ namespace bsn.ModuleStore.Console {
 			}
 
 			public KeyValuePair<CustomAttributeInfo, string>[] GetAssemblyCustomAttributeData() {
-// ReSharper disable RedundantTypeArgumentsOfMethod
+				// ReSharper disable RedundantTypeArgumentsOfMethod
 				return AssemblyHandle.FindCustomAttributes<CustomAttributeInfo>(assembly, CustomAssemblyAttributes, CustomMemberAttributes);
-// ReSharper restore RedundantTypeArgumentsOfMethod
+				// ReSharper restore RedundantTypeArgumentsOfMethod
 			}
 
 			public string[] GetManifestResourceNames() {
@@ -153,6 +153,39 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
+		private object ResolveArgumentValue(KeyValuePair<QualifiedTypeNameInfo, object> a) {
+			if (a.Value is QualifiedTypeNameInfo) {
+				return ((QualifiedTypeNameInfo)a.Value).FindType(true);
+			}
+			return a.Value;
+		}
+
+		private object[] ResolveArguments(ICollection<KeyValuePair<QualifiedTypeNameInfo, object>> constructorArguments) {
+			List<object> result = new List<object>();
+			using (IEnumerator<KeyValuePair<QualifiedTypeNameInfo, object>> enumerator = constructorArguments.GetEnumerator()) {
+				while (enumerator.MoveNext()) {
+					if (enumerator.Current.Key.FindType(true) == typeof(Type)) {
+						QualifiedTypeNameInfo typeName = (QualifiedTypeNameInfo)enumerator.Current.Value;
+						if (enumerator.MoveNext()) {
+							if (enumerator.Current.Key.FindType(true) == typeof(string)) {
+								result.Add(null);
+								result.Add(Regex.Replace(typeName.TypeName, @"((?<=\.)[^\.]+)?$", (string)enumerator.Current.Value, RegexOptions.CultureInvariant|RegexOptions.ExplicitCapture|RegexOptions.RightToLeft));
+							} else {
+								result.Add(typeName.FindType(true));
+								result.Add(enumerator.Current.Value);
+							}
+						} else {
+							result.Add(typeName.FindType(true));
+						}
+					} else {
+						result.Add(enumerator.Current.Value);
+					}
+				}
+			}
+			Debug.Assert(result.Count == constructorArguments.Count);
+			return result.ToArray();
+		}
+
 		public KeyValuePair<T, string>[] GetCustomAttributes<T>() where T: Attribute {
 			KeyValuePair<CustomAttributeInfo, string>[] assemblyCustomAttributeData = handle.GetAssemblyCustomAttributeData();
 			if (assemblyCustomAttributeData.Length == 0) {
@@ -170,7 +203,8 @@ namespace bsn.ModuleStore.Console {
 					Type execAttributeType = execAssembly.GetType(customAttributeData.Key.AttributeType.TypeName);
 					if (typeof(T).IsAssignableFrom(execAttributeType)) {
 						ConstructorInfo execConstructor = execAttributeType.GetConstructor(customAttributeData.Key.ConstructorArguments.Select(a => a.Key.FindType(true)).ToArray());
-						T attribute = (T)execConstructor.Invoke(customAttributeData.Key.ConstructorArguments.Select(a => a.Value).ToArray());
+						Debug.Assert(execConstructor != null);
+						T attribute = (T)execConstructor.Invoke(ResolveArguments(customAttributeData.Key.ConstructorArguments));
 						if (customAttributeData.Key.NamedArguments != null) {
 							foreach (KeyValuePair<TypeMemberInfo, object> namedArgument in customAttributeData.Key.NamedArguments) {
 								MemberInfo execMember = execAttributeType.GetMember(namedArgument.Key.MemberName, namedArgument.Key.MemberType, BindingFlags.Instance|BindingFlags.Public).FirstOrDefault();

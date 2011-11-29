@@ -31,14 +31,14 @@ using System;
 using System.IO;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class SqlScriptableToken: SqlToken, IEquatable<SqlScriptableToken> {
+	public abstract class SqlScriptableToken: SqlToken, IEquatable<SqlScriptableToken>, IEquatable<IHashableStatement>, IHashableStatement {
 		private int? hashCode;
 
 		public override bool Equals(object obj) {
-			return base.Equals(obj as SqlScriptableToken);
+			return Equals(obj as IHashableStatement);
 		}
 
-		public bool Equals(SqlScriptableToken other, DatabaseEngine engine) {
+		public bool Equals(IHashableStatement other, DatabaseEngine engine) {
 			if (other == this) {
 				return true;
 			}
@@ -46,13 +46,6 @@ namespace bsn.ModuleStore.Sql.Script {
 				return HashWriter.HashEqual(GetHash(engine), other.GetHash(engine));
 			}
 			return false;
-		}
-
-		public byte[] GetHash(DatabaseEngine engine) {
-			using (HashWriter writer = new HashWriter()) {
-				WriteTo(new SqlWriter(writer, engine, false));
-				return writer.ToArray();
-			}
 		}
 
 		public override int GetHashCode() {
@@ -79,8 +72,19 @@ namespace bsn.ModuleStore.Sql.Script {
 			hashCode = HashWriter.ToHashCode(GetHash(DatabaseEngine.Unknown));
 		}
 
-		public bool Equals(SqlScriptableToken other) {
+		public bool Equals(IHashableStatement other) {
 			return Equals(other, DatabaseEngine.Unknown);
+		}
+
+		bool IEquatable<SqlScriptableToken>.Equals(SqlScriptableToken other) {
+			return Equals(other);
+		}
+
+		public byte[] GetHash(DatabaseEngine engine) {
+			using (HashWriter writer = new HashWriter()) {
+				WriteTo(new SqlWriter(writer, engine, false));
+				return writer.ToArray();
+			}
 		}
 	}
 }
