@@ -86,15 +86,18 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void Add(IAlterableCreateStatement statement) {
+		public void Add(IInstallStatement statement) {
 			if (statement == null) {
 				throw new ArgumentNullException("statement");
 			}
-			Add(statement.ObjectName, statement);
-		}
-
-		public void Add(string objectName, IInstallStatement statement) {
-			AddDependency(objectName, statement);
+			if (!statement.ObjectName.StartsWith("@")) {
+				List<DependencyNode> dependencyNodes;
+				if (!dependencies.TryGetValue(statement.ObjectName, out dependencyNodes)) {
+					dependencyNodes = new List<DependencyNode>();
+					dependencies.Add(statement.ObjectName, dependencyNodes);
+				}
+				dependencyNodes.Add(new DependencyNode(statement.ObjectName, statement));
+			}
 		}
 
 		public void AddExistingObject(string objectName) {
@@ -141,20 +144,9 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		private void AddDependency(string objectName, IInstallStatement statement) {
-			if (statement == null) {
-				throw new ArgumentNullException("statement");
-			}
-			if (string.IsNullOrEmpty(objectName)) {
-				throw new ArgumentNullException("objectName");
-			}
-			if (!objectName.StartsWith("@")) {
-				List<DependencyNode> dependencyNodes;
-				if (!dependencies.TryGetValue(objectName, out dependencyNodes)) {
-					dependencyNodes = new List<DependencyNode>();
-					dependencies.Add(objectName, dependencyNodes);
-				}
-				dependencyNodes.Add(new DependencyNode(objectName, statement));
+		internal void TransferPendingObjects(DependencyResolver other) {
+			foreach (IInstallStatement statement in dependencies.SelectMany(p => p.Value).Select(n => n.Statement).Where(s => !existingObjectNames.Contains(s.ObjectName)).Distinct()) {
+				other.Add(statement);
 			}
 		}
 

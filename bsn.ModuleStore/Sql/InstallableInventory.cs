@@ -83,6 +83,7 @@ namespace bsn.ModuleStore.Sql {
 								resolver.AddExistingObject(statement.ObjectName);
 							}
 						} catch (InvalidOperationException ex) {
+							schemaResolver.TransferPendingObjects(resolver);
 							Debug.WriteLine(ex.Message, "SCHEMA CREATE trimmed");
 						}
 						sqlWriter.DecreaseIndent();

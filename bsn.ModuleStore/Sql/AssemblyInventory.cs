@@ -174,7 +174,7 @@ namespace bsn.ModuleStore.Sql {
 						if (pair.Key.AlterUsingUpdateScript) {
 							alterUsingUpdateScript.Add(pair.Key);
 						} else {
-							resolver.Add(pair.Key.ObjectName, pair.Key.CreateAlterStatement());
+							resolver.Add(pair.Key.CreateAlterStatement());
 						}
 						break;
 					case InventoryObjectDifference.SourceOnly:
