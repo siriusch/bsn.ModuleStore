@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -60,14 +61,22 @@ namespace bsn.ModuleStore.Sql {
 						sqlWriter.Write("CREATE SCHEMA");
 						sqlWriter.IncreaseIndent();
 						sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
+						DependencyResolver schemaResolver = new DependencyResolver();
 						foreach (IAlterableCreateStatement statement in createStatements) {
 							if (statement.IsPartOfSchemaDefinition) {
-								sqlWriter.WriteLine();
-								statement.WriteTo(sqlWriter);
-								resolver.AddExistingObject(statement.ObjectName);
+								schemaResolver.Add(statement);
 							} else {
 								resolver.Add(statement);
 							}
+						}
+						try {
+							foreach (IInstallStatement statement in schemaResolver.GetInOrder(true)) {
+								sqlWriter.WriteLine();
+								statement.WriteTo(sqlWriter);
+								resolver.AddExistingObject(statement.ObjectName);
+							}
+						} catch (InvalidOperationException ex) {
+							Debug.WriteLine(ex.Message, "SCHEMA CREATE trimmed");
 						}
 						sqlWriter.DecreaseIndent();
 						yield return writer.ToString();
