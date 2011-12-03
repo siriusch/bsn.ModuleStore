@@ -64,7 +64,14 @@ namespace bsn.ModuleStore.Sql {
 						DependencyResolver schemaResolver = new DependencyResolver();
 						foreach (IAlterableCreateStatement statement in createStatements) {
 							if (statement.IsPartOfSchemaDefinition) {
-								schemaResolver.Add(statement);
+								if (statement is CreateTableFragment) {
+									sqlWriter.WriteLine();
+									statement.WriteTo(sqlWriter);
+									resolver.AddExistingObject(statement.ObjectName);
+									schemaResolver.AddExistingObject(statement.ObjectName);
+								} else {
+									schemaResolver.Add(statement);
+								}
 							} else {
 								resolver.Add(statement);
 							}
