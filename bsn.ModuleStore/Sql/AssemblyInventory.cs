@@ -208,13 +208,22 @@ namespace bsn.ModuleStore.Sql {
 					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// execute insert statements for table setup data
-				foreach (InsertStatement insertStatement in AdditionalSetupStatements.OfType<InsertStatement>()) {
-					DestinationRowset<Qualified<SchemaName, TableName>> targetTable = insertStatement.DestinationRowset as DestinationRowset<Qualified<SchemaName, TableName>>;
-					if (targetTable != null) {
-						Qualified<SchemaName, TableName> name = targetTable.Name;
-						if (name.IsQualified && string.Equals(name.Qualification.Value, inventory.SchemaName, StringComparison.OrdinalIgnoreCase) && newObjectNames.Contains(name.Name.Value)) {
-							yield return WriteStatement(insertStatement, builder, inventory.TargetEngine);
+				foreach (Statement statement in AdditionalSetupStatements) {
+					Qualified<SchemaName, TableName> name = null;
+					InsertStatement insertStatement = statement as InsertStatement;
+					if (insertStatement != null) {
+						DestinationRowset<Qualified<SchemaName, TableName>> targetTable = insertStatement.DestinationRowset as DestinationRowset<Qualified<SchemaName, TableName>>;
+						if (targetTable != null) {
+							name = targetTable.Name;
 						}
+					} else {
+						SetIdentityInsertStatement setIdentityInsertStatement = statement as SetIdentityInsertStatement;
+						if (setIdentityInsertStatement != null) {
+							name = setIdentityInsertStatement.TableName;
+						}
+					}
+					if ((name != null) && name.IsQualified && string.Equals(name.Qualification.Value, inventory.SchemaName, StringComparison.OrdinalIgnoreCase) && newObjectNames.Contains(name.Name.Value)) {
+						yield return WriteStatement(statement, builder, inventory.TargetEngine);
 					}
 				}
 				// finally drop objects which are no longer used

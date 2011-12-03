@@ -36,10 +36,10 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class SetIdentityInsertStatement: Statement {
 		private readonly bool enabled;
-		private readonly TableName tableName;
+		private readonly Qualified<SchemaName, TableName> tableName;
 
-		[Rule("<SetOptionStatement> ::= ~SET ~IDENTITY_INSERT <TableName> <Toggle>")]
-		public SetIdentityInsertStatement(TableName tableName, ToggleToken toggle) {
+		[Rule("<SetOptionStatement> ::= ~SET ~IDENTITY_INSERT <TableNameQualified> <Toggle>")]
+		public SetIdentityInsertStatement(Qualified<SchemaName, TableName> tableName, ToggleToken toggle) {
 			Debug.Assert(tableName != null);
 			Debug.Assert(toggle != null);
 			this.tableName = tableName;
@@ -52,7 +52,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public TableName TableName {
+		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;
 			}
@@ -60,7 +60,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("SET IDENTITY INSERT ");
+			writer.Write("SET IDENTITY_INSERT ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.WriteToggle(enabled, WhitespacePadding.SpaceBefore);
 		}
