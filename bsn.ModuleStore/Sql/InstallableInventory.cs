@@ -109,7 +109,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		protected void AddAdditionalSetupStatement(Statement statement) {
+		protected void AddAdditionalSetupStatement(IScriptableStatement statement) {
 			if (statement == null) {
 				throw new ArgumentNullException("statement");
 			}
@@ -121,7 +121,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		protected void StatementSetSchemaOverride(IEnumerable<IScriptableStatement> statements) {
-			foreach (Statement statement in statements) {
+			foreach (Statement statement in statements.OfType<Statement>()) {
 				foreach (IQualifiedName<SchemaName> name in statement.GetInnerSchemaQualifiedNames(n => ObjectSchemas.Contains(n))) {
 					name.SetOverride(this);
 				}

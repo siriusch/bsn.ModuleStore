@@ -195,7 +195,7 @@ namespace bsn.ModuleStore.Sql {
 				}
 				// then perform updates (if any)
 				foreach (KeyValuePair<int, IScriptableStatement[]> update in updateStatements.Where(u => u.Key > currentVersion)) {
-					foreach (Statement statement in update.Value) {
+					foreach (IScriptableStatement statement in update.Value) {
 						yield return WriteStatement(statement, builder, inventory.TargetEngine);
 					}
 				}
@@ -204,11 +204,11 @@ namespace bsn.ModuleStore.Sql {
 					resolver.AddExistingObject(createTableStatement.ObjectName);
 				}
 				// try to perform the remaining actions
-				foreach (Statement statement in resolver.GetInOrder(true)) {
+				foreach (IInstallStatement statement in resolver.GetInOrder(true)) {
 					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// execute insert statements for table setup data
-				foreach (Statement statement in AdditionalSetupStatements) {
+				foreach (IScriptableStatement statement in AdditionalSetupStatements) {
 					Qualified<SchemaName, TableName> name = null;
 					InsertStatement insertStatement = statement as InsertStatement;
 					if (insertStatement != null) {
