@@ -31,7 +31,7 @@ using System;
 using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateTypeStatement: CreateStatement {
+	public abstract class CreateTypeStatement: AlterableCreateStatement {
 		private readonly Qualified<SchemaName, TypeName> typeName;
 
 		protected CreateTypeStatement(Qualified<SchemaName, TypeName> typeName) {
@@ -60,23 +60,22 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		// ReSharper disable RedundantOverridenMember
-		public override Statement CreateAlterStatement() {
-			// TODO: implement the full ALTER replacement sequence
-			// See http://stackoverflow.com/questions/1383494/alter-user-defined-type-in-sql-server#answer-1383509
-			return base.CreateAlterStatement();
-		}
-
-		// ReSharper restore RedundantOverridenMember
-
-		public override DropStatement CreateDropStatement() {
-			return new DropTypeStatement(typeName);
-		}
-
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("CREATE TYPE ");
 			writer.WriteScript(typeName, WhitespacePadding.SpaceAfter);
+		}
+
+		// ReSharper disable RedundantOverridenMember
+		protected override IInstallStatement CreateAlterStatement() {
+			// TODO: implement the full ALTER replacement sequence
+			// See http://stackoverflow.com/questions/1383494/alter-user-defined-type-in-sql-server#answer-1383509
+			return base.CreateAlterStatement();
+		}
+		// ReSharper restore RedundantOverridenMember
+
+		protected override IInstallStatement CreateDropStatement() {
+			return new DropTypeStatement(typeName);
 		}
 
 		protected override string GetObjectSchema() {

@@ -43,6 +43,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		internal virtual bool IsPartOfSchemaDefinition {
+			get {
+				return false;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			if (constraintName != null) {
 				writer.Write("CONSTRAINT ");

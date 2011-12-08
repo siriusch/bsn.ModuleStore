@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Tuple tuple;
 		private readonly Expression valueExpression;
 
-		[Rule("<PredicateOr> ::= <Expression> ~IN <Tuple>")]
+		[Rule("<PredicateCompare> ::= <Expression> ~IN <Tuple>")]
 		public PredicateIn(Expression valueExpression, Tuple tuple): this(valueExpression, false, tuple) {}
 
 		protected PredicateIn(Expression valueExpression, bool not, Tuple tuple): base(not) {

@@ -35,7 +35,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateViewStatement: CreateStatement, ICreateOrAlterStatement {
+	public sealed class CreateViewStatement: AlterableCreateStatement, ICreateOrAlterStatement {
 		private readonly List<ColumnName> columnNames;
 		private readonly SelectStatement selectStatement;
 		private readonly Qualified<SchemaName, ViewName> viewName;
@@ -56,6 +56,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public IEnumerable<ColumnName> ColumnNames {
 			get {
 				return columnNames;
+			}
+		}
+
+		public override bool IsPartOfSchemaDefinition {
+			get {
+				return true;
 			}
 		}
 
@@ -98,16 +104,16 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override Statement CreateAlterStatement() {
+		public override void WriteTo(SqlWriter writer) {
+			WriteToInternal(writer, "CREATE");
+		}
+
+		protected override IInstallStatement CreateAlterStatement() {
 			return new AlterOfCreateStatement<CreateViewStatement>(this);
 		}
 
-		public override DropStatement CreateDropStatement() {
+		protected override IInstallStatement CreateDropStatement() {
 			return new DropViewStatement(viewName);
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			WriteToInternal(writer, "CREATE");
 		}
 
 		protected override string GetObjectSchema() {

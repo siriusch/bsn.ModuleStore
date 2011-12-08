@@ -29,6 +29,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
@@ -57,6 +58,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public ReplicationToken Replication {
 			get {
 				return replication;
+			}
+		}
+
+		internal override bool IsPartOfSchemaDefinition {
+			get {
+				return !predicate.GetInnerSchemaQualifiedNames(s => false).Any();
 			}
 		}
 

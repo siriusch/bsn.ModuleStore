@@ -42,6 +42,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.typeName = typeName;
 		}
 
+		public override string ObjectName {
+			get {
+				return typeName.Name.Value;
+			}
+		}
+
 		public Qualified<SchemaName, TypeName> TypeName {
 			get {
 				return typeName;

@@ -48,6 +48,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override string ObjectName {
+			get {
+				return functionName.Name.Value;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("DROP FUNCTION ");

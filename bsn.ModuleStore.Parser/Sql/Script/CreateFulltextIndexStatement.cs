@@ -34,7 +34,7 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateFulltextIndexStatement: CreateStatement {
+	public sealed class CreateFulltextIndexStatement: AlterableCreateStatement {
 		private readonly FulltextChangeTracking changeTracking;
 		private readonly List<FulltextColumn> columns;
 		private readonly Qualified<SchemaName, TableName> tableName;
@@ -90,10 +90,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override DropStatement CreateDropStatement() {
-			return new DropFulltextStatement(tableName);
-		}
-
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("CREATE FULLTEXT INDEX ON TABLE ");
@@ -106,6 +102,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write(" KEY INDEX ");
 			writer.WriteScript(indexName, WhitespacePadding.None);
 			writer.WriteScript(changeTracking, WhitespacePadding.SpaceBefore);
+		}
+
+		protected override IInstallStatement CreateDropStatement() {
+			return new DropFulltextStatement(tableName);
 		}
 
 		protected override string GetObjectSchema() {

@@ -60,6 +60,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override string ObjectName {
+			get {
+				return indexName.Value;
+			}
+		}
+
 		public Qualified<SchemaName, TableName> TableName {
 			get {
 				return tableName;

@@ -31,12 +31,23 @@ using System;
 using System.Collections.Generic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateStatement: DdlStatement, IObjectBoundStatement {
+	public abstract class CreateStatement: DdlStatement {
 		private readonly List<IQualifiedName<SchemaName>> schemaQualifiedNames = new List<IQualifiedName<SchemaName>>();
 		private string forcedSchema;
 
+		public virtual bool IsPartOfSchemaDefinition {
+			get {
+				return false;
+			}
+		}
+
 		public abstract ObjectCategory ObjectCategory {
 			get;
+		}
+
+		public abstract string ObjectName {
+			get;
+			set;
 		}
 
 		public string ObjectSchema {
@@ -48,11 +59,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public virtual Statement CreateAlterStatement() {
-			return new StatementBlock(CreateDropStatement(), this);
-		}
-
-		public abstract DropStatement CreateDropStatement();
+		public abstract IEnumerable<IAlterableCreateStatement> CreateStatementFragments(bool newSchema);
 
 		public override int GetHashCode() {
 			GetObjectSchemaQualifiedNames();
@@ -66,11 +73,6 @@ namespace bsn.ModuleStore.Sql.Script {
 				schemaQualifiedNames.AddRange(GetObjectSchemaQualifiedNames(ObjectSchema));
 			}
 			return schemaQualifiedNames;
-		}
-
-		public abstract string ObjectName {
-			get;
-			set;
 		}
 	}
 }

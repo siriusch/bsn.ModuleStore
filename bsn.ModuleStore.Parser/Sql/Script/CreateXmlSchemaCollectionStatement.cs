@@ -33,7 +33,7 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateXmlSchemaCollectionStatement: CreateStatement {
+	public sealed class CreateXmlSchemaCollectionStatement: AlterableCreateStatement {
 		private readonly Expression expression;
 		private readonly Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName;
 
@@ -72,16 +72,16 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override DropStatement CreateDropStatement() {
-			return new DropXmlSchemaCollectionStatement(xmlSchemaCollectionName);
-		}
-
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("CERATE XML SCHEMA COLLECTION ");
 			writer.WriteScript(xmlSchemaCollectionName, WhitespacePadding.None);
 			writer.Write(" AS ");
 			writer.WriteScript(expression, WhitespacePadding.None);
+		}
+
+		protected override IInstallStatement CreateDropStatement() {
+			return new DropXmlSchemaCollectionStatement(xmlSchemaCollectionName);
 		}
 
 		protected override string GetObjectSchema() {

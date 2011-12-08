@@ -30,7 +30,7 @@
 using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
-	internal class AlterOfCreateStatement<T>: Statement where T: CreateStatement, ICreateOrAlterStatement {
+	internal class AlterOfCreateStatement<T>: Statement, IInstallStatement where T: CreateStatement, ICreateOrAlterStatement {
 		private readonly T owner;
 
 		public AlterOfCreateStatement(T owner) {
@@ -47,6 +47,18 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			owner.WriteToInternal(writer, "ALTER");
+		}
+
+		string IObjectBoundStatement.ObjectName {
+			get {
+				return owner.ObjectName;
+			}
+		}
+
+		bool IInstallStatement.IsPartOfSchemaDefinition {
+			get {
+				return false;
+			}
 		}
 	}
 }

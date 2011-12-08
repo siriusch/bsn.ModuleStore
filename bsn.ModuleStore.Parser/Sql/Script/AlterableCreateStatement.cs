@@ -28,36 +28,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Diagnostics;
-
-using bsn.GoldParser.Semantic;
+using System.Collections.Generic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DropProcedureStatement: DropStatement {
-		private readonly Qualified<SchemaName, ProcedureName> procedureName;
-
-		[Rule("<DropProcedureStatement> ::= ~DROP ~PROCEDURE <ProcedureNameQualified>")]
-		public DropProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName) {
-			Debug.Assert(procedureName != null);
-			this.procedureName = procedureName;
+	public abstract class AlterableCreateStatement: CreateStatement, IAlterableCreateStatement {
+		public override sealed IEnumerable<IAlterableCreateStatement> CreateStatementFragments(bool newSchema) {
+			yield return this;
 		}
 
-		public override string ObjectName {
+		protected virtual IInstallStatement CreateAlterStatement() {
+			return new CompoundInstallStatement(ObjectName, CreateDropStatement(), this);
+		}
+
+		protected abstract IInstallStatement CreateDropStatement();
+
+		IInstallStatement IAlterableCreateStatement.CreateDropStatement() {
+			return CreateDropStatement();
+		}
+
+		IInstallStatement IAlterableCreateStatement.CreateAlterStatement() {
+			return CreateAlterStatement();
+		}
+
+		bool IAlterableCreateStatement.AlterUsingUpdateScript {
 			get {
-				return procedureName.Name.Value;
+				return false;
 			}
-		}
-
-		public Qualified<SchemaName, ProcedureName> ProcedureName {
-			get {
-				return procedureName;
-			}
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
-			writer.Write("DROP PROCEDURE ");
-			writer.WriteScript(procedureName, WhitespacePadding.None);
 		}
 	}
 }

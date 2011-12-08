@@ -39,7 +39,7 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 [assembly: RuleTrim("<OrderClause> ::= ORDER BY <OrderList>", "<OrderList>", SemanticTokenType = typeof(SqlToken))]
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateFunctionStatement: CreateStatement, ICreateOrAlterStatement {
+	public abstract class CreateFunctionStatement: AlterableCreateStatement, ICreateOrAlterStatement {
 		private readonly Qualified<SchemaName, FunctionName> functionName;
 		private readonly OptionToken option;
 		private readonly List<Parameter> parameters;
@@ -84,12 +84,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override DropStatement CreateDropStatement() {
-			return new DropFunctionStatement(FunctionName);
-		}
-
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteToInternal(writer, "CREATE");
+		}
+
+		protected override IInstallStatement CreateDropStatement() {
+			return new DropFunctionStatement(FunctionName);
 		}
 
 		protected override sealed string GetObjectSchema() {
@@ -132,7 +132,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override Statement CreateAlterStatement() {
+		protected override IInstallStatement CreateAlterStatement() {
 			return new AlterOfCreateStatement<CreateFunctionStatement<TBody>>(this);
 		}
 	}

@@ -29,18 +29,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
-using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class InstallableInventory: Inventory {
-		private readonly List<Statement> additionalSetupStatements = new List<Statement>();
+		private readonly List<IScriptableStatement> additionalSetupStatements = new List<IScriptableStatement>();
 
-		public IEnumerable<Statement> AdditionalSetupStatements {
+		public IEnumerable<IScriptableStatement> AdditionalSetupStatements {
 			get {
 				return additionalSetupStatements;
 			}
@@ -52,6 +52,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 			StringBuilder builder = new StringBuilder(4096);
 			DependencyResolver resolver = new DependencyResolver();
+			IEnumerable<IAlterableCreateStatement> createStatements = Objects.SelectMany(o => o.CreateStatementFragments(true));
 			if (!schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase)) {
 				SetQualification(null);
 				try {
@@ -60,22 +61,29 @@ namespace bsn.ModuleStore.Sql {
 						sqlWriter.Write("CREATE SCHEMA");
 						sqlWriter.IncreaseIndent();
 						sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
-						foreach (CreateStatement statement in Objects) {
-							CreateTableStatement createTable = statement as CreateTableStatement;
-							if (createTable != null) {
-								resolver.AddExistingObject(statement.ObjectName);
-								sqlWriter.WriteLine();
-								createTable.WriteTo(sqlWriter, delegate(TableDefinition definition) {
-									AlterTableAddStatement alterTableStatement = new AlterTableAddStatement(createTable.TableName, new TableWithNocheckToken(), new Sequence<TableDefinition>(definition));
-									if (alterTableStatement.GetReferencedObjectNames<FunctionName>().Any()) {
-										resolver.Add(alterTableStatement);
-										return null;
-									}
-									return definition;
-								});
+						DependencyResolver schemaResolver = new DependencyResolver();
+						foreach (IAlterableCreateStatement statement in createStatements) {
+							if (statement.IsPartOfSchemaDefinition) {
+								if (statement is CreateTableFragment) {
+									sqlWriter.WriteLine();
+									statement.WriteTo(sqlWriter);
+									resolver.AddExistingObject(statement.ObjectName);
+									schemaResolver.AddExistingObject(statement.ObjectName);
+								} else {
+									schemaResolver.Add(statement);
+								}
 							} else {
 								resolver.Add(statement);
 							}
+						}
+						try {
+							foreach (IInstallStatement statement in schemaResolver.GetInOrder(true)) {
+								sqlWriter.WriteLine();
+								statement.WriteTo(sqlWriter);
+								resolver.AddExistingObject(statement.ObjectName);
+							}
+						} catch (InvalidOperationException ex) {
+							Debug.WriteLine(ex.Message, "SCHEMA CREATE trimmed");
 						}
 						sqlWriter.DecreaseIndent();
 						yield return writer.ToString();
@@ -84,16 +92,16 @@ namespace bsn.ModuleStore.Sql {
 					UnsetQualification();
 				}
 			} else {
-				foreach (CreateStatement statement in Objects) {
+				foreach (IAlterableCreateStatement statement in createStatements) {
 					resolver.Add(statement);
 				}
 			}
 			SetQualification(schemaName);
 			try {
-				foreach (Statement statement in resolver.GetInOrder(true)) {
+				foreach (IInstallStatement statement in resolver.GetInOrder(true)) {
 					yield return WriteStatement(statement, builder, targetEngine);
 				}
-				foreach (Statement additionalSetupStatement in AdditionalSetupStatements) {
+				foreach (IScriptableStatement additionalSetupStatement in AdditionalSetupStatements) {
 					yield return WriteStatement(additionalSetupStatement, builder, targetEngine);
 				}
 			} finally {
@@ -101,7 +109,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		protected void AddAdditionalSetupStatement(Statement statement) {
+		protected void AddAdditionalSetupStatement(IScriptableStatement statement) {
 			if (statement == null) {
 				throw new ArgumentNullException("statement");
 			}
@@ -112,8 +120,8 @@ namespace bsn.ModuleStore.Sql {
 			StatementSetSchemaOverride(additionalSetupStatements);
 		}
 
-		protected void StatementSetSchemaOverride(IEnumerable<Statement> statements) {
-			foreach (Statement statement in statements) {
+		protected void StatementSetSchemaOverride(IEnumerable<IScriptableStatement> statements) {
+			foreach (Statement statement in statements.OfType<Statement>()) {
 				foreach (IQualifiedName<SchemaName> name in statement.GetInnerSchemaQualifiedNames(n => ObjectSchemas.Contains(n))) {
 					name.SetOverride(this);
 				}

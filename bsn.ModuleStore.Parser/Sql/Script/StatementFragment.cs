@@ -28,36 +28,61 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Diagnostics;
-
-using bsn.GoldParser.Semantic;
+using System.Collections.Generic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DropProcedureStatement: DropStatement {
-		private readonly Qualified<SchemaName, ProcedureName> procedureName;
+	public abstract class StatementFragment<TCreateStatement>: SqlScriptableToken, IAlterableCreateStatement where TCreateStatement: CreateStatement {
+		private readonly TCreateStatement owner;
 
-		[Rule("<DropProcedureStatement> ::= ~DROP ~PROCEDURE <ProcedureNameQualified>")]
-		public DropProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName) {
-			Debug.Assert(procedureName != null);
-			this.procedureName = procedureName;
+		protected StatementFragment(TCreateStatement owner) {
+			this.owner = owner;
 		}
 
-		public override string ObjectName {
+		public TCreateStatement Owner {
 			get {
-				return procedureName.Name.Value;
+				return owner;
 			}
 		}
 
-		public Qualified<SchemaName, ProcedureName> ProcedureName {
+		public virtual string ObjectName {
 			get {
-				return procedureName;
+				return owner.ObjectName;
 			}
+		}
+
+		public virtual ObjectCategory ObjectCategory {
+			get {
+				return owner.ObjectCategory;
+			}
+		}
+
+		public virtual IInstallStatement CreateAlterStatement() {
+			if (AlterUsingUpdateScript) {
+				throw new NotSupportedException(string.Format("{0} objects must be altered using an update script", ObjectCategory));
+			}
+			return new CompoundInstallStatement(ObjectName, CreateDropStatement(), this);
+		}
+
+		public abstract IInstallStatement CreateDropStatement();
+
+		public IEnumerable<T> GetReferencedObjectNames<T>() where T: SqlName {
+			return owner.GetReferencedObjectNames<T>();
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
-			writer.Write("DROP PROCEDURE ");
-			writer.WriteScript(procedureName, WhitespacePadding.None);
+			owner.WriteTo(writer);
+		}
+
+		public virtual bool AlterUsingUpdateScript {
+			get {
+				return false;
+			}
+		}
+
+		public virtual bool IsPartOfSchemaDefinition {
+			get {
+				return false;
+			}
 		}
 	}
 }

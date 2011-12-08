@@ -33,10 +33,10 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class PredicateNotLike: PredicateLike {
-		[Rule("<PredicateOr> ::= <Expression> ~NOT ~LIKE <Expression>")]
+		[Rule("<PredicateCompare> ::= <Expression> ~NOT ~LIKE <Expression>")]
 		public PredicateNotLike(Expression value, Expression pattern): this(value, pattern, null) {}
 
-		[Rule("<PredicateOr> ::= <Expression> ~NOT ~LIKE <Expression> ~ESCAPE StringLiteral")]
+		[Rule("<PredicateCompare> ::= <Expression> ~NOT ~LIKE <Expression> ~ESCAPE StringLiteral")]
 		public PredicateNotLike(Expression value, Expression pattern, StringLiteral escape): base(value, true, pattern, escape) {}
 	}
 }

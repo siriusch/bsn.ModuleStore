@@ -27,37 +27,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Diagnostics;
-
-using bsn.GoldParser.Semantic;
+using System.Collections.Generic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DropProcedureStatement: DropStatement {
-		private readonly Qualified<SchemaName, ProcedureName> procedureName;
+	public interface IScriptableStatement: IHashableStatement {
+		IEnumerable<T> GetReferencedObjectNames<T>() where T: SqlName;
 
-		[Rule("<DropProcedureStatement> ::= ~DROP ~PROCEDURE <ProcedureNameQualified>")]
-		public DropProcedureStatement(Qualified<SchemaName, ProcedureName> procedureName) {
-			Debug.Assert(procedureName != null);
-			this.procedureName = procedureName;
-		}
-
-		public override string ObjectName {
-			get {
-				return procedureName.Name.Value;
-			}
-		}
-
-		public Qualified<SchemaName, ProcedureName> ProcedureName {
-			get {
-				return procedureName;
-			}
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
-			writer.Write("DROP PROCEDURE ");
-			writer.WriteScript(procedureName, WhitespacePadding.None);
-		}
+		void WriteTo(SqlWriter writer);
 	}
 }

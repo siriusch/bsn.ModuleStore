@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class PredicateNull: PredicateNegable {
 		private readonly Expression valueExpression;
 
-		[Rule("<PredicateOr> ::= <Expression> ~IS ~NULL")]
+		[Rule("<PredicateCompare> ::= <Expression> ~IS ~NULL")]
 		public PredicateNull(Expression valueExpression): this(valueExpression, false) {}
 
 		protected PredicateNull(Expression valueExpression, bool not): base(not) {
