@@ -51,7 +51,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 						DataRow row = NewRow();
 						row[columnName] = ci.ColumnName;
 						row[columnOrdinal] = parameterAttribute.Position;
-						row[dataType] = ci.DataType;
+						row[dataType] = ci.DataType.IsNullableType() ? ci.DataType.GetGenericArguments()[0] : ci.DataType;
 						row[allowDbNull] = ci.DataType.IsNullableType();
 						row[baseColumnName] = ci.ColumnName;
 						row[providerType] = (int)sqlColumnInfo.DbType;

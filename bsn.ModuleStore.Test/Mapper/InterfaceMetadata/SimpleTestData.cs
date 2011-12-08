@@ -6,7 +6,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 	internal class SimpleTestData: IEquatable<SimpleTestData> {
 		[SqlColumn("iData")]
 		[StructuredParameter(Position = 2)]
-		private int data;
+		private int? data;
 
 		[SqlColumn("uidKey")]
 		[StructuredParameter(Position = 0)]
@@ -16,7 +16,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		[StructuredParameter(Position = 1)]
 		private string key;
 
-		public SimpleTestData(Guid id, string key, int data) {
+		public SimpleTestData(Guid id, string key, int? data) {
 			this.id = id;
 			this.key = key;
 			this.data = data;
@@ -24,7 +24,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 
 		public SimpleTestData() {}
 
-		public int Data {
+		public int? Data {
 			get {
 				return data;
 			}
@@ -66,7 +66,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 
 		public override int GetHashCode() {
 			unchecked {
-				int result = data;
+				int result = data ?? 0;
 				result = (result*397)^id.GetHashCode();
 				result = (result*397)^(key != null ? key.GetHashCode() : 0);
 				return result;

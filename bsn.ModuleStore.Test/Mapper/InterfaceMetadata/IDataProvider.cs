@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 	internal interface IDataProvider: IStoredProcedures {
 		// ReSharper disable InconsistentNaming
-		void spAddSimpleTypes(Guid uidKey, string sKey, int iData);
+		void spAddSimpleTypes(Guid uidKey, string sKey, int? iData);
 
 		void spClearSimpleTypes();
 
