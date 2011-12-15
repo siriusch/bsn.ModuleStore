@@ -82,7 +82,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		protected override object CreateInstance(TypeKey key) {
+		protected override object CreateInstance(TypeKey<TId> key) {
 			Debug.Assert(manager != null);
 			if (typeof(Instance<TId, TManager>).IsAssignableFrom(key.Type)) {
 				Debug.Assert(!key.Type.IsAbstract);
