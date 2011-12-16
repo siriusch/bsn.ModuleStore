@@ -1,7 +1,7 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -30,23 +30,13 @@
 using System;
 
 namespace bsn.ModuleStore.Mapper {
-	public class SingleInstanceProvider<TKey>: SingleInstanceProviderBase<TypeKey<TKey>, TKey> where TKey: IEquatable<TKey> {
-		public SingleInstanceProvider(CachePolicy defaultCachePolicy): base(defaultCachePolicy) {}
-
-		public SingleInstanceProvider(): this(CachePolicy.WeakReference) {}
-
-		protected override sealed TypeKey<TKey> CreateTypeKey(Type instanceType, TKey identity) {
-			return new TypeKey<TKey>(instanceType, identity);
+	public interface ITypeKey<TSelf, TKey>: IEquatable<TSelf> where TSelf: struct, ITypeKey<TSelf, TKey> {
+		TKey Key {
+			get;
 		}
-	}
 
-	public class SingleInstanceProvider: SingleInstanceProviderBase<TypeKey, object> {
-		public SingleInstanceProvider(CachePolicy defaultCachePolicy): base(defaultCachePolicy) {}
-
-		public SingleInstanceProvider(): this(CachePolicy.WeakReference) {}
-
-		protected override sealed TypeKey CreateTypeKey(Type instanceType, object identity) {
-			return new TypeKey(instanceType, identity);
+		Type Type {
+			get;
 		}
 	}
 }
