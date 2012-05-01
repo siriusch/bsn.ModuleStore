@@ -189,7 +189,11 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				StringBuilder builder = new StringBuilder(4096);
-				// first perform all possible actions which do not rely on tables which are altered
+				// first drop table constraints (if any)
+				foreach (IScriptableStatement dropStatement in dropStatements.OfType<AlterTableDropConstraintStatement>()) {
+					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
+				}
+				// now perform all possible actions which do not rely on tables which are altered
 				foreach (IInstallStatement statement in resolver.GetInOrder(false)) {
 					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
@@ -227,7 +231,7 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				// finally drop objects which are no longer used
-				foreach (IScriptableStatement dropStatement in dropStatements) {
+				foreach (IScriptableStatement dropStatement in dropStatements.Where(s => !(s is AlterTableDropConstraintStatement))) {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
 			} finally {
