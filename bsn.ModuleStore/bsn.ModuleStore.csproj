@@ -57,6 +57,7 @@
     <Compile Include="Bootstrapper\DatabaseObject.cs" />
     <Compile Include="Bootstrapper\ModuleAssemblyInfo.cs" />
     <Compile Include="Mapper\CachePolicy.cs" />
+    <Compile Include="Mapper\DistinctInstanceProviderBase.cs" />
     <Compile Include="Mapper\ICallDeserializationInfo.cs" />
     <Compile Include="Mapper\IMetadataProvider.cs" />
     <Compile Include="Mapper\InterfaceMetadata\InterfaceMetadataProvider.cs" />
@@ -73,6 +74,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Mapper\ISqlCallInfo.cs" />
+    <Compile Include="Mapper\ITypeKey.cs" />
     <Compile Include="Mapper\IVersioned.cs" />
     <Compile Include="Mapper\MemberInfoExtensionMethods.cs" />
     <Compile Include="Mapper\Serialization\CachedMemberConverter.cs" />
@@ -153,8 +155,10 @@
     <Compile Include="Mapper\Serialization\XPathDocumentMemberConverter.cs" />
     <Compile Include="Mapper\AssemblyMetadata\SqlMappingAttribute.cs" />
     <Compile Include="Mapper\AssemblyMetadata\SqlParameterAttribute.cs" />
+    <Compile Include="Mapper\SingleInstanceProviderBase.cs" />
     <Compile Include="Mapper\SqlColumnAttributeBase.cs" />
     <Compile Include="Mapper\TypeExtensionMethods.cs" />
+    <Compile Include="Mapper\TypeKey.cs" />
     <Compile Include="Mapper\VersionedInstance.cs" />
     <Compile Include="ModuleDatabase.cs" />
     <Compile Include="DatabaseType.cs" />

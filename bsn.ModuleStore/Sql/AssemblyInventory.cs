@@ -61,7 +61,7 @@ namespace bsn.ModuleStore.Sql {
 		private readonly List<SqlExceptionMappingAttribute> exceptionMappings = new List<SqlExceptionMappingAttribute>();
 		private readonly HashSet<string> processedManifestStreamKeys = new HashSet<string>(StringComparer.Ordinal);
 		private readonly int requiredEngineVersion = 9;
-		private readonly SortedList<int, Statement[]> updateStatements = new SortedList<int, Statement[]>();
+		private readonly SortedList<int, IScriptableStatement[]> updateStatements = new SortedList<int, IScriptableStatement[]>();
 		private readonly int updateVersion;
 
 		public AssemblyInventory(IAssemblyHandle assembly) {
@@ -109,7 +109,7 @@ namespace bsn.ModuleStore.Sql {
 				}
 			}
 			int expectedVersion = 1;
-			foreach (KeyValuePair<int, Statement[]> update in updateStatements) {
+			foreach (KeyValuePair<int, IScriptableStatement[]> update in updateStatements) {
 				Debug.Assert(update.Key == expectedVersion);
 				StatementSetSchemaOverride(update.Value);
 				expectedVersion = update.Key+1;
@@ -142,7 +142,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public SortedList<int, Statement[]> UpdateStatements {
+		public SortedList<int, IScriptableStatement[]> UpdateStatements {
 			get {
 				return updateStatements;
 			}
@@ -194,8 +194,8 @@ namespace bsn.ModuleStore.Sql {
 					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// then perform updates (if any)
-				foreach (KeyValuePair<int, Statement[]> update in updateStatements.Where(u => u.Key > currentVersion)) {
-					foreach (Statement statement in update.Value) {
+				foreach (KeyValuePair<int, IScriptableStatement[]> update in updateStatements.Where(u => u.Key > currentVersion)) {
+					foreach (IScriptableStatement statement in update.Value) {
 						yield return WriteStatement(statement, builder, inventory.TargetEngine);
 					}
 				}
@@ -204,11 +204,11 @@ namespace bsn.ModuleStore.Sql {
 					resolver.AddExistingObject(createTableStatement.ObjectName);
 				}
 				// try to perform the remaining actions
-				foreach (Statement statement in resolver.GetInOrder(true)) {
+				foreach (IInstallStatement statement in resolver.GetInOrder(true)) {
 					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// execute insert statements for table setup data
-				foreach (Statement statement in AdditionalSetupStatements) {
+				foreach (IScriptableStatement statement in AdditionalSetupStatements) {
 					Qualified<SchemaName, TableName> name = null;
 					InsertStatement insertStatement = statement as InsertStatement;
 					if (insertStatement != null) {

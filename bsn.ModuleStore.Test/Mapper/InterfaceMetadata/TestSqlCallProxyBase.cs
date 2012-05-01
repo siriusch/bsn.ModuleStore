@@ -94,12 +94,13 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			dataProvider = SqlCallProxy.Create<IDataProvider>(new InterfaceMetadataProvider(), connectionProvider);
 			testData = new List<SimpleTestData>();
 			for (int i = 0; i < 100; i++) {
-				testData.Add(new SimpleTestData(Guid.NewGuid(), string.Format("key_{0}", i), i));
+				int? data = ((i % 2) == 0) ? i : (int?)null;
+				testData.Add(new SimpleTestData(Guid.NewGuid(), string.Format("key_{0}", i), data));
 			}
 		}
 
 		protected void TeardownTests() {
-			//this.nUnitSetup.CleanUpTestDatabase();
+			this.nUnitSetup.CleanUpTestDatabase();
 		}
 	}
 }

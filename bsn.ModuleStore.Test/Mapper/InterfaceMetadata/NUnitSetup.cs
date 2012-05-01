@@ -128,7 +128,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("CREATE TABLE [dbo].[tblSimpleTypes](");
 			sb.AppendLine("[uidKey] [uniqueidentifier] ROWGUIDCOL  NOT NULL, ");
 			sb.AppendLine("[sKey] [nvarchar](50) NOT NULL, ");
-			sb.AppendLine("[iData] [int] NOT NULL, ");
+			sb.AppendLine("[iData] [int] NULL, ");
 			sb.AppendLine("CONSTRAINT [PK_tblSimpleTypes] PRIMARY KEY CLUSTERED  ");
 			sb.AppendLine("( ");
 			sb.AppendLine("[uidKey] ASC ");
