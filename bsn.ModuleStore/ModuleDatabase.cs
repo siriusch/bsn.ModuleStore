@@ -90,6 +90,7 @@ namespace bsn.ModuleStore {
 		private readonly Dictionary<Assembly, ModuleInstanceCache> instances = new Dictionary<Assembly, ModuleInstanceCache>();
 		private readonly ManagementConnectionProvider managementConnectionProvider;
 		private readonly IModules moduleStore;
+		private bool disposed;
 		private bool forceUpdateCheck = Debugger.IsAttached;
 
 		public ModuleDatabase(string connectionString): this(connectionString, false) {}
@@ -106,6 +107,12 @@ namespace bsn.ModuleStore {
 		public bool AutoUpdate {
 			get {
 				return autoUpdate;
+			}
+		}
+
+		public bool Disposed {
+			get {
+				return disposed;
 			}
 		}
 
@@ -243,9 +250,12 @@ namespace bsn.ModuleStore {
 		}
 
 		protected virtual void Dispose(bool disposing) {
-			if (disposing) {
-				if (managementConnectionProvider != null) {
-					managementConnectionProvider.Dispose();
+			if (!disposed) {
+				disposed = true;
+				if (disposing) {
+					if (managementConnectionProvider != null) {
+						managementConnectionProvider.Dispose();
+					}
 				}
 			}
 		}

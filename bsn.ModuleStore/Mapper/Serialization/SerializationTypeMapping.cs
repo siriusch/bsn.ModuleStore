@@ -73,6 +73,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				} else {
 					type = Nullable.GetUnderlyingType(type) ?? type;
 				}
+				if (type.IsEnum) {
+					type = Enum.GetUnderlyingType(type);
+				}
 				KeyValuePair<SqlDbType, bool> mapping;
 				lock (dbTypeMapping) {
 					if (dbTypeMapping.TryGetValue(type, out mapping)) {
