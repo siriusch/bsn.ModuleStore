@@ -48,6 +48,13 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("END;");
 			ExecuteSqlStatement(sb.ToString());
 			sb = new StringBuilder();
+			sb.AppendLine("CREATE PROCEDURE [dbo].[spSaveGuids] ( @tblInput dbo.udtGuid READONLY )");
+			sb.AppendLine("AS BEGIN");
+			sb.AppendLine("SET NOCOUNT ON ;");
+			sb.AppendLine("SELECT  [uidKey] FROM    @tblInput");
+			sb.AppendLine("END;");
+			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
 			sb.AppendLine("CREATE PROCEDURE [dbo].[spGetKey] ( @uidKey UNIQUEIDENTIFIER )");
 			sb.AppendLine("AS BEGIN");
 			sb.AppendLine("SET NOCOUNT ON ;");
@@ -167,6 +174,13 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("([uidKey] ASC) WITH (IGNORE_DUP_KEY = OFF)");
 			sb.AppendLine(")");
 			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
+			sb.AppendLine("CREATE TYPE [dbo].[udtGuid] AS TABLE(");
+			sb.AppendLine("[uidKey] [uniqueidentifier] NOT NULL,");
+			sb.AppendLine("PRIMARY KEY CLUSTERED ");
+			sb.AppendLine("([uidKey] ASC) WITH (IGNORE_DUP_KEY = OFF)");
+			sb.AppendLine(")");
+			ExecuteSqlStatement(sb.ToString());
 		}
 
 		private void DropProcedures() {
@@ -200,6 +214,9 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			sb.AppendLine("END");
 			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spListParentChildMultiResultsChildParent]') AND type in (N'P', N'PC')) BEGIN");
 			sb.AppendLine("DROP PROCEDURE [dbo].[spListParentChildMultiResultsChildParent]");
+			sb.AppendLine("END");
+			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spSaveGuids]') AND type in (N'P', N'PC')) BEGIN");
+			sb.AppendLine("DROP PROCEDURE [dbo].[spSaveGuids]");
 			sb.AppendLine("END");
 			ExecuteSqlStatement(sb.ToString());
 		}
@@ -235,6 +252,11 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'udtSimpleType' AND ss.name = N'dbo') begin ");
 			sb.AppendLine("DROP TYPE [dbo].[udtSimpleType]");
+			sb.AppendLine("end");
+			ExecuteSqlStatement(sb.ToString());
+			sb = new StringBuilder();
+			sb.AppendLine("IF  EXISTS (SELECT * FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'udtGuid' AND ss.name = N'dbo') begin ");
+			sb.AppendLine("DROP TYPE [dbo].[udtGuid]");
 			sb.AppendLine("end");
 			ExecuteSqlStatement(sb.ToString());
 		}

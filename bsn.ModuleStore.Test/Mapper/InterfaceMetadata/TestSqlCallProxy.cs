@@ -61,6 +61,12 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		public void TestTvpInsert() {
 			RunTvpInsert();
 		}
+
+		[Test(Description = "Tests the insert of multiple records using table value parameters and only one primitive column")]
+		public void TestPrimitiveTvpInsert()
+		{
+			RunPrimitiveTvpInsert();
+		}
 	}
 }
 

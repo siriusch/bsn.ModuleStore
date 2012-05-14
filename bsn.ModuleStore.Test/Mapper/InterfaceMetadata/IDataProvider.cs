@@ -32,6 +32,8 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 
 		void spSaveSimpleTypes(IEnumerable<SimpleTestData> tblInput);
 
+		void spSaveGuids(IEnumerable<Guid> tblInput);
+
 		// ReSharper restore InconsistentNaming
 	}
 }

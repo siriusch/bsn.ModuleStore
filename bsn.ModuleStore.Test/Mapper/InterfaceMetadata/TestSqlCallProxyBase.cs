@@ -87,6 +87,14 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			dataProvider.spSaveSimpleTypes(testData);
 		}
 
+		protected void RunPrimitiveTvpInsert()
+		{
+			Debug.WriteLine("TestList: executing sp testdata...");
+			IEnumerable<Guid> guids = new[] {Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()};
+			dataProvider.spSaveGuids(guids);
+		}
+
+
 		protected void SetupTests() {
 			nUnitSetup = new NUnitSetup("Data Source=tmp3dev;Initial Catalog=SqlCallProxyNunitTest;Integrated Security=True;");
 			nUnitSetup.SetupTestEnvironment();

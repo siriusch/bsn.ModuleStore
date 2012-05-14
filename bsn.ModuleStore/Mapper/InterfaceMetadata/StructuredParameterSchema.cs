@@ -40,6 +40,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				row[baseColumnName] = "value";
 				row[providerType] = (int)typeInfo.Mapping.DbType;
 				Rows.Add(row);
+				columns.Add(new ColumnInfo(0, "value", Enum.GetName(typeof(SqlDbType), typeInfo.Mapping.DbType), typeInfo.Type));
 			} else {
 				foreach (MemberInfo memberInfo in typeInfo.Type.GetAllFieldsAndProperties()) {
 					SqlColumnAttribute sqlColumn = SqlColumnAttributeBase.Get<SqlColumnAttribute>(memberInfo, false);
@@ -66,7 +67,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			}
 			MappedColumns = sqlColumnInfos.AsReadOnly();
 			ColumnsInfos = columns.ToArray();
-			if ((MappedColumns.Count != 1) || (MappedColumns[0].MemberInfo != null)) {
+			if ((MappedColumns.Count > 0) && (MappedColumns[0].MemberInfo != null)) {
 				ExtractMembers = MembersMethods.Get(MappedColumns.Select(c => c.MemberInfo).ToArray()).ExtractMembers;
 			}
 			AcceptChanges();
