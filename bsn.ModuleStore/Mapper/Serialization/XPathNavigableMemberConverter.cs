@@ -33,7 +33,7 @@ using System.Xml.XPath;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	internal abstract class XPathNavigableMemberConverter: XmlReaderMemberConverterBase {
-		public XPathNavigableMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
+		protected XPathNavigableMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override XmlReader GetXmlReader(object value) {
 			return ((IXPathNavigable)value).CreateNavigator().ReadSubtree();

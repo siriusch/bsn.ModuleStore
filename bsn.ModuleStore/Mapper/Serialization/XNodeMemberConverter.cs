@@ -33,7 +33,7 @@ using System.Xml.Linq;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	internal abstract class XNodeMemberConverter: XmlReaderMemberConverterBase {
-		public XNodeMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
+		protected XNodeMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override XmlReader GetXmlReader(object value) {
 			return ((XNode)value).CreateReader();

@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class SetVariableStatement: Statement {
 		private readonly VariableName variableName;
 
-		public SetVariableStatement(VariableName variableName) {
+		protected SetVariableStatement(VariableName variableName) {
 			this.variableName = variableName;
 			Debug.Assert(variableName != null);
 		}
