@@ -50,7 +50,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				throw new ArgumentNullException("schema");
 			}
 			this.schema = schema;
-			data = new object[Math.Max(schema.MappedColumns.Count,1)];
+			data = new object[schema.MappedColumns.Count];
 			if (values != null) {
 				enumerator = values.GetEnumerator();
 				if (!enumerator.MoveNext()) {
@@ -358,7 +358,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					data[i] = ((converter != null) ? converter.ProcessToDb(data[i]) : data[i]) ?? DBNull.Value;
 				}
 			} else {
-				data[0] = (schema.MappedColumns.Count != 0 ? schema.MappedColumns[0].Converter.ProcessToDb(instance) : instance) ?? DBNull.Value;
+				data[0] = schema.MappedColumns[0].Converter.ProcessToDb(instance) ?? DBNull.Value;
 			}
 		}
 

@@ -143,7 +143,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				outArgPosition = outArgCount++;
 			}
 			if (sqlType == SqlDbType.Structured) {
-				structuredSchema = new StructuredParameterSchema(typeInfoProvider.GetSerializationTypeInfo(parameterType.GetGenericArguments()[0]));
+				structuredSchema = new StructuredParameterSchema(typeInfoProvider.GetSerializationTypeInfo(parameterType.GetGenericArguments()[0]), typeInfoProvider.TypeMappingProvider);
 			}
 			if ((sqlType == SqlDbType.Udt) && string.IsNullOrEmpty(arg.UserDefinedTypeName)) {
 				userDefinedTypeName = GetClrUserDefinedTypeName(parameter.ParameterType);

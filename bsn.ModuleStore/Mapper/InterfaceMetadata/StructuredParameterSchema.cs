@@ -16,7 +16,8 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			return Enum.GetName(typeof(SqlDbType), sqlColumnInfo.DbType);
 		}
 
-		public StructuredParameterSchema(ISerializationTypeInfo typeInfo) {
+		public StructuredParameterSchema(ISerializationTypeInfo typeInfo, ISerializationTypeMappingProvider typeMappingProvider)
+		{
 			SetupColumns(typeInfo.Type.Name, typeInfo.Type.Namespace);
 			DataColumn columnName = Columns[SchemaTableColumn.ColumnName];
 			DataColumn allowDbNull = Columns[SchemaTableColumn.AllowDBNull];
@@ -41,6 +42,8 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				row[providerType] = (int)typeInfo.Mapping.DbType;
 				Rows.Add(row);
 				columns.Add(new ColumnInfo(0, "value", Enum.GetName(typeof(SqlDbType), typeInfo.Mapping.DbType), typeInfo.Type));
+				IMemberConverter memberConverter = MemberConverter.Get(typeInfo.Type, false, "value", 0, DateTimeKind.Unspecified);
+				sqlColumnInfos.Add(new SqlColumnInfo(typeMappingProvider.GetMapping(typeInfo.Type), "value", memberConverter));
 			} else {
 				foreach (MemberInfo memberInfo in typeInfo.Type.GetAllFieldsAndProperties()) {
 					SqlColumnAttribute sqlColumn = SqlColumnAttributeBase.Get<SqlColumnAttribute>(memberInfo, false);
@@ -67,7 +70,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			}
 			MappedColumns = sqlColumnInfos.AsReadOnly();
 			ColumnsInfos = columns.ToArray();
-			if ((MappedColumns.Count > 0) && (MappedColumns[0].MemberInfo != null)) {
+			if ((MappedColumns.Count != 1) ||(MappedColumns[0].MemberInfo != null)) {
 				ExtractMembers = MembersMethods.Get(MappedColumns.Select(c => c.MemberInfo).ToArray()).ExtractMembers;
 			}
 			AcceptChanges();
