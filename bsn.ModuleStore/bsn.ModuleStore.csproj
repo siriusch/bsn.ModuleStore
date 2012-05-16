@@ -53,6 +53,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bsn.ModuleStore.ExternalAnnotations.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
     <Compile Include="Bootstrapper\Bootstrap.cs" />
     <Compile Include="Bootstrapper\DatabaseObject.cs" />
     <Compile Include="Bootstrapper\ModuleAssemblyInfo.cs" />
