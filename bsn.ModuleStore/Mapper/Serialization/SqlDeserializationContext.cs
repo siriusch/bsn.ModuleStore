@@ -82,7 +82,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		internal void NotifyInstancePopulated(object instance) {
-			Debug.Assert((instance != null) && (!instance.GetType().IsValueType));
+			Debug.Assert(instance != null);
 			if (stateProvider != null) {
 				stateProvider.InstanceDeserialized(state, instance);
 			}
