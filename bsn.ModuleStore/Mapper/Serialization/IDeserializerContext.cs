@@ -28,14 +28,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Xml;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public interface IDeserializerContext {
-		SqlDataReader DataReader {
-			get;
-		}
+		SqlXml GetSqlXml(int column);
+
+		object GetValue(int column);
 
 		XmlNameTable NameTable {
 			get;

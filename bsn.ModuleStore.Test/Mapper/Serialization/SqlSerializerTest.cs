@@ -28,43 +28,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Data.SqlTypes;
-using System.Diagnostics;
-using System.Xml;
+
+using NUnit.Framework;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	internal class XmlReaderMemberConverter: MemberConverter {
-		public XmlReaderMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {
-			Debug.Assert(!isIdentity);
-		}
-
-		public override sealed Type DbClrType {
-			get {
-				return typeof(SqlXml);
-			}
-		}
-
-		public override sealed object ProcessFromDb(IDeserializerContext context, int column) {
-			SqlXml xml = context.GetSqlXml(column);
-			if (!xml.IsNull) {
-				return ProcessXmlReader(context, xml.CreateReader());
-			}
-			return null;
-		}
-
-		public override sealed object ProcessToDb(object value) {
-			if (value == null) {
-				return DBNull.Value;
-			}
-			return GetXmlReader(value);
-		}
-
-		protected virtual XmlReader GetXmlReader(object value) {
-			return (XmlReader)value;
-		}
-
-		protected virtual object ProcessXmlReader(IDeserializerContext context, XmlReader xmlReader) {
-			return xmlReader;
+	[TestFixture]
+	public class SqlSerializerTest: AssertionHelper {
+		[Test]
+		public void Mocking() {
+			var data = new {
+					uidAssemblyGuid = Guid.NewGuid(),
+					uidModule = Guid.NewGuid(),
+					sSchema = "ModuleStore",
+					fSchemaExists = true,
+					dtSetup = DateTime.UtcNow,
+					binSetupHash = new byte[20],
+					dtUpdate = DateTime.UtcNow.AddHours(-1),
+					iUpdateVersion = 1
+			};
+			Module module = SqlDeserializer<Module>.Mock(data);
+			Expect(module.AssemblyGuid, Is.EqualTo(data.uidAssemblyGuid));
+			Expect(module.Id, Is.EqualTo(data.uidModule));
+			Expect(module.Schema, Is.EqualTo(data.sSchema));
+			Expect(module.SchemaExists, Is.EqualTo(true));
+			Expect(module.SetupDate, Is.EqualTo(data.dtSetup));
+			Expect(module.UpdateDate, Is.EqualTo(data.dtUpdate));
+			Expect(module.UpdateVersion, Is.EqualTo(data.iUpdateVersion));
 		}
 	}
 }
