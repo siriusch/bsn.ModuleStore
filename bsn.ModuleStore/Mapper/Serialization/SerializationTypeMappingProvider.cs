@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SerializationTypeMappingProvider: ISerializationTypeMappingProvider {
-		private static readonly Dictionary<Type, ISerializationTypeMapping> mappings = new Dictionary<Type, ISerializationTypeMapping>();
+		private readonly Dictionary<Type, ISerializationTypeMapping> mappings = new Dictionary<Type, ISerializationTypeMapping>();
 
 		public ISerializationTypeMapping GetMapping(Type type) {
 			if (type == null) {

@@ -47,6 +47,13 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore {
 	public class ModuleDatabase: IDisposable, IMetadataProvider {
 		private static readonly Dictionary<Type, SqlCallInfo> knownTypes = new Dictionary<Type, SqlCallInfo>();
+		private static readonly SerializationTypeInfoProvider serializationTypeInfoProvider = new SerializationTypeInfoProvider();
+
+		internal static SerializationTypeInfoProvider SerializationTypeInfoProvider {
+			get {
+				return serializationTypeInfoProvider;
+			}
+		}
 
 		[Conditional("DEBUG")]
 		private static void DebugWriteFirstLines(string sql) {
@@ -289,7 +296,6 @@ namespace bsn.ModuleStore {
 			lock (knownTypes) {
 				SqlCallInfo result;
 				if (!knownTypes.TryGetValue(interfaceType, out result)) {
-					ISerializationTypeInfoProvider serializationTypeInfoProvider = ((IMetadataProvider)this).SerializationTypeInfoProvider;
 					result = new SqlCallInfo(GetModuleInstanceCache(interfaceType.Assembly).AssemblyInfo.Inventory, serializationTypeInfoProvider, interfaceType, serializationTypeInfoProvider.TypeMappingProvider);
 					knownTypes.Add(interfaceType, result);
 				}
@@ -299,7 +305,7 @@ namespace bsn.ModuleStore {
 
 		ISerializationTypeInfoProvider IMetadataProvider.SerializationTypeInfoProvider {
 			get {
-				return new SerializationTypeInfoProvider();
+				return SerializationTypeInfoProvider;
 			}
 		}
 	}
