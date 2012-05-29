@@ -159,22 +159,27 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private void AssertValidMember(MemberInfo memberInfo) {
+			Type declaringType = memberInfo.DeclaringType;
+			Debug.Assert(declaringType != null);
 			FieldInfo fieldInfo = memberInfo as FieldInfo;
 			if (fieldInfo != null) {
 				if (fieldInfo.IsInitOnly) {
-					throw new InvalidOperationException(String.Format("The field {0}.{1} cannot be used as SQL column because it is readonly", fieldInfo.DeclaringType.FullName, fieldInfo.Name));
+					throw new InvalidOperationException(String.Format("The field {0}.{1} cannot be used as SQL column because it is readonly", declaringType.FullName, fieldInfo.Name));
 				}
 			} else {
 				PropertyInfo propertyInfo = memberInfo as PropertyInfo;
 				if (propertyInfo != null) {
+					if (!declaringType.IsClass) {
+						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it is on a struct; use an explicit backing field as SQL column instead", declaringType.FullName, propertyInfo.Name));
+					}
 					if (propertyInfo.GetIndexParameters().Length > 0) {
-						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it is indexed", propertyInfo.DeclaringType.FullName, propertyInfo.Name));
+						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it is indexed", declaringType.FullName, propertyInfo.Name));
 					}
 					if (propertyInfo.GetGetMethod(true) == null) {
-						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it has no getter", propertyInfo.DeclaringType.FullName, propertyInfo.Name));
+						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it has no getter", declaringType.FullName, propertyInfo.Name));
 					}
 					if (propertyInfo.GetSetMethod(true) == null) {
-						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it has no setter", propertyInfo.DeclaringType.FullName, propertyInfo.Name));
+						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it has no setter", declaringType.FullName, propertyInfo.Name));
 					}
 				} else {
 					throw new ArgumentException("Only fields and properties are supported", "memberInfo");
