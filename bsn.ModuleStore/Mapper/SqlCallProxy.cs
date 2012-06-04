@@ -115,7 +115,11 @@ namespace bsn.ModuleStore.Mapper {
 		/// </returns>
 		// ReSharper disable InconsistentNaming
 		public static I Create<I>(IMetadataProvider metadataProvider, IConnectionProvider connectionProvider) where I: IStoredProcedures {
-			return (I)(new SqlCallProxy(metadataProvider, connectionProvider, typeof(I))).GetTransparentProxy();
+			return (I)CreateInternal(typeof(I), metadataProvider, connectionProvider);
+		}
+
+		internal static IStoredProcedures CreateInternal(Type type, IMetadataProvider metadataProvider, IConnectionProvider connectionProvider) {
+			return (IStoredProcedures)(new SqlCallProxy(metadataProvider, connectionProvider, type)).GetTransparentProxy();
 		}
 
 		// ReSharper restore InconsistentNaming

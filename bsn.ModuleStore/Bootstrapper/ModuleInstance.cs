@@ -77,14 +77,25 @@ namespace bsn.ModuleStore.Bootstrapper {
 		}
 
 		public TI GetProxy<TI>() where TI: IStoredProcedures {
+			return (TI)GetProxyInternal(typeof(TI));
+		}
+
+		public IStoredProcedures GetProxy(Type type) {
+			if (!typeof(IStoredProcedures).IsAssignableFrom(type)) {
+				throw new ArgumentException("The types for the proxy must inherit from IStoredProcedures");
+			}
+			return GetProxyInternal(type);
+		}
+
+		private IStoredProcedures GetProxyInternal(Type type) {
 			lock (proxies) {
 				IStoredProcedures proxy;
-				if (proxies.TryGetValue(typeof(TI), out proxy)) {
-					return (TI)proxy;
+				if (proxies.TryGetValue(type, out proxy)) {
+					return proxy;
 				}
 				AssertIsUpToDate();
-				TI result = SqlCallProxy.Create<TI>(owner.Owner, owner.Owner.CreateConnectionProvider(module.Schema));
-				proxies.Add(typeof(TI), result);
+				IStoredProcedures result = SqlCallProxy.CreateInternal(type, owner.Owner, owner.Owner.CreateConnectionProvider(module.Schema));
+				proxies.Add(type, result);
 				return result;
 			}
 		}

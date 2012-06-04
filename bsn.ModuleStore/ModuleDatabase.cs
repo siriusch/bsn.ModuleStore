@@ -166,6 +166,24 @@ namespace bsn.ModuleStore {
 			return GetModuleInstanceCache(typeof(TI).Assembly).GetInstance(instance).GetProxy<TI>();
 		}
 
+		public IStoredProcedures Get(Type interfaceType) {
+			return Get(interfaceType, false);
+		}
+
+		public IStoredProcedures Get(Type interfaceType, bool autoCreate) {
+			if (interfaceType == null) {
+				throw new ArgumentNullException("interfaceType");
+			}
+			return GetModuleInstanceCache(interfaceType.Assembly).GetDefaultInstance(autoCreate).GetProxy(interfaceType);
+		}
+
+		public IStoredProcedures Get(Type interfaceType, string instance) {
+			if (interfaceType == null) {
+				throw new ArgumentNullException("interfaceType");
+			}
+			return GetModuleInstanceCache(interfaceType.Assembly).GetInstance(instance).GetProxy(interfaceType);
+		}
+
 		public AssemblyInventory GetInventory(Assembly assembly) {
 			return GetModuleInstanceCache(assembly).AssemblyInfo.Inventory;
 		}
