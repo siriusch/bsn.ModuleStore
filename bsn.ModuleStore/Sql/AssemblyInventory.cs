@@ -174,7 +174,13 @@ namespace bsn.ModuleStore.Sql {
 						if (pair.Key.AlterUsingUpdateScript) {
 							alterUsingUpdateScript.Add(pair.Key);
 						} else {
-							resolver.Add(pair.Key.CreateAlterStatement());
+							AlterTableAddConstraintFragment alterConstraint = pair.Key as AlterTableAddConstraintFragment;
+							if (alterConstraint != null) {
+								dropStatements.Add(pair.Key.CreateDropStatement());
+								resolver.Add(pair.Key);
+							} else {
+								resolver.Add(pair.Key.CreateAlterStatement());
+							}
 						}
 						break;
 					case InventoryObjectDifference.SourceOnly:
