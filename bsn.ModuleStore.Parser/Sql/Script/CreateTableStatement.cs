@@ -108,7 +108,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.Write(" (");
 			writer.IncreaseIndent();
-			writer.WriteScriptSequence(definitions.Select(definitionRewriter), WhitespacePadding.NewlineBefore, ",");
+			IEnumerable<TableDefinition> tableDefinitions = definitions.Select(definitionRewriter);
+			if (writer.Mode == SqlWriterMode.ForHashing) {
+				tableDefinitions = tableDefinitions.OrderBy(td => (td != null) ? td.ToString(DatabaseEngine.Unknown) : string.Empty);
+			}
+			writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, ",");
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');

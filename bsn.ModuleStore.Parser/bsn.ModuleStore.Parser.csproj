@@ -493,6 +493,7 @@
     <Compile Include="Sql\SqlTokenizer.cs" />
     <Compile Include="Sql\SqlTypeMapping.cs" />
     <Compile Include="Sql\SqlWriter.cs" />
+    <Compile Include="Sql\SqlWriterMode.cs" />
     <Compile Include="Sql\WhitespacePadding.cs" />
   </ItemGroup>
   <ItemGroup>

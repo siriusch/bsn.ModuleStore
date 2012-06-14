@@ -45,21 +45,21 @@ namespace bsn.ModuleStore.Sql {
 				"ALLOW_PAGE_LOCKS"
 		};
 
-		private readonly bool emitComments;
 		private readonly DatabaseEngine engine;
+		private readonly SqlWriterMode mode;
 		private readonly TextWriter writer;
 		private string indentation = "    ";
 		private int indentationLevel;
 
-		public SqlWriter(TextWriter writer, DatabaseEngine engine): this(writer, engine, true) {}
+		public SqlWriter(TextWriter writer, DatabaseEngine engine): this(writer, engine, SqlWriterMode.Normal) {}
 
-		public SqlWriter(TextWriter writer, DatabaseEngine engine, bool emitComments) {
+		public SqlWriter(TextWriter writer, DatabaseEngine engine, SqlWriterMode mode) {
 			if (writer == null) {
 				throw new ArgumentNullException("writer");
 			}
 			this.writer = writer;
 			this.engine = engine;
-			this.emitComments = emitComments;
+			this.mode = mode;
 		}
 
 		public DatabaseEngine Engine {
@@ -74,6 +74,12 @@ namespace bsn.ModuleStore.Sql {
 			}
 			set {
 				indentation = value ?? string.Empty;
+			}
+		}
+
+		public SqlWriterMode Mode {
+			get {
+				return mode;
 			}
 		}
 
@@ -109,7 +115,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public void WriteComment(string comment) {
-			if (emitComments) {
+			if (mode == SqlWriterMode.Normal) {
 				WriteLine(comment);
 			}
 		}

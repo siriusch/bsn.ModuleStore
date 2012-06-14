@@ -194,7 +194,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 					int index = 0;
 					foreach (Statement preCallStatement in preCallStatements) {
 						StringWriter output = new StringWriter(CultureInfo.InvariantCulture);
-						SqlWriter writer = new SqlWriter(output, DatabaseEngine.Unknown, false);
+						SqlWriter writer = new SqlWriter(output, DatabaseEngine.Unknown, SqlWriterMode.NoComments);
 						preCallStatement.WriteTo(writer);
 						SqlCommand preCallCommand = connection.CreateCommand();
 						preCallCommand.CommandType = CommandType.Text;

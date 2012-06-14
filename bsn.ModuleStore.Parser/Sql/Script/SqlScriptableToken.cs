@@ -82,7 +82,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public byte[] GetHash(DatabaseEngine engine) {
 			using (HashWriter writer = new HashWriter()) {
-				WriteTo(new SqlWriter(writer, engine, false));
+				WriteTo(new SqlWriter(writer, engine, SqlWriterMode.ForHashing));
 				return writer.ToArray();
 			}
 		}
