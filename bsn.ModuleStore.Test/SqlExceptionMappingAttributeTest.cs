@@ -47,12 +47,17 @@ namespace bsn.ModuleStore {
 
 		private static readonly MemberInfo method = typeof(IModules).GetMethods().First(m => m.IsDefined(typeof(SqlProcedureAttribute), true));
 
-		private static SqlExceptionMappingAttribute Create<T>(Level level, int? message, byte? severity, byte? state) where T: Exception {
-			SqlExceptionMappingAttribute result = new SqlExceptionMappingAttribute(typeof(T)) {
-					Number = message,
-					Severity = severity,
-					State = state
-			};
+		private static SqlExceptionMappingAttribute Create<T>(Level level, int? number, byte? severity, byte? state) where T: Exception {
+			SqlExceptionMappingAttribute result = new SqlExceptionMappingAttribute(typeof(T));
+			if (number.HasValue) {
+				result.Number = number.Value;
+			}
+			if (severity.HasValue) {
+				result.Severity = severity.Value;
+			}
+			if (state.HasValue) {
+				result.State = state.Value;
+			}
 			MemberInfo appliedOn;
 			switch (level) {
 			case Level.Method:

@@ -49,17 +49,38 @@ namespace bsn.ModuleStore {
 			get {
 				return number.HasValue;
 			}
+			set {
+				AssertNotReadonly();
+				if (value) {
+					throw new ArgumentException("The setter can only be used to clear out the value");
+				}
+				number = default(int?);
+			}
 		}
 
 		public bool HasSeverity {
 			get {
 				return severity.HasValue;
 			}
+			set {
+				AssertNotReadonly();
+				if (value) {
+					throw new ArgumentException("The setter can only be used to clear out the value");
+				}
+				severity = default(byte?);
+			}
 		}
 
 		public bool HasState {
 			get {
 				return state.HasValue;
+			}
+			set {
+				AssertNotReadonly();
+				if (value) {
+					throw new ArgumentException("The setter can only be used to clear out the value");
+				}
+				state = default(byte?);
 			}
 		}
 
@@ -126,6 +147,22 @@ namespace bsn.ModuleStore {
 				result += state.Value+1;
 			}
 			return result;
+		}
+
+		internal string GetMessage(string defaultValue) {
+			return message ?? defaultValue;
+		}
+
+		internal int GetNumber(int defaultValue) {
+			return number.GetValueOrDefault(defaultValue);
+		}
+
+		internal byte GetSeverity(byte defaultValue) {
+			return severity.GetValueOrDefault(defaultValue);
+		}
+
+		internal byte GetState(byte defaultValue) {
+			return state.GetValueOrDefault(defaultValue);
 		}
 
 		private void AssertNotReadonly() {
