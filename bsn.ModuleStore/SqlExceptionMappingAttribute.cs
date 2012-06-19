@@ -45,6 +45,24 @@ namespace bsn.ModuleStore {
 			this.targetException = targetException;
 		}
 
+		public bool HasNumber {
+			get {
+				return number.HasValue;
+			}
+		}
+
+		public bool HasSeverity {
+			get {
+				return severity.HasValue;
+			}
+		}
+
+		public bool HasState {
+			get {
+				return state.HasValue;
+			}
+		}
+
 		public string Message {
 			get {
 				return message;
@@ -55,9 +73,9 @@ namespace bsn.ModuleStore {
 			}
 		}
 
-		public int? Number {
+		public int Number {
 			get {
-				return number;
+				return number.GetValueOrDefault();
 			}
 			set {
 				AssertNotReadonly();
@@ -65,9 +83,9 @@ namespace bsn.ModuleStore {
 			}
 		}
 
-		public byte? Severity {
+		public byte Severity {
 			get {
-				return severity;
+				return severity.GetValueOrDefault();
 			}
 			set {
 				AssertNotReadonly();
@@ -75,9 +93,9 @@ namespace bsn.ModuleStore {
 			}
 		}
 
-		public byte? State {
+		public byte State {
 			get {
-				return state;
+				return state.GetValueOrDefault();
 			}
 			set {
 				AssertNotReadonly();
