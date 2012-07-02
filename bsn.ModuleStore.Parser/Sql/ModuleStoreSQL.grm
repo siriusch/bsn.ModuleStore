@@ -869,7 +869,9 @@ _ACTION = '$ACTION'
 
 ! We don't support the ON option, filegroup is managed by module manager
 
-<CreateIndexStatement> ::= CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' INCLUDE '(' <ColumnNameList> ')' <IndexOptionGroup>
+<CreateIndexStatement> ::= CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' INCLUDE '(' <ColumnNameList> ')' WHERE <Predicate> <IndexOptionGroup>
+                         | CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' INCLUDE '(' <ColumnNameList> ')' <IndexOptionGroup>
+                         | CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' WHERE <Predicate> <IndexOptionGroup>
                          | CREATE <IndexOptionalUnique> <ConstraintCluster> INDEX <IndexName> ON <TableNameQualified> '(' <IndexColumnList> ')' <IndexOptionGroup>
                          | CREATE PRIMARY XML INDEX <IndexName> ON <TableNameQualified> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>
                          | CREATE XML INDEX <IndexName> ON <TableNameQualified> '(' <ColumnName> ')' <IndexUsing> <IndexOptionGroup>

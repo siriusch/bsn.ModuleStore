@@ -337,6 +337,16 @@ OUTPUT $action INTO @SummaryOfChanges;",
 		}
 
 		[Test]
+		public void CreateIndex() {
+			ParseWithRoundtrip(@"CREATE UNIQUE INDEX AK_UnitMeasure_Name ON Production.UnitMeasure(Name);", 1);
+		}
+
+		[Test]
+		public void CreateIndexFiltered() {
+			ParseWithRoundtrip(@"CREATE NONCLUSTERED INDEX FIBillOfMaterialsWithEndDate ON Production.BillOfMaterials (ComponentID, StartDate) WHERE EndDate IS NOT NULL ;", 1);
+		}
+
+		[Test]
 		public void ParseCreateComplexTableFunction() {
 			ParseWithRoundtrip(
 					@"CREATE FUNCTION SPLIT
