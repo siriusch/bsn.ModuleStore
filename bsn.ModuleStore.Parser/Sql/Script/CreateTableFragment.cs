@@ -43,6 +43,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public IEnumerable<TableDefinition> Definitions {
+			get {
+				return definitions;
+			}
+		}
+
 		public override bool IsPartOfSchemaDefinition {
 			get {
 				return true;

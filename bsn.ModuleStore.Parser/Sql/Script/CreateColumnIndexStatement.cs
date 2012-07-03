@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
@@ -48,12 +49,12 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<CreateIndexStatement> ::= ~CREATE <IndexOptionalUnique> <ConstraintCluster> ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <IndexColumnList> ~')' ~WHERE <Predicate> <IndexOptionGroup>")]
 		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Predicate filter, Optional<Sequence<IndexOption>> indexOptions)
-			: this(unique, clustered, indexName, tableName, indexColumns, null, filter, indexOptions) {
-		}
+				: this(unique, clustered, indexName, tableName, indexColumns, null, filter, indexOptions) {}
 
 		[Rule("<CreateIndexStatement> ::= ~CREATE <IndexOptionalUnique> <ConstraintCluster> ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <IndexColumnList> ~')' ~INCLUDE ~'(' <ColumnNameList> ~')' <IndexOptionGroup>")]
-		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Sequence<ColumnName> columnNames, Optional<Sequence<IndexOption>> indexOptions): this(unique, clustered, indexName, tableName, indexColumns, columnNames, null, indexOptions) {}
-		
+		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Sequence<ColumnName> columnNames, Optional<Sequence<IndexOption>> indexOptions)
+				: this(unique, clustered, indexName, tableName, indexColumns, columnNames, null, indexOptions) {}
+
 		[Rule("<CreateIndexStatement> ::= ~CREATE <IndexOptionalUnique> <ConstraintCluster> ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <IndexColumnList> ~')' ~INCLUDE ~'(' <ColumnNameList> ~')' ~WHERE <Predicate> <IndexOptionGroup>")]
 		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Sequence<ColumnName> columnNames, Predicate filter, Optional<Sequence<IndexOption>> indexOptions)
 				: base(indexName, tableName, indexOptions) {
@@ -68,6 +69,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public Clustered Clustered {
 			get {
 				return clustered;
+			}
+		}
+
+		public Predicate Filter {
+			get {
+				return filter;
 			}
 		}
 
@@ -106,11 +113,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');
-			if (filter != null) {
-				writer.IncreaseIndent();
-				writer.WriteScript(filter, WhitespacePadding.NewlineAfter, "WHERE ", "");
-				writer.DecreaseIndent();
-			}
 			if (includeColumnNames.Count > 0) {
 				writer.Write(" INCLUDE (");
 				writer.IncreaseIndent();
@@ -118,6 +120,15 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.DecreaseIndent();
 				writer.WriteLine();
 				writer.Write(')');
+			}
+			if ((filter != null) && writer.IsAtLeast(DatabaseEngine.SqlServer2010)) {
+				writer.WriteLine();
+				writer.IncreaseIndent();
+				writer.WriteScript(filter, WhitespacePadding.None, "WHERE ", "");
+				writer.DecreaseIndent();
+				if (IndexOptions.Any()) {
+					writer.WriteLine();
+				}
 			}
 			writer.WriteIndexOptions(IndexOptions);
 		}

@@ -165,8 +165,11 @@
           NULLIF(CONVERT(bit, [i].[is_unique_constraint]), 0) AS [@UniqueConstraint], 
           NULLIF(CONVERT(bit, [i].[allow_page_locks]), 0) AS [@AllowPageLocks], 
           NULLIF(CONVERT(bit, [i].[allow_row_locks]), 0) AS [@AllowRowLocks], 
-          NULLIF(CONVERT(bit, [i].[is_padded]), 0) AS [@Padded], 
-          NULLIF([i].[fill_factor], 0) AS [@FillFactor], (
+          NULLIF(CONVERT(bit, [i].[is_padded]), 0) AS [@Padded], ]]>
+		<xsl:if test="$version&gt;=10">
+			<![CDATA[[i].[filter_definition] AS [@Filter], ]]>
+		</xsl:if>
+			<![CDATA[NULLIF([i].[fill_factor], 0) AS [@FillFactor], (
               SELECT '['+[c].[name]+']' AS [@Name], CASE 
                   WHEN [ic].[is_included_column]=1 THEN NULL
                   WHEN [ic].[is_descending_key]=0 THEN 'ASC'

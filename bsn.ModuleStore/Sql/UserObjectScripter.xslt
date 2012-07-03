@@ -253,7 +253,18 @@
 			</xsl:for-each>
 			<xsl:value-of select="$indent"/>
 		</xsl:if>
-		<xsl:text xml:space="preserve">) WITH </xsl:text>
+		<xsl:text xml:space="preserve">) </xsl:text>
+		<xsl:if test="string-length(@Filter)!=0">
+			<xsl:text xml:space="preserve">
+</xsl:text>
+			<xsl:value-of select="$indent"/>
+			<xsl:text xml:space="preserve">WHERE </xsl:text>
+			<xsl:value-of select="@Filter"/>
+			<xsl:text xml:space="preserve">
+</xsl:text>
+			<xsl:value-of select="$indent"/>
+		</xsl:if>
+		<xsl:text xml:space="preserve">WITH </xsl:text>
 		<xsl:choose>
 			<xsl:when test="@FillFactor">
 				<xsl:text xml:space="preserve">FILLFACTOR = </xsl:text>

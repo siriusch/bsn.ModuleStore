@@ -104,6 +104,10 @@ namespace bsn.ModuleStore.Sql {
 			indentationLevel++;
 		}
 
+		public bool IsAtLeast(DatabaseEngine engine) {
+			return (this.engine == DatabaseEngine.Unknown) || (this.engine >= engine);
+		}
+
 		public void Write(char data) {
 			writer.Write(data);
 		}
