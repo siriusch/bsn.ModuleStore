@@ -34,7 +34,7 @@ namespace bsn.ModuleStore {
 		Unknown = 0,
 		SqlServer2005 = 9,
 		SqlServer2008 = 10,
-		SqlServer2010 = 11,
+		SqlServer2012 = 11,
 		SqlAzure = 110
 	}
 }
