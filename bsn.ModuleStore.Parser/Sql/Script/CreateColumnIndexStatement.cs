@@ -121,7 +121,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.WriteLine();
 				writer.Write(')');
 			}
-			if ((filter != null) && writer.IsAtLeast(DatabaseEngine.SqlServer2010)) {
+			if ((filter != null) && writer.IsAtLeast(DatabaseEngine.SqlServer2008)) {
 				writer.WriteLine();
 				writer.IncreaseIndent();
 				writer.WriteScript(filter, WhitespacePadding.None, "WHERE ", "");
