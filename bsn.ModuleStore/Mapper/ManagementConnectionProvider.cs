@@ -88,7 +88,7 @@ namespace bsn.ModuleStore.Mapper {
 						engine = DatabaseEngine.SqlServer2008;
 						break;
 					case 11:
-						engine = DatabaseEngine.SqlServer2010;
+						engine = DatabaseEngine.SqlServer2012;
 						break;
 					default:
 						engine = DatabaseEngine.Unknown;
