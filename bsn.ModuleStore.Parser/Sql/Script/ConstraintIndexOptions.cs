@@ -54,7 +54,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteIndexOptions(indexOptions);
+			writer.WriteIndexOptions(indexOptions, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

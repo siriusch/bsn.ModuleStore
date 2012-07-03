@@ -121,16 +121,15 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.WriteLine();
 				writer.Write(')');
 			}
+			WhitespacePadding optionsPadding = WhitespacePadding.SpaceBefore;
 			if ((filter != null) && writer.IsAtLeast(DatabaseEngine.SqlServer2008)) {
 				writer.WriteLine();
 				writer.IncreaseIndent();
 				writer.WriteScript(filter, WhitespacePadding.None, "WHERE ", "");
 				writer.DecreaseIndent();
-				if (IndexOptions.Any()) {
-					writer.WriteLine();
-				}
+				optionsPadding = WhitespacePadding.NewlineBefore;
 			}
-			writer.WriteIndexOptions(IndexOptions);
+			writer.WriteIndexOptions(IndexOptions, optionsPadding);
 		}
 	}
 }

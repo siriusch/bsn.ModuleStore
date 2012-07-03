@@ -267,13 +267,13 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		internal void WriteIndexOptions(IEnumerable<IndexOption> indexOptions) {
-			using (IEnumerator<IndexOption> enumerator = indexOptions.Where(o => !((engine == DatabaseEngine.SqlAzure) && azureUnsupportedIndexOption.Contains(o.Key.Value))).GetEnumerator()) {
-				if (enumerator.MoveNext()) {
-					Write(" WITH (");
-					WriteScriptSequence(indexOptions, WhitespacePadding.None, ", ");
-					Write(')');
-				}
+		internal void WriteIndexOptions(IEnumerable<IndexOption> indexOptions, WhitespacePadding itemPadding) {
+			if (indexOptions.Any(o => !((engine == DatabaseEngine.SqlAzure) && azureUnsupportedIndexOption.Contains(o.Key.Value)))) {
+				PaddingBefore(itemPadding);
+				Write("WITH (");
+				WriteScriptSequence(indexOptions, WhitespacePadding.None, ", ");
+				Write(')');
+				PaddingAfter(itemPadding);
 			}
 		}
 

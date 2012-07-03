@@ -78,7 +78,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(indexName, WhitespacePadding.None);
 			writer.Write(" ON ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
-			writer.WriteIndexOptions(indexOptions);
+			writer.WriteIndexOptions(indexOptions, WhitespacePadding.SpaceBefore);
 		}
 	}
 }
