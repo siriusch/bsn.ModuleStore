@@ -40,7 +40,7 @@ Comment Line  = '--'
 
 StringLiteral  = N?(''{String Ch}*'')+
 IntegerLiteral = {Digit}+
-RealLiteral    = {Digit}+'.'{Digit}+|{Digit}+('.'{Digit}+)[eE][+-]?{Digit}+
+RealLiteral    = {Digit}+'.'{Digit}+|{Digit}+('.'{Digit}+)?[eE][+-]?{Digit}+
 HexLiteral     = 0x{Hex Ch}+
 
 ! We use a simplified name convention, which does not allow user/schema, database or server to be specified
