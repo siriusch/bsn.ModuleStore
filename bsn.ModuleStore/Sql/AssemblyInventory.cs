@@ -37,6 +37,7 @@ using System.Reflection;
 using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	public class AssemblyInventory: InstallableInventory {
@@ -218,22 +219,36 @@ namespace bsn.ModuleStore.Sql {
 					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// execute insert statements for table setup data
-				foreach (IScriptableStatement statement in AdditionalSetupStatements) {
-					Qualified<SchemaName, TableName> name = null;
-					InsertStatement insertStatement = statement as InsertStatement;
-					if (insertStatement != null) {
-						DestinationRowset<Qualified<SchemaName, TableName>> targetTable = insertStatement.DestinationRowset as DestinationRowset<Qualified<SchemaName, TableName>>;
-						if (targetTable != null) {
-							name = targetTable.Name;
+				if (AdditionalSetupStatements.Any()) {
+					bool disabledChecks = false;
+					foreach (IScriptableStatement statement in AdditionalSetupStatements) {
+						Qualified<SchemaName, TableName> name = null;
+						InsertStatement insertStatement = statement as InsertStatement;
+						if (insertStatement != null) {
+							DestinationRowset<Qualified<SchemaName, TableName>> targetTable = insertStatement.DestinationRowset as DestinationRowset<Qualified<SchemaName, TableName>>;
+							if (targetTable != null) {
+								name = targetTable.Name;
+							}
+						} else {
+							SetIdentityInsertStatement setIdentityInsertStatement = statement as SetIdentityInsertStatement;
+							if (setIdentityInsertStatement != null) {
+								name = setIdentityInsertStatement.TableName;
+							}
 						}
-					} else {
-						SetIdentityInsertStatement setIdentityInsertStatement = statement as SetIdentityInsertStatement;
-						if (setIdentityInsertStatement != null) {
-							name = setIdentityInsertStatement.TableName;
+						if ((name != null) && name.IsQualified && string.Equals(name.Qualification.Value, inventory.SchemaName, StringComparison.OrdinalIgnoreCase) && newObjectNames.Contains(name.Name.Value)) {
+							if (!disabledChecks) {
+								foreach (CreateTableStatement table in Objects.OfType<CreateTableStatement>()) {
+									yield return WriteStatement(new AlterTableNocheckConstraintStatement(table.TableName, new TableCheckToken()), builder, inventory.TargetEngine);
+								}
+								disabledChecks = true;
+							}
+							yield return WriteStatement(statement, builder, inventory.TargetEngine);
 						}
 					}
-					if ((name != null) && name.IsQualified && string.Equals(name.Qualification.Value, inventory.SchemaName, StringComparison.OrdinalIgnoreCase) && newObjectNames.Contains(name.Name.Value)) {
-						yield return WriteStatement(statement, builder, inventory.TargetEngine);
+					if (disabledChecks) {
+						foreach (CreateTableStatement table in Objects.OfType<CreateTableStatement>()) {
+							yield return WriteStatement(new AlterTableCheckConstraintStatement(table.TableName, new TableWithCheckToken()), builder, inventory.TargetEngine);
+						}
 					}
 				}
 				// finally drop objects which are no longer used

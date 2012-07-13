@@ -35,6 +35,7 @@ using System.Linq;
 using System.Text;
 
 using bsn.ModuleStore.Sql.Script;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class InstallableInventory: Inventory {
@@ -102,8 +103,16 @@ namespace bsn.ModuleStore.Sql {
 				foreach (IInstallStatement statement in resolver.GetInOrder(true)) {
 					yield return WriteStatement(statement, builder, targetEngine);
 				}
-				foreach (IScriptableStatement additionalSetupStatement in AdditionalSetupStatements) {
-					yield return WriteStatement(additionalSetupStatement, builder, targetEngine);
+				if (AdditionalSetupStatements.Any()) {
+					foreach (CreateTableStatement table in Objects.OfType<CreateTableStatement>()) {
+						yield return WriteStatement(new AlterTableNocheckConstraintStatement(table.TableName, new TableCheckToken()), builder, targetEngine);
+					}
+					foreach (IScriptableStatement additionalSetupStatement in AdditionalSetupStatements) {
+						yield return WriteStatement(additionalSetupStatement, builder, targetEngine);
+					}
+					foreach (CreateTableStatement table in Objects.OfType<CreateTableStatement>()) {
+						yield return WriteStatement(new AlterTableCheckConstraintStatement(table.TableName, new TableWithCheckToken()), builder, targetEngine);
+					}
 				}
 			} finally {
 				UnsetQualification();
