@@ -27,33 +27,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class AlterableCreateStatement: CreateStatement, IAlterableCreateStatement {
-		public override sealed IEnumerable<IAlterableCreateStatement> CreateStatementFragments(CreateFragmentMode mode) {
-			yield return this;
-		}
-
-		protected virtual IInstallStatement CreateAlterStatement() {
-			return new CompoundInstallStatement(ObjectName, CreateDropStatement(), this);
-		}
-
-		protected abstract IInstallStatement CreateDropStatement();
-
-		IInstallStatement IAlterableCreateStatement.CreateDropStatement() {
-			return CreateDropStatement();
-		}
-
-		IInstallStatement IAlterableCreateStatement.CreateAlterStatement() {
-			return CreateAlterStatement();
-		}
-
-		bool IAlterableCreateStatement.AlterUsingUpdateScript {
-			get {
-				return false;
-			}
-		}
+	public enum CreateFragmentMode {
+		Alter,
+		CreateOnExistingSchema,
+		CreateOnNewSchema
 	}
 }

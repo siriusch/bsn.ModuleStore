@@ -59,7 +59,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public abstract IEnumerable<IAlterableCreateStatement> CreateStatementFragments(bool newSchema);
+		public abstract IEnumerable<IAlterableCreateStatement> CreateStatementFragments(CreateFragmentMode mode);
 
 		public override int GetHashCode() {
 			GetObjectSchemaQualifiedNames();

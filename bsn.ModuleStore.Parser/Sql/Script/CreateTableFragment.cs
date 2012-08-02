@@ -59,6 +59,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			return new DropTableStatement(Owner.TableName);
 		}
 
+		public override IEnumerable<T> GetReferencedObjectNames<T>() {
+			return Owner.GetReferencedObjectNames<T>(typeof(TableConstraint));
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			Owner.WriteTo(writer, def => definitions.Contains(def) ? def : null);
 		}

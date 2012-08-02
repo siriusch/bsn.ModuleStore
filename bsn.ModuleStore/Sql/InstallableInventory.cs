@@ -51,10 +51,11 @@ namespace bsn.ModuleStore.Sql {
 			if (string.IsNullOrEmpty(schemaName)) {
 				throw new ArgumentNullException("schemaName");
 			}
+			bool newSchema = !schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase);
 			StringBuilder builder = new StringBuilder(4096);
 			DependencyResolver resolver = new DependencyResolver();
-			IEnumerable<IAlterableCreateStatement> createStatements = Objects.SelectMany(o => o.CreateStatementFragments(true));
-			if (!schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase)) {
+			IEnumerable<IAlterableCreateStatement> createStatements = Objects.SelectMany(o => o.CreateStatementFragments(newSchema ? CreateFragmentMode.CreateOnNewSchema : CreateFragmentMode.CreateOnExistingSchema));
+			if (newSchema) {
 				SetQualification(null);
 				try {
 					using (StringWriter writer = new StringWriter(builder)) {

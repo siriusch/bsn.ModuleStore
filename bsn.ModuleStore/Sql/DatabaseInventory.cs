@@ -152,7 +152,7 @@ namespace bsn.ModuleStore.Sql {
 			SetQualification(SchemaName);
 			try {
 				DependencyResolver resolver = new DependencyResolver();
-				foreach (IAlterableCreateStatement statement in Objects.SelectMany(o => o.CreateStatementFragments(false))) {
+				foreach (IAlterableCreateStatement statement in Objects.SelectMany(o => o.CreateStatementFragments(CreateFragmentMode.Alter))) {
 					resolver.Add(statement);
 				}
 				foreach (IAlterableCreateStatement statement in resolver.GetInOrder(true).Where(s => !(s is CreateIndexStatement)).Reverse()) {

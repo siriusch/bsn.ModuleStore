@@ -47,8 +47,8 @@ namespace bsn.ModuleStore.Sql {
 			if (target == null) {
 				throw new ArgumentNullException("target");
 			}
-			using (IEnumerator<IAlterableCreateStatement> sourceEnumerator = source.Objects.SelectMany(s => s.CreateStatementFragments(false)).OrderBy(s => s.ObjectName).GetEnumerator()) {
-				using (IEnumerator<IAlterableCreateStatement> targetEnumerator = target.Objects.SelectMany(s => s.CreateStatementFragments(false)).OrderBy(s => s.ObjectName).GetEnumerator()) {
+			using (IEnumerator<IAlterableCreateStatement> sourceEnumerator = source.Objects.SelectMany(s => s.CreateStatementFragments(CreateFragmentMode.Alter)).OrderBy(s => s.ObjectName).GetEnumerator()) {
+				using (IEnumerator<IAlterableCreateStatement> targetEnumerator = target.Objects.SelectMany(s => s.CreateStatementFragments(CreateFragmentMode.Alter)).OrderBy(s => s.ObjectName).GetEnumerator()) {
 					bool hasSource = sourceEnumerator.MoveNext();
 					bool hasTarget = targetEnumerator.MoveNext();
 					while (hasSource && hasTarget) {

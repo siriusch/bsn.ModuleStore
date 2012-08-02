@@ -81,6 +81,7 @@
     <Compile Include="Sql\Script\CommitTransactionStatement.cs" />
     <Compile Include="Sql\Script\CompoundInstallStatement.cs" />
     <Compile Include="Sql\Script\ConstraintDefaultFunctionValue.cs" />
+    <Compile Include="Sql\Script\CreateFragmentMode.cs" />
     <Compile Include="Sql\Script\CreatePrimaryXmlIndexStatement.cs" />
     <Compile Include="Sql\Script\CreateTableFragment.cs" />
     <Compile Include="Sql\Script\StatementFragment.cs" />

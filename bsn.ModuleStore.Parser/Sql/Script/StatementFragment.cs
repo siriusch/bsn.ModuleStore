@@ -65,8 +65,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public abstract IInstallStatement CreateDropStatement();
 
-		public IEnumerable<T> GetReferencedObjectNames<T>() where T: SqlName {
-			return owner.GetReferencedObjectNames<T>();
+		public virtual IEnumerable<T> GetReferencedObjectNames<T>() where T: SqlName {
+			return owner.GetReferencedObjectNames<T>(null);
 		}
 
 		public override void WriteTo(SqlWriter writer) {

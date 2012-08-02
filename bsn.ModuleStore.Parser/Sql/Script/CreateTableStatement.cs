@@ -74,12 +74,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override IEnumerable<IAlterableCreateStatement> CreateStatementFragments(bool newSchema) {
+		public override IEnumerable<IAlterableCreateStatement> CreateStatementFragments(CreateFragmentMode mode) {
 			List<TableDefinition> definitions = new List<TableDefinition>();
 			List<TableConstraint> constraints = new List<TableConstraint>();
 			foreach (TableDefinition definition in Definitions) {
 				TableConstraint constraint = definition as TableConstraint;
-				if ((constraint == null) || (newSchema && constraint.IsPartOfSchemaDefinition)) {
+				if ((constraint == null) || ((mode == CreateFragmentMode.CreateOnExistingSchema) && (constraint is TableUniqueConstraintBase)) || ((mode == CreateFragmentMode.CreateOnNewSchema) && constraint.IsPartOfSchemaDefinition)) {
 					definitions.Add(definition);
 				} else {
 					constraints.Add(constraint);
