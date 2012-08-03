@@ -28,16 +28,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Data.SqlTypes;
+using System.IO;
+using System.Xml;
 
-namespace bsn.ModuleStore.Mapper {
-	// ReSharper disable InconsistentNaming
-	public static class IIdentifiableExtension {
-		// ReSharper restore InconsistentNaming
-		public static T? GetId<T>(this IIdentifiable<T> value) where T: struct, IEquatable<T> {
-			if (value != null) {
-				return value.Id;
-			}
-			return null;
+namespace bsn.ModuleStore.Mapper.Serialization {
+	public static class Extensions {
+		public static SqlXml ToSqlXml(this string xml) {
+			return new SqlXml(XmlReader.Create(new StringReader(xml)));
 		}
 	}
 }

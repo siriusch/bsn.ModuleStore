@@ -86,6 +86,7 @@
     <Compile Include="Mapper\Serialization\ConvertibleMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\DateTimeMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\DateTimeOffsetMemberConverter.cs" />
+    <Compile Include="Mapper\Serialization\Extensions.cs" />
     <Compile Include="Mapper\Serialization\IDeserializerContext.cs" />
     <Compile Include="Mapper\Serialization\IMemberConverter.cs" />
     <Compile Include="Mapper\Serialization\ISerializationTypeInfo.cs" />
@@ -108,7 +109,7 @@
     <Compile Include="Mapper\IConnectionProvider.cs" />
     <Compile Include="Mapper\IDeserializationStateProvider.cs" />
     <Compile Include="Mapper\IIdentifiable.cs" />
-    <Compile Include="Mapper\IIdentifiableExtension.cs" />
+    <Compile Include="Mapper\Extensions.cs" />
     <Compile Include="Mapper\IInstanceProvider.cs" />
     <Compile Include="Mapper\Serialization\NestedMemberConverter.cs" />
     <Compile Include="Mapper\Instance.cs" />
