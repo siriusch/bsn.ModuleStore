@@ -156,7 +156,10 @@ namespace bsn.ModuleStore.Sql {
 					resolver.Add(statement);
 				}
 				foreach (IAlterableCreateStatement statement in resolver.GetInOrder(true).Where(s => !(s is CreateIndexStatement)).Reverse()) {
-					yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);
+					AlterTableAddConstraintFragment addConstraint = statement as AlterTableAddConstraintFragment;
+					if ((addConstraint == null) || !(addConstraint.Constraint is TableUniqueConstraintBase)) {
+						yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);
+					}
 				}
 				if (!schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase)) {
 					buffer.Length = 0;
