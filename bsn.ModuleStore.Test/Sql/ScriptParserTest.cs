@@ -40,12 +40,26 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql {
 	[TestFixture]
 	public class ScriptParserTest: AssertionHelper {
+		private class SchemaQualified: IQualified<SchemaName> {
+			private readonly SchemaName schema;
+
+			public SchemaQualified(string schema) {
+				this.schema = new SchemaName(schema);
+			}
+
+			public SchemaName Qualification {
+				get {
+					return schema;
+				}
+			}
+		}
+
 		[TestFixtureSetUp]
 		public void Initialize() {
 			ScriptParser.GetSemanticActions();
 		}
 
-		public List<Statement> ParseWithRoundtrip(string sql, int expectedStatementCount) {
+		public List<Statement> ParseWithRoundtrip(string sql, int expectedStatementCount, string schema) {
 			GenerateSql(ScriptParser.Parse(sql)); // warm-up
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
@@ -54,6 +68,12 @@ namespace bsn.ModuleStore.Sql {
 			long parseTime = sw.ElapsedMilliseconds;
 			List<Statement> statements = parsedStatements.ToList();
 			Expect(statements.Count, EqualTo(expectedStatementCount));
+			if (schema != null) {
+				IQualified<SchemaName> qualified = new SchemaQualified(schema);
+				foreach (IQualifiedName<SchemaName> qualifiedName in statements.SelectMany(s => s.GetObjectSchemaQualifiedNames(schema))) {
+					qualifiedName.SetOverride(qualified);
+				}
+			}
 			sw.Reset();
 			sw.Start();
 			string sqlGen = GenerateSql(statements);
@@ -82,67 +102,67 @@ namespace bsn.ModuleStore.Sql {
 
 		[Test]
 		public void BeginTransaction() {
-			ParseWithRoundtrip(@"BEGIN TRAN", 1);
+			ParseWithRoundtrip(@"BEGIN TRAN", 1, null);
 		}
 
 		[Test]
 		public void BeginTransactionIdentifierName() {
-			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans", 1);
+			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans", 1, null);
 		}
 
 		[Test]
 		public void BeginTransactionVariableName() {
-			ParseWithRoundtrip(@"BEGIN TRANSACTION @trans", 1);
+			ParseWithRoundtrip(@"BEGIN TRANSACTION @trans", 1, null);
 		}
 
 		[Test]
 		public void BeginTransactionWithMark() {
-			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK", 1);
+			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK", 1, null);
 		}
 
 		[Test]
 		public void BeginTransactionWithMarkNamed() {
-			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK 'My Trans'", 1);
+			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans WITH MARK 'My Trans'", 1, null);
 		}
 
 		[Test]
 		public void BitwiseAnd() {
-			ParseWithRoundtrip(@"PRINT 1&0", 1);
+			ParseWithRoundtrip(@"PRINT 1&0", 1, null);
 		}
 
 		[Test]
 		public void BitwiseNot() {
-			ParseWithRoundtrip(@"PRINT ~1", 1);
+			ParseWithRoundtrip(@"PRINT ~1", 1, null);
 		}
 
 		[Test]
 		public void BitwiseOr() {
-			ParseWithRoundtrip(@"PRINT 1|0", 1);
+			ParseWithRoundtrip(@"PRINT 1|0", 1, null);
 		}
 
 		[Test]
 		public void BitwiseXor() {
-			ParseWithRoundtrip(@"PRINT 1^0", 1);
+			ParseWithRoundtrip(@"PRINT 1^0", 1, null);
 		}
 
 		[Test]
 		public void CommitTransaction() {
-			ParseWithRoundtrip(@"COMMIT TRAN", 1);
+			ParseWithRoundtrip(@"COMMIT TRAN", 1, null);
 		}
 
 		[Test]
 		public void CommitTransactionIdentifierName() {
-			ParseWithRoundtrip(@"COMMIT TRANSACTION MyTrans", 1);
+			ParseWithRoundtrip(@"COMMIT TRANSACTION MyTrans", 1, null);
 		}
 
 		[Test]
 		public void CommitTransactionLegacy() {
-			ParseWithRoundtrip(@"COMMIT", 1);
+			ParseWithRoundtrip(@"COMMIT", 1, null);
 		}
 
 		[Test]
 		public void CommitTransactionVariableName() {
-			ParseWithRoundtrip(@"COMMIT TRANSACTION @trans", 1);
+			ParseWithRoundtrip(@"COMMIT TRANSACTION @trans", 1, null);
 		}
 
 		[Test]
@@ -185,65 +205,75 @@ WITH  [IndicatorStructures]
     FROM [IndicatorStructures] [is]
     WHERE [is].[bPersist] = 1
         )",
-					1);
+					1, null);
+		}
+
+		[Test]
+		public void CreateIndex() {
+			ParseWithRoundtrip(@"CREATE UNIQUE INDEX AK_UnitMeasure_Name ON Production.UnitMeasure(Name);", 1, null);
+		}
+
+		[Test]
+		public void CreateIndexFiltered() {
+			ParseWithRoundtrip(@"CREATE NONCLUSTERED INDEX FIBillOfMaterialsWithEndDate ON Production.BillOfMaterials (ComponentID, StartDate) WHERE EndDate IS NOT NULL ;", 1, null);
 		}
 
 		[Test]
 		public void CreateTypeAsTable() {
 			ParseWithRoundtrip(@"CREATE TYPE dbo.LocationTableType AS TABLE 
     ( LocationName VARCHAR(50)
-    , CostRate INT );", 1);
+    , CostRate INT );", 1, null);
 		}
 
 		[Test]
 		public void CreateTypeFrom() {
 			ParseWithRoundtrip(@"CREATE TYPE dbo.SSN
-FROM varchar(11) NOT NULL ;", 1);
+FROM varchar(11) NOT NULL ;", 1, null);
 		}
 
 		[Test]
 		public void DateTime2SpecificVariable() {
-			ParseWithRoundtrip(@"DECLARE @dt datetime2(4)", 1);
+			ParseWithRoundtrip(@"DECLARE @dt datetime2(4)", 1, null);
 		}
 
 		[Test]
 		public void DateTime2Variable() {
-			ParseWithRoundtrip(@"DECLARE @dt datetime2", 1);
+			ParseWithRoundtrip(@"DECLARE @dt datetime2", 1, null);
 		}
 
 		[Test]
 		public void DeclareVariant() {
-			ParseWithRoundtrip(@"DECLARE @v sql_variant", 1);
+			ParseWithRoundtrip(@"DECLARE @v sql_variant", 1, null);
 		}
 
 		[Test]
 		public void DropType() {
-			ParseWithRoundtrip(@"DROP TYPE dbo.SSN;", 1);
+			ParseWithRoundtrip(@"DROP TYPE dbo.SSN;", 1, null);
 		}
 
 		[Test]
 		public void Fetch() {
-			ParseWithRoundtrip(@"FETCH @curs", 1);
+			ParseWithRoundtrip(@"FETCH @curs", 1, null);
 		}
 
 		[Test]
 		public void FetchAbsoluteVariable() {
-			ParseWithRoundtrip(@"FETCH ABSOLUTE @i FROM curs INTO @a, @b", 1);
+			ParseWithRoundtrip(@"FETCH ABSOLUTE @i FROM curs INTO @a, @b", 1, null);
 		}
 
 		[Test]
 		public void FetchGlobal() {
-			ParseWithRoundtrip(@"FETCH NEXT FROM GLOBAL curs", 1);
+			ParseWithRoundtrip(@"FETCH NEXT FROM GLOBAL curs", 1, null);
 		}
 
 		[Test]
 		public void FetchInto() {
-			ParseWithRoundtrip(@"FETCH FIRST FROM curs INTO @a, @b", 1);
+			ParseWithRoundtrip(@"FETCH FIRST FROM curs INTO @a, @b", 1, null);
 		}
 
 		[Test]
 		public void FetchRelativeInt() {
-			ParseWithRoundtrip(@"FETCH RELATIVE 12 FROM curs INTO @a, @b", 1);
+			ParseWithRoundtrip(@"FETCH RELATIVE 12 FROM curs INTO @a, @b", 1, null);
 		}
 
 		[Test]
@@ -258,32 +288,32 @@ FROM varchar(11) NOT NULL ;", 1);
 
 		[Test]
 		public void JoinHashHint() {
-			ParseWithRoundtrip(@"SELECT * FROM a INNER HASH JOIN b ON a.x=b.x", 1);
+			ParseWithRoundtrip(@"SELECT * FROM a INNER HASH JOIN b ON a.x=b.x", 1, null);
 		}
 
 		[Test]
 		public void JoinLoopHint() {
-			ParseWithRoundtrip(@"SELECT * FROM a INNER LOOP JOIN b ON a.x=b.x", 1);
+			ParseWithRoundtrip(@"SELECT * FROM a INNER LOOP JOIN b ON a.x=b.x", 1, null);
 		}
 
 		[Test]
 		public void JoinMergeHint() {
-			ParseWithRoundtrip(@"SELECT * FROM a INNER MERGE JOIN b ON a.x=b.x", 1);
+			ParseWithRoundtrip(@"SELECT * FROM a INNER MERGE JOIN b ON a.x=b.x", 1, null);
 		}
 
 		[Test]
 		public void LikePredicate() {
-			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a'", 1);
+			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a'", 1, null);
 		}
 
 		[Test]
 		public void LikeWithCollationPredicate() {
-			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a' COLLATE Latin1_General_BIN2", 1);
+			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a' COLLATE Latin1_General_BIN2", 1, null);
 		}
 
 		[Test]
 		public void LikeWithExpressionPredicate() {
-			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a%'+x.z", 1);
+			ParseWithRoundtrip(@"SELECT * FROM x WHERE x.y LIKE 'a%'+x.z", 1, null);
 		}
 
 		[Test]
@@ -303,7 +333,7 @@ WHEN MATCHED
                     target.ModifiedDate = GETDATE()
 OUTPUT $action, Inserted.ProductID, Inserted.Quantity, Inserted.ModifiedDate, Deleted.ProductID,
     Deleted.Quantity, Deleted.ModifiedDate;",
-					1);
+					1, null);
 		}
 
 		[Test]
@@ -318,7 +348,7 @@ OUTPUT $action, Inserted.ProductID, Inserted.Quantity, Inserted.ModifiedDate, De
 	    INSERT (UnitMeasureCode, Name)
 	    VALUES (source.UnitMeasureCode, source.Name)
 	    OUTPUT deleted.*, $action, inserted.* INTO #MyTempTable;",
-					1);
+					1, null);
 		}
 
 		[Test]
@@ -333,17 +363,7 @@ WHEN MATCHED THEN
 WHEN NOT MATCHED BY TARGET THEN
 	INSERT (Name, ReasonType) VALUES (NewName, NewReasonType)
 OUTPUT $action INTO @SummaryOfChanges;",
-					1);
-		}
-
-		[Test]
-		public void CreateIndex() {
-			ParseWithRoundtrip(@"CREATE UNIQUE INDEX AK_UnitMeasure_Name ON Production.UnitMeasure(Name);", 1);
-		}
-
-		[Test]
-		public void CreateIndexFiltered() {
-			ParseWithRoundtrip(@"CREATE NONCLUSTERED INDEX FIBillOfMaterialsWithEndDate ON Production.BillOfMaterials (ComponentID, StartDate) WHERE EndDate IS NOT NULL ;", 1);
+					1, null);
 		}
 
 		[Test]
@@ -406,7 +426,7 @@ option (maxrecursion 0);
 return;
 
 end",
-					1);
+					1, null);
 		}
 
 		[Test]
@@ -436,12 +456,12 @@ AS
             FROM [dbo].[vwIndicatorStatus]
             WHERE [vwIndicatorStatus].[uidIndicatorStatus]=@uidIndicatorStatus;
     END;",
-					1);
+					1, null);
 		}
 
 		[Test]
 		public void ParseExecWithMultipleArguments() {
-			ParseWithRoundtrip(@"EXEC spMyProc 'a', 24, @b = 10, @@rownumber, @c, @d = @e", 1);
+			ParseWithRoundtrip(@"EXEC spMyProc 'a', 24, @b = 10, @@rownumber, @c, @d = @e", 1, null);
 		}
 
 		[Test]
@@ -449,7 +469,7 @@ AS
 			ParseWithRoundtrip(@"SELECT N'This
 is
 on
-several lines!'", 1);
+several lines!'", 1, null);
 		}
 
 		[Test]
@@ -461,7 +481,7 @@ select x = convert(varchar(8000),'hello')
 union all
 select x + 'a' from MyCTE where len(x) < 100
 )
-select x from MyCTE", 1);
+select x from MyCTE", 1, null);
 		}
 
 		[Test]
@@ -473,14 +493,14 @@ on 2 lines */
 SELECT * -- Comment inside select
 FROM [tbl];
 -- Comment may move
-END;", 1);
+END;", 1, null);
 		}
 
 		[Test]
 		public void ParseWithMissingTerminator() {
 			ParseWithRoundtrip(@"SELECT * FROM [tblA]
 SELECT * FROM [tblB]
-PRINT 'Cool'", 3);
+PRINT 'Cool'", 3, null);
 		}
 
 		[Test]
@@ -490,7 +510,7 @@ PRINT 'Cool'", 3);
            1, -- State,
            7, -- First argument used for width.
            3, -- Second argument used for precision.
-           N'abcde');", 1);
+           N'abcde');", 1, null);
 		}
 
 		[Test]
@@ -498,67 +518,75 @@ PRINT 'Cool'", 3);
 			ParseWithRoundtrip(@"RAISERROR (N'<<%7.3s>>', -- Message text.
            10, -- Severity,
            1, -- State,
-           N'abcde') WITH NOWAIT, LOG;", 1);
+           N'abcde') WITH NOWAIT, LOG;", 1, null);
 		}
 
 		[Test]
 		public void RollbackTransaction() {
-			ParseWithRoundtrip(@"ROLLBACK TRAN", 1);
+			ParseWithRoundtrip(@"ROLLBACK TRAN", 1, null);
 		}
 
 		[Test]
 		public void RollbackTransactionIdentifierName() {
-			ParseWithRoundtrip(@"ROLLBACK TRANSACTION MyTrans", 1);
+			ParseWithRoundtrip(@"ROLLBACK TRANSACTION MyTrans", 1, null);
 		}
 
 		[Test]
 		public void RollbackTransactionLegacy() {
-			ParseWithRoundtrip(@"ROLLBACK", 1);
+			ParseWithRoundtrip(@"ROLLBACK", 1, null);
 		}
 
 		[Test]
 		public void RollbackTransactionVariableName() {
-			ParseWithRoundtrip(@"ROLLBACK TRANSACTION @trans", 1);
+			ParseWithRoundtrip(@"ROLLBACK TRANSACTION @trans", 1, null);
 		}
 
 		[Test]
 		public void SaveTransactionIdentifierName() {
-			ParseWithRoundtrip(@"SAVE TRANSACTION MyTrans", 1);
+			ParseWithRoundtrip(@"SAVE TRANSACTION MyTrans", 1, null);
 		}
 
 		[Test]
 		public void SaveTransactionVariableName() {
-			ParseWithRoundtrip(@"SAVE TRANSACTION @trans", 1);
+			ParseWithRoundtrip(@"SAVE TRANSACTION @trans", 1, null);
 		}
 
 		[Test]
 		public void SelectExcept() {
-			ParseWithRoundtrip(@"SELECT * FROM TableA EXCEPT SELECT * FROM TableB", 1);
+			ParseWithRoundtrip(@"SELECT * FROM TableA EXCEPT SELECT * FROM TableB", 1, null);
 		}
 
 		[Test]
 		public void SelectExceptIntersect() {
-			ParseWithRoundtrip(@"SELECT * FROM TableA EXCEPT SELECT * FROM TableB INTERSECT SELECT * FROM TableC", 1);
+			ParseWithRoundtrip(@"SELECT * FROM TableA EXCEPT SELECT * FROM TableB INTERSECT SELECT * FROM TableC", 1, null);
 		}
 
 		[Test]
 		public void SelectGroupByHaving() {
-			ParseWithRoundtrip(@"SELECT a FROM tbl GROUP BY a HAVING SUM(b)>0", 1);
+			ParseWithRoundtrip(@"SELECT a FROM tbl GROUP BY a HAVING SUM(b)>0", 1, null);
 		}
 
 		[Test]
 		public void SelectIntersect() {
-			ParseWithRoundtrip(@"SELECT * FROM TableA INTERSECT SELECT * FROM TableB", 1);
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA INTERSECT SELECT * FROM dbo.TableB", 1, "dbo");
 		}
 
 		[Test]
 		public void SelectValuesRowset() {
-			ParseWithRoundtrip(@"SELECT * FROM (VALUES (1,2,3),(4,5,6)) AS Ints (x, y, z);", 1);
+			ParseWithRoundtrip(@"SELECT * FROM (VALUES (1,2,3),(4,5,6)) AS Ints (x, y, z);", 1, "dbo");
 		}
 
 		[Test]
 		public void SelectVariableWhere() {
-			ParseWithRoundtrip(@"SELECT @x=1 WHERE EXISTS (SELECT * FROM tbl)", 1);
+			ParseWithRoundtrip(@"SELECT @x=1 WHERE EXISTS (SELECT * FROM dbo.tbl)", 1, "dbo");
+		}
+
+		[Test]
+		public void SelectWithCrossApplyAndXmlFunction() {
+			ParseWithRoundtrip(
+					@"SELECT [p].[uidPeriodStructureIndicator], [d].[uidPeriodIndicator].value('.', 'uniqueidentifier') AS [uidPeriodIndicatorDependency]
+            FROM @tblPeriodStructureIndicator AS [p]
+            CROSS APPLY [p].[xDependencies].nodes('/*/id') AS [d]([uidPeriodIndicator])", 1, "dbo");
 		}
 
 		[Test]
@@ -570,12 +598,12 @@ FROM Production.ProductModel
 CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)       
 CROSS APPLY T1.Locations.nodes('/MI:step ') as T2(steps)       
 WHERE ProductModelID=7;",
-					1);
+					1, null);
 		}
 
 		[Test]
 		public void SelectWithHints() {
-			ParseWithRoundtrip(@"SELECT @a=1 OPTION (MAXRECURSION 0, RECOMPILE);", 1);
+			ParseWithRoundtrip(@"SELECT @a=1 OPTION (MAXRECURSION 0, RECOMPILE);", 1, null);
 		}
 
 		[Test]
@@ -585,7 +613,7 @@ WHERE ProductModelID=7;",
    FROM   docs CROSS APPLY xCol.nodes('/book') T(nref)
    WHERE  nref.exist ('author/first-name') = 1) Result
 GROUP BY FName
-ORDER BY Fname;", 1);
+ORDER BY Fname;", 1, null);
 		}
 
 		[Test]
@@ -601,7 +629,7 @@ CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)
 CROSS APPLY T1.Locations.nodes('./MI:step') as T2(steps)
 WHERE  ProductModelID=7
 AND    steps.exist('./MI:tool') = 1;",
-					1);
+					1, null);
 		}
 
 		[Test]
@@ -618,49 +646,49 @@ CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)
 CROSS APPLY T1.Locations.nodes('./MI:step') as T2(steps)
 WHERE  ProductModelID=7
 AND    steps.exist('./MI:tool') = 1;",
-					1);
+					1, null);
 		}
 
 		[Test]
 		public void SetTransactionIsolationLevel() {
-			ParseWithRoundtrip(@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE", 1);
+			ParseWithRoundtrip(@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE", 1, null);
 		}
 
 		[Test]
 		public void SetXmlModfiy() {
-			ParseWithRoundtrip(@"SET @x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]')", 1);
+			ParseWithRoundtrip(@"SET @x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]')", 1, null);
 		}
 
 		[Test]
 		public void StatementsWithXmlFunctions() {
 			ParseWithRoundtrip(@"DECLARE @tbl TABLE (id xml);
 INSERT @tbl (id) SELECT t.x FROM (SELECT NEWID() x FOR XML RAW) t(x);
-SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
+SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3, null);
 		}
 
 		[Test]
 		public void SyntaxError() {
-			Expect(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1), Throws.InstanceOf<ParseException>().With.Message.ContainsSubstring("SyntaxError"));
+			Expect(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1, null), Throws.InstanceOf<ParseException>().With.Message.ContainsSubstring("SyntaxError"));
 		}
 
 		[Test]
 		public void UpdateSetXmlColumnModfiy() {
-			ParseWithRoundtrip(@"UPDATE tbl SET x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+			ParseWithRoundtrip(@"UPDATE tbl SET x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1, null);
 		}
 
 		[Test]
 		public void UpdateSetXmlQualifiedColumnModfiy() {
-			ParseWithRoundtrip(@"UPDATE tbl SET tbl.x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+			ParseWithRoundtrip(@"UPDATE tbl SET tbl.x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1, null);
 		}
 
 		[Test]
 		public void UpdateSetXmlVariableColumnModfiy() {
-			ParseWithRoundtrip(@"UPDATE @tbl SET [@tbl].x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+			ParseWithRoundtrip(@"UPDATE @tbl SET [@tbl].x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1, null);
 		}
 
 		[Test]
 		public void UpdateSetXmlVariableModfiy() {
-			ParseWithRoundtrip(@"UPDATE tbl SET @x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1);
+			ParseWithRoundtrip(@"UPDATE tbl SET @x.modify('insert sql:variable(""@newFeatures"") into (/Root/ProductDescription/Features)[1]'), tbl.y=1", 1, null);
 		}
 
 		[Test]
@@ -668,7 +696,7 @@ SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3);
 			ParseWithRoundtrip(@"UPDATE Production.Product
 WITH (TABLOCK)
 SET ListPrice = ListPrice * 1.10
-WHERE ProductNumber LIKE 'BK-%';", 1);
+WHERE ProductNumber LIKE 'BK-%';", 1, null);
 		}
 	}
 }

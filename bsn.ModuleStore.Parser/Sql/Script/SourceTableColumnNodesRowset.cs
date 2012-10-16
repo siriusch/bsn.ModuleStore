@@ -38,7 +38,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Qualified<SchemaName, TableName> tableNameQualified;
 
 		[Rule("<SourceRowset> ::= <SchemaName> ~'.' <TableName> ~'.' <NamedFunction> <RowsetAlias>")]
-		public SourceTableColumnNodesRowset(SchemaName tableName, TableName columnName, NamedFunction functionCall, RowsetAlias rowsetAlias): this(new Qualified<SchemaName, TableName>(null, new TableName(tableName.Value)), new ColumnName(columnName.Value), functionCall, rowsetAlias) {}
+		public SourceTableColumnNodesRowset(SchemaName tableName, TableName columnName, NamedFunction functionCall, RowsetAlias rowsetAlias): this(new Qualified<SchemaName, TableName>(null, new TableName(tableName.Value)), new ColumnName(columnName.Value), functionCall, rowsetAlias) {
+			tableNameQualified.LockOverride(); // TableName here is usually an alias to a table, so don't prefix this
+		}
 
 		//		[Rule("<SourceRowset> ::= <SchemaName> ~'.' <TableName> ~'.' <ColumnName> ~'.' <FunctionCall> <RowsetAlias>")]
 		//		public SourceTableColumnNodesRowset(SchemaName schemaName, TableName tableName, ColumnName columnName, ExpressionFunctionCall functionCall, RowsetAlias rowsetAlias): this(new Qualified<SchemaName, TableName>(schemaName, tableName), columnName, functionCall, rowsetAlias) {}
