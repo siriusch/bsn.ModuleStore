@@ -31,6 +31,7 @@ using System;
 using System.ComponentModel;
 
 namespace bsn.ModuleStore {
+	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 	public sealed class SqlUpdateScriptAttribute: SqlManifestResourceAttribute {
 		private readonly int version;
 
