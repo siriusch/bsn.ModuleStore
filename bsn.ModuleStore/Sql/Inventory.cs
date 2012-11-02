@@ -47,8 +47,8 @@ namespace bsn.ModuleStore.Sql {
 			if (target == null) {
 				throw new ArgumentNullException("target");
 			}
-			using (IEnumerator<IAlterableCreateStatement> sourceEnumerator = source.Objects.SelectMany(s => s.CreateStatementFragments(CreateFragmentMode.Alter)).OrderBy(s => s.ObjectName).GetEnumerator()) {
-				using (IEnumerator<IAlterableCreateStatement> targetEnumerator = target.Objects.SelectMany(s => s.CreateStatementFragments(CreateFragmentMode.Alter)).OrderBy(s => s.ObjectName).GetEnumerator()) {
+			using (IEnumerator<IAlterableCreateStatement> sourceEnumerator = GetOrderedFragments(source).GetEnumerator()) {
+				using (IEnumerator<IAlterableCreateStatement> targetEnumerator = GetOrderedFragments(target).GetEnumerator()) {
 					bool hasSource = sourceEnumerator.MoveNext();
 					bool hasTarget = targetEnumerator.MoveNext();
 					while (hasSource && hasTarget) {
@@ -79,6 +79,10 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 			}
+		}
+
+		private static IEnumerable<IAlterableCreateStatement> GetOrderedFragments(Inventory source) {
+			return source.Objects.SelectMany(s => s.CreateStatementFragments(CreateFragmentMode.Alter)).OrderBy(s => s.ObjectName, StringComparer.OrdinalIgnoreCase);
 		}
 
 		protected static string WriteStatement(IScriptableStatement statement, StringBuilder buffer, DatabaseEngine targetEngine) {
