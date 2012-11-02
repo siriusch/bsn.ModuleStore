@@ -42,9 +42,9 @@ namespace bsn.ModuleStore.Console.Commands {
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
 			DatabaseEngine engine = DatabaseEngine.Unknown;
-			Inventory sourceInventory = executionContext.GetInventory((Entities.Source)tags["source"]);
+			Inventory sourceInventory = executionContext.GetInventory((Entities.Source)tags["source"], (bool)tags["directories"]);
 			GetDatabaseEngine(sourceInventory, ref engine);
-			Inventory targetInventory = executionContext.GetInventory((Entities.Source)tags["target"]);
+			Inventory targetInventory = executionContext.GetInventory((Entities.Source)tags["target"], (bool)tags["directories"]);
 			GetDatabaseEngine(sourceInventory, ref engine);
 			foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> difference in Inventory.Compare(sourceInventory, targetInventory, engine)) {
 				executionContext.Output.WriteLine(string.Format(" {0} {1}: {2}", difference.Key.ObjectCategory, difference.Key.ObjectName, difference.Value));
@@ -54,6 +54,7 @@ namespace bsn.ModuleStore.Console.Commands {
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
 			yield return new Tag<ExecutionContext, Entities.Source>("source", "The source for the comparison.").SetDefault(context => context.Assembly != null ? Entities.Source.Assembly : Entities.Source.Files);
 			yield return new Tag<ExecutionContext, Entities.Source>("target", "The target for the comparison.").SetDefault(context => context.Connected ? Entities.Source.Database : Entities.Source.Files);
+			yield return new Tag<ExecutionContext, bool>("directories", "If true, traverse directories when looking for SQL files.").SetDefault(context => false);
 		}
 
 		private void GetDatabaseEngine(Inventory sourceInventory, ref DatabaseEngine engine) {

@@ -41,7 +41,7 @@ namespace bsn.ModuleStore.Console.Commands {
 		public UninstallCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
-			DatabaseInventory inventory = executionContext.GetInventory(Source.Database) as DatabaseInventory;
+			DatabaseInventory inventory = executionContext.GetInventory(Source.Database, false) as DatabaseInventory;
 			if (inventory == null) {
 				throw new NotSupportedException("The database inventory could not be created");
 			}

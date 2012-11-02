@@ -43,7 +43,7 @@ namespace bsn.ModuleStore.Console.Commands {
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
 			try {
 				Source inventorySource = (Source)tags["source"];
-				Inventory inventory = executionContext.GetInventory(inventorySource);
+				Inventory inventory = executionContext.GetInventory(inventorySource, (bool)tags["directories"]);
 				inventory.Dump(null, executionContext.Output);
 			} catch (Exception ex) {
 				executionContext.Output.WriteLine("Error: "+ex.Message);
@@ -52,6 +52,7 @@ namespace bsn.ModuleStore.Console.Commands {
 
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
 			yield return new Tag<ExecutionContext, Source>("source", "Source for the dump").SetDefault(context => context.Connected ? Source.Database : Source.Files);
+			yield return new Tag<ExecutionContext, bool>("directories", "If true, traverse directories when looking for SQL files.").SetDefault(context => false);
 		}
 	}
 }

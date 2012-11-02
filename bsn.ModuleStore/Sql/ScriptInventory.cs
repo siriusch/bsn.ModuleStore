@@ -38,13 +38,13 @@ namespace bsn.ModuleStore.Sql {
 	public class ScriptInventory: InstallableInventory {
 		private readonly string scriptPath;
 
-		public ScriptInventory(string scriptPath) {
+		public ScriptInventory(string scriptPath, bool deepSearch) {
 			this.scriptPath = Directory.GetCurrentDirectory();
 			if (!string.IsNullOrEmpty(scriptPath)) {
 				this.scriptPath = Path.Combine(this.scriptPath, scriptPath);
 			}
 			List<Statement> unsupportedStatements = new List<Statement>();
-			foreach (string fileName in Directory.GetFiles(this.scriptPath, "*.sql", SearchOption.AllDirectories)) {
+			foreach (string fileName in Directory.GetFiles(this.scriptPath, "*.sql", deepSearch ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)) {
 				unsupportedStatements.Clear();
 				using (TextReader reader = new StreamReader(fileName, true)) {
 					try {

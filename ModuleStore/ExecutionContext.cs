@@ -193,7 +193,7 @@ namespace bsn.ModuleStore.Console {
 			return BuildConnectionString(Server, Database, DatabaseUser, DatabasePassword);
 		}
 
-		public Inventory GetInventory(Source inventorySource) {
+		public Inventory GetInventory(Source inventorySource, bool deepSearch) {
 			Inventory inventory;
 			switch (inventorySource) {
 			case Source.Database:
@@ -202,7 +202,7 @@ namespace bsn.ModuleStore.Console {
 				}
 				break;
 			case Source.Files:
-				inventory = new ScriptInventory(ScriptPath);
+				inventory = new ScriptInventory(ScriptPath, deepSearch);
 				break;
 			case Source.Assembly:
 				inventory = new AssemblyInventory(Assembly);

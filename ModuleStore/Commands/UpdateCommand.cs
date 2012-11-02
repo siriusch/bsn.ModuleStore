@@ -41,13 +41,13 @@ namespace bsn.ModuleStore.Console.Commands {
 		public UpdateCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
-			AssemblyInventory assemblyInventory = (AssemblyInventory)executionContext.GetInventory(Source.Assembly);
+			AssemblyInventory assemblyInventory = (AssemblyInventory)executionContext.GetInventory(Source.Assembly, false);
 			if (assemblyInventory == null) {
 				throw new NotSupportedException("The assembly inventory could not be created");
 			}
-			DatabaseInventory databaseInventory = (DatabaseInventory)executionContext.GetInventory(Source.Database);
+			DatabaseInventory databaseInventory = (DatabaseInventory)executionContext.GetInventory(Source.Database, false);
 			if (databaseInventory == null) {
-				throw new NotSupportedException("The assembly inventory could not be created");
+				throw new NotSupportedException("The database inventory could not be created");
 			}
 #warning perform lookup on ModuleStore tables and perform only updates as necessary on all matching schemas
 			base.ExecuteInternal(executionContext, tags, assemblyInventory.GenerateUpdateSql(databaseInventory, 0));
