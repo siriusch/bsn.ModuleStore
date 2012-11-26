@@ -39,7 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<SourceRowset> ::= ~'(' ~VALUES <ValuesList> ~')' <RowsetAlias>")]
 		public SourceValuesRowset(Sequence<Sequence<Expression>> valuesList, RowsetAlias rowsetAlias): base(rowsetAlias) {
 			foreach (Sequence<Expression> expressions in valuesList) {
-				this.valuesList.Add(expressions.ToList());
+				this.valuesList.Add(expressions.ToArray());
 			}
 			Debug.Assert(this.valuesList.Count > 0);
 		}

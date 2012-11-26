@@ -287,6 +287,22 @@ FROM varchar(11) NOT NULL ;", 1, null);
 		}
 
 		[Test]
+		public void InsertValuesMultiple() {
+			ParseWithRoundtrip(@"INSERT INTO [dbo].[tblStatusTransition]([uidStatusFrom], [uidStatusTo], [bForecastedValuesOnly], [sFunction])
+VALUES (N'4d460bf8-ef37-e211-ace9-8c598b00dad1', N'17bd16ff-ef37-e211-ace9-8c598b00dad1', 0, N'Status:Commit'),
+(N'17bd16ff-ef37-e211-ace9-8c598b00dad1', N'4d460bf8-ef37-e211-ace9-8c598b00dad1', 0, N'Status:Verify'),
+(N'17bd16ff-ef37-e211-ace9-8c598b00dad1', N'18bd16ff-ef37-e211-ace9-8c598b00dad1', 0, N'Status:Verify'),
+(N'18bd16ff-ef37-e211-ace9-8c598b00dad1', N'4d460bf8-ef37-e211-ace9-8c598b00dad1', 0, N'Status:Restate'),
+(N'18bd16ff-ef37-e211-ace9-8c598b00dad1', N'4d460bf8-ef37-e211-ace9-8c598b00dad1', 1, N'Status:RestateForecast');", 1, null);
+		}
+
+		[Test]
+		public void InsertValuesSingle() {
+			ParseWithRoundtrip(@"INSERT INTO [dbo].[tblStatusTransition]([uidStatusFrom], [uidStatusTo], [bForecastedValuesOnly], [sFunction])
+VALUES (N'4d460bf8-ef37-e211-ace9-8c598b00dad1', N'17bd16ff-ef37-e211-ace9-8c598b00dad1', 0, N'Status:Commit');", 1, null);
+		}
+
+		[Test]
 		public void JoinHashHint() {
 			ParseWithRoundtrip(@"SELECT * FROM a INNER HASH JOIN b ON a.x=b.x", 1, null);
 		}

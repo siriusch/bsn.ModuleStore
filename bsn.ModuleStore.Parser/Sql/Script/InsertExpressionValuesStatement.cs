@@ -34,26 +34,33 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class InsertExpressionValuesStatement: InsertValuesStatement {
-		private readonly List<Expression> expressions;
+		private readonly List<IEnumerable<Expression>> valuesList = new List<IEnumerable<Expression>>();
 
-		[Rule("<InsertStatement> ::= <QueryOptions> ~INSERT <OptionalTop> ~<OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> ~VALUES ~'(' <ExpressionList> ~')' <QueryHint>")]
-		public InsertExpressionValuesStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, Optional<Sequence<ColumnName>> columnNames, OutputClause output, Sequence<Expression> expressions, QueryHint queryHint)
+		[Rule("<InsertStatement> ::= <QueryOptions> ~INSERT <OptionalTop> ~<OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> ~VALUES <ValuesList> <QueryHint>")]
+		public InsertExpressionValuesStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, Optional<Sequence<ColumnName>> columnNames, OutputClause output, Sequence<Sequence<Expression>> valuesList, QueryHint queryHint)
 				: base(queryOptions, topExpression, destinationRowset, columnNames, output, queryHint) {
-			this.expressions = expressions.ToList();
-		}
-
-		public IEnumerable<Expression> Expressions {
-			get {
-				return expressions;
+			foreach (Sequence<Expression> expressions in valuesList) {
+				this.valuesList.Add(expressions.ToArray());
 			}
 		}
 
 		protected override void WriteToInternal(SqlWriter writer) {
 			base.WriteToInternal(writer);
 			writer.WriteLine();
-			writer.Write("VALUES (");
-			writer.WriteScriptSequence(expressions, WhitespacePadding.None, ", ");
-			writer.Write(')');
+			writer.IncreaseIndent();
+			string separator = "VALUES";
+			foreach (IEnumerable<Expression> expressions in valuesList) {
+				if (valuesList.Count > 1) {
+					writer.WriteLine(separator);
+				} else {
+					writer.Write("VALUES ");
+				}
+				separator = ",";
+				writer.Write("(");
+				writer.WriteScriptSequence(expressions, WhitespacePadding.None, ", ");
+				writer.Write(")");
+			}
+			writer.DecreaseIndent();
 		}
 	}
 }

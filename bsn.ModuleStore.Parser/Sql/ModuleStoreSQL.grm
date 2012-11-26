@@ -1088,7 +1088,7 @@ _ACTION = '$ACTION'
 ! INSERT Statement
 ! =============================================================================
 
-<InsertStatement> ::= <QueryOptions> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES '(' <ExpressionList> ')' <QueryHint>
+<InsertStatement> ::= <QueryOptions> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> VALUES <ValuesList> <QueryHint>
                     | <QueryOptions> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <SelectQuery> <QueryHint>
                     | <QueryOptions> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> <ExecuteStatement> <QueryHint>
                     | <QueryOptions> INSERT <OptionalTop> <OptionalInto> <DestinationRowset> DEFAULT VALUES <QueryHint>
