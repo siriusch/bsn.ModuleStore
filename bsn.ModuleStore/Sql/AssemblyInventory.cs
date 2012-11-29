@@ -201,8 +201,15 @@ namespace bsn.ModuleStore.Sql {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
 				// now perform all possible actions which do not rely on tables which are altered
+				HashSet<string> createdTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				foreach (IInstallStatement statement in resolver.GetInOrder(false)) {
-					yield return WriteStatement(statement, builder, inventory.TargetEngine);
+					CreateTableFragment createTable = statement as CreateTableFragment;
+					if (createTable != null) {
+						yield return WriteStatement(createTable.Owner.CreateStatementFragments(CreateFragmentMode.CreateOnExistingSchema).OfType<CreateTableFragment>().Single(), builder, inventory.TargetEngine);
+						createdTables.Add(createTable.ObjectName);
+					} else if (!statement.IsTableUniqueConstraintOfTables(createdTables)) {
+						yield return WriteStatement(statement, builder, inventory.TargetEngine);
+					}
 				}
 				// then perform updates (if any)
 				foreach (KeyValuePair<int, IScriptableStatement[]> update in updateStatements.Where(u => u.Key > currentVersion)) {
@@ -215,7 +222,7 @@ namespace bsn.ModuleStore.Sql {
 					resolver.AddExistingObject(createTableStatement.ObjectName);
 				}
 				// try to perform the remaining actions
-				foreach (IInstallStatement statement in resolver.GetInOrder(true)) {
+				foreach (IInstallStatement statement in resolver.GetInOrder(true).Where(statement => !statement.IsTableUniqueConstraintOfTables(createdTables))) {
 					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// execute insert statements for table setup data

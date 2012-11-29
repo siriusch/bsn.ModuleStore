@@ -198,6 +198,7 @@
     <Compile Include="SqlSetupScriptAttribute.cs" />
     <Compile Include="SqlSetupScriptAttributeBase.cs" />
     <Compile Include="SqlUpdateScriptAttribute.cs" />
+    <Compile Include="Sql\AssemblyExtensions.cs" />
     <Compile Include="Sql\AssemblyHandle.cs" />
     <Compile Include="Sql\AssemblyInventory.cs" />
     <Compile Include="Sql\DatabaseInventory.cs" />
