@@ -70,7 +70,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public StringLiteral(string value): this(ParseValue(value), ParseIsUnicode(value), null) {}
 
-		private StringLiteral(string parsedValue, bool isUnicode, CollationName collation): base(parsedValue) {
+		internal StringLiteral(string parsedValue, bool isUnicode, CollationName collation): base(parsedValue) {
 			this.isUnicode = isUnicode;
 			this.collation = collation;
 		}
@@ -89,6 +89,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
+			if (isUnicode) {
+				writer.Write('N');
+			}
 			writer.Write('\'');
 			writer.Write(Value.Replace("'", "''"));
 			writer.Write('\'');
