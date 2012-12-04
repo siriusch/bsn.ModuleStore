@@ -70,6 +70,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("NEXT")]
 	[Terminal("NO")]
 	[Terminal("NOWAIT")]
+	[Terminal("OBJECT_ID")]
 	[Terminal("ONLY")]
 	[Terminal("OUTPUT")]
 	[Terminal("PARTITION")]
@@ -100,6 +101,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("WORK")]
 	[Terminal("XML")]
 	[Terminal("XMLNAMESPACES")]
+	[Terminal("_NAMEONLY")]
 	public class UnreservedKeyword: KeywordToken {
 		public UnreservedKeyword(string text): base(text) {}
 

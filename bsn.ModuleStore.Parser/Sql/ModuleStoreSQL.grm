@@ -155,6 +155,7 @@ NONCLUSTERED = NONCLUSTERED
 NOT = NOT
 NULL = NULL
 NULLIF = NULLIF
+OBJECT_ID = OBJECT_ID
 OF = OF
 OFF = OFF
 OFFSETS = OFFSETS
@@ -300,6 +301,7 @@ XMLNAMESPACES = XMLNAMESPACES
 FOR_UPDATE = FOR{Whitespace}+UPDATE
 WITH_CHECK_OPTION = WITH{Whitespace}+CHECK{Whitespace}+OPTION
 _ACTION = '$ACTION'
+_NAMEONLY = '$NAMEONLY$'
 
 ! =============================================================================
 ! Common Terminals (Names, Literals, ...)
@@ -319,6 +321,12 @@ _ACTION = '$ACTION'
 <ColumnName> ::= Id
                | QuotedId
                | _ACTION
+
+<ObjectName> ::= Id
+               | QuotedId
+
+<ObjectNameQualified> ::= <ObjectName>
+                        | <SchemaName> '.' <ObjectName>
 
 <ColumnNameQualified> ::= <ColumnName>
                         | <TableName> '.' <ColumnName>
@@ -470,6 +478,7 @@ _ACTION = '$ACTION'
 <Statement> ::= <DDLStatement>
               | <DMLStatement>
               | <PrgStatement>
+              | _NAMEONLY <ObjectNameQualified>
 
 <DDLStatement> ::= <CreateFulltextStatement>
                  | <DropFulltextStatement>
@@ -1424,6 +1433,8 @@ _ACTION = '$ACTION'
                  | COUNT '(' <Restriction> <Expression> ')'
                  | IDENTITY '(' <TypeName> ')'
                  | IDENTITY '(' <TypeName> ',' <IntegerLiteral> ',' <IntegerLiteral> ')'
+                 | OBJECT_ID '(' StringLiteral ')'
+                 | OBJECT_ID '(' StringLiteral ',' StringLiteral ')'
                  | CURRENT_TIMESTAMP
                  | CURRENT_USER
                  | SESSION_USER

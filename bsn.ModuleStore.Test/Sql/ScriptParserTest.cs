@@ -489,6 +489,21 @@ several lines!'", 1, null);
 		}
 
 		[Test]
+		public void ParseName() {
+			ParseWithRoundtrip(NameOnlyStatement.Key+" [dbo].[SomeName]", 1, null);
+		}
+
+		[Test]
+		public void ParseObjectId1() {
+			ParseWithRoundtrip(@"SELECT OBJECT_ID('[dbo].[SomeName]')", 1, null);
+		}
+
+		[Test]
+		public void ParseObjectId2() {
+			ParseWithRoundtrip(@"SELECT OBJECT_ID(N'[dbo].[SomeName]', N'U')", 1, null);
+		}
+
+		[Test]
 		public void ParseSimpleCTESelect() {
 			ParseWithRoundtrip(@"with MyCTE(x)
 as

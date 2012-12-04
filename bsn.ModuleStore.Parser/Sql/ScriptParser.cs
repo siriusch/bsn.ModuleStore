@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 using bsn.GoldParser.Grammar;
 using bsn.GoldParser.Parser;
@@ -112,6 +113,10 @@ namespace bsn.ModuleStore.Sql {
 				throw new ParseException("The supplied SQL could not be parsed", parseMessage, ((IToken)processor.CurrentToken).Position);
 			}
 			return (IEnumerable<Statement>)processor.CurrentToken;
+		}
+
+		public static Qualified<SchemaName, ObjectName> ParseObjectName(string objectName) {
+			return Parse(NameOnlyStatement.Key+' '+objectName+";").OfType<NameOnlyStatement>().Single().ObjectName;
 		}
 
 		internal static bool TryGetBuiltinFunctionName(ref string name) {

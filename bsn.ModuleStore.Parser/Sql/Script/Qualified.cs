@@ -35,7 +35,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName
-	                                                                              where TN: SqlName {
+																																								where TN: SqlName {
 		private readonly TQ qualification;
 		private bool lockedOverride;
 		private TN name;
@@ -51,6 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ViewNameQualified> ::= <ViewName>", typeof(SchemaName), typeof(ViewName))]
 		[Rule("<XmlSchemaCollectionNameQualified> ::= <XmlSchemaCollectionName>", typeof(SchemaName), typeof(XmlSchemaCollectionName))]
 		[Rule("<TriggerNameQualified> ::= <TriggerName>", typeof(SchemaName), typeof(TriggerName))]
+		[Rule("<ObjectNameQualified> ::= <ObjectName>", typeof(SchemaName), typeof(ObjectName))]
 		public Qualified(TN name): this(null, name) {}
 
 		[Rule("<ColumnNameQualified> ::= <TableName> ~'.' <ColumnName>", typeof(SqlName), typeof(ColumnName))]
@@ -64,6 +65,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ViewNameQualified> ::= <SchemaName> ~'.' <ViewName>", typeof(SchemaName), typeof(ViewName))]
 		[Rule("<XmlSchemaCollectionNameQualified> ::= <SchemaName> ~'.' <XmlSchemaCollectionName>", typeof(SchemaName), typeof(XmlSchemaCollectionName))]
 		[Rule("<TriggerNameQualified> ::= <SchemaName> ~'.' <TriggerName>", typeof(SchemaName), typeof(TriggerName))]
+		[Rule("<ObjectNameQualified> ::= <SchemaName> ~'.' <ObjectName>", typeof(SchemaName), typeof(ObjectName))]
 		public Qualified(TQ qualification, TN name) {
 			Debug.Assert(name != null);
 			this.qualification = qualification;
@@ -196,5 +198,5 @@ namespace bsn.ModuleStore.Sql.Script {
 				return qualification;
 			}
 		}
-	                                                                              }
+	}
 }
