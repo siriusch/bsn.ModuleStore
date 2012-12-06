@@ -99,6 +99,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected override SchemaName SchemaName {
+			get {
+				return procedureName.Qualification;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteToInternal(writer, "CREATE");
 		}
@@ -109,10 +115,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override IInstallStatement CreateDropStatement() {
 			return new DropProcedureStatement(procedureName);
-		}
-
-		protected override string GetObjectSchema() {
-			return procedureName.IsQualified ? procedureName.Qualification.Value : string.Empty;
 		}
 
 		private void WriteToInternal(SqlWriter writer, string command) {

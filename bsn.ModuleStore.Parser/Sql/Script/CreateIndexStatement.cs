@@ -78,12 +78,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		protected override IInstallStatement CreateDropStatement() {
-			return new DropIndexStatement(indexName, tableName, null);
+		protected override SchemaName SchemaName {
+			get {
+				return tableName.Qualification;
+			}
 		}
 
-		protected override sealed string GetObjectSchema() {
-			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
+		protected override IInstallStatement CreateDropStatement() {
+			return new DropIndexStatement(indexName, tableName, null);
 		}
 	}
 }

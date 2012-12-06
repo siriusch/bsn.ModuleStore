@@ -33,7 +33,6 @@ using System.Collections.Generic;
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateStatement: DdlStatement {
 		private readonly List<IQualifiedName<SchemaName>> schemaQualifiedNames = new List<IQualifiedName<SchemaName>>();
-		private string forcedSchema;
 
 		public virtual bool IsPartOfSchemaDefinition {
 			get {
@@ -50,23 +49,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			set;
 		}
 
-		public string ObjectSchema {
-			get {
-				return forcedSchema ?? GetObjectSchema() ?? string.Empty;
-			}
-			internal set {
-				forcedSchema = value;
-			}
-		}
-
 		public abstract IEnumerable<IAlterableCreateStatement> CreateStatementFragments(CreateFragmentMode mode);
 
 		public override int GetHashCode() {
 			GetObjectSchemaQualifiedNames();
 			return base.GetHashCode();
 		}
-
-		protected abstract string GetObjectSchema();
 
 		internal IEnumerable<IQualifiedName<SchemaName>> GetObjectSchemaQualifiedNames() {
 			if (schemaQualifiedNames.Count == 0) {

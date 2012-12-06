@@ -30,5 +30,27 @@
 using System;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class DdlStatement: Statement {}
+	public abstract class DdlStatement: Statement {
+		private string forcedSchema;
+
+		public string ObjectSchema {
+			get {
+				if (forcedSchema != null) {
+					return forcedSchema;
+				}
+				SchemaName schemaName = SchemaName;
+				if (schemaName != null) {
+					return schemaName.Value;
+				}
+				return string.Empty;
+			}
+			internal set {
+				forcedSchema = value;
+			}
+		}
+
+		protected abstract SchemaName SchemaName {
+			get;
+		}
+	}
 }

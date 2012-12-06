@@ -60,6 +60,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected override SchemaName SchemaName {
+			get {
+				return typeName.Qualification;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("CREATE TYPE ");
@@ -76,10 +82,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override IInstallStatement CreateDropStatement() {
 			return new DropTypeStatement(typeName);
-		}
-
-		protected override string GetObjectSchema() {
-			return typeName.IsQualified ? typeName.Qualification.Value : string.Empty;
 		}
 	}
 }

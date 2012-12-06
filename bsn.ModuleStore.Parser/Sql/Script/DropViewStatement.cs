@@ -54,6 +54,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected override SchemaName SchemaName {
+			get {
+				return viewName.Qualification;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("DROP VIEW ");

@@ -84,16 +84,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected override SchemaName SchemaName {
+			get {
+				return functionName.Qualification;
+			}
+		}
+
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteToInternal(writer, "CREATE");
 		}
 
 		protected override IInstallStatement CreateDropStatement() {
 			return new DropFunctionStatement(FunctionName);
-		}
-
-		protected override sealed string GetObjectSchema() {
-			return FunctionName.IsQualified ? FunctionName.Qualification.Value : string.Empty;
 		}
 
 		protected virtual void WriteToInternal(SqlWriter writer, string command) {

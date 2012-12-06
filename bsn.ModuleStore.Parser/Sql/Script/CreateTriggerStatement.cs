@@ -112,16 +112,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected override SchemaName SchemaName {
+			get {
+				return triggerName.Qualification;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteToInternal(writer, "CREATE");
 		}
 
 		protected override IInstallStatement CreateDropStatement() {
 			return new DropTriggerStatement(triggerName);
-		}
-
-		protected override string GetObjectSchema() {
-			return triggerName.IsQualified ? triggerName.Qualification.Value : string.Empty;
 		}
 
 		protected override void Initialize(Symbol symbol, LineInfo position) {

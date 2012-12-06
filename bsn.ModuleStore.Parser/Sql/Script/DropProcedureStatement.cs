@@ -54,6 +54,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected override SchemaName SchemaName {
+			get {
+				return procedureName.Qualification;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("DROP PROCEDURE ");

@@ -90,6 +90,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected override SchemaName SchemaName {
+			get {
+				return tableName.Qualification;
+			}
+		}
+
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write("CREATE FULLTEXT INDEX ON TABLE ");
@@ -106,10 +112,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override IInstallStatement CreateDropStatement() {
 			return new DropFulltextStatement(tableName);
-		}
-
-		protected override string GetObjectSchema() {
-			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
 		}
 	}
 }

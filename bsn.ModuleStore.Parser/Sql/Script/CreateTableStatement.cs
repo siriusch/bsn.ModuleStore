@@ -74,6 +74,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected override SchemaName SchemaName {
+			get {
+				return tableName.Qualification;
+			}
+		}
+
 		public override IEnumerable<IAlterableCreateStatement> CreateStatementFragments(CreateFragmentMode mode) {
 			List<TableDefinition> definitions = new List<TableDefinition>();
 			List<TableConstraint> constraints = new List<TableConstraint>();
@@ -93,10 +99,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteTo(writer, definition => definition);
-		}
-
-		protected override string GetObjectSchema() {
-			return tableName.IsQualified ? tableName.Qualification.Value : string.Empty;
 		}
 
 		internal void WriteTo(SqlWriter writer, Func<TableDefinition, TableDefinition> definitionRewriter) {
