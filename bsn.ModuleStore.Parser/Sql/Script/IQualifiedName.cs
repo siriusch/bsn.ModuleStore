@@ -46,5 +46,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		void LockOverride();
 
 		void SetOverride(IQualified<TQ> qualificationProvider);
+
+		void WriteTo(SqlWriter writer);
 	}
 }

@@ -35,7 +35,7 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class Qualified<TQ, TN>: SqlScriptableToken, IQualifiedName<TQ> where TQ: SqlName
-																																								where TN: SqlName {
+			where TN: SqlName {
 		private readonly TQ qualification;
 		private bool lockedOverride;
 		private TN name;

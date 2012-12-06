@@ -28,26 +28,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Globalization;
+using System.IO;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class ObjectIdFunction: FunctionCall {
-		private readonly Qualified<SchemaName, ObjectName> objectName;
+		private readonly IQualifiedName<SchemaName> objectName;
 		private readonly StringLiteral objectType;
 		private readonly bool unicodeObjectName;
+
+		public ObjectIdFunction(IQualifiedName<SchemaName> objectName, bool unicodeObjectName = true, StringLiteral objectType = null) {
+			this.objectName = objectName;
+			this.objectType = objectType;
+			this.unicodeObjectName = unicodeObjectName;
+		}
 
 		[Rule("<FunctionCall> ::= ~OBJECT_ID ~'(' StringLiteral ~')'")]
 		public ObjectIdFunction(StringLiteral objectName): this(objectName, null) {}
 
 		[Rule("<FunctionCall> ::= ~OBJECT_ID ~'(' StringLiteral ~',' StringLiteral ~')'")]
-		public ObjectIdFunction(StringLiteral objectName, StringLiteral objectType) {
-			this.objectName = ScriptParser.ParseObjectName(objectName.Value);
-			unicodeObjectName = objectName.IsUnicode;
-			this.objectType = objectType;
-		}
+		public ObjectIdFunction(StringLiteral objectName, StringLiteral objectType): this(ScriptParser.ParseObjectName(objectName.Value), objectName.IsUnicode, objectType) {}
 
-		public Qualified<SchemaName, ObjectName> ObjectName {
+		public IQualified<SchemaName> ObjectName {
 			get {
 				return objectName;
 			}
@@ -61,7 +65,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write(@"OBJECT_ID(");
-			new StringLiteral(objectName.ToString(writer.Engine), unicodeObjectName, null).WriteTo(writer);
+			using (StringWriter nameWriter = new StringWriter(CultureInfo.InvariantCulture)) {
+				objectName.WriteTo(new SqlWriter(nameWriter, writer.Engine, SqlWriterMode.NoComments));
+				new StringLiteral(nameWriter.ToString(), unicodeObjectName, null).WriteTo(writer);
+			}
 			if (objectType != null) {
 				writer.Write(", ");
 				objectType.WriteTo(writer);
