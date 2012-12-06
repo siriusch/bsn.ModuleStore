@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class CreateIndexStatement: AlterableCreateStatement {
+	public abstract class CreateIndexStatement: AlterableCreateStatement, ITableBound {
 		private readonly List<IndexOption> indexOptions;
 		private readonly Qualified<SchemaName, TableName> tableName;
 		private IndexName indexName;

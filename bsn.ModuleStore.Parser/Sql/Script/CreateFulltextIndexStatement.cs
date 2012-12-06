@@ -34,7 +34,7 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateFulltextIndexStatement: AlterableCreateStatement {
+	public sealed class CreateFulltextIndexStatement: AlterableCreateStatement, ITableBound {
 		private readonly FulltextChangeTracking changeTracking;
 		private readonly List<FulltextColumn> columns;
 		private readonly Qualified<SchemaName, TableName> tableName;
@@ -84,12 +84,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
-
 		protected override SchemaName SchemaName {
 			get {
 				return tableName.Qualification;
@@ -112,6 +106,12 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override IInstallStatement CreateDropStatement() {
 			return new DropFulltextStatement(tableName);
+		}
+
+		public Qualified<SchemaName, TableName> TableName {
+			get {
+				return tableName;
+			}
 		}
 	}
 }

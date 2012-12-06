@@ -33,7 +33,7 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DropFulltextStatement: DropStatement {
+	public sealed class DropFulltextStatement: DropStatement, ITableBound {
 		private readonly Qualified<SchemaName, TableName> tableName;
 
 		[Rule("<DropFulltextStatement> ::= ~DROP ~FULLTEXT ~INDEX ~ON <TableNameQualified>")]

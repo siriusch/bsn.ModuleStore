@@ -212,8 +212,13 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				// then perform updates (if any)
+				HashSet<string> droppedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				foreach (KeyValuePair<int, IScriptableStatement[]> update in updateStatements.Where(u => u.Key > currentVersion)) {
 					foreach (IScriptableStatement statement in update.Value) {
+						DropTableStatement dropTable = statement as DropTableStatement;
+						if (dropTable != null) {
+							droppedTables.Add(dropTable.ObjectName);
+						}
 						yield return WriteStatement(statement, builder, inventory.TargetEngine);
 					}
 				}
@@ -222,7 +227,7 @@ namespace bsn.ModuleStore.Sql {
 					resolver.AddExistingObject(createTableStatement.ObjectName);
 				}
 				// try to perform the remaining actions
-				foreach (IInstallStatement statement in resolver.GetInOrder(true).Where(statement => !statement.IsTableUniqueConstraintOfTables(createdTables))) {
+				foreach (IInstallStatement statement in resolver.GetInOrder(true).Where(statement => !(statement.IsTableUniqueConstraintOfTables(createdTables) || statement.DependsOnTables(droppedTables)))) {
 					yield return WriteStatement(statement, builder, inventory.TargetEngine);
 				}
 				// execute insert statements for table setup data
@@ -259,7 +264,7 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				// finally drop objects which are no longer used
-				foreach (IScriptableStatement dropStatement in dropStatements.Where(s => !(s is AlterTableDropConstraintStatement))) {
+				foreach (IScriptableStatement dropStatement in dropStatements.Where(s => !(s is AlterTableDropConstraintStatement || s is DropTableStatement || s.DependsOnTables(droppedTables)))) {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
 			} finally {

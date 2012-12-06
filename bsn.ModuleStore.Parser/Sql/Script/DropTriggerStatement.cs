@@ -33,13 +33,17 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DropTriggerStatement: DropStatement {
+	public sealed class DropTriggerStatement: DropStatement, ITableBound {
+		private readonly Qualified<SchemaName, TableName> ownerTable;
 		private readonly Qualified<SchemaName, TriggerName> triggerName;
 
 		[Rule("<DropTriggerStatement> ::= ~DROP ~TRIGGER <TriggerNameQualified>")]
-		public DropTriggerStatement(Qualified<SchemaName, TriggerName> triggerName) {
+		public DropTriggerStatement(Qualified<SchemaName, TriggerName> triggerName): this(triggerName, null) {}
+
+		internal DropTriggerStatement(Qualified<SchemaName, TriggerName> triggerName, Qualified<SchemaName, TableName> ownerTable) {
 			Debug.Assert(triggerName != null);
 			this.triggerName = triggerName;
+			this.ownerTable = ownerTable;
 		}
 
 		public override string ObjectName {
@@ -64,6 +68,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteCommentsTo(writer);
 			writer.Write("DROP TRIGGER ");
 			writer.WriteScript(triggerName, WhitespacePadding.None);
+		}
+
+		Qualified<SchemaName, TableName> ITableBound.TableName {
+			get {
+				return ownerTable;
+			}
 		}
 	}
 }

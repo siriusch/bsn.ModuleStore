@@ -34,7 +34,7 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class DropIndexStatement: DropStatement {
+	public sealed class DropIndexStatement: DropStatement, ITableBound {
 		private readonly IndexName indexName;
 		private readonly List<IndexOption> indexOptions;
 		private readonly Qualified<SchemaName, TableName> tableName;

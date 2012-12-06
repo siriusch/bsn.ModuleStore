@@ -38,7 +38,7 @@ using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class CreateTriggerStatement: AlterableCreateStatement, ICreateOrAlterStatement {
+	public sealed class CreateTriggerStatement: AlterableCreateStatement, ICreateOrAlterStatement, ITableBound {
 		private readonly ReplicationToken replication;
 		private readonly Statement statement;
 		private readonly Qualified<SchemaName, TableName> tableName;
@@ -88,12 +88,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
-
 		public Qualified<SchemaName, TriggerName> TriggerName {
 			get {
 				return triggerName;
@@ -123,7 +117,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected override IInstallStatement CreateDropStatement() {
-			return new DropTriggerStatement(triggerName);
+			return new DropTriggerStatement(triggerName, tableName);
 		}
 
 		protected override void Initialize(Symbol symbol, LineInfo position) {
@@ -157,6 +151,12 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("command");
 			}
 			WriteToInternal(writer, command);
+		}
+
+		public Qualified<SchemaName, TableName> TableName {
+			get {
+				return tableName;
+			}
 		}
 	}
 }

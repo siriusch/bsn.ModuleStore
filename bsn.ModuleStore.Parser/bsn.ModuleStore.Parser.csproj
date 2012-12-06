@@ -84,6 +84,7 @@
     <Compile Include="Sql\Script\CreateFragmentMode.cs" />
     <Compile Include="Sql\Script\CreatePrimaryXmlIndexStatement.cs" />
     <Compile Include="Sql\Script\CreateTableFragment.cs" />
+    <Compile Include="Sql\Script\ITableBound.cs" />
     <Compile Include="Sql\Script\NameOnlyStatement.cs" />
     <Compile Include="Sql\Script\ObjectIdFunction.cs" />
     <Compile Include="Sql\Script\ObjectName.cs" />
