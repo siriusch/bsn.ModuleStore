@@ -27,39 +27,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-
-using bsn.GoldParser.Grammar;
-using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script.Tokens {
-	[Terminal("(EOF)")]
-	[Terminal("(Error)")]
-	[Terminal("(Whitespace)")]
-	[Terminal("(NewLine)")]
-	[Terminal("(--)")]
-	[Terminal("(/*)")]
-	[Terminal("(*/)")]
-	[Terminal("(")]
-	[Terminal(")")]
-	[Terminal(".")]
-	[Terminal(":")]
-	[Terminal(",")]
-	[Terminal(";")]
-	public class InsignificantToken: SqlToken {
-		[Rule("<OptionalAs> ::= ~AS")]
-		[Rule("<OptionalAs> ::=")]
-		[Rule("<Terminator> ::= ~';'")]
-		[Rule("<Terminator> ::= ~<Terminator> ~';'")]
-		[Rule("<OptionalInto> ::=")]
-		[Rule("<OptionalInto> ::= ~INTO")]
-		[Rule("<OptionalFrom> ::=")]
-		[Rule("<OptionalFrom> ::= ~FROM")]
-		public InsignificantToken() {}
-
-		internal void InitializeInternal(Symbol symbol, LineInfo lineInfo) {
-			base.Initialize(symbol, lineInfo);
-		}
+	[Terminal("(Comment)")]
+	public class CommentToken : InsignificantToken {
+		public CommentToken() {}
 	}
 }

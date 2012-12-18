@@ -51,7 +51,7 @@ namespace bsn.ModuleStore.Sql {
 		internal static CompiledGrammar GetGrammar() {
 			lock (sync) {
 				if (compiledGrammar == null) {
-					compiledGrammar = CompiledGrammar.Load(typeof(ScriptParser), "ModuleStoreSQL.cgt");
+					compiledGrammar = CompiledGrammar.Load(typeof(ScriptParser), "ModuleStoreSQL.egt");
 				}
 				return compiledGrammar;
 			}

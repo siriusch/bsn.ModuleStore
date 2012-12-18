@@ -101,6 +101,7 @@
     <Compile Include="Sql\Script\IScriptableStatement.cs" />
     <Compile Include="Sql\Script\KeywordToken.cs" />
     <Compile Include="Sql\Script\SetVariableMethodStatement.cs" />
+    <Compile Include="Sql\Script\Tokens\CommentToken.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionAbsolute.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionFirst.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionLast.cs" />
@@ -502,7 +503,7 @@
     <Compile Include="Sql\WhitespacePadding.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\ModuleStoreSQL.cgt" />
+    <EmbeddedResource Include="Sql\ModuleStoreSQL.egt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql\ModuleStoreSQL.grm" />

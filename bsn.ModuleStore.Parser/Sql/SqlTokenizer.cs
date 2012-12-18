@@ -36,6 +36,7 @@ using bsn.GoldParser.Grammar;
 using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	internal class SqlTokenizer: Tokenizer<SqlToken> {
@@ -85,17 +86,17 @@ namespace bsn.ModuleStore.Sql {
 				throw new InvalidOperationException("No terminal factory for symbol "+tokenSymbol.Name);
 			}
 			SqlToken token = factory.CreateAndInitialize(tokenSymbol, tokenPosition, text);
-			switch (tokenSymbol.Kind) {
-			case SymbolKind.CommentLine:
-			case SymbolKind.CommentStart:
+			if (token is CommentToken) {
 				pendingComments.Add(text);
-				break;
-			case SymbolKind.Terminal:
-				TransferPendingComments((int)tokenPosition.Index);
-				break;
-			case SymbolKind.End:
-				TransferPendingComments(0);
-				break;
+			} else {
+				switch (tokenSymbol.Kind) {
+				case SymbolKind.Terminal:
+					TransferPendingComments((int)tokenPosition.Index);
+					break;
+				case SymbolKind.End:
+					TransferPendingComments(0);
+					break;
+				}
 			}
 			return token;
 		}
