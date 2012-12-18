@@ -52,6 +52,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public Qualified<SchemaName, TableName> OwnerTable {
+			get {
+				return ownerTable;
+			}
+		}
+
 		public Qualified<SchemaName, TriggerName> TriggerName {
 			get {
 				return triggerName;
