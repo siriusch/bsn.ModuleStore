@@ -134,10 +134,11 @@
         WHERE [c].[object_id]=[t].[object_id]
         ORDER BY [c].[column_id] FOR XML PATH ('Column'), TYPE
       ), (
-        SELECT '['+[cc].[name]+']' AS [@Name], [cc].[definition] AS [@Definition]
+        SELECT CASE WHEN [cc].[is_system_named]=0 THEN '['+[cc].[name]+']' END AS [@Name], [cc].[definition] AS [@Definition]
         FROM [sys].[check_constraints] AS [cc]
         WHERE [cc].[parent_object_id]=[t].[object_id]
-        ORDER BY [cc].[name] FOR XML PATH ('CheckConstraint'), TYPE
+        ORDER BY CASE WHEN [cc].[is_system_named]=0 THEN [cc].[name] ELSE [cc].[definition] END
+        FOR XML PATH ('CheckConstraint'), TYPE
       ), (
         SELECT '['+[fk].[name]+']' AS [@Name], '['+[fs].[name]+'].['+[ft].[name]+']' AS [@Reference], CASE [fk].[delete_referential_action]
           WHEN 0 THEN NULL
@@ -282,14 +283,11 @@
         FOR XML PATH('Column'), TYPE
       ),
         (
-         SELECT '['+[cc].[name]+']' AS [@Name],
-            [cc].[definition] AS [@Definition]
+         SELECT CASE WHEN [cc].[is_system_named]=0 THEN '['+[cc].[name]+']' END AS [@Name], [cc].[definition] AS [@Definition]
           FROM [sys].[check_constraints] AS [cc]
           WHERE [cc].[parent_object_id] = [tt].[type_table_object_id]
-          ORDER BY [cc].[name]
-        FOR
-         XML PATH('CheckConstraint'),
-             TYPE
+          ORDER BY CASE WHEN [cc].[is_system_named]=0 THEN [cc].[name] ELSE [cc].[definition] END
+          FOR XML PATH('CheckConstraint'), TYPE
         ),
         (
         SELECT [i].[type_desc] AS [@Type], NULLIF(CONVERT(bit, [i].[is_unique]), 0) AS [@Unique],
