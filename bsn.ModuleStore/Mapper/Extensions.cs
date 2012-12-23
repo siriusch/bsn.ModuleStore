@@ -28,6 +28,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	public static class Extensions {
@@ -36,6 +38,10 @@ namespace bsn.ModuleStore.Mapper {
 				return value.Id;
 			}
 			return null;
+		}
+
+		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<TValue> values) where TValue: IIdentifiable<TKey> where TKey: struct, IEquatable<TKey> {
+			return Enumerable.ToDictionary(values, v => v.Id);
 		}
 	}
 }
