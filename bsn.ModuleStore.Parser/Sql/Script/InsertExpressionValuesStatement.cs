@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using bsn.GoldParser.Semantic;
 
@@ -41,6 +42,12 @@ namespace bsn.ModuleStore.Sql.Script {
 				: base(queryOptions, topExpression, destinationRowset, columnNames, output, queryHint) {
 			foreach (Sequence<Expression> expressions in valuesList) {
 				this.valuesList.Add(expressions.ToArray());
+			}
+		}
+
+		public IEnumerable<Expression> AllValues {
+			get {
+				return valuesList.SelectMany(v => v);
 			}
 		}
 
