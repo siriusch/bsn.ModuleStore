@@ -214,6 +214,9 @@
 			<xsl:if test="@Unique">
 				<xsl:text xml:space="preserve">UNIQUE </xsl:text>
 			</xsl:if>
+			<xsl:if test="@Type='XML'">
+				<xsl:text xml:space="preserve">PRIMARY </xsl:text>
+			</xsl:if>
 			<xsl:value-of select="@Type"/>
 			<xsl:text xml:space="preserve"> INDEX </xsl:text>
 			<xsl:value-of select="@Name"/>
@@ -231,7 +234,7 @@
 			<xsl:value-of select="$indent"/>
 			<xsl:text xml:space="preserve">  </xsl:text>
 			<xsl:value-of select="@Name" />
-			<xsl:if test="@Order">
+			<xsl:if test="@Order and ../@Type!='XML'">
 				<xsl:text xml:space="preserve"> </xsl:text>
 				<xsl:value-of select="@Order"/>
 			</xsl:if>
