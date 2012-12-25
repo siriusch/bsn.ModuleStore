@@ -214,7 +214,7 @@
 			<xsl:if test="@Unique">
 				<xsl:text xml:space="preserve">UNIQUE </xsl:text>
 			</xsl:if>
-			<xsl:if test="@Type='XML'">
+			<xsl:if test="@Type='XML' and not(@SecondaryType)">
 				<xsl:text xml:space="preserve">PRIMARY </xsl:text>
 			</xsl:if>
 			<xsl:value-of select="@Type"/>
@@ -234,7 +234,7 @@
 			<xsl:value-of select="$indent"/>
 			<xsl:text xml:space="preserve">  </xsl:text>
 			<xsl:value-of select="@Name" />
-			<xsl:if test="@Order and ../@Type!='XML'">
+			<xsl:if test="@Order">
 				<xsl:text xml:space="preserve"> </xsl:text>
 				<xsl:value-of select="@Order"/>
 			</xsl:if>
@@ -257,6 +257,22 @@
 			<xsl:value-of select="$indent"/>
 		</xsl:if>
 		<xsl:text xml:space="preserve">) </xsl:text>
+		<xsl:if test="string-length(@PrimaryName)!=0">
+			<xsl:text xml:space="preserve">
+</xsl:text>
+			<xsl:value-of select="$indent"/>
+			<xsl:text xml:space="preserve">USING XML INDEX </xsl:text>
+			<xsl:value-of select="@PrimaryName"/>
+			<xsl:text xml:space="preserve"> </xsl:text>
+		</xsl:if>
+		<xsl:if test="string-length(@SecondaryType)!=0">
+			<xsl:text xml:space="preserve">
+</xsl:text>
+			<xsl:value-of select="$indent"/>
+			<xsl:text xml:space="preserve">FOR </xsl:text>
+			<xsl:value-of select="@SecondaryType"/>
+			<xsl:text xml:space="preserve"> </xsl:text>
+		</xsl:if>
 		<xsl:if test="string-length(@Filter)!=0">
 			<xsl:text xml:space="preserve">
 </xsl:text>

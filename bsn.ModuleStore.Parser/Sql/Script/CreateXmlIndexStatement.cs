@@ -71,10 +71,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write(" ON ");
 			writer.WriteScript(TableName, WhitespacePadding.None);
 			writer.Write(" (");
-			writer.WriteScript(columnName, WhitespacePadding.None);
+			writer.IncreaseIndent();
+			writer.WriteScript(columnName, WhitespacePadding.NewlineBefore);
+			writer.DecreaseIndent();
+			writer.WriteLine();
 			writer.Write(") ");
-			writer.WriteScript(indexUsing, WhitespacePadding.None);
-			writer.WriteIndexOptions(IndexOptions, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(indexUsing, WhitespacePadding.NewlineAfter);
+			writer.WriteIndexOptions(IndexOptions, WhitespacePadding.None);
 		}
 	}
 }

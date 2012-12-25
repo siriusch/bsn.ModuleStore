@@ -29,15 +29,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:utils="urn:utils" exclude-result-prefixes="msxsl utils">
-	<xsl:output method="text" indent="no"/>
+  <xsl:output method="text" indent="no"/>
 
-	<xsl:param name="engine" />
-	<xsl:param name="azure" select="false()" />
-	<xsl:param name="version" select="10" />
+  <xsl:param name="engine" />
+  <xsl:param name="azure" select="false()" />
+  <xsl:param name="version" select="10" />
 
-	<xsl:template match="/">
-		<!-- Types 'AF', 'FS', 'FT', 'PC', 'TA' are not yet implemented! -->
-		<![CDATA[SELECT [s].[name] AS [sSchema], [o].[name] AS [sName], 
+  <xsl:template match="/">
+    <!-- Types 'AF', 'FS', 'FT', 'PC', 'TA' are not yet implemented! -->
+    <![CDATA[SELECT [s].[name] AS [sSchema], [o].[name] AS [sName], 
     CASE [o].[type] 
     WHEN 'FN' THEN
       CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
@@ -66,10 +66,15 @@
             NULLIF(CONVERT(bit, [i].[is_unique_constraint]), 0) AS [@UniqueConstraint], 
             NULLIF(CONVERT(bit, [i].[allow_page_locks]), 0) AS [@AllowPageLocks], 
             NULLIF(CONVERT(bit, [i].[allow_row_locks]), 0) AS [@AllowRowLocks], 
-            NULLIF(CONVERT(bit, [i].[is_padded]), 0) AS [@Padded], 
-            NULLIF([i].[fill_factor], 0) AS [@FillFactor], (
+            NULLIF(CONVERT(bit, [i].[is_padded]), 0) AS [@Padded], ]]>
+              <xsl:if test="$version&gt;=10">
+                <![CDATA[[i].[filter_definition] AS [@Filter], ]]>
+              </xsl:if>
+              <![CDATA[NULLIF([i].[fill_factor], 0) AS [@FillFactor],
+            [xi].[secondary_type] AS [@SecondaryType],
+            [xi].[primary_name] AS [@PrimaryName], (
                 SELECT '['+[c].[name]+']' AS [@Name], CASE 
-                    WHEN [ic].[is_included_column]=1 THEN NULL
+                    WHEN ([i].[type]=3) OR ([ic].[is_included_column]=1) THEN NULL
                     WHEN [ic].[is_descending_key]=0 THEN 'ASC'
                     WHEN [ic].[is_descending_key]=1 THEN 'DESC'
                     END AS [@Order], 
@@ -80,6 +85,11 @@
                 ORDER BY COALESCE(NULLIF([ic].[key_ordinal], 0), 9999), [c].[name] FOR XML PATH ('Column'), TYPE
             )
           FROM [sys].[indexes] AS [i]
+          LEFT JOIN (
+            SELECT [xis].[object_id], [xis].[index_id], [xis].[secondary_type_desc] AS [secondary_type], [xp].[name] as [primary_name]
+            FROM [sys].[xml_indexes] AS [xis]
+            LEFT JOIN [sys].[indexes] AS [xp] ON ([xp].[object_id]=[xis].[object_id]) AND ([xis].[using_xml_index_id] = [xp].[index_id])
+          ) [xi] ON ([i].[object_id]=[xi].[object_id]) AND ([i].[index_id]=[xi].[index_id])
           WHERE ([i].[object_id]=[o].[object_id]) AND ([i].[type]>0)
           ORDER BY [i].[is_primary_key], [i].[name] FOR XML PATH ('Index'), TYPE
         ) FOR XML PATH ('View'), TYPE
@@ -91,40 +101,40 @@
     WHEN 'U' THEN
       CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
         SELECT '['+[c].[name]+']' AS [@Name], 
-				  [cc].[definition] AS [@Definition], 
-					[cc].[is_persisted] AS [@Persisted], 
-					CASE
+          [cc].[definition] AS [@Definition], 
+          [cc].[is_persisted] AS [@Persisted], 
+          CASE
           WHEN [c].[is_computed]=1 THEN NULL
           WHEN [ct].[is_user_defined]=0 THEN [ct].[NAME]
           ELSE '['+[cts].[name]+'].['+[ct].[name]+']'
           END AS [@Type], 
-					CASE [cc].[is_persisted]
+          CASE [cc].[is_persisted]
           WHEN 0 THEN NULL
           ELSE [c].[is_nullable]
           END AS [@Nullable], 
-					CASE
+          CASE
           WHEN ([c].[max_length]=-1) AND (([ct].[name]='varchar') OR ([ct].[name]='nvarchar') OR ([ct].[name]='varbinary')) THEN 'MAX'
           WHEN ([ct].[name]='varchar') OR ([ct].[name]='varbinary') OR ([ct].[name]='char') OR ([ct].[name]='binary') THEN CONVERT(varchar(4), [c].[max_length])
           WHEN ([ct].[name]='nchar') OR ([ct].[name]='nvarchar') THEN CONVERT(varchar(4), [c].[max_length]/2)
           END AS [@Length], 
-					CASE
+          CASE
           WHEN (([ct].[name]='decimal') OR ([ct].[name]='numeric')) AND (([c].[precision]<>18) OR ([c].[scale]>0)) THEN [c].[precision]
           WHEN (([ct].[name]='real') OR ([ct].[name]='float')) AND ([c].[precision]<>[ct].[precision]) THEN [c].[precision]
           WHEN (([ct].[name]='datetime2') OR ([ct].[name]='datetimeoffset')) AND ([c].[scale]<>[ct].[scale]) THEN [c].[scale]
           END AS [@Precision], 
-					CASE
+          CASE
           WHEN (([ct].[name]='decimal') OR ([ct].[name]='numeric')) AND ([c].[scale]>0) THEN [c].[scale]
           END AS [@Scale], 
-					CASE
+          CASE
           WHEN ([ct].[name]<>'sysname') THEN [c].[collation_name] 
           END AS [@Collation], 
-					CASE [dc].[is_system_named]
+          CASE [dc].[is_system_named]
           WHEN 0 THEN '['+[dc].[name]+']'
           END AS [@DefaultName], 
-					[dc].[definition] AS [@Default], 
-					NULLIF(CONVERT(bit, [c].[is_rowguidcol]), 0) AS [@RowGuid], 
-					[ic].[seed_value] AS [@IdentitySeed], 
-					[ic].[seed_value] AS [@IdentityIncrement]
+          [dc].[definition] AS [@Default], 
+          NULLIF(CONVERT(bit, [c].[is_rowguidcol]), 0) AS [@RowGuid], 
+          [ic].[seed_value] AS [@IdentitySeed], 
+          [ic].[seed_value] AS [@IdentityIncrement]
         FROM [sys].[columns] AS [c]
         JOIN [sys].[types] AS [ct] ON [c].[user_type_id]=[ct].[user_type_id]
         JOIN [sys].[schemas] AS [cts] ON [ct].[schema_id]=[cts].[schema_id]
@@ -167,12 +177,14 @@
           NULLIF(CONVERT(bit, [i].[allow_page_locks]), 0) AS [@AllowPageLocks], 
           NULLIF(CONVERT(bit, [i].[allow_row_locks]), 0) AS [@AllowRowLocks], 
           NULLIF(CONVERT(bit, [i].[is_padded]), 0) AS [@Padded], ]]>
-		<xsl:if test="$version&gt;=10">
-			<![CDATA[[i].[filter_definition] AS [@Filter], ]]>
-		</xsl:if>
-			<![CDATA[NULLIF([i].[fill_factor], 0) AS [@FillFactor], (
+    <xsl:if test="$version&gt;=10">
+      <![CDATA[[i].[filter_definition] AS [@Filter], ]]>
+    </xsl:if>
+      <![CDATA[NULLIF([i].[fill_factor], 0) AS [@FillFactor],
+          [xi].[secondary_type] AS [@SecondaryType],
+          [xi].[primary_name] AS [@PrimaryName], (
               SELECT '['+[c].[name]+']' AS [@Name], CASE 
-                  WHEN [ic].[is_included_column]=1 THEN NULL
+                  WHEN ([i].[type]=3) OR ([ic].[is_included_column]=1) THEN NULL
                   WHEN [ic].[is_descending_key]=0 THEN 'ASC'
                   WHEN [ic].[is_descending_key]=1 THEN 'DESC'
                   END AS [@Order], 
@@ -183,6 +195,11 @@
               ORDER BY COALESCE(NULLIF([ic].[key_ordinal], 0), 9999), [c].[name] FOR XML PATH ('Column'), TYPE
           )
         FROM [sys].[indexes] AS [i]
+        LEFT JOIN (
+          SELECT [xis].[object_id], [xis].[index_id], [xis].[secondary_type_desc] AS [secondary_type], [xp].[name] as [primary_name]
+          FROM [sys].[xml_indexes] AS [xis]
+          LEFT JOIN [sys].[indexes] AS [xp] ON ([xp].[object_id]=[xis].[object_id]) AND ([xis].[using_xml_index_id] = [xp].[index_id])
+        ) [xi] ON ([i].[object_id]=[xi].[object_id]) AND ([i].[index_id]=[xi].[index_id])
         WHERE ([i].[object_id]=[o].[object_id]) AND ([i].[type]>0)
         ORDER BY [i].[is_primary_key], [i].[name] FOR XML PATH ('Index'), TYPE
       )
@@ -192,40 +209,40 @@
     END AS [xDefinition]
     FROM [sys].[objects] AS [o]
     JOIN [sys].[schemas] AS [s] ON [o].[schema_id]=[s].[schema_id]]]>
-		<xsl:if test="not($azure)">
-			<![CDATA[LEFT JOIN [sys].[extended_properties] AS [mdts] ON ([mdts].[name]='microsoft_database_tools_support') AND ([mdts].[class]='1') AND (CONVERT(bit, [mdts].[value])=1) AND ([o].[object_id]=[mdts].[major_id])]]>
-		</xsl:if>
-		<![CDATA[WHERE ]]>
-		<xsl:if test="not($azure)">
-			<![CDATA[([mdts].[class] IS NULL) AND ]]>
-		</xsl:if>
-		<![CDATA[([o].[type] IN ('AF', 'FN', 'FS', 'FT', 'IF', 'P', 'PC', 'TA', 'TF', 'TR', 'U', 'V')) AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))]]>
-		<xsl:if test="not($azure)">
-			<![CDATA[UNION ALL
+    <xsl:if test="not($azure)">
+      <![CDATA[LEFT JOIN [sys].[extended_properties] AS [mdts] ON ([mdts].[name]='microsoft_database_tools_support') AND ([mdts].[class]='1') AND (CONVERT(bit, [mdts].[value])=1) AND ([o].[object_id]=[mdts].[major_id])]]>
+    </xsl:if>
+    <![CDATA[WHERE ]]>
+    <xsl:if test="not($azure)">
+      <![CDATA[([mdts].[class] IS NULL) AND ]]>
+    </xsl:if>
+    <![CDATA[([o].[type] IN ('AF', 'FN', 'FS', 'FT', 'IF', 'P', 'PC', 'TA', 'TF', 'TR', 'U', 'V')) AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))]]>
+    <xsl:if test="not($azure)">
+      <![CDATA[UNION ALL
     SELECT [s].[name], [x].[name], (
             SELECT '['+[s].[name]+'].['+[x].[name]+']' AS [@Name], xml_schema_namespace([s].[name], [x].[name]) FOR XML PATH ('XmlSchemaCollection'), TYPE
         ) AS [xDefinition]
     FROM [sys].[xml_schema_collections] AS [x]
     JOIN [sys].[schemas] AS [s] ON [x].[schema_id]=[s].[schema_id]
     WHERE ([s].[name]<>'sys') AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))]]>
-		</xsl:if>
-		<![CDATA[UNION ALL
+    </xsl:if>
+    <![CDATA[UNION ALL
   SELECT [s].[name], [t].[name],
   (
     SELECT '['+[s].[name]+'].['+[t].[name]+']' AS [@Name],
       [bt].[name] AS [@Type],
       [t].[is_nullable] AS [@Nullable],
-			CASE
+      CASE
       WHEN ([t].[max_length]=-1) AND (([bt].[name]='varchar') OR ([bt].[name]='nvarchar') OR ([bt].[name]='varbinary')) THEN 'MAX'
       WHEN ([bt].[name]='varchar') OR ([bt].[name]='varbinary') OR ([bt].[name]='char') OR ([bt].[name]='binary') THEN CONVERT(varchar(4), [t].[max_length])
       WHEN ([bt].[name]='nchar') OR ([bt].[name]='nvarchar') THEN CONVERT(varchar(4), [t].[max_length]/2)
       END AS [@Length], 
-			CASE
+      CASE
       WHEN (([bt].[name]='decimal') OR ([bt].[name]='numeric')) AND (([t].[precision]<>18) OR ([t].[scale]>0)) THEN [t].[precision]
       WHEN (([bt].[name]='real') OR ([bt].[name]='float')) AND ([t].[precision]<>[bt].[precision]) THEN [t].[precision]
       WHEN (([bt].[name]='datetime2') OR ([bt].[name]='datetimeoffset')) AND ([t].[scale]<>[bt].[scale]) THEN [t].[scale]
       END AS [@Precision], 
-			CASE
+      CASE
       WHEN (([bt].[name]='decimal') OR ([bt].[name]='numeric')) AND ([t].[scale]>0) THEN [t].[scale]
       END AS [@Scale]
     FOR XML PATH('Type'), TYPE
@@ -234,44 +251,44 @@
   JOIN [sys].[types] AS [bt] ON [bt].[user_type_id] = [t].[system_type_id] 
   JOIN [sys].[schemas] AS [s] ON [t].[schema_id] = [s].[schema_id]
   WHERE (t.is_user_defined = 1) AND ((@sSchema IS NULL) OR (@sSchema = [s].[name]))]]>
-		<xsl:if test="$version&gt;=10">
-			<![CDATA[UNION ALL
+    <xsl:if test="$version&gt;=10">
+      <![CDATA[UNION ALL
     SELECT [s].[name], [tt].[name], (
       SELECT '['+[s].[name]+'].['+[tt].[name]+']' AS [@Name], (
         SELECT '['+[c].[name]+']' AS [@Name],
-				  [cc].[definition] AS [@Definition], 
-					[cc].[is_persisted] AS [@Persisted],
-					CASE
+          [cc].[definition] AS [@Definition], 
+          [cc].[is_persisted] AS [@Persisted],
+          CASE
           WHEN [c].[is_computed]=1 THEN NULL
           WHEN [ct].[is_user_defined]=0 THEN [ct].[NAME]
           ELSE '['+[cts].[name]+'].['+[ct].[name]+']'
           END AS [@Type], 
-					CASE [cc].[is_persisted]
+          CASE [cc].[is_persisted]
           WHEN 0 THEN NULL
           ELSE [c].[is_nullable]
           END AS [@Nullable], 
-					CASE
+          CASE
           WHEN ([c].[max_length]=-1) AND (([ct].[name]='varchar') OR ([ct].[name]='nvarchar') OR ([ct].[name]='varbinary')) THEN 'MAX'
           WHEN ([ct].[name]='varchar') OR ([ct].[name]='varbinary') OR ([ct].[name]='char') OR ([ct].[name]='binary') THEN CONVERT(varchar(4), [c].[max_length])
           WHEN ([ct].[name]='nchar') OR ([ct].[name]='nvarchar') THEN CONVERT(varchar(4), [c].[max_length]/2)
           END AS [@Length], 
-					CASE
+          CASE
           WHEN (([ct].[name]='decimal') OR ([ct].[name]='numeric')) AND (([c].[precision]<>18) OR ([c].[scale]>0)) THEN [c].[precision]
           WHEN (([ct].[name]='real') OR ([ct].[name]='float')) AND ([c].[precision]<>[ct].[precision]) THEN [c].[precision]
           WHEN (([ct].[name]='datetime2') OR ([ct].[name]='datetimeoffset')) AND ([c].[scale]<>[ct].[scale]) THEN [c].[scale]
           END AS [@Precision], 
-					CASE
+          CASE
           WHEN (([ct].[name]='decimal') OR ([ct].[name]='numeric')) AND ([c].[scale]>0) THEN [c].[scale]
           END AS [@Scale], 
-					CASE
+          CASE
           WHEN ([ct].[name]<>'sysname') THEN [c].[collation_name] 
           END AS [@Collation], CASE [dc].[is_system_named]
           WHEN 0 THEN '['+[dc].[name]+']'
           END AS [@DefaultName], 
-					[dc].[definition] AS [@Default], 
-					NULLIF(CONVERT(bit, [c].[is_rowguidcol]), 0) AS [@RowGuid], 
-					[ic].[seed_value] AS [@IdentitySeed], 
-					[ic].[seed_value] AS [@IdentityIncrement]
+          [dc].[definition] AS [@Default], 
+          NULLIF(CONVERT(bit, [c].[is_rowguidcol]), 0) AS [@RowGuid], 
+          [ic].[seed_value] AS [@IdentitySeed], 
+          [ic].[seed_value] AS [@IdentityIncrement]
         FROM [sys].[columns] AS [c]
         JOIN [sys].[types] AS [ct] ON [c].[user_type_id] = [ct].[user_type_id]
         JOIN [sys].[schemas] AS [cts] ON [ct].[schema_id] = [cts].[schema_id]
@@ -304,7 +321,7 @@
             WHERE ([ic].[object_id] = [i].[object_id]) AND ([ic].[index_id] = [i].[index_id])
             ORDER BY [ic].[key_ordinal]
           FOR XML PATH('Column'), TYPE
-				)
+        )
         FROM [sys].[indexes] AS [i]
         WHERE ([i].[object_id] = [tt].[type_table_object_id]) AND ([i].[type] > 0)
         ORDER BY [i].[is_primary_key], [i].[name]
@@ -315,6 +332,6 @@
   FROM [sys].[table_types] AS [tt] 
   JOIN [sys].[schemas] AS [s] ON [tt].[schema_id] = [s].[schema_id]
   WHERE ([tt].[is_user_defined] = 1) AND ([tt].[is_table_type] = 1) AND ((@sSchema IS NULL) OR (@sSchema = [s].[name]))]]>
-		</xsl:if>
-	</xsl:template>
+    </xsl:if>
+  </xsl:template>
 </xsl:stylesheet>

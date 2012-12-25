@@ -64,7 +64,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (HasValue) {
 				writer.Write("USING XML INDEX ");
 				writer.WriteScript(indexName, WhitespacePadding.None);
-				writer.Write(" FOR ");
+				writer.WriteLine();
+				writer.Write("FOR ");
 				writer.Write(IndexForSpecifier);
 			}
 		}
