@@ -32,7 +32,6 @@ using System;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	[Terminal("ANY")]
 	[Terminal("AS")]
 	[Terminal("AUTHORIZATION")]
 	[Terminal("BACKUP")]
@@ -151,7 +150,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("SET")]
 	[Terminal("SETUSER")]
 	[Terminal("SHUTDOWN")]
-	[Terminal("SOME")]
 	[Terminal("STATISTICS")]
 	[Terminal("SYSTEM_USER")]
 	[Terminal("TABLE")]

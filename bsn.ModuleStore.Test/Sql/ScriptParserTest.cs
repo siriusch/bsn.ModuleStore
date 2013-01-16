@@ -504,6 +504,26 @@ several lines!'", 1, null);
 		}
 
 		[Test]
+		public void ParsePredicateSubqueryAll() {
+			ParseWithRoundtrip(@"IF 1 = ALL (SELECT colA FROM tblB) PRINT 'All';", 1, null);
+		}
+
+		[Test]
+		public void ParsePredicateSubqueryAny() {
+			ParseWithRoundtrip(@"IF 1 = ANY (SELECT colA FROM tblB) PRINT 'Any';", 1, null);
+		}
+
+		[Test]
+		public void ParsePredicateSubqueryExact() {
+			ParseWithRoundtrip(@"IF 1 = (SELECT colA FROM tblB) PRINT 'Exact';", 1, null);
+		}
+
+		[Test]
+		public void ParsePredicateSubquerySome() {
+			ParseWithRoundtrip(@"IF 1 = SOME (SELECT colA FROM tblB) PRINT 'Any';", 1, null);
+		}
+
+		[Test]
 		public void ParseSimpleCTESelect() {
 			ParseWithRoundtrip(@"with MyCTE(x)
 as

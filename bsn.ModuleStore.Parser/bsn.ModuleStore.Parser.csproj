@@ -101,6 +101,7 @@
     <Compile Include="Sql\Script\IScriptableStatement.cs" />
     <Compile Include="Sql\Script\KeywordToken.cs" />
     <Compile Include="Sql\Script\SetVariableMethodStatement.cs" />
+    <Compile Include="Sql\Script\SubqueryTestExpression.cs" />
     <Compile Include="Sql\Script\Tokens\CommentToken.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionAbsolute.cs" />
     <Compile Include="Sql\Script\Tokens\CursorPositionFirst.cs" />

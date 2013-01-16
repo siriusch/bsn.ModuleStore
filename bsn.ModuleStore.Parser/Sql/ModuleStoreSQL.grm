@@ -1329,8 +1329,6 @@ _NAMEONLY = '$NAMEONLY$'
 <PredicateOr> ::= <PredicateAnd> OR <PredicateOr>
                 | <PredicateAnd>
 
-! support for SOME/ANY/ALL comparisons on sets is missing: http://msdn.microsoft.com/en-US/library/ms175064(v=SQL.90).aspx
-
 <PredicateAnd> ::= <PredicateNot> AND <PredicateAnd>
                  | <PredicateNot>
 
@@ -1346,6 +1344,15 @@ _NAMEONLY = '$NAMEONLY$'
                      | <Expression> '!=' <Expression>
                      | <Expression> '!<' <Expression>
                      | <Expression> '!>' <Expression>
+                     | <Expression> '=' <SubqueryTest>
+                     | <Expression> '>' <SubqueryTest>
+                     | <Expression> '<' <SubqueryTest>
+                     | <Expression> '>=' <SubqueryTest>
+                     | <Expression> '<=' <SubqueryTest>
+                     | <Expression> '<>' <SubqueryTest>
+                     | <Expression> '!=' <SubqueryTest>
+                     | <Expression> '!<' <SubqueryTest>
+                     | <Expression> '!>' <SubqueryTest>
                      | <Expression> BETWEEN <Expression> AND <Expression>
                      | <Expression> NOT BETWEEN <Expression> AND <Expression>
                      | <Expression> IS NULL
@@ -1357,6 +1364,10 @@ _NAMEONLY = '$NAMEONLY$'
                      | <Expression> IN <Tuple>
                      | <Expression> NOT IN <Tuple>
                      | <PredicateFunction>
+
+<SubqueryTest> ::= ANY '(' <SelectQuery> ')'
+                 | ALL '(' <SelectQuery> ')'
+                 | SOME '(' <SelectQuery> ')'
 
 <Tuple> ::= '(' <SelectQuery> ')'
           | '(' <ExpressionList> ')'

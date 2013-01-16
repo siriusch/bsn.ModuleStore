@@ -49,6 +49,15 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<PredicateCompare> ::= <Expression> '!=' <Expression>", typeof(Expression))]
 		[Rule("<PredicateCompare> ::= <Expression> '!<' <Expression>", typeof(Expression))]
 		[Rule("<PredicateCompare> ::= <Expression> '!>' <Expression>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '=' <SubqueryTest>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '>' <SubqueryTest>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '<' <SubqueryTest>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '>=' <SubqueryTest>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '<=' <SubqueryTest>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '<>' <SubqueryTest>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '!=' <SubqueryTest>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '!<' <SubqueryTest>", typeof(Expression))]
+		[Rule("<PredicateCompare> ::= <Expression> '!>' <SubqueryTest>", typeof(Expression))]
 		public PredicateBinaryOperation(T left, OperationToken operation, T right) {
 			Debug.Assert(left != null);
 			Debug.Assert(operation != null);
