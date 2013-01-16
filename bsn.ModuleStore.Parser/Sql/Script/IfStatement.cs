@@ -74,7 +74,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.IncreaseIndent();
 			writer.WriteScript(condition, WhitespacePadding.SpaceAfter);
 			writer.DecreaseIndent();
-			writer.WriteScript(thenStatement, WhitespacePadding.None);
+			if (thenStatement is StatementBlock) {
+				writer.WriteScript(thenStatement, WhitespacePadding.None);
+			} else {
+				writer.IncreaseIndent();
+				writer.WriteScript(thenStatement, WhitespacePadding.NewlineBefore);
+				writer.DecreaseIndent();
+			}
 			writer.WriteScript(elseStatement, WhitespacePadding.None, " ELSE ", null);
 		}
 	}
