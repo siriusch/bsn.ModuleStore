@@ -34,6 +34,37 @@ using NUnit.Framework;
 namespace bsn.ModuleStore.Mapper.Serialization {
 	[TestFixture]
 	public class SqlSerializerTest: AssertionHelper {
+		public class Inner {
+			[SqlColumn("id")]
+			private Guid id;
+
+			public Guid Id {
+				get {
+					return id;
+				}
+			}
+		}
+
+		public class Outer {
+			[SqlDeserialize]
+			private Inner inner;
+
+			[SqlColumn("val")]
+			private string val;
+
+			public Inner Inner {
+				get {
+					return inner;
+				}
+			}
+
+			public string Val {
+				get {
+					return val;
+				}
+			}
+		}
+
 		[Test]
 		public void Mocking() {
 			var data = new {
@@ -54,6 +85,17 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			Expect(module.SetupDate, Is.EqualTo(data.dtSetup));
 			Expect(module.UpdateDate, Is.EqualTo(data.dtUpdate));
 			Expect(module.UpdateVersion, Is.EqualTo(data.iUpdateVersion));
+		}
+
+		[Test]
+		public void MockingNestedDeserialize() {
+			var data = new {
+					id = Guid.NewGuid(),
+					val = "Value"
+			};
+			Outer outer = SqlDeserializer<Outer>.Mock(data);
+			Expect(outer.Inner.Id, Is.EqualTo(data.id));
+			Expect(outer.Val, Is.EqualTo(data.val));
 		}
 	}
 }

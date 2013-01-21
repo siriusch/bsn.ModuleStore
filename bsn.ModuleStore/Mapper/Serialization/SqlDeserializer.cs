@@ -52,59 +52,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	/// <seealso cref="ISqlDeserializationHook"/>
 	/// <typeparam name="T">The type of the object to be deserialized to.</typeparam>
 	public class SqlDeserializer<T>: SqlDeserializer {
-		private class MockContext: IDeserializerContext {
-			private readonly IDictionary<int, object> columnData;
-			private readonly IDictionary<string, int> columnIndex;
-			private XmlNameTable nameTable;
-			private XmlDocument xmlDocument;
-
-			public MockContext(IDictionary<string, object> dictionary, ISerializationTypeMapping mapping) {
-				columnIndex = mapping.Converters.ToDictionary(m => m.ColumnName, m => m.MemberIndex, StringComparer.Ordinal);
-				columnData = mapping.Converters.ToDictionary(m => m.MemberIndex, m => dictionary[m.ColumnName]);
-			}
-
-			public int GetOrdinal(string columnName) {
-				return columnIndex[columnName];
-			}
-
-			public SqlXml GetSqlXml(int column) {
-				object value = GetValue(column);
-				return (SqlXml)value;
-			}
-
-			public object GetValue(int column) {
-				return columnData[column] ?? DBNull.Value;
-			}
-
-			public XmlNameTable NameTable {
-				get {
-					if (nameTable == null) {
-						nameTable = new NameTable();
-					}
-					return nameTable;
-				}
-			}
-
-			public XmlDocument XmlDocument {
-				get {
-					if (xmlDocument == null) {
-						xmlDocument = new XmlDocument(NameTable);
-					}
-					return xmlDocument;
-				}
-			}
-
-			public object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin) {
-				throw new NotSupportedException("The mock doesn't support this operation");
-			}
-
-			public bool IsDeserialized(object obj) {
-				return false;
-			}
-
-			public void RequireDeserialization(object obj) {}
-		}
-
 		public static T Mock(object columnData, IMetadataProvider metadataProvider = null, bool callConstructor = false) {
 			Dictionary<string, object> dataDictionary = new Dictionary<string, object>(StringComparer.Ordinal);
 			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(columnData)) {
@@ -114,19 +61,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public static T Mock(IDictionary<string, object> columnData, IMetadataProvider metadataProvider = null, bool callConstructor = false) {
-			ISerializationTypeMapping mapping = ((metadataProvider != null) ? metadataProvider.SerializationTypeInfoProvider : ModuleDatabase.SerializationTypeInfoProvider).TypeMappingProvider.GetMapping(typeof(T));
-			MockContext context = new MockContext(columnData, mapping);
-			object[] buffer = new object[mapping.MemberCount];
-			foreach (IMemberConverter converter in mapping.Converters) {
-				buffer[converter.MemberIndex] = converter.ProcessFromDb(context, context.GetOrdinal(converter.ColumnName));
-			}
-			object result = CreateInstance(typeof(T), callConstructor);
-			mapping.PopulateInstanceMembers(result, buffer);
-			ISqlDeserializationHook callback = result as ISqlDeserializationHook;
-			if (callback != null) {
-				callback.AfterDeserialization();
-			}
-			return (T)result;
+			return (T)Mock(typeof(T), columnData, metadataProvider, callConstructor);
 		}
 
 		private readonly bool callConstructor;
@@ -261,6 +196,60 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
+		private class MockContext: IDeserializerContext {
+			private readonly IDictionary<int, object> columnData;
+			private readonly IDictionary<string, int> columnIndex;
+			private XmlNameTable nameTable;
+			private XmlDocument xmlDocument;
+
+			public MockContext(IDictionary<string, object> dictionary, ISerializationTypeMapping mapping) {
+				List<IMemberConverter> memberConverters = mapping.Converters.Where(m => !string.IsNullOrEmpty(m.ColumnName)).ToList();
+				columnIndex = memberConverters.ToDictionary(m => m.ColumnName, m => m.MemberIndex, StringComparer.Ordinal);
+				columnData = memberConverters.ToDictionary(m => m.MemberIndex, m => dictionary[m.ColumnName]);
+			}
+
+			public int GetOrdinal(string columnName) {
+				return columnIndex[columnName];
+			}
+
+			public SqlXml GetSqlXml(int column) {
+				object value = GetValue(column);
+				return (SqlXml)value;
+			}
+
+			public object GetValue(int column) {
+				return columnData[column] ?? DBNull.Value;
+			}
+
+			public XmlNameTable NameTable {
+				get {
+					if (nameTable == null) {
+						nameTable = new NameTable();
+					}
+					return nameTable;
+				}
+			}
+
+			public XmlDocument XmlDocument {
+				get {
+					if (xmlDocument == null) {
+						xmlDocument = new XmlDocument(NameTable);
+					}
+					return xmlDocument;
+				}
+			}
+
+			public object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin) {
+				throw new NotSupportedException("The mock doesn't support this operation");
+			}
+
+			public bool IsDeserialized(object obj) {
+				return false;
+			}
+
+			public void RequireDeserialization(object obj) {}
+		}
+
 		private static bool AreAllBufferElementsNull(object[] buffer) {
 			bool allBufferElementsNull = true;
 			for (int i = 0; (i < buffer.Length) && (allBufferElementsNull); i++) {
@@ -271,6 +260,23 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		protected static object CreateInstance(Type instanceType, bool callConstructor) {
 			return (callConstructor) ? Activator.CreateInstance(instanceType, true) : FormatterServices.GetUninitializedObject(instanceType);
+		}
+
+		protected static object Mock(Type type, IDictionary<string, object> columnData, IMetadataProvider metadataProvider = null, bool callConstructor = false) {
+			ISerializationTypeMapping mapping = ((metadataProvider != null) ? metadataProvider.SerializationTypeInfoProvider : ModuleDatabase.SerializationTypeInfoProvider).TypeMappingProvider.GetMapping(type);
+			MockContext context = new MockContext(columnData, mapping);
+			object[] buffer = new object[mapping.MemberCount];
+			foreach (IMemberConverter converter in mapping.Converters) {
+				NestedMemberConverter nestedConverter = converter as NestedMemberConverter;
+				buffer[converter.MemberIndex] = nestedConverter == null ? converter.ProcessFromDb(context, context.GetOrdinal(converter.ColumnName)) : Mock(nestedConverter.Type, columnData, metadataProvider, callConstructor);
+			}
+			object result = CreateInstance(type, callConstructor);
+			mapping.PopulateInstanceMembers(result, buffer);
+			ISqlDeserializationHook callback = result as ISqlDeserializationHook;
+			if (callback != null) {
+				callback.AfterDeserialization();
+			}
+			return result;
 		}
 
 		private readonly SortedList<int, MemberConverter> columnConverters;

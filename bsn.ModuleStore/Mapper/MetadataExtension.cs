@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -84,7 +85,7 @@ namespace bsn.ModuleStore.Mapper {
 					return root.Elements();
 				}
 			}
-			return new XElement[0];
+			return Enumerable.Empty<XElement>();
 		}
 
 		public static bool? GetBoolean(this XDocument doc, XName elementName, bool? @default) {
