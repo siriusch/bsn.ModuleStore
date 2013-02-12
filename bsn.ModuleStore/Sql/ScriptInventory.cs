@@ -55,13 +55,13 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				if (unsupportedStatements.Count > 0) {
-					// only files which have insert statements only as "unsupported statements" are assumed to be setup scripts
-					if (unsupportedStatements.TrueForAll(statement => statement is InsertStatement)) {
+					// only files which have no DDL as "unsupported statements" are assumed to be setup scripts
+					if (unsupportedStatements.TrueForAll(statement => !(statement is DdlStatement))) {
 						foreach (Statement statement in unsupportedStatements) {
 							AddAdditionalSetupStatement(statement);
 						}
 					} else {
-						Debug.WriteLine(string.Format("Script {0} contains {1} unsupported statements", fileName, unsupportedStatements.Count));
+						Trace.WriteLine(string.Format("Script {0} contains {1} unsupported statements", fileName, unsupportedStatements.Count));
 					}
 				}
 			}
