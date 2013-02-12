@@ -13,8 +13,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <KeyContainerName>bsn</KeyContainerName>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
+    <FileUpgradeFlags />
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
@@ -56,6 +55,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\bsn.ModuleStore.Parser\bsn.ModuleStore.Parser.csproj">
+      <Project>{CE71AB0F-0241-400A-82A1-F385A2D8B985}</Project>
+      <Name>bsn.ModuleStore.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\bsn.ModuleStore\bsn.ModuleStore.csproj">
+      <Project>{085ABCD3-9471-40F7-AC15-5A1F5E369714}</Project>
+      <Name>bsn.ModuleStore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Collections\" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="AssemblyHandler.cs" />
     <Compile Include="AssemblyReflectionLoader.cs" />
     <Compile Include="Commands\ConnectCommand.cs" />
@@ -70,35 +85,19 @@
     <Compile Include="Commands\UnloadCommand.cs" />
     <Compile Include="Commands\UpdateCommand.cs" />
     <Compile Include="Configurations\AssemblyConfiguration.cs" />
+    <Compile Include="Configurations\SchemaConfiguration.cs" />
     <Compile Include="Configurations\ScriptingConfiguration.cs" />
     <Compile Include="Configurations\ServerConfiguration.cs" />
     <Compile Include="Contexts\AssemblyContext.cs" />
-    <Compile Include="Contexts\ModuleStoreContext.cs" />
     <Compile Include="Contexts\DatabaseContext.cs" />
+    <Compile Include="Contexts\ModuleStoreContext.cs" />
     <Compile Include="CustomAttributeInfo.cs" />
     <Compile Include="Entities\Source.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Configurations\SchemaConfiguration.cs" />
     <Compile Include="QualifiedTypeNameInfo.cs" />
     <Compile Include="TypeMemberInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\bsn.ModuleStore.Parser\bsn.ModuleStore.Parser.csproj">
-      <Project>{CE71AB0F-0241-400A-82A1-F385A2D8B985}</Project>
-      <Name>bsn.ModuleStore.Parser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\bsn.ModuleStore\bsn.ModuleStore.csproj">
-      <Project>{085ABCD3-9471-40F7-AC15-5A1F5E369714}</Project>
-      <Name>bsn.ModuleStore</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Collections\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

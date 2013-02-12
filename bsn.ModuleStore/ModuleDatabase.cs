@@ -37,6 +37,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+using Common.Logging;
+
 using bsn.ModuleStore.Bootstrapper;
 using bsn.ModuleStore.Mapper;
 using bsn.ModuleStore.Mapper.AssemblyMetadata;
@@ -47,6 +49,7 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore {
 	public class ModuleDatabase: IDisposable, IMetadataProvider {
 		private static readonly Dictionary<Type, SqlCallInfo> knownTypes = new Dictionary<Type, SqlCallInfo>();
+		private static readonly ILog log = LogManager.GetLogger<ModuleDatabase>();
 		private static readonly SerializationTypeInfoProvider serializationTypeInfoProvider = new SerializationTypeInfoProvider();
 
 		internal static SerializationTypeInfoProvider SerializationTypeInfoProvider {
@@ -57,27 +60,31 @@ namespace bsn.ModuleStore {
 
 		[Conditional("DEBUG")]
 		private static void DebugWriteFirstLines(string sql) {
-			StringBuilder result = new StringBuilder();
-			bool hasMore;
-			using (StringReader reader = new StringReader(sql)) {
-				for (int i = 0; i < 3; i++) {
-					string line = reader.ReadLine();
-					if (line == null) {
-						break;
+			if (log.IsTraceEnabled) {
+				log.TraceFormat("Executing SQL: {0}", sql);
+			} else if (log.IsDebugEnabled) {
+				StringBuilder result = new StringBuilder("Executing SQL: ");
+				bool hasMore;
+				using (StringReader reader = new StringReader(sql)) {
+					for (int i = 0; i < 3; i++) {
+						string line = reader.ReadLine();
+						if (line == null) {
+							break;
+						}
+						line = line.Trim();
+						if (line.Length > 0) {
+							result.Append(line);
+							result.Append(' ');
+						}
 					}
-					line = line.Trim();
-					if (line.Length > 0) {
-						result.Append(line);
-						result.Append(' ');
+					hasMore = (reader.ReadLine() != null);
+				}
+				if (result.Length > 0) {
+					if (hasMore) {
+						result.Append("...");
 					}
+					log.Debug(result);
 				}
-				hasMore = (reader.ReadLine() != null);
-			}
-			if (result.Length > 0) {
-				if (hasMore) {
-					result.Append("...");
-				}
-				Debug.WriteLine(result, "Executing SQL");
 			}
 		}
 
@@ -103,7 +110,7 @@ namespace bsn.ModuleStore {
 		public ModuleDatabase(string connectionString): this(connectionString, false) {}
 
 		public ModuleDatabase(string connectionString, bool autoUpdate) {
-			Debug.WriteLine(DateTime.Now, "Start DB initialization");
+			log.Info("Initialize ModuleStore DB");
 			this.connectionString = connectionString;
 			this.autoUpdate = autoUpdate;
 			managementConnectionProvider = new ManagementConnectionProvider(connectionString, "ModuleStore");
@@ -217,7 +224,7 @@ namespace bsn.ModuleStore {
 			}
 			AssertSmoTransaction();
 			foreach (string sql in inventory.GenerateInstallSql(managementConnectionProvider.Engine, moduleSchema)) {
-				Debug.WriteLine(sql, "SQL install");
+				log.DebugFormat("SQL install: ", sql);
 				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
 					command.Transaction = managementConnectionProvider.GetTransaction();
 					command.CommandType = CommandType.Text;
@@ -257,10 +264,11 @@ namespace bsn.ModuleStore {
 						message.Append(module.Schema);
 						message.Append(" update failed for");
 						do {
-							Trace.WriteLine(enumerator.Current.Key, String.Format("SQL object {0}.{1} is {2}", module.Schema, enumerator.Current.Key.ObjectName, enumerator.Current.Value));
+							log.InfoFormat("SQL object {0}.{1} is {2}", module.Schema, enumerator.Current.Key.ObjectName, enumerator.Current.Value);
 							message.Append(' ');
 							message.Append(enumerator.Current.Key.ObjectName);
 						} while (enumerator.MoveNext());
+						log.Error(message);
 						throw new InvalidOperationException(message.ToString());
 					}
 				}

@@ -36,12 +36,15 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+using Common.Logging;
+
 using bsn.ModuleStore.Sql.Script;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	public class AssemblyInventory: InstallableInventory {
 		private static readonly Dictionary<Assembly, AssemblyInventory> cachedInventories = new Dictionary<Assembly, AssemblyInventory>();
+		private static readonly ILog log = LogManager.GetLogger<AssemblyInventory>();
 
 		public static AssemblyInventory Get(Assembly assembly) {
 			if (assembly == null) {
@@ -92,7 +95,9 @@ namespace bsn.ModuleStore.Sql {
 						SqlUpdateScriptAttribute updateScriptAttribute = attribute.Key as SqlUpdateScriptAttribute;
 						if (updateScriptAttribute != null) {
 							if (updateScriptAttribute.Version < 1) {
-								throw new InvalidOperationException(string.Format("Update script versions must be at least 1, but {0} was specified (script: {1})", updateScriptAttribute.Version, updateScriptAttribute.ManifestResourceName));
+								string message = string.Format("Update script versions must be at least 1, but {0} was specified (script: {1})", updateScriptAttribute.Version, updateScriptAttribute.ManifestResourceName);
+								log.Error(message);
+								throw new InvalidOperationException(message);
 							}
 							using (TextReader reader = OpenText(updateScriptAttribute, attribute.Value)) {
 								updateStatements.Add(updateScriptAttribute.Version, ScriptParser.Parse(reader).ToArray());
@@ -103,7 +108,7 @@ namespace bsn.ModuleStore.Sql {
 							if (exceptionMappingAttribute != null) {
 								exceptionMappings.Add(exceptionMappingAttribute);
 							} else {
-								Debug.WriteLine(attribute.Key.GetType(), "Unrecognized assembly SQL attribute");
+								log.WarnFormat("Unrecognized assembly SQL attribute {0}", attribute.Key.GetType());
 							}
 						}
 					}
@@ -275,7 +280,9 @@ namespace bsn.ModuleStore.Sql {
 
 		internal void AssertEngineVersion(int engineVersion) {
 			if (engineVersion < RequiredEngineVersion) {
-				throw new InvalidOperationException(string.Format("The assembly {0} requires a database engine version {1}, but the database engine version is {2}", assembly.AssemblyName.FullName, requiredEngineVersion, engineVersion));
+				string message = string.Format("The assembly {0} requires a database engine version {1}, but the database engine version is {2}", assembly.AssemblyName.FullName, requiredEngineVersion, engineVersion);
+				log.ErrorFormat(message);
+				throw new InvalidOperationException(message);
 			}
 		}
 
@@ -291,6 +298,7 @@ namespace bsn.ModuleStore.Sql {
 				result = assembly.GetManifestResourceStream(null, manifestStreamKey);
 			}
 			if (result == null) {
+				log.ErrorFormat("The embedded SQL file {0} was not found", attribute.ManifestResourceName);
 				throw new FileNotFoundException("The embedded SQL file was not found", attribute.ManifestResourceName);
 			}
 			return result;

@@ -34,6 +34,8 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 
+using Common.Logging;
+
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SerializationTypeInfo: ISerializationTypeInfo {
 		private static class ToArray<T> {
@@ -58,6 +60,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				return (Func<object, Array>)method.CreateDelegate(typeof(Func<object, Array>));
 			}
 		}
+
+		private static readonly ILog log = LogManager.GetLogger<SerializationTypeInfo>();
 
 		// ReSharper disable UnusedMember.Local
 		private static Array ToArrayGeneric<T>(IEnumerable enumerable) {
@@ -165,7 +169,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			try {
 				return (IList)Activator.CreateInstance(listType);
 			} catch {
-				Debug.WriteLine(listType, "Failed to create list");
+				log.WarnFormat("Failed to create list of type {0}", listType.FullName);
 				throw;
 			}
 		}

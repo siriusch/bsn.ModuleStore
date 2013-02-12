@@ -32,8 +32,12 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 
+using Common.Logging;
+
 namespace bsn.ModuleStore.Bootstrapper {
 	internal static class Bootstrap {
+		private static readonly ILog log = LogManager.GetLogger(typeof(Bootstrap));
+
 		private static void CreateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {
 			database.ManagementConnectionProvider.BeginTransaction();
 			bool commit = false;
@@ -103,33 +107,35 @@ namespace bsn.ModuleStore.Bootstrapper {
 			bool commit = false;
 			database.ManagementConnectionProvider.BeginTransaction();
 			try {
-				Debug.WriteLine(DateTime.Now, "Got ModuleStore proxy");
+				log.Trace("Got ModuleStore proxy");
 				string dbName;
 				ModuleInstanceCache cache = database.GetModuleInstanceCache(typeof(IModules).Assembly);
 				switch (GetDatabaseType(database.ConnectionString, out dbName)) {
 				case DatabaseType.Other:
+					log.ErrorFormat("The database {0} is not a ModuleStore database", dbName);
 					throw new InvalidOperationException(string.Format("The database {0} is not a ModuleStore database", dbName));
 				case DatabaseType.Empty:
-					Debug.WriteLine(DateTime.Now, "Create ModuleStore schema start");
+					log.Debug("Create ModuleStore schema start");
 					CreateModuleStoreSchema(database, dbName, cache);
-					Debug.WriteLine(DateTime.Now, "Create ModuleStore schema end");
+					log.Debug("Create ModuleStore schema end");
 					break;
 				case DatabaseType.ModuleStore:
-					Debug.WriteLine(DateTime.Now, "Update ModuleStore schema start");
+					log.Debug("Update ModuleStore schema start");
 					UpdateModuleStoreSchema(database, dbName, cache);
-					Debug.WriteLine(DateTime.Now, "Update ModuleStore schema end");
+					log.Debug("Update ModuleStore schema end");
 					break;
 				case DatabaseType.None:
+					log.ErrorFormat("The database {0} does not exist", dbName);
 					throw new InvalidOperationException(string.Format("The database {0} does not exist", dbName));
 				}
 				commit = true;
 			} catch (Exception ex) {
-				Trace.WriteLine(ex, "ModuleStore initialization failed");
+				log.Error("ModuleStore initialization failed", ex);
 				throw;
 			} finally {
 				database.ManagementConnectionProvider.EndTransaction(commit);
 			}
-			Debug.WriteLine(DateTime.Now, "End DB initialization");
+			log.Trace("ModuleStore DB initialized");
 		}
 
 		private static void UpdateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {

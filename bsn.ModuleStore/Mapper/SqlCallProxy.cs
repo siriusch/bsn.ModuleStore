@@ -40,6 +40,8 @@ using System.Runtime.Remoting.Proxies;
 using System.Xml;
 using System.Xml.XPath;
 
+using Common.Logging;
+
 using bsn.ModuleStore.Mapper.AssemblyMetadata;
 using bsn.ModuleStore.Mapper.Serialization;
 
@@ -62,36 +64,41 @@ namespace bsn.ModuleStore.Mapper {
 	/// <seealso cref="IConnectionProvider"/>
 	public class SqlCallProxy: RealProxy {
 		private struct Profiler {
+			private readonly ILog log;
 			private long call;
 			private long fetch;
 			private string name;
 			private Stopwatch sw;
 			private bool transaction;
 
-			[Conditional("DEBUG")]
+			public Profiler(ILog log): this() {
+				this.log = log;
+			}
+
 			public void End() {
 				if (sw != null) {
 					sw.Stop();
 					fetch = sw.ElapsedMilliseconds;
-					Debug.WriteLine(string.Format("Call {0}ms -- Fetch {1}ms -- Transaction: {2}", call, fetch, transaction), string.Format("Invoked SP {0}", name));
+					log.DebugFormat("SP {0} called; Duration {1}ms -- Fetch {2}ms -- Transaction: {3}", name, call, fetch, transaction);
 				}
 			}
 
-			[Conditional("DEBUG")]
 			public void Fetch() {
-				Debug.Assert(sw != null);
-				sw.Stop();
-				call = sw.ElapsedMilliseconds;
-				sw.Reset();
-				sw.Start();
+				if (sw != null) {
+					sw.Stop();
+					call = sw.ElapsedMilliseconds;
+					sw.Reset();
+					sw.Start();
+				}
 			}
 
-			[Conditional("DEBUG")]
 			public void Start(string name, bool transaction) {
-				this.name = name;
-				this.transaction = transaction;
-				sw = new Stopwatch();
-				sw.Start();
+				if (log.IsDebugEnabled) {
+					this.name = name;
+					this.transaction = transaction;
+					sw = new Stopwatch();
+					sw.Start();
+				}
 			}
 		}
 
@@ -141,6 +148,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		private readonly ISqlCallInfo callInfo;
 		private readonly IConnectionProvider connectionProvider;
+		private readonly ILog log;
 		private readonly Dictionary<MethodBase, Func<IMethodCallMessage, IMessage>> methods = new Dictionary<MethodBase, Func<IMethodCallMessage, IMessage>>(8);
 		private readonly ISerializationTypeInfoProvider serializationTypeInfoProvider;
 		private IInstanceProvider provider;
@@ -152,6 +160,7 @@ namespace bsn.ModuleStore.Mapper {
 			if (connectionProvider == null) {
 				throw new ArgumentNullException("connectionProvider");
 			}
+			log = LogManager.GetLogger(interfaceToProxy);
 			this.connectionProvider = connectionProvider;
 			serializationTypeInfoProvider = metadataProvider.SerializationTypeInfoProvider;
 			if (serializationTypeInfoProvider == null) {
@@ -172,13 +181,15 @@ namespace bsn.ModuleStore.Mapper {
 		/// Handle a method invocation. This is called by the proxy and should not be called explicitly.
 		/// </summary>
 		public override IMessage Invoke(IMessage msg) {
-			Profiler profiler = new Profiler();
+			Profiler profiler = new Profiler(log);
 			IMethodCallMessage mcm = (IMethodCallMessage)msg;
 			try {
 				Func<IMethodCallMessage, IMessage> method;
 				if (methods.TryGetValue(mcm.MethodBase, out method)) {
+					log.TraceFormat("Invoking {0} as built-in method", mcm.MethodName);
 					return method(mcm);
 				}
+				log.TraceFormat("Invoking {0} via database proxy", mcm.MethodName);
 				bool ownsConnection = false;
 				SqlConnection connection;
 				SqlTransaction transaction = connectionProvider.GetTransaction();
@@ -187,11 +198,13 @@ namespace bsn.ModuleStore.Mapper {
 					if (connection == null) {
 						throw new InvalidOperationException("The transaction is not associated to a connection");
 					}
+					log.TraceFormat("Using connection of transaction provided by connection provider");
 				} else {
 					connection = connectionProvider.GetConnection();
 					if (connection == null) {
 						throw new InvalidOperationException("No connection was returned by the provider");
 					}
+					log.TraceFormat("Acquired connection from connection provider");
 				}
 				profiler.Start(callInfo.GetProcedureName(mcm, connectionProvider.SchemaName), transaction != null);
 				SqlDataReader reader = null;
@@ -199,8 +212,9 @@ namespace bsn.ModuleStore.Mapper {
 					ownsConnection = (transaction == null) && (connection.State == ConnectionState.Closed);
 					if (ownsConnection) {
 						connection.Open();
-					} else {
-						Debug.Assert(connection.State == ConnectionState.Open);
+					}
+					if (connection.State != ConnectionState.Open) {
+						throw new InvalidOperationException("Connection is expected to be open");
 					}
 					SqlParameter returnParameter;
 					SqlParameter[] outParameters;
@@ -218,7 +232,7 @@ namespace bsn.ModuleStore.Mapper {
 						SqlCommand command = commandEnumerator.Current;
 						Debug.Assert(command != null);
 						while (commandEnumerator.MoveNext()) {
-							Debug.WriteLine(command.CommandText, "Pre-call SQL execute");
+							log.DebugFormat("Pre-call SQL execute: {0}", command.CommandText);
 							command.Transaction = transaction;
 							command.ExecuteNonQuery();
 							command = commandEnumerator.Current;
@@ -338,10 +352,12 @@ namespace bsn.ModuleStore.Mapper {
 				} finally {
 					if (ownsConnection && (connection != null)) {
 						connection.Dispose();
+						log.Trace("Disposing connection");
 					}
 					profiler.End();
 				}
 			} catch (Exception ex) {
+				log.WarnFormat("An exception occured during the call to {0}", ex, mcm.MethodName);
 				IMessage result = null;
 				SqlException sqlEx = ex as SqlException;
 				if (sqlEx != null) {

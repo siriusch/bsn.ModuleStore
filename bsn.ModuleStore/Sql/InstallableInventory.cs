@@ -34,11 +34,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using Common.Logging;
+
 using bsn.ModuleStore.Sql.Script;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class InstallableInventory: Inventory {
+		private static readonly ILog log = LogManager.GetLogger<InstallableInventory>();
+
 		private readonly List<IScriptableStatement> additionalSetupStatements = new List<IScriptableStatement>();
 
 		public IEnumerable<IScriptableStatement> AdditionalSetupStatements {
@@ -86,7 +90,7 @@ namespace bsn.ModuleStore.Sql {
 							}
 						} catch (InvalidOperationException ex) {
 							schemaResolver.TransferPendingObjects(resolver);
-							Debug.WriteLine(ex.Message, "SCHEMA CREATE trimmed");
+							log.DebugFormat("SCHEMA CREATE trimmed because of {0} - processing continues", ex, ex.Message);
 						}
 						sqlWriter.DecreaseIndent();
 						yield return writer.ToString();

@@ -31,10 +31,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
+
+using Common.Logging;
 
 namespace bsn.ModuleStore.Mapper {
 	public sealed class ManagementConnectionProvider: IConnectionProvider, IDisposable {
+		private static readonly ILog log = LogManager.GetLogger<ManagementConnectionProvider>();
+
 		private readonly bool closeConnection;
 		private readonly SqlConnection connection;
 		private readonly DatabaseEngine engine;
@@ -96,6 +99,7 @@ namespace bsn.ModuleStore.Mapper {
 					}
 				}
 			}
+			log.DebugFormat("Detected server: {0}"+engine);
 		}
 
 		public string DatabaseName {
@@ -131,10 +135,10 @@ namespace bsn.ModuleStore.Mapper {
 		public void BeginTransaction() {
 			lock (sync) {
 				if (transaction == null) {
-					Debug.WriteLine("Starting management transaction");
+					log.Debug("Starting management transaction");
 					transaction = connection.BeginTransaction();
 				} else {
-					Debug.WriteLine("Creating management transaction savepoint");
+					log.Debug("Creating management transaction savepoint");
 					string savepoint = Guid.NewGuid().ToString("N");
 					transaction.Save(savepoint);
 					savepoints.Push(savepoint);
@@ -144,17 +148,17 @@ namespace bsn.ModuleStore.Mapper {
 
 		public void EndTransaction(bool commit) {
 			lock (sync) {
-				Debug.WriteLine(string.Format("[Savepoints: {0}] [Commit: {1}]", savepoints.Count, commit), "Ending management transaction");
 				if (transaction == null) {
 					throw new InvalidOperationException("No open transaction");
 				}
+				log.DebugFormat("Ending management transaction: [Savepoints: {0}] [Commit: {1}]", savepoints.Count, commit);
 				if (savepoints.Count > 0) {
 					string savepoint = savepoints.Pop();
 					if (!commit) {
 						try {
 							transaction.Rollback(savepoint);
 						} catch (SqlException ex) {
-							Trace.WriteLine(ex, "Rollback to savepoint failed");
+							log.Error("Rollback of management transaction to savepoint failed (exception will not be re-thrown)", ex);
 						}
 					}
 				} else {
@@ -165,9 +169,12 @@ namespace bsn.ModuleStore.Mapper {
 							try {
 								transaction.Rollback();
 							} catch (SqlException ex) {
-								Trace.WriteLine(ex, "Rollback failed");
+								log.Error("Rollback of management transaction failed (exception will not be re-thrown)", ex);
 							}
 						}
+					} catch (SqlException ex) {
+						log.Error("Commit of management transaction failed", ex);
+						throw;
 					} finally {
 						try {
 							transaction.Dispose();
