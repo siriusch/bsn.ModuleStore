@@ -45,6 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		[SkipConsistencyCheck]
 		public IEnumerable<Expression> AllValues {
 			get {
 				return valuesList.SelectMany(v => v);

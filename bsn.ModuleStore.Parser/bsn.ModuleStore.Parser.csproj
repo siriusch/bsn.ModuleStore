@@ -366,6 +366,7 @@
     <Compile Include="Sql\Script\SetVariableExpressionStatement.cs" />
     <Compile Include="Sql\Script\SetVariableMethodStatement.cs" />
     <Compile Include="Sql\Script\SetVariableStatement.cs" />
+    <Compile Include="Sql\Script\SkipConsistencyCheckAttribute.cs" />
     <Compile Include="Sql\Script\Source.cs" />
     <Compile Include="Sql\Script\SourceFunctionRowset.cs" />
     <Compile Include="Sql\Script\SourceNestedSelectRowset.cs" />

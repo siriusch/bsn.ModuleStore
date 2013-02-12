@@ -59,7 +59,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		private class SqlTokenEnumeratorGetter<TInstance, TItem>: ISqlTokenEnumeratorGetter<TInstance> where TInstance: SqlToken
-		                                                                                               where TItem: SqlToken {
+				where TItem: SqlToken {
 			private readonly bool isPriority;
 			private readonly Func<TInstance, IEnumerable<TItem>> propertyGetter;
 
@@ -79,10 +79,10 @@ namespace bsn.ModuleStore.Sql.Script {
 					return isPriority;
 				}
 			}
-		                                                                                               }
+		}
 
 		private class SqlTokenMetadata<TToken, TTokenBase>: SqlTokenMetadata, ISqlTokenMetadata<TToken> where TToken: TTokenBase
-		                                                                                                where TTokenBase: SqlToken {
+				where TTokenBase: SqlToken {
 			private static IEnumerable<Type> GetInterfaces(Type type) {
 				if (type.IsInterface) {
 					yield return type;
@@ -115,7 +115,7 @@ namespace bsn.ModuleStore.Sql.Script {
 					MethodInfo propertyGetter = property.GetGetMethod();
 					if (propertyGetter != null) {
 						if (typeof(SqlToken).IsAssignableFrom(property.PropertyType)) {
-							if (propertyNames != null) {
+							if ((propertyNames != null) && (!property.IsDefined(typeof(SkipConsistencyCheckAttribute), true))) {
 								propertyNames.Add(property.Name, false);
 							}
 							Type delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), typeof(SqlToken));
@@ -131,7 +131,7 @@ namespace bsn.ModuleStore.Sql.Script {
 								if (@interface.IsGenericType && (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
 									Type enumerationType = @interface.GetGenericArguments()[0];
 									if (typeof(SqlToken).IsAssignableFrom(enumerationType)) {
-										if (propertyNames != null) {
+										if ((propertyNames != null) && (!property.IsDefined(typeof(SkipConsistencyCheckAttribute), true))) {
 											propertyNames.Add(property.Name, true);
 										}
 										Type delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), @interface);
@@ -150,7 +150,7 @@ namespace bsn.ModuleStore.Sql.Script {
 						}
 					}
 				}
-				if (propertyNames != null) {
+				if ((propertyNames != null) && (!typeof(TToken).IsDefined(typeof(SkipConsistencyCheckAttribute), true))) {
 					CheckFieldNames(propertyNames, checkFieldErrors);
 				}
 				enumeratorGetters = enumerators.ToArray();
@@ -164,19 +164,21 @@ namespace bsn.ModuleStore.Sql.Script {
 			[Conditional("DEBUG")]
 			private void CheckFieldNames(Dictionary<string, bool> propertyNames, ICollection<string> checkFieldErrors) {
 				foreach (FieldInfo field in typeof(TToken).GetFields(BindingFlags.DeclaredOnly|BindingFlags.Instance|BindingFlags.NonPublic|BindingFlags.Public)) {
-					if (typeof(SqlToken).IsAssignableFrom(field.FieldType)) {
-						if (!propertyNames.Remove(field.Name)) {
-							checkFieldErrors.Add(string.Format("Missing instance property: {0}", field.Name));
-						}
-					} else {
-						foreach (Type @interface in field.FieldType.GetInterfaces()) {
-							if (@interface.IsGenericType && (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
-								Type enumerationType = @interface.GetGenericArguments()[0];
-								if (typeof(SqlToken).IsAssignableFrom(enumerationType)) {
-									if (!propertyNames.Remove(field.Name)) {
-										checkFieldErrors.Add(string.Format("Missing enumerator property: {0}", field.Name));
+					if (!field.IsDefined(typeof(SkipConsistencyCheckAttribute), true)) {
+						if (typeof(SqlToken).IsAssignableFrom(field.FieldType)) {
+							if (!propertyNames.Remove(field.Name)) {
+								checkFieldErrors.Add(string.Format("Missing instance property: {0}", field.Name));
+							}
+						} else {
+							foreach (Type @interface in field.FieldType.GetInterfaces()) {
+								if (@interface.IsGenericType && (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
+									Type enumerationType = @interface.GetGenericArguments()[0];
+									if (typeof(SqlToken).IsAssignableFrom(enumerationType)) {
+										if (!propertyNames.Remove(field.Name)) {
+											checkFieldErrors.Add(string.Format("Missing enumerator property: {0}", field.Name));
+										}
+										break;
 									}
-									break;
 								}
 							}
 						}
@@ -234,7 +236,7 @@ namespace bsn.ModuleStore.Sql.Script {
 					}
 				}
 			}
-		                                                                                                }
+		}
 
 		private static readonly Dictionary<Type, SqlTokenMetadata> tokenMetadata = new Dictionary<Type, SqlTokenMetadata>();
 
