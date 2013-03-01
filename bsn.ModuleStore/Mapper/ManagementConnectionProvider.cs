@@ -99,7 +99,7 @@ namespace bsn.ModuleStore.Mapper {
 					}
 				}
 			}
-			log.DebugFormat("Detected server: {0}"+engine);
+			log.DebugFormat("Detected server: {0}", engine);
 		}
 
 		public string DatabaseName {
