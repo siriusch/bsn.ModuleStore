@@ -115,14 +115,20 @@ namespace bsn.ModuleStore.Bootstrapper {
 					log.ErrorFormat("The database {0} is not a ModuleStore database", dbName);
 					throw new InvalidOperationException(string.Format("The database {0} is not a ModuleStore database", dbName));
 				case DatabaseType.Empty:
+					if (!database.AutoUpdate) {
+						log.ErrorFormat("The database {0} is empty, but ModuleStore is not allowed to initialize it", dbName);
+						throw new InvalidOperationException(string.Format("The database {0} is empty", dbName));
+					}
 					log.Debug("Create ModuleStore schema start");
 					CreateModuleStoreSchema(database, dbName, cache);
 					log.Debug("Create ModuleStore schema end");
 					break;
 				case DatabaseType.ModuleStore:
-					log.Debug("Update ModuleStore schema start");
-					UpdateModuleStoreSchema(database, dbName, cache);
-					log.Debug("Update ModuleStore schema end");
+					if (database.AutoUpdate || database.ForceUpdateCheck) {
+						log.Debug("Update ModuleStore schema start");
+						UpdateModuleStoreSchema(database, dbName, cache);
+						log.Debug("Update ModuleStore schema end");
+					}
 					break;
 				case DatabaseType.None:
 					log.ErrorFormat("The database {0} does not exist", dbName);

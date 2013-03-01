@@ -51,6 +51,16 @@ namespace bsn.ModuleStore {
 		private static readonly Dictionary<Type, SqlCallInfo> knownTypes = new Dictionary<Type, SqlCallInfo>();
 		private static readonly ILog log = LogManager.GetLogger<ModuleDatabase>();
 		private static readonly SerializationTypeInfoProvider serializationTypeInfoProvider = new SerializationTypeInfoProvider();
+		private static bool forceUpdateCheckDefault = Debugger.IsAttached;
+
+		public static bool ForceUpdateCheckDefault {
+			get {
+				return forceUpdateCheckDefault;
+			}
+			set {
+				forceUpdateCheckDefault = value;
+			}
+		}
 
 		internal static SerializationTypeInfoProvider SerializationTypeInfoProvider {
 			get {
@@ -105,7 +115,7 @@ namespace bsn.ModuleStore {
 		private readonly ManagementConnectionProvider managementConnectionProvider;
 		private readonly IModules moduleStore;
 		private bool disposed;
-		private bool forceUpdateCheck = Debugger.IsAttached;
+		private bool? forceUpdateCheck;
 
 		public ModuleDatabase(string connectionString): this(connectionString, false) {}
 
@@ -132,7 +142,7 @@ namespace bsn.ModuleStore {
 
 		public bool ForceUpdateCheck {
 			get {
-				return forceUpdateCheck;
+				return forceUpdateCheck.GetValueOrDefault(forceUpdateCheckDefault);
 			}
 			set {
 				forceUpdateCheck = value;
