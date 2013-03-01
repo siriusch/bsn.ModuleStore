@@ -34,10 +34,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using Common.Logging;
+
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory: IQualified<SchemaName> {
+		private static readonly ILog log = LogManager.GetLogger<Inventory>();
+
 		private static readonly byte[] hashXor = new byte[] {0xDA, 0x39, 0xA3, 0xEE, 0x5E, 0x6B, 0x4B, 0x0D, 0x32, 0x55, 0xBF, 0xEF, 0x95, 0x60, 0x18, 0x90, 0xAF, 0xD8, 0x07, 0x09};
 
 		public static IEnumerable<KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target, DatabaseEngine engine) {
@@ -209,6 +213,11 @@ namespace bsn.ModuleStore.Sql {
 		protected IEnumerable<CreateStatement> ProcessSingleScript(TextReader scriptReader, Action<Statement> unsupportedStatementFound) {
 			List<CreateStatement> objects = new List<CreateStatement>();
 			CreateTableStatement createTable = null;
+			if (log.IsTraceEnabled) {
+				string sql = scriptReader.ReadToEnd();
+				scriptReader = new StringReader(sql);
+				log.TraceFormat("Processing SQL script:\n{0}", sql);
+			}
 			foreach (Statement statement in ScriptParser.Parse(scriptReader)) {
 				if (!((statement is SetOptionStatement) || (statement is AlterTableCheckConstraintStatementBase))) {
 					IApplicableTo<CreateTableStatement> addToTable = statement as IApplicableTo<CreateTableStatement>;

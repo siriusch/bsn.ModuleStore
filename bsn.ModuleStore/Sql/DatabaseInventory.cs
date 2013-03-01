@@ -42,6 +42,8 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 
+using Common.Logging;
+
 using bsn.ModuleStore.Mapper;
 using bsn.ModuleStore.Sql.Script;
 
@@ -52,16 +54,15 @@ namespace bsn.ModuleStore.Sql {
 			public string AsText(XPathNavigator nav) {
 				return nav.InnerXml;
 			}
-
 			// ReSharper restore UnusedMember.Local
 		}
 
+		private static readonly ILog log = LogManager.GetLogger<DatabaseInventory>();
 		private static readonly ICollection<Type> objectsToRename = new HashSet<Type> {
 				typeof(CreateFunctionStatement),
 				typeof(CreateProcedureStatement),
 				typeof(CreateTriggerStatement)
 		};
-
 		private static readonly XslCompiledTransform scripter = LoadTransform("UserObjectScripter.xslt");
 		private static readonly XslCompiledTransform userObjectList = LoadTransform("UserObjectList.xslt");
 
@@ -86,7 +87,8 @@ namespace bsn.ModuleStore.Sql {
 		private readonly string schemaName;
 		private readonly DatabaseEngine targetEngine;
 
-		public DatabaseInventory(ManagementConnectionProvider database, string schemaName): base() {
+		public DatabaseInventory(ManagementConnectionProvider database, string schemaName)
+				: base() {
 			if (database == null) {
 				throw new ArgumentNullException("database");
 			}
@@ -100,6 +102,9 @@ namespace bsn.ModuleStore.Sql {
 				using (StringWriter writer = new StringWriter()) {
 					userObjectList.Transform(new XDocument().CreateReader(), arguments, writer);
 					command.CommandText = Regex.Replace(writer.ToString(), @"\s+", " ");
+					// ReSharper disable AccessToDisposedClosure
+					log.Trace(l => l(writer.ToString()));
+					// ReSharper restore AccessToDisposedClosure
 				}
 				using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleResult)) {
 					int definitionColumn = reader.GetOrdinal("xDefinition");
@@ -110,12 +115,15 @@ namespace bsn.ModuleStore.Sql {
 						using (StringWriter writer = new StringWriter(builder)) {
 							SqlXml xml = reader.GetSqlXml(definitionColumn);
 							scripter.Transform(xml.CreateReader(), arguments, writer);
-							//							TraceXmlToSql(xml, writer);
+							// ReSharper disable AccessToDisposedClosure
+							log.Trace(l => l("Object name: {0}\n  XML: {1}\n  SQL: {2}", reader.GetString(nameColumn), xml.Value, writer));
+							// ReSharper restore AccessToDisposedClosure
 						}
 						try {
 							try {
 								using (StringReader scriptReader = new StringReader(builder.ToString())) {
 									CreateStatement objectStatement = ProcessSingleScript(scriptReader, statement => {
+										log.Error(l => l("Cannot process statement error: {0}", statement));
 										throw CreateException("Cannot process statement:", statement, TargetEngine);
 									}).SingleOrDefault(statement => objectsToRename.Any(t => t.IsAssignableFrom(statement.GetType())));
 									if (objectStatement != null) {
@@ -123,7 +131,7 @@ namespace bsn.ModuleStore.Sql {
 									}
 								}
 							} catch (ParseException ex) {
-								ex.FileName = reader.GetString(reader.GetOrdinal("sName"));
+								ex.FileName = reader.GetString(nameColumn);
 								throw;
 							}
 						} catch {
@@ -190,12 +198,6 @@ namespace bsn.ModuleStore.Sql {
 			arguments.AddParam("azure", "", targetEngine == DatabaseEngine.SqlAzure);
 			arguments.AddParam("version", "", database.EngineVersion.Major);
 			return arguments;
-		}
-
-		[Conditional("DEBUG")]
-		private void TraceXmlToSql(SqlXml xml, StringWriter writer) {
-			Trace.WriteLine(xml.Value, "Input XML");
-			Trace.WriteLine(writer.ToString(), "Output SQL");
 		}
 	}
 }
