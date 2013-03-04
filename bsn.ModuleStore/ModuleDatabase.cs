@@ -52,6 +52,7 @@ namespace bsn.ModuleStore {
 		private static readonly ILog log = LogManager.GetLogger<ModuleDatabase>();
 		private static readonly SerializationTypeInfoProvider serializationTypeInfoProvider = new SerializationTypeInfoProvider();
 		private static bool forceUpdateCheckDefault = Debugger.IsAttached;
+		private static bool ignoreDatabaseInventory;
 
 		public static bool ForceUpdateCheckDefault {
 			get {
@@ -59,6 +60,15 @@ namespace bsn.ModuleStore {
 			}
 			set {
 				forceUpdateCheckDefault = value;
+			}
+		}
+
+		public static bool IgnoreDatabaseInventory {
+			get {
+				return ignoreDatabaseInventory;
+			}
+			set {
+				ignoreDatabaseInventory = value;
 			}
 		}
 

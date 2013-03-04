@@ -101,7 +101,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 		}
 
 		private void UpdateUpToDateStatus() {
-			isUpToDate = HashWriter.HashEqual(owner.AssemblyInfo.Inventory.GetInventoryHash(owner.Owner.ManagementConnectionProvider.Engine), module.SetupHash);
+			isUpToDate = ModuleDatabase.IgnoreDatabaseInventory || HashWriter.HashEqual(owner.AssemblyInfo.Inventory.GetInventoryHash(owner.Owner.ManagementConnectionProvider.Engine), module.SetupHash);
 		}
 	}
 }
