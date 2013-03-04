@@ -105,7 +105,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public IntegerHexLiteral(string value): this(ParseBinary(value)) {}
 
-		private IntegerHexLiteral(byte[] binaryValue): base(BinaryToLong(binaryValue)) {
+		internal IntegerHexLiteral(byte[] binaryValue): base(BinaryToLong(binaryValue)) {
 			this.binaryValue = binaryValue;
 		}
 

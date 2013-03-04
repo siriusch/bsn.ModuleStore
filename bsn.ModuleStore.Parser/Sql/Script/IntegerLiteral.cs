@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class IntegerLiteral: NumericLiteral<long> {
 		public IntegerLiteral(string value): this(long.Parse(value, NumberFormatInfo.InvariantInfo)) {}
 
-		protected IntegerLiteral(long value): base(value) {}
+		internal IntegerLiteral(long value): base(value) {}
 
 		public override double AsDouble {
 			get {

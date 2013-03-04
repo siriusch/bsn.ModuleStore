@@ -45,6 +45,7 @@ using bsn.ModuleStore.Mapper.AssemblyMetadata;
 using bsn.ModuleStore.Mapper.Serialization;
 using bsn.ModuleStore.Sql;
 using bsn.ModuleStore.Sql.Script;
+using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore {
 	public class ModuleDatabase: IDisposable, IMetadataProvider {
@@ -144,6 +145,12 @@ namespace bsn.ModuleStore {
 			}
 		}
 
+		public string ConnectionString {
+			get {
+				return connectionString;
+			}
+		}
+
 		public bool Disposed {
 			get {
 				return disposed;
@@ -156,12 +163,6 @@ namespace bsn.ModuleStore {
 			}
 			set {
 				forceUpdateCheck = value;
-			}
-		}
-
-		protected internal string ConnectionString {
-			get {
-				return connectionString;
 			}
 		}
 
@@ -179,6 +180,25 @@ namespace bsn.ModuleStore {
 
 		public string CreateInstance(Assembly assembly) {
 			return GetModuleInstanceCache(assembly).CreateInstance();
+		}
+
+		public IEnumerable<string> GenerateUpdateInstanceStatements(AssemblyInventory inventory, Module module) {
+			DatabaseInventory databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
+			foreach (string sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
+				yield return sql;
+			}
+			ExecuteStatement exec = new ExecuteStatement(
+					new Qualified<SchemaName, ProcedureName>(new SchemaName(moduleStore.InstanceName), new ProcedureName("spModuleUpdate")),
+					new Optional<Sequence<ExecuteParameter>>(
+							new Sequence<ExecuteParameter>(
+									new ExecuteParameter<Literal>(new StringLiteral(module.Id.ToString(), false, null), new Optional<UnreservedKeyword>()),
+									new Sequence<ExecuteParameter>(
+											new ExecuteParameter<Literal>(new StringLiteral(inventory.AssemblyName.FullName, true, null), new Optional<UnreservedKeyword>()),
+											new Sequence<ExecuteParameter>(
+													new ExecuteParameter<Literal>(new IntegerHexLiteral(inventory.GetInventoryHash(managementConnectionProvider.Engine)), new Optional<UnreservedKeyword>()),
+													new Sequence<ExecuteParameter>(
+															new ExecuteParameter<Literal>(new IntegerLiteral(inventory.UpdateVersion), new Optional<UnreservedKeyword>())))))), new OptionToken());
+			yield return exec.ToString(module.Database.ManagementConnectionProvider.Engine);
 		}
 
 		public TI Get<TI>() where TI: IStoredProcedures {
@@ -231,30 +251,7 @@ namespace bsn.ModuleStore {
 			}
 		}
 
-		protected internal virtual IConnectionProvider CreateConnectionProvider(string schema) {
-			return new ConnectionProvider(ConnectionString, schema);
-		}
-
-		protected internal virtual void CreateInstanceDatabaseSchema(AssemblyInventory inventory, string moduleSchema) {
-			if (inventory == null) {
-				throw new ArgumentNullException("inventory");
-			}
-			if (String.IsNullOrEmpty(moduleSchema)) {
-				throw new ArgumentNullException("moduleSchema");
-			}
-			AssertSmoTransaction();
-			foreach (string sql in inventory.GenerateInstallSql(managementConnectionProvider.Engine, moduleSchema)) {
-				log.DebugFormat("SQL install: ", sql);
-				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
-					command.Transaction = managementConnectionProvider.GetTransaction();
-					command.CommandType = CommandType.Text;
-					command.CommandText = sql;
-					command.ExecuteNonQuery();
-				}
-			}
-		}
-
-		protected internal virtual void UpdateInstanceDatabaseSchema(AssemblyInventory inventory, Module module) {
+		public void UpdateInstanceDatabaseSchema(AssemblyInventory inventory, Module module) {
 			if (inventory == null) {
 				throw new ArgumentNullException("inventory");
 			}
@@ -294,6 +291,29 @@ namespace bsn.ModuleStore {
 				}
 			}
 			moduleStore.Update(module.Id, inventory.AssemblyName.FullName, inventory.GetInventoryHash(managementConnectionProvider.Engine), inventory.UpdateVersion);
+		}
+
+		protected internal virtual IConnectionProvider CreateConnectionProvider(string schema) {
+			return new ConnectionProvider(ConnectionString, schema);
+		}
+
+		protected internal virtual void CreateInstanceDatabaseSchema(AssemblyInventory inventory, string moduleSchema) {
+			if (inventory == null) {
+				throw new ArgumentNullException("inventory");
+			}
+			if (String.IsNullOrEmpty(moduleSchema)) {
+				throw new ArgumentNullException("moduleSchema");
+			}
+			AssertSmoTransaction();
+			foreach (string sql in inventory.GenerateInstallSql(managementConnectionProvider.Engine, moduleSchema)) {
+				log.DebugFormat("SQL install: ", sql);
+				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
+					command.Transaction = managementConnectionProvider.GetTransaction();
+					command.CommandType = CommandType.Text;
+					command.CommandText = sql;
+					command.ExecuteNonQuery();
+				}
+			}
 		}
 
 		protected void AssertSmoTransaction() {
