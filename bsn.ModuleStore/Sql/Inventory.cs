@@ -163,7 +163,7 @@ namespace bsn.ModuleStore.Sql {
 			SetQualification(null);
 			try {
 				using (HashWriter writer = new HashWriter()) {
-					SqlWriter sqlWriter = new SqlWriter(writer, targetEngine);
+					SqlWriter sqlWriter = new SqlWriter(writer, targetEngine, SqlWriterMode.ForHashing);
 					foreach (CreateStatement statement in objects.Values) {
 						statement.WriteTo(sqlWriter);
 					}
