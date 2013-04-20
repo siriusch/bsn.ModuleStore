@@ -29,15 +29,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:utils="urn:utils" exclude-result-prefixes="msxsl utils">
-	<xsl:output method="text" indent="no"/>
+  <xsl:output method="text" indent="no"/>
 
-	<xsl:param name="engine" />
-	<xsl:param name="azure" select="false()" />
-	<xsl:param name="version" select="10" />
+  <xsl:param name="engine" />
+  <xsl:param name="azure" select="false()" />
+  <xsl:param name="version" select="10" />
 
-	<xsl:template match="/">
-		<!-- Types 'AF', 'FS', 'FT', 'PC', 'TA' are not yet implemented! -->
-		<![CDATA[SELECT [s].[name] AS [sSchema], [o].[name] AS [sName], 
+  <xsl:template match="/">
+    <!-- Types 'AF', 'FS', 'FT', 'PC', 'TA' are not yet implemented! -->
+    <![CDATA[SELECT [s].[name] AS [sSchema], [o].[name] AS [sName], 
     CASE [o].[type] 
     WHEN 'FN' THEN
       CONVERT(xml, (SELECT '['+[s].[name]+'].['+[o].[name]+']' AS [@Name], (
@@ -67,34 +67,35 @@
             NULLIF(CONVERT(bit, [i].[allow_page_locks]), 0) AS [@AllowPageLocks], 
             NULLIF(CONVERT(bit, [i].[allow_row_locks]), 0) AS [@AllowRowLocks], 
             NULLIF(CONVERT(bit, [i].[is_padded]), 0) AS [@Padded], ]]>
-		<xsl:if test="$version&gt;=10">
-			<![CDATA[[i].[filter_definition] AS [@Filter], ]]>
-		</xsl:if>
-		<![CDATA[NULLIF([i].[fill_factor], 0) AS [@FillFactor],
-]]><xsl:if test="not($azure)">
-			<![CDATA[[xi].[secondary_type] AS [@SecondaryType],
-            [xi].[primary_name] AS [@PrimaryName], (
+    <xsl:if test="$version&gt;=10">
+      <![CDATA[[i].[filter_definition] AS [@Filter], ]]>
+    </xsl:if>
+    <![CDATA[NULLIF([i].[fill_factor], 0) AS [@FillFactor],]]>
+    <xsl:if test="not($azure)">
+      <![CDATA[[xi].[secondary_type] AS [@SecondaryType],
+            [xi].[primary_name] AS [@PrimaryName],]]>
+    </xsl:if>
+    <![CDATA[(
                 SELECT '['+[c].[name]+']' AS [@Name], CASE 
                     WHEN ([i].[type]=3) OR ([ic].[is_included_column]=1) THEN NULL
                     WHEN [ic].[is_descending_key]=0 THEN 'ASC'
                     WHEN [ic].[is_descending_key]=1 THEN 'DESC'
-                    END AS [@Order],]]>
-		</xsl:if>
-		<![CDATA[NULLIF([ic].[is_included_column], 0) AS [@IsIncludedColumn]
+                    END AS [@Order],
+                NULLIF([ic].[is_included_column], 0) AS [@IsIncludedColumn]
                 FROM [sys].[index_columns] AS [ic]
                 JOIN [sys].[columns] AS [c] ON ([ic].[column_id]=[c].[column_id]) AND ([i].[object_id]=[c].[object_id])
                 WHERE ([ic].[object_id]=[i].[object_id]) AND ([ic].[index_id]=[i].[index_id])
                 ORDER BY COALESCE(NULLIF([ic].[key_ordinal], 0), 9999), [c].[name] FOR XML PATH ('Column'), TYPE
             )
           FROM [sys].[indexes] AS [i]]]>
-		<xsl:if test="not($azure)">
-			<![CDATA[LEFT JOIN (
+    <xsl:if test="not($azure)">
+      <![CDATA[LEFT JOIN (
             SELECT [xis].[object_id], [xis].[index_id], [xis].[secondary_type_desc] AS [secondary_type], [xp].[name] as [primary_name]
             FROM [sys].[xml_indexes] AS [xis]
             LEFT JOIN [sys].[indexes] AS [xp] ON ([xp].[object_id]=[xis].[object_id]) AND ([xis].[using_xml_index_id] = [xp].[index_id])
           ) [xi] ON ([i].[object_id]=[xi].[object_id]) AND ([i].[index_id]=[xi].[index_id])]]>
-		</xsl:if>
-		<![CDATA[WHERE ([i].[object_id]=[o].[object_id]) AND ([i].[type]>0)
+    </xsl:if>
+    <![CDATA[WHERE ([i].[object_id]=[o].[object_id]) AND ([i].[type]>0)
           ORDER BY [i].[is_primary_key], [i].[name] FOR XML PATH ('Index'), TYPE
         ) FOR XML PATH ('View'), TYPE
       ))
@@ -181,34 +182,35 @@
           NULLIF(CONVERT(bit, [i].[allow_page_locks]), 0) AS [@AllowPageLocks], 
           NULLIF(CONVERT(bit, [i].[allow_row_locks]), 0) AS [@AllowRowLocks], 
           NULLIF(CONVERT(bit, [i].[is_padded]), 0) AS [@Padded], ]]>
-		<xsl:if test="$version&gt;=10">
-			<![CDATA[[i].[filter_definition] AS [@Filter], ]]>
-		</xsl:if>
-		<![CDATA[NULLIF([i].[fill_factor], 0) AS [@FillFactor],]]>
-		<xsl:if test="not($azure)">
-			<![CDATA[[xi].[secondary_type] AS [@SecondaryType],
-          [xi].[primary_name] AS [@PrimaryName], (
+    <xsl:if test="$version&gt;=10">
+      <![CDATA[[i].[filter_definition] AS [@Filter], ]]>
+    </xsl:if>
+    <![CDATA[NULLIF([i].[fill_factor], 0) AS [@FillFactor],]]>
+    <xsl:if test="not($azure)">
+      <![CDATA[[xi].[secondary_type] AS [@SecondaryType],
+          [xi].[primary_name] AS [@PrimaryName],]]>
+    </xsl:if>
+    <![CDATA[(
               SELECT '['+[c].[name]+']' AS [@Name], CASE 
                   WHEN ([i].[type]=3) OR ([ic].[is_included_column]=1) THEN NULL
                   WHEN [ic].[is_descending_key]=0 THEN 'ASC'
                   WHEN [ic].[is_descending_key]=1 THEN 'DESC'
-                  END AS [@Order],]]>
-		</xsl:if>
-		<![CDATA[NULLIF([ic].[is_included_column], 0) AS [@IsIncludedColumn]
+                  END AS [@Order],
+              NULLIF([ic].[is_included_column], 0) AS [@IsIncludedColumn]
               FROM [sys].[index_columns] AS [ic]
               JOIN [sys].[columns] AS [c] ON ([ic].[column_id]=[c].[column_id]) AND ([i].[object_id]=[c].[object_id])
               WHERE ([ic].[object_id]=[i].[object_id]) AND ([ic].[index_id]=[i].[index_id])
               ORDER BY COALESCE(NULLIF([ic].[key_ordinal], 0), 9999), [c].[name] FOR XML PATH ('Column'), TYPE
           )
         FROM [sys].[indexes] AS [i]]]>
-		<xsl:if test="not($azure)">
-			<![CDATA[LEFT JOIN (
+    <xsl:if test="not($azure)">
+      <![CDATA[LEFT JOIN (
           SELECT [xis].[object_id], [xis].[index_id], [xis].[secondary_type_desc] AS [secondary_type], [xp].[name] as [primary_name]
           FROM [sys].[xml_indexes] AS [xis]
           LEFT JOIN [sys].[indexes] AS [xp] ON ([xp].[object_id]=[xis].[object_id]) AND ([xis].[using_xml_index_id] = [xp].[index_id])
         ) [xi] ON ([i].[object_id]=[xi].[object_id]) AND ([i].[index_id]=[xi].[index_id])]]>
-		</xsl:if>
-		<![CDATA[WHERE ([i].[object_id]=[o].[object_id]) AND ([i].[type]>0)
+    </xsl:if>
+    <![CDATA[WHERE ([i].[object_id]=[o].[object_id]) AND ([i].[type]>0)
         ORDER BY [i].[is_primary_key], [i].[name] FOR XML PATH ('Index'), TYPE
       )
       FROM [sys].[tables] AS [t]
@@ -217,24 +219,24 @@
     END AS [xDefinition]
     FROM [sys].[objects] AS [o]
     JOIN [sys].[schemas] AS [s] ON [o].[schema_id]=[s].[schema_id]]]>
-		<xsl:if test="not($azure)">
-			<![CDATA[LEFT JOIN [sys].[extended_properties] AS [mdts] ON ([mdts].[name]='microsoft_database_tools_support') AND ([mdts].[class]='1') AND (CONVERT(bit, [mdts].[value])=1) AND ([o].[object_id]=[mdts].[major_id])]]>
-		</xsl:if>
-		<![CDATA[WHERE ]]>
-		<xsl:if test="not($azure)">
-			<![CDATA[([mdts].[class] IS NULL) AND ]]>
-		</xsl:if>
-		<![CDATA[([o].[type] IN ('AF', 'FN', 'FS', 'FT', 'IF', 'P', 'PC', 'TA', 'TF', 'TR', 'U', 'V')) AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))]]>
-		<xsl:if test="not($azure)">
-			<![CDATA[UNION ALL
+    <xsl:if test="not($azure)">
+      <![CDATA[LEFT JOIN [sys].[extended_properties] AS [mdts] ON ([mdts].[name]='microsoft_database_tools_support') AND ([mdts].[class]='1') AND (CONVERT(bit, [mdts].[value])=1) AND ([o].[object_id]=[mdts].[major_id])]]>
+    </xsl:if>
+    <![CDATA[WHERE ]]>
+    <xsl:if test="not($azure)">
+      <![CDATA[([mdts].[class] IS NULL) AND ]]>
+    </xsl:if>
+    <![CDATA[([o].[type] IN ('AF', 'FN', 'FS', 'FT', 'IF', 'P', 'PC', 'TA', 'TF', 'TR', 'U', 'V')) AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))]]>
+    <xsl:if test="not($azure)">
+      <![CDATA[UNION ALL
     SELECT [s].[name], [x].[name], (
             SELECT '['+[s].[name]+'].['+[x].[name]+']' AS [@Name], xml_schema_namespace([s].[name], [x].[name]) FOR XML PATH ('XmlSchemaCollection'), TYPE
         ) AS [xDefinition]
     FROM [sys].[xml_schema_collections] AS [x]
     JOIN [sys].[schemas] AS [s] ON [x].[schema_id]=[s].[schema_id]
     WHERE ([s].[name]<>'sys') AND ((@sSchema IS NULL) OR (@sSchema=[s].[name]))]]>
-		</xsl:if>
-		<![CDATA[UNION ALL
+    </xsl:if>
+    <![CDATA[UNION ALL
   SELECT [s].[name], [t].[name],
   (
     SELECT '['+[s].[name]+'].['+[t].[name]+']' AS [@Name],
@@ -259,8 +261,8 @@
   JOIN [sys].[types] AS [bt] ON [bt].[user_type_id] = [t].[system_type_id] 
   JOIN [sys].[schemas] AS [s] ON [t].[schema_id] = [s].[schema_id]
   WHERE (t.is_user_defined = 1) AND ((@sSchema IS NULL) OR (@sSchema = [s].[name]))]]>
-		<xsl:if test="$version&gt;=10">
-			<![CDATA[UNION ALL
+    <xsl:if test="$version&gt;=10">
+      <![CDATA[UNION ALL
     SELECT [s].[name], [tt].[name], (
       SELECT '['+[s].[name]+'].['+[tt].[name]+']' AS [@Name], (
         SELECT '['+[c].[name]+']' AS [@Name],
@@ -340,6 +342,6 @@
   FROM [sys].[table_types] AS [tt] 
   JOIN [sys].[schemas] AS [s] ON [tt].[schema_id] = [s].[schema_id]
   WHERE ([tt].[is_user_defined] = 1) AND ([tt].[is_table_type] = 1) AND ((@sSchema IS NULL) OR (@sSchema = [s].[name]))]]>
-		</xsl:if>
-	</xsl:template>
+    </xsl:if>
+  </xsl:template>
 </xsl:stylesheet>
