@@ -48,6 +48,10 @@ namespace bsn.ModuleStore.Sql {
 		private static CompiledGrammar compiledGrammar;
 		private static SemanticTypeActions<SqlToken> semanticActions;
 
+		internal static string GetBuiltinFunctionName(string name) {
+			return builtinFunctions[name];
+		}
+
 		internal static CompiledGrammar GetGrammar() {
 			lock (sync) {
 				if (compiledGrammar == null) {
