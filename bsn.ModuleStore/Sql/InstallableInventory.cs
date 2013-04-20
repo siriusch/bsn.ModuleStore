@@ -29,7 +29,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -58,7 +57,7 @@ namespace bsn.ModuleStore.Sql {
 			bool newSchema = !schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase);
 			StringBuilder builder = new StringBuilder(4096);
 			DependencyResolver resolver = new DependencyResolver();
-			IEnumerable<IAlterableCreateStatement> createStatements = Objects.SelectMany(o => o.CreateStatementFragments(newSchema ? CreateFragmentMode.CreateOnNewSchema : CreateFragmentMode.CreateOnExistingSchema));
+			IEnumerable<IAlterableCreateStatement> createStatements = Objects.SelectMany(o => o.CreateStatementFragments(newSchema ? CreateFragmentMode.CreateOnNewSchema : CreateFragmentMode.CreateOnExistingSchema)).Where(s => s.DoesApplyToEngine(targetEngine));
 			if (newSchema) {
 				SetQualification(null);
 				try {

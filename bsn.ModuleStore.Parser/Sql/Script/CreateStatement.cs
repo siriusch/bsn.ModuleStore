@@ -51,6 +51,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public abstract IEnumerable<IAlterableCreateStatement> CreateStatementFragments(CreateFragmentMode mode);
 
+		public virtual bool DoesApplyToEngine(DatabaseEngine engine) {
+			return true;
+		}
+
 		public override int GetHashCode() {
 			GetObjectSchemaQualifiedNames();
 			return base.GetHashCode();

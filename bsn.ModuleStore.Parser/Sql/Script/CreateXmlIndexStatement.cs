@@ -28,6 +28,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 
 using bsn.GoldParser.Semantic;
 
@@ -60,7 +61,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public override bool DoesApplyToEngine(DatabaseEngine engine) {
+			if (engine == DatabaseEngine.SqlAzure) {
+				return false;
+			}
+			return base.DoesApplyToEngine(engine);
+		}
+
 		public override void WriteTo(SqlWriter writer) {
+			Debug.Assert(writer.Engine != DatabaseEngine.SqlAzure);
 			WriteCommentsTo(writer);
 			writer.Write("CREATE ");
 			if (Primary) {

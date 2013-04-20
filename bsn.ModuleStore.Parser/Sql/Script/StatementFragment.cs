@@ -65,6 +65,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public abstract IInstallStatement CreateDropStatement();
 
+		bool IAlterableCreateStatement.DoesApplyToEngine(DatabaseEngine engine) {
+			return owner.DoesApplyToEngine(engine);
+		}
+
 		public virtual IEnumerable<T> GetReferencedObjectNames<T>() where T: SqlName {
 			return owner.GetReferencedObjectNames<T>(null);
 		}

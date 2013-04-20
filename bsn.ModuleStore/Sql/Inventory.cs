@@ -40,9 +40,8 @@ using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory: IQualified<SchemaName> {
-		private static readonly ILog log = LogManager.GetLogger<Inventory>();
-
 		private static readonly byte[] hashXor = new byte[] {0xDA, 0x39, 0xA3, 0xEE, 0x5E, 0x6B, 0x4B, 0x0D, 0x32, 0x55, 0xBF, 0xEF, 0x95, 0x60, 0x18, 0x90, 0xAF, 0xD8, 0x07, 0x09};
+		private static readonly ILog log = LogManager.GetLogger<Inventory>();
 
 		public static IEnumerable<KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target, DatabaseEngine engine) {
 			if (source == null) {
@@ -51,8 +50,8 @@ namespace bsn.ModuleStore.Sql {
 			if (target == null) {
 				throw new ArgumentNullException("target");
 			}
-			using (IEnumerator<IAlterableCreateStatement> sourceEnumerator = GetOrderedFragments(source).GetEnumerator()) {
-				using (IEnumerator<IAlterableCreateStatement> targetEnumerator = GetOrderedFragments(target).GetEnumerator()) {
+			using (IEnumerator<IAlterableCreateStatement> sourceEnumerator = GetOrderedFragments(source, engine).GetEnumerator()) {
+				using (IEnumerator<IAlterableCreateStatement> targetEnumerator = GetOrderedFragments(target, engine).GetEnumerator()) {
 					bool hasSource = sourceEnumerator.MoveNext();
 					bool hasTarget = targetEnumerator.MoveNext();
 					while (hasSource && hasTarget) {
@@ -85,8 +84,8 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		private static IEnumerable<IAlterableCreateStatement> GetOrderedFragments(Inventory source) {
-			return source.Objects.SelectMany(s => s.CreateStatementFragments(CreateFragmentMode.Alter)).OrderBy(s => s.ObjectName, StringComparer.OrdinalIgnoreCase);
+		private static IEnumerable<IAlterableCreateStatement> GetOrderedFragments(Inventory source, DatabaseEngine engine) {
+			return source.Objects.SelectMany(s => s.CreateStatementFragments(CreateFragmentMode.Alter)).Where(s => s.DoesApplyToEngine(engine)).OrderBy(s => s.ObjectName, StringComparer.OrdinalIgnoreCase);
 		}
 
 		protected static string WriteStatement(IScriptableStatement statement, StringBuilder buffer, DatabaseEngine targetEngine) {
@@ -165,7 +164,9 @@ namespace bsn.ModuleStore.Sql {
 				using (HashWriter writer = new HashWriter()) {
 					SqlWriter sqlWriter = new SqlWriter(writer, targetEngine, SqlWriterMode.ForHashing);
 					foreach (CreateStatement statement in objects.Values) {
-						statement.WriteTo(sqlWriter);
+						if (statement.DoesApplyToEngine(targetEngine)) {
+							statement.WriteTo(sqlWriter);
+						}
 					}
 					byte[] inventoryHash = writer.ToArray();
 					for (int i = 0; i < hashXor.Length; i++) {

@@ -40,5 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		IInstallStatement CreateAlterStatement();
 
 		IInstallStatement CreateDropStatement();
+
+		bool DoesApplyToEngine(DatabaseEngine engine);
 	}
 }
