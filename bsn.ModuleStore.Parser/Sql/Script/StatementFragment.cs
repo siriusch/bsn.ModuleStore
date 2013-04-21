@@ -50,6 +50,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		public virtual bool DisableUsagesForUpdate {
+			get {
+				IAlterableCreateStatement alterable = owner as IAlterableCreateStatement;
+				return (alterable != null) && alterable.DisableUsagesForUpdate;
+			}
+		}
+
 		public virtual ObjectCategory ObjectCategory {
 			get {
 				return owner.ObjectCategory;

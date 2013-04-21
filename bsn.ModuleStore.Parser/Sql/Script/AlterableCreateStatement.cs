@@ -32,6 +32,12 @@ using System.Collections.Generic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class AlterableCreateStatement: CreateStatement, IAlterableCreateStatement {
+		protected virtual bool DisableUsagesForUpdate {
+			get {
+				return false;
+			}
+		}
+
 		public override sealed IEnumerable<IAlterableCreateStatement> CreateStatementFragments(CreateFragmentMode mode) {
 			yield return this;
 		}
@@ -48,6 +54,12 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		IInstallStatement IAlterableCreateStatement.CreateAlterStatement() {
 			return CreateAlterStatement();
+		}
+
+		bool IAlterableCreateStatement.DisableUsagesForUpdate {
+			get {
+				return DisableUsagesForUpdate;
+			}
 		}
 
 		bool IAlterableCreateStatement.AlterUsingUpdateScript {

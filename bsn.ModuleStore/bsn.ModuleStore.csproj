@@ -219,6 +219,7 @@
     <Compile Include="Sql\AssemblyHandle.cs" />
     <Compile Include="Sql\AssemblyInventory.cs" />
     <Compile Include="Sql\DatabaseInventory.cs" />
+    <Compile Include="Sql\DependencyDisablingAlterStatement.cs" />
     <Compile Include="Sql\DependencyResolver.cs" />
     <Compile Include="Sql\IAssemblyHandle.cs" />
     <Compile Include="Sql\InstallableInventory.cs" />

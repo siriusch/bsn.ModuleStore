@@ -60,6 +60,22 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
+		private static IEnumerable<IInstallStatement> HandleDependendObjects(IInstallStatement statement, DatabaseInventory inventory, ICollection<string> droppedObjects) {
+			DependencyDisablingAlterStatement dependencyAltering = statement as DependencyDisablingAlterStatement;
+			if (dependencyAltering != null) {
+				ICollection<IAlterableCreateStatement> dependencyObjects = dependencyAltering.GetDependencyObjects(inventory, droppedObjects);
+				foreach (IAlterableCreateStatement dependencyObject in dependencyObjects) {
+					yield return dependencyObject.CreateDropStatement();
+				}
+				yield return statement;
+				foreach (IAlterableCreateStatement dependencyObject in dependencyObjects) {
+					yield return dependencyObject;
+				}
+			} else {
+				yield return statement;
+			}
+		}
+
 		private readonly IAssemblyHandle assembly;
 		private readonly ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> attributes;
 		private readonly List<SqlExceptionMappingAttribute> exceptionMappings = new List<SqlExceptionMappingAttribute>();
@@ -169,7 +185,7 @@ namespace bsn.ModuleStore.Sql {
 			try {
 				DependencyResolver resolver = new DependencyResolver();
 				List<IInstallStatement> alterUsingUpdateScript = new List<IInstallStatement>();
-				List<IScriptableStatement> dropStatements = new List<IScriptableStatement>();
+				Dictionary<string, IScriptableStatement> dropStatements = new Dictionary<string, IScriptableStatement>(StringComparer.OrdinalIgnoreCase);
 				HashSet<string> newObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> pair in Compare(inventory, this, inventory.TargetEngine)) {
 					switch (pair.Value) {
@@ -182,15 +198,20 @@ namespace bsn.ModuleStore.Sql {
 						} else {
 							AlterTableAddConstraintFragment alterConstraint = pair.Key as AlterTableAddConstraintFragment;
 							if (alterConstraint != null) {
-								dropStatements.Add(pair.Key.CreateDropStatement());
+								dropStatements.Add(pair.Key.ObjectName, pair.Key.CreateDropStatement());
 								resolver.Add(pair.Key);
 							} else {
-								resolver.Add(pair.Key.CreateAlterStatement());
+								if (pair.Key.DisableUsagesForUpdate) {
+									Debug.Assert(!(pair.Key is CreateTableFragment)); // we must not wrap those - but they shouldn't return true for this flag
+									resolver.Add(new DependencyDisablingAlterStatement(pair.Key.CreateAlterStatement()));
+								} else {
+									resolver.Add(pair.Key.CreateAlterStatement());
+								}
 							}
 						}
 						break;
 					case InventoryObjectDifference.SourceOnly:
-						dropStatements.Add(pair.Key.CreateDropStatement());
+						dropStatements.Add(pair.Key.ObjectName, pair.Key.CreateDropStatement());
 						break;
 					case InventoryObjectDifference.TargetOnly:
 						resolver.Add(pair.Key);
@@ -201,8 +222,11 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				StringBuilder builder = new StringBuilder(4096);
-				// first drop table constraints (if any)
-				foreach (IScriptableStatement dropStatement in dropStatements.OfType<AlterTableDropConstraintStatement>()) {
+				// first drop table constraints and indices (if any)
+				foreach (AlterTableDropConstraintStatement dropStatement in dropStatements.Values.OfType<AlterTableDropConstraintStatement>()) {
+					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
+				}
+				foreach (DropIndexStatement dropStatement in dropStatements.Values.OfType<DropIndexStatement>()) {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
 				// now perform all possible actions which do not rely on tables which are altered
@@ -213,7 +237,9 @@ namespace bsn.ModuleStore.Sql {
 						yield return WriteStatement(createTable.Owner.CreateStatementFragments(CreateFragmentMode.CreateOnExistingSchema).OfType<CreateTableFragment>().Single(), builder, inventory.TargetEngine);
 						createdTables.Add(createTable.ObjectName);
 					} else if (!statement.IsTableUniqueConstraintOfTables(createdTables)) {
-						yield return WriteStatement(statement, builder, inventory.TargetEngine);
+						foreach (IInstallStatement innerStatement in HandleDependendObjects(statement, inventory, dropStatements.Keys)) {
+							yield return WriteStatement(innerStatement, builder, inventory.TargetEngine);
+						}
 					}
 				}
 				// then perform updates (if any)
@@ -233,7 +259,9 @@ namespace bsn.ModuleStore.Sql {
 				}
 				// try to perform the remaining actions
 				foreach (IInstallStatement statement in resolver.GetInOrder(true).Where(statement => !(statement.IsTableUniqueConstraintOfTables(createdTables) || statement.DependsOnTables(droppedTables)))) {
-					yield return WriteStatement(statement, builder, inventory.TargetEngine);
+					foreach (IInstallStatement innerStatement in HandleDependendObjects(statement, inventory, dropStatements.Keys)) {
+						yield return WriteStatement(innerStatement, builder, inventory.TargetEngine);
+					}
 				}
 				// execute insert statements for table setup data
 				if (AdditionalSetupStatements.Any()) {
@@ -269,7 +297,7 @@ namespace bsn.ModuleStore.Sql {
 					}
 				}
 				// finally drop objects which are no longer used
-				foreach (IScriptableStatement dropStatement in dropStatements.Where(s => !(s is AlterTableDropConstraintStatement || s is DropTableStatement || s.DependsOnTables(droppedTables)))) {
+				foreach (IScriptableStatement dropStatement in dropStatements.Values.Where(s => !(s is AlterTableDropConstraintStatement || s is DropTableStatement || s is DropIndexStatement || s.DependsOnTables(droppedTables)))) {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
 			} finally {

@@ -60,6 +60,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
+		protected override bool DisableUsagesForUpdate {
+			get {
+				return true;
+			}
+		}
+
 		protected override SchemaName SchemaName {
 			get {
 				return typeName.Qualification;
@@ -71,14 +77,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write("CREATE TYPE ");
 			writer.WriteScript(typeName, WhitespacePadding.SpaceAfter);
 		}
-
-		// ReSharper disable RedundantOverridenMember
-		protected override IInstallStatement CreateAlterStatement() {
-			// TODO: implement the full ALTER replacement sequence
-			// See http://stackoverflow.com/questions/1383494/alter-user-defined-type-in-sql-server#answer-1383509
-			return base.CreateAlterStatement();
-		}
-		// ReSharper restore RedundantOverridenMember
 
 		protected override IInstallStatement CreateDropStatement() {
 			return new DropTypeStatement(typeName);

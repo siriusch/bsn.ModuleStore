@@ -33,6 +33,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
+		bool DisableUsagesForUpdate {
+			get;
+		}
+
 		ObjectCategory ObjectCategory {
 			get;
 		}
