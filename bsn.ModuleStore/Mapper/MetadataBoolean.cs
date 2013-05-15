@@ -46,6 +46,10 @@ namespace bsn.ModuleStore.Mapper {
 			if (string.IsNullOrEmpty(value)) {
 				return null;
 			}
+			bool result;
+			if (bool.TryParse(value, out result)) {
+				return result;
+			}
 			return XmlConvert.ToBoolean(value);
 		}
 	}

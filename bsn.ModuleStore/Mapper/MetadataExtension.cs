@@ -93,6 +93,10 @@ namespace bsn.ModuleStore.Mapper {
 			if (result == null) {
 				return @default;
 			}
+			bool resultValue;
+			if (bool.TryParse(result, out resultValue)) {
+				return resultValue;
+			}
 			return XmlConvert.ToBoolean(result);
 		}
 
