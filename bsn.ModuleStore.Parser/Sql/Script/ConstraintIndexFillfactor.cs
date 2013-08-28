@@ -54,7 +54,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("WITH FILLFACTOR=");
+			writer.Write(" WITH FILLFACTOR=");
 			writer.WriteScript(fillfactor, WhitespacePadding.None);
 		}
 	}

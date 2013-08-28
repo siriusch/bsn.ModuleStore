@@ -101,6 +101,29 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
+		public void TableWithFillFactor() {
+			ParseWithRoundtrip(@"CREATE TABLE [Acl].[tblACE] ( 
+ [idAce] bigint IDENTITY(1, 1) NOT NULL, 
+ [uidObject] uniqueidentifier NOT NULL, 
+ [uidSubject] uniqueidentifier NOT NULL, 
+ [iKind] tinyint NOT NULL, 
+ [iLevel] tinyint NOT NULL, 
+ [idRight] smallint NOT NULL, 
+ [timestamp] timestamp NOT NULL, 
+ CONSTRAINT [PK_tblACE] PRIMARY KEY CLUSTERED ( 
+    [idAce] ASC 
+) WITH FILLFACTOR = 90, 
+ CONSTRAINT [UK_tblACE_uidSubject_uidObject_iKind_idRight] UNIQUE NONCLUSTERED ( 
+    [uidSubject] ASC, 
+    [uidObject] ASC, 
+    [iKind] ASC, 
+    [idRight] ASC 
+) WITH FILLFACTOR = 90, 
+ CONSTRAINT [FK_tblACE_tblRight] FOREIGN KEY ([idRight]) REFERENCES [Acl].[tblRight] ([idRight]) ON DELETE CASCADE 
+);", 1, null);
+		}
+
+		[Test]
 		public void BeginTransaction() {
 			ParseWithRoundtrip(@"BEGIN TRAN", 1, null);
 		}
