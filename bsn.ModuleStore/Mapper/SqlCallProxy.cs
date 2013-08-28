@@ -297,6 +297,7 @@ namespace bsn.ModuleStore.Mapper {
 										reader = command.ExecuteReader(CommandBehavior.SingleResult); // no using() or try...finally required, since the "reader" is already handled below
 										profiler.Fetch();
 										if (!reader.HasRows) {
+											reader.Read(); // this makes sure that any pending exception is thrown - see http://connect.microsoft.com/VisualStudio/feedback/details/659751/sqlcommand-executereader-not-throwing-exception-on-erroneous-tsql-statement
 											if (procInfo.DeserializeReturnNullOnEmptyReader) {
 												returnValue = null;
 											} else if (returnTypeInfo.Type.IsArray) {
