@@ -35,11 +35,11 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class TableUniqueConstraintBase: TableConstraint {
 		private readonly Clustered clustered;
-		private readonly ConstraintIndex constraintIndex;
+		private readonly IndexOptionGroup indexOptionGroup;
 		private readonly List<IndexColumn> indexColumns;
 
-		protected TableUniqueConstraintBase(ConstraintName constraintName, ConstraintClusterToken clustered, Sequence<IndexColumn> indexColumns, ConstraintIndex constraintIndex): base(constraintName) {
-			this.constraintIndex = constraintIndex;
+		protected TableUniqueConstraintBase(ConstraintName constraintName, ConstraintClusterToken clustered, Sequence<IndexColumn> indexColumns, IndexOptionGroup indexOptionGroup): base(constraintName) {
+			this.indexOptionGroup = indexOptionGroup;
 			this.clustered = clustered.Clustered;
 			this.indexColumns = indexColumns.ToList();
 		}
@@ -50,9 +50,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public ConstraintIndex ConstraintIndex {
+		public IndexOptionGroup IndexOptionGroup {
 			get {
-				return constraintIndex;
+				return indexOptionGroup;
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');
-			writer.WriteScript(constraintIndex, WhitespacePadding.None);
+			writer.WriteScript(indexOptionGroup, WhitespacePadding.None);
 		}
 	}
 }

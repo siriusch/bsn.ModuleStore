@@ -268,10 +268,12 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		internal void WriteIndexOptions(IEnumerable<IndexOption> indexOptions, WhitespacePadding itemPadding) {
-			if (indexOptions.Any(o => !((engine == DatabaseEngine.SqlAzure) && azureUnsupportedIndexOption.Contains(o.Key.Value)))) {
+			// ignore any unwanted options; either unsupported by Azure or FILLFACTOR during hashing
+			ICollection<IndexOption> indexOptionsToRender = indexOptions.Where(o => !(((engine == DatabaseEngine.SqlAzure) && azureUnsupportedIndexOption.Contains(o.Key.Value)) || ((mode == SqlWriterMode.ForHashing) && o.Key.Value.Equals("FILLFACTOR", StringComparison.OrdinalIgnoreCase)))).ToList();
+			if (indexOptionsToRender.Count > 0) {
 				PaddingBefore(itemPadding);
 				Write("WITH (");
-				WriteScriptSequence(indexOptions, WhitespacePadding.None, ", ");
+				WriteScriptSequence(indexOptionsToRender, WhitespacePadding.None, ", ");
 				Write(')');
 				PaddingAfter(itemPadding);
 			}

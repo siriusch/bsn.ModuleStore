@@ -28,11 +28,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
+
+using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class ConstraintIndex: SqlScriptableToken, IOptional {
-		public abstract bool HasValue {
-			get;
+	public class IndexOptionGroupList: IndexOptionGroup {
+		private readonly List<IndexOption> indexOptions;
+
+		[Rule("<IndexOptionGroup> ::= ~WITH ~'(' <IndexOptionList> ~')'")]
+		public IndexOptionGroupList(Sequence<IndexOption> indexOptions) {
+			this.indexOptions = indexOptions.ToList();
+		}
+
+		public override bool HasValue {
+			get {
+				return indexOptions.Count > 0;
+			}
+		}
+
+		public IEnumerable<IndexOption> IndexOptions {
+			get {
+				return indexOptions;
+			}
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			writer.WriteIndexOptions(indexOptions, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

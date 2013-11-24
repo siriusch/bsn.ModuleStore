@@ -36,16 +36,16 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class DropIndexStatement: DropStatement, ITableBound {
 		private readonly IndexName indexName;
-		private readonly List<IndexOption> indexOptions;
+		private readonly IndexOptionGroup indexOptions;
 		private readonly Qualified<SchemaName, TableName> tableName;
 
 		[Rule("<DropIndexStatement> ::= ~DROP ~INDEX <IndexName> ~ON <TableNameQualified> <IndexOptionGroup>")]
-		public DropIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, Optional<Sequence<IndexOption>> indexOptions) {
+		public DropIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, IndexOptionGroup indexOptions) {
 			Debug.Assert(indexName != null);
 			Debug.Assert(tableName != null);
 			this.indexName = indexName;
 			this.tableName = tableName;
-			this.indexOptions = indexOptions.ToList();
+			this.indexOptions = indexOptions;
 		}
 
 		public IndexName IndexName {
@@ -54,7 +54,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public IEnumerable<IndexOption> IndexOptions {
+		public IndexOptionGroup IndexOptions {
 			get {
 				return indexOptions;
 			}
@@ -84,7 +84,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(indexName, WhitespacePadding.None);
 			writer.Write(" ON ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
-			writer.WriteIndexOptions(indexOptions, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(indexOptions, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

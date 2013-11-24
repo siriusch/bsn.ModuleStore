@@ -34,10 +34,10 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class ColumnUniqueConstraintBase: ColumnNamedConstraintBase {
 		private readonly Clustered clustered;
-		private readonly ConstraintIndex constraintIndex;
+		private readonly IndexOptionGroup indexOptionGroup;
 
-		protected ColumnUniqueConstraintBase(ConstraintName constraintName, ConstraintClusterToken clustered, ConstraintIndex constraintIndex): base(constraintName) {
-			this.constraintIndex = constraintIndex;
+		protected ColumnUniqueConstraintBase(ConstraintName constraintName, ConstraintClusterToken clustered, IndexOptionGroup indexOptionGroup): base(constraintName) {
+			this.indexOptionGroup = indexOptionGroup;
 			this.clustered = clustered.Clustered;
 		}
 
@@ -47,9 +47,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public ConstraintIndex ConstraintIndex {
+		public IndexOptionGroup IndexOptionGroup {
 			get {
-				return constraintIndex;
+				return indexOptionGroup;
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			base.WriteTo(writer);
 			writer.Write(UniqueKindName);
 			writer.WriteEnum(clustered, WhitespacePadding.SpaceBefore);
-			writer.WriteScript(constraintIndex, WhitespacePadding.SpaceBefore);
+			writer.WriteScript(indexOptionGroup, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

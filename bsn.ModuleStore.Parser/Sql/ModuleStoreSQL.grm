@@ -893,7 +893,8 @@ _NAMEONLY = '$NAMEONLY$'
 
 <IndexColumn> ::= <ColumnName> <OrderType> 
 
-<IndexOptionGroup> ::= WITH '(' <IndexOptionList> ')'
+<IndexOptionGroup> ::= WITH FILLFACTOR '=' <IntegerLiteral>
+                     | WITH '(' <IndexOptionList> ')'
                      |
 
 <IndexOptionList> ::= <IndexOption> ',' <IndexOptionList>
@@ -979,12 +980,12 @@ _NAMEONLY = '$NAMEONLY$'
 <TableDefinition> ::= <ColumnName> <ColumnDefinition>
                     | <TableConstraint>
 
-<TableConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
-                    | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
+<TableConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <IndexOptionGroup>
+                    | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <IndexOptionGroup>
                     | CONSTRAINT <ConstraintName> FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>
                     | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Predicate> ')'
-                    | PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
-                    | UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <ConstraintIndex>
+                    | PRIMARY KEY <ConstraintCluster> '(' <IndexColumnList> ')' <IndexOptionGroup>
+                    | UNIQUE <ConstraintCluster> '(' <IndexColumnList> ')' <IndexOptionGroup>
                     | FOREIGN KEY '(' <ColumnNameList> ')' REFERENCES <TableNameQualified> <ColumnNameGroup> <ForeignKeyActionList>
                     | CHECK <OptionalNotForReplication> '(' <Predicate> ')'
 
@@ -1024,14 +1025,14 @@ _NAMEONLY = '$NAMEONLY$'
                              | PERSISTED
                              | NOT NULL
 
-<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> <ConstraintIndex>
-                          | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> <ConstraintIndex>
+<NamedColumnConstraint> ::= CONSTRAINT <ConstraintName> PRIMARY KEY <ConstraintCluster> <IndexOptionGroup>
+                          | CONSTRAINT <ConstraintName> UNIQUE <ConstraintCluster> <IndexOptionGroup>
                           | CONSTRAINT <ConstraintName> FOREIGN KEY REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | CONSTRAINT <ConstraintName> REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | CONSTRAINT <ConstraintName> CHECK <OptionalNotForReplication> '(' <Predicate> ')'
                           | CONSTRAINT <ConstraintName> DEFAULT <ConstraintDefaultValue>
-                          | PRIMARY KEY <ConstraintCluster> <ConstraintIndex>
-                          | UNIQUE <ConstraintCluster> <ConstraintIndex>
+                          | PRIMARY KEY <ConstraintCluster> <IndexOptionGroup>
+                          | UNIQUE <ConstraintCluster> <IndexOptionGroup>
                           | FOREIGN KEY REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | REFERENCES <TableNameQualified> <OptionalForeignRefColumn> <ForeignKeyActionList>
                           | CHECK <OptionalNotForReplication> '(' <Predicate> ')'
@@ -1046,9 +1047,6 @@ _NAMEONLY = '$NAMEONLY$'
                            | <NumberLiteral>
                            | <StringLiteral>
                            | NULL
-
-<ConstraintIndex> ::= WITH FILLFACTOR '=' <IntegerLiteral>
-                    | <IndexOptionGroup>
 
 ! =============================================================================
 ! Common Table Expressions, TOP and OUTPUT clauses

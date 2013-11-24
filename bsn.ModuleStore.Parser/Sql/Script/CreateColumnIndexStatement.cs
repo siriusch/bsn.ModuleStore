@@ -44,19 +44,19 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly bool unique;
 
 		[Rule("<CreateIndexStatement> ::= ~CREATE <IndexOptionalUnique> <ConstraintCluster> ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <IndexColumnList> ~')' <IndexOptionGroup>")]
-		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Optional<Sequence<IndexOption>> indexOptions)
+		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, IndexOptionGroup indexOptions)
 				: this(unique, clustered, indexName, tableName, indexColumns, null, null, indexOptions) {}
 
 		[Rule("<CreateIndexStatement> ::= ~CREATE <IndexOptionalUnique> <ConstraintCluster> ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <IndexColumnList> ~')' ~WHERE <Predicate> <IndexOptionGroup>")]
-		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Predicate filter, Optional<Sequence<IndexOption>> indexOptions)
+		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Predicate filter, IndexOptionGroup indexOptions)
 				: this(unique, clustered, indexName, tableName, indexColumns, null, filter, indexOptions) {}
 
 		[Rule("<CreateIndexStatement> ::= ~CREATE <IndexOptionalUnique> <ConstraintCluster> ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <IndexColumnList> ~')' ~INCLUDE ~'(' <ColumnNameList> ~')' <IndexOptionGroup>")]
-		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Sequence<ColumnName> columnNames, Optional<Sequence<IndexOption>> indexOptions)
+		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Sequence<ColumnName> columnNames, IndexOptionGroup indexOptions)
 				: this(unique, clustered, indexName, tableName, indexColumns, columnNames, null, indexOptions) {}
 
 		[Rule("<CreateIndexStatement> ::= ~CREATE <IndexOptionalUnique> <ConstraintCluster> ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <IndexColumnList> ~')' ~INCLUDE ~'(' <ColumnNameList> ~')' ~WHERE <Predicate> <IndexOptionGroup>")]
-		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Sequence<ColumnName> columnNames, Predicate filter, Optional<Sequence<IndexOption>> indexOptions)
+		public CreateColumnIndexStatement(Optional<UniqueToken> unique, ConstraintClusterToken clustered, IndexName indexName, Qualified<SchemaName, TableName> tableName, Sequence<IndexColumn> indexColumns, Sequence<ColumnName> columnNames, Predicate filter, IndexOptionGroup indexOptions)
 				: base(indexName, tableName, indexOptions) {
 			Debug.Assert(clustered != null);
 			this.unique = unique.HasValue();
@@ -129,7 +129,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.DecreaseIndent();
 				optionsPadding = WhitespacePadding.NewlineBefore;
 			}
-			writer.WriteIndexOptions(IndexOptions, optionsPadding);
+			writer.WriteScript(IndexOptions, optionsPadding);
 		}
 	}
 }

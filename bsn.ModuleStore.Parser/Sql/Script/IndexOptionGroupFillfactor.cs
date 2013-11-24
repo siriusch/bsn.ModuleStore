@@ -28,33 +28,36 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ConstraintIndexOptions: ConstraintIndex {
-		private readonly List<IndexOption> indexOptions;
+	public sealed class IndexOptionGroupFillfactor: IndexOptionGroup {
+		private readonly IntegerLiteral fillfactor;
 
-		[Rule("<ConstraintIndex> ::= <IndexOptionGroup>")]
-		public ConstraintIndexOptions(Optional<Sequence<IndexOption>> indexOptions) {
-			this.indexOptions = indexOptions.ToList();
+		[Rule("<IndexOptionGroup> ::= ~WITH ~FILLFACTOR ~'=' <IntegerLiteral>")]
+		public IndexOptionGroupFillfactor(IntegerLiteral fillfactor) {
+			this.fillfactor = fillfactor;
+		}
+
+		public IntegerLiteral Fillfactor {
+			get {
+				return fillfactor;
+			}
 		}
 
 		public override bool HasValue {
 			get {
-				return indexOptions.Count > 0;
-			}
-		}
-
-		public IEnumerable<IndexOption> IndexOptions {
-			get {
-				return indexOptions;
+				return true;
 			}
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteIndexOptions(indexOptions, WhitespacePadding.SpaceBefore);
+			// we ignore the fill factor when computing a hash, so that differences due to fill factor only are ignored
+			if (writer.Mode != SqlWriterMode.ForHashing) {
+				writer.Write(" WITH FILLFACTOR=");
+				writer.WriteScript(fillfactor, WhitespacePadding.None);
+			}
 		}
 	}
 }

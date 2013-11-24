@@ -38,7 +38,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly IndexUsing indexUsing;
 
 		[Rule("<CreateIndexStatement> ::= ~CREATE ~XML ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <ColumnName> ~')' <IndexUsing> <IndexOptionGroup>")]
-		public CreateXmlIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, ColumnName columnName, IndexUsing indexUsing, Optional<Sequence<IndexOption>> indexOptions): base(indexName, tableName, indexOptions) {
+		public CreateXmlIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, ColumnName columnName, IndexUsing indexUsing, IndexOptionGroup indexOptions)
+			: base(indexName, tableName, indexOptions) {
 			this.columnName = columnName;
 			this.indexUsing = indexUsing;
 		}
@@ -86,7 +87,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteLine();
 			writer.Write(") ");
 			writer.WriteScript(indexUsing, WhitespacePadding.NewlineAfter);
-			writer.WriteIndexOptions(IndexOptions, WhitespacePadding.None);
+			writer.WriteScript(IndexOptions, WhitespacePadding.None);
 		}
 	}
 }

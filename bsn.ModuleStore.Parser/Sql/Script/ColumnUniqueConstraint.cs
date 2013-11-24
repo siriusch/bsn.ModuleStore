@@ -34,11 +34,11 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ColumnUniqueConstraint: ColumnUniqueConstraintBase {
-		[Rule("<NamedColumnConstraint> ::= ~UNIQUE <ConstraintCluster> <ConstraintIndex>")]
-		public ColumnUniqueConstraint(ConstraintClusterToken clustered, ConstraintIndex constraintIndex): this(null, clustered, constraintIndex) {}
+		[Rule("<NamedColumnConstraint> ::= ~UNIQUE <ConstraintCluster> <IndexOptionGroup>")]
+		public ColumnUniqueConstraint(ConstraintClusterToken clustered, IndexOptionGroup indexOptionGroup): this(null, clustered, indexOptionGroup) {}
 
-		[Rule("<NamedColumnConstraint> ::= ~CONSTRAINT <ConstraintName> ~UNIQUE <ConstraintCluster> <ConstraintIndex>")]
-		public ColumnUniqueConstraint(ConstraintName constraintName, ConstraintClusterToken clustered, ConstraintIndex constraintIndex): base(constraintName, clustered, constraintIndex) {}
+		[Rule("<NamedColumnConstraint> ::= ~CONSTRAINT <ConstraintName> ~UNIQUE <ConstraintCluster> <IndexOptionGroup>")]
+		public ColumnUniqueConstraint(ConstraintName constraintName, ConstraintClusterToken clustered, IndexOptionGroup indexOptionGroup): base(constraintName, clustered, indexOptionGroup) {}
 
 		protected override string UniqueKindName {
 			get {

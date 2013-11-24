@@ -33,16 +33,16 @@ using System.Diagnostics;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateIndexStatement: AlterableCreateStatement, ITableBound {
-		private readonly List<IndexOption> indexOptions;
+		private readonly IndexOptionGroup indexOptions;
 		private readonly Qualified<SchemaName, TableName> tableName;
 		private IndexName indexName;
 
-		protected CreateIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, Optional<Sequence<IndexOption>> indexOptions) {
+		protected CreateIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, IndexOptionGroup indexOptions) {
 			Debug.Assert(indexName != null);
 			Debug.Assert(tableName != null);
 			this.indexName = indexName;
 			this.tableName = tableName;
-			this.indexOptions = indexOptions.ToList();
+			this.indexOptions = indexOptions;
 		}
 
 		public IndexName IndexName {
@@ -51,7 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public IEnumerable<IndexOption> IndexOptions {
+		public IndexOptionGroup IndexOptions {
 			get {
 				return indexOptions;
 			}

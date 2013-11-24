@@ -126,9 +126,6 @@
     <Compile Include="Sql\Script\CompoundInstallStatement.cs" />
     <Compile Include="Sql\Script\ComputedColumnDefinition.cs" />
     <Compile Include="Sql\Script\ConstraintDefaultFunctionValue.cs" />
-    <Compile Include="Sql\Script\ConstraintIndex.cs" />
-    <Compile Include="Sql\Script\ConstraintIndexFillfactor.cs" />
-    <Compile Include="Sql\Script\ConstraintIndexOptions.cs" />
     <Compile Include="Sql\Script\ConstraintName.cs" />
     <Compile Include="Sql\Script\ContinueStatement.cs" />
     <Compile Include="Sql\Script\ConvertFunction.cs" />
@@ -248,6 +245,9 @@
     <Compile Include="Sql\Script\IndexFor.cs" />
     <Compile Include="Sql\Script\IndexName.cs" />
     <Compile Include="Sql\Script\IndexOption.cs" />
+    <Compile Include="Sql\Script\IndexOptionGroup.cs" />
+    <Compile Include="Sql\Script\IndexOptionGroupFillfactor.cs" />
+    <Compile Include="Sql\Script\IndexOptionGroupList.cs" />
     <Compile Include="Sql\Script\IndexOptionNumeric.cs" />
     <Compile Include="Sql\Script\IndexOptionToggle.cs" />
     <Compile Include="Sql\Script\IndexUsing.cs" />

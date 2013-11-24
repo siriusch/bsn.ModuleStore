@@ -34,11 +34,11 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class TablePrimaryKeyConstraint: TableUniqueConstraintBase {
-		[Rule("<TableConstraint> ::= ~PRIMARY ~KEY <ConstraintCluster> ~'(' <IndexColumnList> ~')' <ConstraintIndex>")]
-		public TablePrimaryKeyConstraint(ConstraintClusterToken clustered, Sequence<IndexColumn> indexColumns, ConstraintIndex constraintIndex): this(null, clustered, indexColumns, constraintIndex) {}
+		[Rule("<TableConstraint> ::= ~PRIMARY ~KEY <ConstraintCluster> ~'(' <IndexColumnList> ~')' <IndexOptionGroup>")]
+		public TablePrimaryKeyConstraint(ConstraintClusterToken clustered, Sequence<IndexColumn> indexColumns, IndexOptionGroup indexOptionGroup): this(null, clustered, indexColumns, indexOptionGroup) {}
 
-		[Rule("<TableConstraint> ::= ~CONSTRAINT <ConstraintName> ~PRIMARY ~KEY <ConstraintCluster> ~'(' <IndexColumnList> ~')' <ConstraintIndex>")]
-		public TablePrimaryKeyConstraint(ConstraintName constraintName, ConstraintClusterToken clustered, Sequence<IndexColumn> indexColumns, ConstraintIndex constraintIndex): base(constraintName, clustered, indexColumns, constraintIndex) {}
+		[Rule("<TableConstraint> ::= ~CONSTRAINT <ConstraintName> ~PRIMARY ~KEY <ConstraintCluster> ~'(' <IndexColumnList> ~')' <IndexOptionGroup>")]
+		public TablePrimaryKeyConstraint(ConstraintName constraintName, ConstraintClusterToken clustered, Sequence<IndexColumn> indexColumns, IndexOptionGroup indexOptionGroup): base(constraintName, clustered, indexColumns, indexOptionGroup) {}
 
 		protected override string UniqueKindName {
 			get {
