@@ -283,38 +283,34 @@
 </xsl:text>
 			<xsl:value-of select="$indent"/>
 		</xsl:if>
-		<xsl:text xml:space="preserve">WITH </xsl:text>
+		<xsl:text xml:space="preserve">WITH (</xsl:text>
+		<xsl:if test="not($azure)">
+			<xsl:if test="@Padded=1">
+				<xsl:text xml:space="preserve">PAD_INDEX=ON, </xsl:text>
+			</xsl:if>
+		</xsl:if>
+		<xsl:if test="@FillFactor">
+			<xsl:text xml:space="preserve">FILLFACTOR=</xsl:text>
+			<xsl:value-of select="@FillFactor"/>
+			<xsl:text xml:space="preserve">, </xsl:text>
+		</xsl:if>
+		<xsl:if test="not(ancestor::TableType)">
+			<xsl:text xml:space="preserve">STATISTICS_NORECOMPUTE=OFF, </xsl:text>
+		</xsl:if>
+		<xsl:text xml:space="preserve">IGNORE_DUP_KEY=</xsl:text>
 		<xsl:choose>
-			<xsl:when test="@FillFactor">
-				<xsl:text xml:space="preserve">FILLFACTOR = </xsl:text>
-				<xsl:value-of select="@FillFactor"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:text xml:space="preserve">(</xsl:text>
-				<xsl:if test="not($azure)">
-					<xsl:if test="@Padded=1">
-						<xsl:text xml:space="preserve">PAD_INDEX=ON, </xsl:text>
-					</xsl:if>
-				</xsl:if>
-				<xsl:if test="not(ancestor::TableType)">
-					<xsl:text xml:space="preserve">STATISTICS_NORECOMPUTE=OFF, </xsl:text>
-				</xsl:if>
-				<xsl:text xml:space="preserve">IGNORE_DUP_KEY=</xsl:text>
-				<xsl:choose>
-					<xsl:when test="@IgnoreDuplicateKeys=1">ON</xsl:when>
-					<xsl:otherwise>OFF</xsl:otherwise>
-				</xsl:choose>
-				<xsl:if test="not($azure)">
-					<xsl:if test="@AllowRowLocks=0">
-						<xsl:text xml:space="preserve">, ALLOW_ROW_LOCKS=OFF</xsl:text>
-					</xsl:if>
-					<xsl:if test="@AllowPageLocks=0">
-						<xsl:text xml:space="preserve">, ALLOW_PAGE_LOCKS=OFF</xsl:text>
-					</xsl:if>
-				</xsl:if>
-				<xsl:text>)</xsl:text>
-			</xsl:otherwise>
+			<xsl:when test="@IgnoreDuplicateKeys=1">ON</xsl:when>
+			<xsl:otherwise>OFF</xsl:otherwise>
 		</xsl:choose>
+		<xsl:if test="not($azure)">
+			<xsl:if test="@AllowRowLocks=0">
+				<xsl:text xml:space="preserve">, ALLOW_ROW_LOCKS=OFF</xsl:text>
+			</xsl:if>
+			<xsl:if test="@AllowPageLocks=0">
+				<xsl:text xml:space="preserve">, ALLOW_PAGE_LOCKS=OFF</xsl:text>
+			</xsl:if>
+		</xsl:if>
+		<xsl:text>)</xsl:text>
 	</xsl:template>
 
 	<xsl:template match="XmlSchemaCollection" mode="script">
