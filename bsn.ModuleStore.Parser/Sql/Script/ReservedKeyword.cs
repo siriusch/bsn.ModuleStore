@@ -82,7 +82,6 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("EXIT")]
 	[Terminal("FETCH")]
 	[Terminal("FILE")]
-	[Terminal("FILLFACTOR")]
 	[Terminal("FOR")]
 	[Terminal("FOREIGN")]
 	[Terminal("FREETEXT")]

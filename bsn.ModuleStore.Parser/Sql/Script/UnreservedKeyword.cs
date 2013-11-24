@@ -51,6 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("ENABLE")]
 	[Terminal("EXPLICIT")]
 	[Terminal("EXTERNAL")]
+	[Terminal("FILLFACTOR")]
 	[Terminal("FIRST")]
 	[Terminal("FULLTEXT")]
 	[Terminal("GLOBAL")]
