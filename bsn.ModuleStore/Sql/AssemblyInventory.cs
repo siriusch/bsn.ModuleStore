@@ -189,7 +189,7 @@ namespace bsn.ModuleStore.Sql {
 				HashSet<string> newObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				HashSet<string> refreshObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				refreshObjectNames.UnionWith(inventory.Objects.OfType<CreateViewStatement>().Where(v => !(v.ViewOption is OptionSchemabindingToken)).Select(v => v.ObjectName));
-				refreshObjectNames.UnionWith(inventory.Objects.OfType<CreateFunctionStatement>().Where(f => !(f.Option is OptionSchemabindingToken)).Select(f => f.ObjectName));
+				// refreshObjectNames.UnionWith(inventory.Objects.OfType<CreateFunctionStatement>().Where(f => !(f.Option is OptionSchemabindingToken)).Select(f => f.ObjectName));
 				foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> pair in Compare(inventory, this, inventory.TargetEngine)) {
 					switch (pair.Value) {
 					case InventoryObjectDifference.None:
@@ -263,7 +263,7 @@ namespace bsn.ModuleStore.Sql {
 				}
 				// refresh the views and functions
 				foreach (string objectName in refreshObjectNames) {
-					yield return string.Format("EXEC [sp_refreshsqlmodule] '[{0}].[{1}]';", inventory.SchemaName, objectName);
+					yield return string.Format("EXEC [sp_refreshsqlmodule] '[{0}].[{1}]'", inventory.SchemaName, objectName);
 				}
 				// try to perform the remaining actions
 				foreach (IInstallStatement statement in resolver.GetInOrder(true).Where(statement => !(statement.IsTableUniqueConstraintOfTables(createdTables) || statement.DependsOnTables(droppedTables)))) {
