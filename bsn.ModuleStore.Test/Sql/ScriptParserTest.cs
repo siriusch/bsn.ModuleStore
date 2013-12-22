@@ -111,13 +111,13 @@ namespace bsn.ModuleStore.Sql {
  [idRight] smallint NOT NULL, 
  [timestamp] timestamp NOT NULL, 
  CONSTRAINT [PK_tblACE] PRIMARY KEY CLUSTERED ( 
-    [idAce] ASC 
+		[idAce] ASC 
 ) WITH FILLFACTOR = 90, 
  CONSTRAINT [UK_tblACE_uidSubject_uidObject_iKind_idRight] UNIQUE NONCLUSTERED ( 
-    [uidSubject] ASC, 
-    [uidObject] ASC, 
-    [iKind] ASC, 
-    [idRight] ASC 
+		[uidSubject] ASC, 
+		[uidObject] ASC, 
+		[iKind] ASC, 
+		[idRight] ASC 
 ) WITH FILLFACTOR = 90, 
  CONSTRAINT [FK_tblACE_tblRight] FOREIGN KEY ([idRight]) REFERENCES [Acl].[tblRight] ([idRight]) ON DELETE CASCADE 
 );", 1, null);
@@ -189,45 +189,52 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
+		public void CreateIndexWithOptions() {
+			ParseWithRoundtrip(@"CREATE NONCLUSTERED INDEX [IX_tblIndicatorTag_timestamp] ON [dbo].[tblIndicatorTag] (
+     [timestamp] ASC
+) WITH (STATISTICS_NORECOMPUTE=OFF, IGNORE_DUP_KEY=OFF);", 1, null);
+		}
+
+		[Test]
 		public void CreateFunctionWithReadonlyParameter() {
 			ParseWithRoundtrip(
 					@"CREATE FUNCTION [dbo].[fnIndicatorStructureResolve]
-  (
-   @tblPeriodIndicator [dbo].[udtUidList] READONLY,
-   @tblStructure [dbo].[udtStructureList] READONLY
-  )
+	(
+	 @tblPeriodIndicator [dbo].[udtUidList] READONLY,
+	 @tblStructure [dbo].[udtStructureList] READONLY
+	)
 RETURNS TABLE
-  AS
+	AS
 RETURN
-  (
+	(
 WITH  [IndicatorStructures]
-        AS (
-            SELECT DISTINCT [pi].[uidPeriodIndicator], [s].[uidStructure], [i].[uidPersistLevel],
-                CASE WHEN [i].[uidPersistLevel] = [s].[uidLevel] THEN CONVERT(bit, 1)
-                     ELSE CONVERT(bit, 0)
-                END AS [bPersist]
-              FROM @tblPeriodIndicator AS [pis]
-              JOIN 
-                [dbo].[tblPeriodIndicator] AS [pi] ON [pis].[uid] = [pi].[uidPeriodIndicator]
-              JOIN 
-                [dbo].[tblIndicator] AS [i] ON [i].[uidIndicator] = [pi].[uidIndicator] 
-              JOIN 
-                @tblStructure AS [s] ON [i].[uidOwnerStructure] = [s].[uidStructure]
-              WHERE ([i].[uidPersistLevel] IS NOT NULL)
-            UNION ALL
-            SELECT [is].[uidPeriodIndicator], [s].[uidStructure], [is].[uidPersistLevel],
-                CASE WHEN [is].[uidPersistLevel] = [s].[uidLevel] THEN CONVERT(bit, 1)
-                     ELSE CONVERT(bit, 0)
-                END
-              FROM [IndicatorStructures] AS [is] 
-              JOIN 
-                @tblStructure AS [s] ON [s].[uidParent] = [is].[uidStructure]
-              WHERE [is].[bPersist] = 0
-           )
-  SELECT [is].[uidPeriodIndicator], [is].[uidStructure]
-    FROM [IndicatorStructures] [is]
-    WHERE [is].[bPersist] = 1
-        )",
+				AS (
+						SELECT DISTINCT [pi].[uidPeriodIndicator], [s].[uidStructure], [i].[uidPersistLevel],
+								CASE WHEN [i].[uidPersistLevel] = [s].[uidLevel] THEN CONVERT(bit, 1)
+										 ELSE CONVERT(bit, 0)
+								END AS [bPersist]
+							FROM @tblPeriodIndicator AS [pis]
+							JOIN 
+								[dbo].[tblPeriodIndicator] AS [pi] ON [pis].[uid] = [pi].[uidPeriodIndicator]
+							JOIN 
+								[dbo].[tblIndicator] AS [i] ON [i].[uidIndicator] = [pi].[uidIndicator] 
+							JOIN 
+								@tblStructure AS [s] ON [i].[uidOwnerStructure] = [s].[uidStructure]
+							WHERE ([i].[uidPersistLevel] IS NOT NULL)
+						UNION ALL
+						SELECT [is].[uidPeriodIndicator], [s].[uidStructure], [is].[uidPersistLevel],
+								CASE WHEN [is].[uidPersistLevel] = [s].[uidLevel] THEN CONVERT(bit, 1)
+										 ELSE CONVERT(bit, 0)
+								END
+							FROM [IndicatorStructures] AS [is] 
+							JOIN 
+								@tblStructure AS [s] ON [s].[uidParent] = [is].[uidStructure]
+							WHERE [is].[bPersist] = 0
+					 )
+	SELECT [is].[uidPeriodIndicator], [is].[uidStructure]
+		FROM [IndicatorStructures] [is]
+		WHERE [is].[bPersist] = 1
+				)",
 					1, null);
 		}
 
@@ -244,8 +251,8 @@ WITH  [IndicatorStructures]
 		[Test]
 		public void CreateTypeAsTable() {
 			ParseWithRoundtrip(@"CREATE TYPE dbo.LocationTableType AS TABLE 
-    ( LocationName VARCHAR(50)
-    , CostRate INT );", 1, null);
+		( LocationName VARCHAR(50)
+		, CostRate INT );", 1, null);
 		}
 
 		[Test]
@@ -360,18 +367,18 @@ VALUES (N'4d460bf8-ef37-e211-ace9-8c598b00dad1', N'17bd16ff-ef37-e211-ace9-8c598
 			ParseWithRoundtrip(
 					@"MERGE Production.ProductInventory AS target
 USING (SELECT ProductID, SUM(OrderQty) FROM Sales.SalesOrderDetail AS sod
-    JOIN Sales.SalesOrderHeader AS soh
-    ON sod.SalesOrderID = soh.SalesOrderID
-    AND soh.OrderDate = @OrderDate
-    GROUP BY ProductID) AS source (ProductID, OrderQty)
+		JOIN Sales.SalesOrderHeader AS soh
+		ON sod.SalesOrderID = soh.SalesOrderID
+		AND soh.OrderDate = @OrderDate
+		GROUP BY ProductID) AS source (ProductID, OrderQty)
 ON (target.ProductID = source.ProductID)
 WHEN MATCHED AND target.Quantity - source.OrderQty <= 0
-    THEN DELETE
+		THEN DELETE
 WHEN MATCHED 
-    THEN UPDATE SET target.Quantity = target.Quantity - source.OrderQty, 
-                    target.ModifiedDate = GETDATE()
+		THEN UPDATE SET target.Quantity = target.Quantity - source.OrderQty, 
+										target.ModifiedDate = GETDATE()
 OUTPUT $action, Inserted.ProductID, Inserted.Quantity, Inserted.ModifiedDate, Deleted.ProductID,
-    Deleted.Quantity, Deleted.ModifiedDate;",
+		Deleted.Quantity, Deleted.ModifiedDate;",
 					1, null);
 		}
 
@@ -379,14 +386,14 @@ OUTPUT $action, Inserted.ProductID, Inserted.Quantity, Inserted.ModifiedDate, De
 		public void MergeUpdateInsert() {
 			ParseWithRoundtrip(
 					@"MERGE Production.UnitMeasure AS target
-    USING (SELECT @UnitMeasureCode, @Name) AS source (UnitMeasureCode, Name)
-    ON (target.UnitMeasureCode = source.UnitMeasureCode)
-    WHEN MATCHED THEN 
-        UPDATE SET Name = source.Name
+		USING (SELECT @UnitMeasureCode, @Name) AS source (UnitMeasureCode, Name)
+		ON (target.UnitMeasureCode = source.UnitMeasureCode)
+		WHEN MATCHED THEN 
+				UPDATE SET Name = source.Name
 	WHEN NOT MATCHED THEN	
-	    INSERT (UnitMeasureCode, Name)
-	    VALUES (source.UnitMeasureCode, source.Name)
-	    OUTPUT deleted.*, $action, inserted.* INTO #MyTempTable;",
+			INSERT (UnitMeasureCode, Name)
+			VALUES (source.UnitMeasureCode, source.Name)
+			OUTPUT deleted.*, $action, inserted.* INTO #MyTempTable;",
 					1, null);
 		}
 
@@ -395,7 +402,7 @@ OUTPUT $action, Inserted.ProductID, Inserted.Quantity, Inserted.ModifiedDate, De
 			ParseWithRoundtrip(
 					@"MERGE INTO Sales.SalesReason AS Target
 USING (VALUES ('Recommendation','Other'), ('Review', 'Marketing'), ('Internet', 'Promotion'))
-       AS Source (NewName, NewReasonType)
+			 AS Source (NewName, NewReasonType)
 ON Target.Name = Source.NewName
 WHEN MATCHED THEN
 	UPDATE SET ReasonType = Source.NewReasonType
@@ -410,9 +417,9 @@ OUTPUT $action INTO @SummaryOfChanges;",
 			ParseWithRoundtrip(
 					@"CREATE FUNCTION SPLIT
 (
-  @s nvarchar(max),
-  @trimPieces bit,
-  @returnEmptyStrings bit
+	@s nvarchar(max),
+	@trimPieces bit,
+	@returnEmptyStrings bit
 )
 returns @t table (val nvarchar(max))
 as
@@ -424,41 +431,41 @@ select @i = 0, @j = (len(@s) - len(replace(@s,',','')))
 ;with cte 
 as
 (
-  select
-    i = @i + 1,
-    s = @s, 
-    n = substring(@s, 0, charindex(',', @s)),
-    m = substring(@s, charindex(',', @s)+1, len(@s) - charindex(',', @s))
+	select
+		i = @i + 1,
+		s = @s, 
+		n = substring(@s, 0, charindex(',', @s)),
+		m = substring(@s, charindex(',', @s)+1, len(@s) - charindex(',', @s))
 
-  union all
+	union all
 
-  select 
-    i = cte.i + 1,
-    s = cte.m, 
-    n = substring(cte.m, 0, charindex(',', cte.m)),
-    m = substring(
-      cte.m,
-      charindex(',', cte.m) + 1,
-      len(cte.m)-charindex(',', cte.m)
-    )
-  from cte
-  where i <= @j
+	select 
+		i = cte.i + 1,
+		s = cte.m, 
+		n = substring(cte.m, 0, charindex(',', cte.m)),
+		m = substring(
+			cte.m,
+			charindex(',', cte.m) + 1,
+			len(cte.m)-charindex(',', cte.m)
+		)
+	from cte
+	where i <= @j
 )
 insert into @t (val)
 select pieces
 from 
 (
-  select 
-  case 
-    when @trimPieces = 1
-    then ltrim(rtrim(case when i <= @j then n else m end))
-    else case when i <= @j then n else m end
-  end as pieces
-  from cte
+	select 
+	case 
+		when @trimPieces = 1
+		then ltrim(rtrim(case when i <= @j then n else m end))
+		else case when i <= @j then n else m end
+	end as pieces
+	from cte
 ) t
 where
-  (@returnEmptyStrings = 0 and len(pieces) > 0)
-  or (@returnEmptyStrings = 1)
+	(@returnEmptyStrings = 0 and len(pieces) > 0)
+	or (@returnEmptyStrings = 1)
 option (maxrecursion 0);
 
 
@@ -472,29 +479,29 @@ end",
 		public void ParseCreateProcedure() {
 			ParseWithRoundtrip(
 					@"CREATE PROCEDURE [dbo].[prcIndicatorStatusSet]
-    @uidIndicatorStatus [uniqueidentifier],
-    @bEditable [bit],
-    @xMetadata [xml]
+		@uidIndicatorStatus [uniqueidentifier],
+		@bEditable [bit],
+		@xMetadata [xml]
 AS
-    BEGIN
-        SET NOCOUNT ON;
-        SET XACT_ABORT ON;
-        IF @uidIndicatorStatus IS NULL BEGIN
-            SET @uidIndicatorStatus=NEWID();
-            SET ROWCOUNT 0;
-        END ELSE BEGIN
-            UPDATE [dbo].[tblIndicatorStatus] WITH (UPDLOCK)
-                SET [bEditable]=COALESCE(@bEditable, [bEditable]), [xMetadata]=COALESCE(@xMetadata, [xMetadata]) WHERE [tblIndicatorStatus].[uidIndicatorStatus]=@uidIndicatorStatus;
-        END;
-        IF @@ROWCOUNT=0 BEGIN
-            INSERT 
-                INTO [dbo].[tblIndicatorStatus] ([uidIndicatorStatus], [bEditable], [xMetadata])
-                VALUES (@uidIndicatorStatus, @bEditable, @xMetadata);
-        END;
-        SELECT *
-            FROM [dbo].[vwIndicatorStatus]
-            WHERE [vwIndicatorStatus].[uidIndicatorStatus]=@uidIndicatorStatus;
-    END;",
+		BEGIN
+				SET NOCOUNT ON;
+				SET XACT_ABORT ON;
+				IF @uidIndicatorStatus IS NULL BEGIN
+						SET @uidIndicatorStatus=NEWID();
+						SET ROWCOUNT 0;
+				END ELSE BEGIN
+						UPDATE [dbo].[tblIndicatorStatus] WITH (UPDLOCK)
+								SET [bEditable]=COALESCE(@bEditable, [bEditable]), [xMetadata]=COALESCE(@xMetadata, [xMetadata]) WHERE [tblIndicatorStatus].[uidIndicatorStatus]=@uidIndicatorStatus;
+				END;
+				IF @@ROWCOUNT=0 BEGIN
+						INSERT 
+								INTO [dbo].[tblIndicatorStatus] ([uidIndicatorStatus], [bEditable], [xMetadata])
+								VALUES (@uidIndicatorStatus, @bEditable, @xMetadata);
+				END;
+				SELECT *
+						FROM [dbo].[vwIndicatorStatus]
+						WHERE [vwIndicatorStatus].[uidIndicatorStatus]=@uidIndicatorStatus;
+		END;",
 					1, null);
 		}
 
@@ -580,19 +587,19 @@ PRINT 'Cool'", 3, null);
 		[Test]
 		public void RaiserrorNoOption() {
 			ParseWithRoundtrip(@"RAISERROR (N'<<%*.*s>>', -- Message text.
-           10, -- Severity,
-           1, -- State,
-           7, -- First argument used for width.
-           3, -- Second argument used for precision.
-           N'abcde');", 1, null);
+					 10, -- Severity,
+					 1, -- State,
+					 7, -- First argument used for width.
+					 3, -- Second argument used for precision.
+					 N'abcde');", 1, null);
 		}
 
 		[Test]
 		public void RaiserrorWithOption() {
 			ParseWithRoundtrip(@"RAISERROR (N'<<%7.3s>>', -- Message text.
-           10, -- Severity,
-           1, -- State,
-           N'abcde') WITH NOWAIT, LOG;", 1, null);
+					 10, -- Severity,
+					 1, -- State,
+					 N'abcde') WITH NOWAIT, LOG;", 1, null);
 		}
 
 		[Test]
@@ -659,8 +666,8 @@ PRINT 'Cool'", 3, null);
 		public void SelectWithCrossApplyAndXmlFunction() {
 			ParseWithRoundtrip(
 					@"SELECT [p].[uidPeriodStructureIndicator], [d].[uidPeriodIndicator].value('.', 'uniqueidentifier') AS [uidPeriodIndicatorDependency]
-            FROM @tblPeriodStructureIndicator AS [p]
-            CROSS APPLY [p].[xDependencies].nodes('/*/id') AS [d]([uidPeriodIndicator])", 1, "dbo");
+						FROM @tblPeriodStructureIndicator AS [p]
+						CROSS APPLY [p].[xDependencies].nodes('/*/id') AS [d]([uidPeriodIndicator])", 1, "dbo");
 		}
 
 		[Test]
@@ -683,9 +690,9 @@ WHERE ProductModelID=7;",
 		[Test]
 		public void SelectWithNestedQueryWithXmlFunctions() {
 			ParseWithRoundtrip(@"SELECT Fname, count(Fname) FROM    
-  (SELECT nref.value('(author/first-name)[1]', 'nvarchar(max)') Fname
-   FROM   docs CROSS APPLY xCol.nodes('/book') T(nref)
-   WHERE  nref.exist ('author/first-name') = 1) Result
+	(SELECT nref.value('(author/first-name)[1]', 'nvarchar(max)') Fname
+	 FROM   docs CROSS APPLY xCol.nodes('/book') T(nref)
+	 WHERE  nref.exist ('author/first-name') = 1) Result
 GROUP BY FName
 ORDER BY Fname;", 1, null);
 		}
@@ -694,10 +701,10 @@ ORDER BY Fname;", 1, null);
 		public void SelectWithXmlnamespaces() {
 			ParseWithRoundtrip(
 					@"WITH XMLNAMESPACES (
-   'http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelManuInstructions' AS MI)
+	 'http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelManuInstructions' AS MI)
 SELECT ProductModelID, 
-       Locations.value('./@LocationID','int') as LocID,
-       steps.query('.') as Steps
+			 Locations.value('./@LocationID','int') as LocID,
+			 steps.query('.') as Steps
 FROM   Production.ProductModel
 CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)
 CROSS APPLY T1.Locations.nodes('./MI:step') as T2(steps)
@@ -710,11 +717,11 @@ AND    steps.exist('./MI:tool') = 1;",
 		public void SelectWithXmlnamespacesAndCte() {
 			ParseWithRoundtrip(
 					@"WITH XMLNAMESPACES (
-   'http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelManuInstructions' AS MI),
+	 'http://schemas.microsoft.com/sqlserver/2004/07/adventure-works/ProductModelManuInstructions' AS MI),
 cteModel AS (SELECt * FROM Production.ProductModel)
 SELECT ProductModelID, 
-       Locations.value('./@LocationID','int') as LocID,
-       steps.query('.') as Steps
+			 Locations.value('./@LocationID','int') as LocID,
+			 steps.query('.') as Steps
 FROM   cteModel
 CROSS APPLY Instructions.nodes('/MI:root/MI:Location') as T1(Locations)
 CROSS APPLY T1.Locations.nodes('./MI:step') as T2(steps)
