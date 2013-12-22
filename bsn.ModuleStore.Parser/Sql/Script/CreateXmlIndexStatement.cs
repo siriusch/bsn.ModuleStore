@@ -86,8 +86,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(") ");
-			writer.WriteScript(indexUsing, WhitespacePadding.NewlineAfter);
-			writer.WriteScript(IndexOptions, WhitespacePadding.None);
+			writer.WriteScript(indexUsing, WhitespacePadding.None);
+			writer.WriteScript(IndexOptions, WhitespacePadding.NewlineBefore);
 		}
 	}
 }

@@ -83,7 +83,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');
-			writer.WriteScript(indexOptionGroup, WhitespacePadding.None);
+			writer.WriteScript(indexOptionGroup, WhitespacePadding.SpaceBefore);
 		}
 	}
 }

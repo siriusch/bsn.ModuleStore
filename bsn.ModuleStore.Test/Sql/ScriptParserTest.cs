@@ -191,7 +191,7 @@ namespace bsn.ModuleStore.Sql {
 		[Test]
 		public void CreateIndexWithOptions() {
 			ParseWithRoundtrip(@"CREATE NONCLUSTERED INDEX [IX_tblIndicatorTag_timestamp] ON [dbo].[tblIndicatorTag] (
-     [timestamp] ASC
+		 [timestamp] ASC
 ) WITH (STATISTICS_NORECOMPUTE=OFF, IGNORE_DUP_KEY=OFF);", 1, null);
 		}
 
