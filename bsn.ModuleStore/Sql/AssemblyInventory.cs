@@ -187,6 +187,9 @@ namespace bsn.ModuleStore.Sql {
 				List<IInstallStatement> alterUsingUpdateScript = new List<IInstallStatement>();
 				Dictionary<string, IScriptableStatement> dropStatements = new Dictionary<string, IScriptableStatement>(StringComparer.OrdinalIgnoreCase);
 				HashSet<string> newObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				HashSet<string> refreshObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				refreshObjectNames.UnionWith(inventory.Objects.OfType<CreateViewStatement>().Where(v => !(v.ViewOption is OptionSchemabindingToken)).Select(v => v.ObjectName));
+				refreshObjectNames.UnionWith(inventory.Objects.OfType<CreateFunctionStatement>().Where(f => !(f.Option is OptionSchemabindingToken)).Select(f => f.ObjectName));
 				foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> pair in Compare(inventory, this, inventory.TargetEngine)) {
 					switch (pair.Value) {
 					case InventoryObjectDifference.None:
@@ -212,6 +215,7 @@ namespace bsn.ModuleStore.Sql {
 						break;
 					case InventoryObjectDifference.SourceOnly:
 						dropStatements.Add(pair.Key.ObjectName, pair.Key.CreateDropStatement());
+						refreshObjectNames.Remove(pair.Key.ObjectName);
 						break;
 					case InventoryObjectDifference.TargetOnly:
 						resolver.Add(pair.Key);
@@ -257,6 +261,10 @@ namespace bsn.ModuleStore.Sql {
 				foreach (IInstallStatement createTableStatement in alterUsingUpdateScript) {
 					resolver.AddExistingObject(createTableStatement.ObjectName);
 				}
+				// refresh the views and functions
+				foreach (string objectName in refreshObjectNames) {
+					yield return string.Format("EXEC [sp_refreshsqlmodule] '[{0}].[{1}]';", inventory.SchemaName, objectName);
+				}
 				// try to perform the remaining actions
 				foreach (IInstallStatement statement in resolver.GetInOrder(true).Where(statement => !(statement.IsTableUniqueConstraintOfTables(createdTables) || statement.DependsOnTables(droppedTables)))) {
 					foreach (IInstallStatement innerStatement in HandleDependendObjects(statement, inventory, dropStatements.Keys)) {
@@ -299,6 +307,10 @@ namespace bsn.ModuleStore.Sql {
 				// finally drop objects which are no longer used
 				foreach (IScriptableStatement dropStatement in dropStatements.Values.Where(s => !(s is AlterTableDropConstraintStatement || s is DropTableStatement || s is DropIndexStatement || s.DependsOnTables(droppedTables)))) {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
+				}
+				// refresh the SPs
+				foreach (string objectName in Objects.OfType<CreateProcedureStatement>().Where(sp => !(sp.Option is OptionSchemabindingToken)).Select(sp => sp.ObjectName)) {
+					yield return string.Format("EXEC [sp_refreshsqlmodule] '[{0}].[{1}]';", inventory.SchemaName, objectName);
 				}
 			} finally {
 				UnsetQualification();

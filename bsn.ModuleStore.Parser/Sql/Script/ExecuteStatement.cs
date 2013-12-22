@@ -44,6 +44,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExecuteStatement> ::= ~EXECUTE <VariableName> ~'=' <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>")]
 		public ExecuteStatement(VariableName resultVariableName, Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, OptionToken option) {
 			Debug.Assert(procedureName != null);
+			if (!procedureName.IsQualified && procedureName.Name.Value.StartsWith("sp_", StringComparison.OrdinalIgnoreCase)) {
+				procedureName.LockOverride();
+			}
 			this.resultVariableName = resultVariableName;
 			this.procedureName = procedureName;
 			this.parameters = parameters.ToList();
