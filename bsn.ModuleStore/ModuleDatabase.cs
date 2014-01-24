@@ -267,7 +267,7 @@ namespace bsn.ModuleStore {
 				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
 					command.Transaction = managementConnectionProvider.GetTransaction();
 					command.CommandType = CommandType.Text;
-					command.CommandText = sql;
+					command.CommandText = sql+';';
 					command.CommandTimeout = 3600; // 1 hour should be enough...
 					command.ExecuteNonQuery();
 				}

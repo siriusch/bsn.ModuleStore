@@ -310,7 +310,7 @@ namespace bsn.ModuleStore.Sql {
 				}
 				// refresh the SPs
 				foreach (string objectName in Objects.OfType<CreateProcedureStatement>().Where(sp => !(sp.Option is OptionSchemabindingToken)).Select(sp => sp.ObjectName)) {
-					yield return string.Format("EXEC [sp_refreshsqlmodule] '[{0}].[{1}]';", inventory.SchemaName, objectName);
+					yield return string.Format("EXEC [sp_refreshsqlmodule] '[{0}].[{1}]'", inventory.SchemaName, objectName);
 				}
 			} finally {
 				UnsetQualification();
