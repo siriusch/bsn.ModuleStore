@@ -196,6 +196,50 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
+		public void CreateXmlSchemaCollection() {
+			ParseWithRoundtrip(@"CREATE XML SCHEMA COLLECTION [SicherheitssetSchema] AS N'<?xml version=""1.0"" ?>
+<xs:schema id=""Sicherheitsset""
+		targetNamespace=""http://weedu.ch/SecureTokenService/Sicherheitsset""
+		elementFormDefault=""qualified""
+		xmlns=""http://weedu.ch/SecureTokenService/Sicherheitsset""
+		xmlns:mstns=""http://weedu.ch/SecureTokenService/Sicherheitsset""
+		xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
+	<xs:element name=""Sicherheitsset"">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name=""Item"" minOccurs=""1"" maxOccurs=""unbounded"">
+					<xs:complexType>
+						<xs:attribute name=""GruppeId"" type=""xs:int"" use=""required"" />
+						<xs:attribute name=""Stufe"" type=""xs:int"" use=""required"" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>';", 1, null);
+		}
+
+		[Test]
+		public void TypedXmlTypeVariable() {
+			ParseWithRoundtrip(@"DECLARE @xml xml([SicherheitssetSchema]);", 1, null);
+		}
+
+		[Test]
+		public void NvarcharMaxType() {
+			ParseWithRoundtrip(@"DECLARE @s nvarchar(max);", 1, null);
+		}
+
+		[Test]
+		public void TypedXmlTypeTableVar() {
+			ParseWithRoundtrip(@"DECLARE @tblSicherheitsset TABLE (
+		[Create] bit NOT NULL,
+		[EntitaetUid] uniqueidentifier NOT NULL UNIQUE,
+		[SicherheitssetUid] uniqueidentifier NOT NULL PRIMARY KEY,
+		[SicherheitssetXml] xml ([SicherheitssetSchema]) NOT NULL
+	);", 1, null);
+		}
+
+		[Test]
 		public void CreateFunctionWithReadonlyParameter() {
 			ParseWithRoundtrip(
 					@"CREATE FUNCTION [dbo].[fnIndicatorStructureResolve]

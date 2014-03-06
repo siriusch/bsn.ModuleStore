@@ -400,8 +400,8 @@ _NAMEONLY = '$NAMEONLY$'
                             | <SchemaName> '.' <SimpleTypeName>
 
 <TypeName> ::= <SimpleTypeName>
-             | Id '(' Id ')' ! e.g. VARCHAR(MAX)
-             | QuotedId '(' Id ')' ! e.g. VARCHAR(MAX)
+             | Id '(' <XmlSchemaCollectionNameQualified> ')' ! e.g. xml([MySchema]) but also VARCHAR(MAX)
+             | QuotedId '(' <XmlSchemaCollectionNameQualified> ')' ! e.g. xml([MySchema]) but also VARCHAR(MAX)
              | Id '(' <IntegerLiteral> ')' ! e.g. VARCHAR(20)
              | QuotedId '(' <IntegerLiteral> ')' ! e.g. VARCHAR(20)
              | Id '(' <IntegerLiteral> ',' <IntegerLiteral> ')' ! e.g. DECIMAL(10,5)
@@ -951,7 +951,8 @@ _NAMEONLY = '$NAMEONLY$'
 ! CREATE/DROP XML SCHEMA COLLECTION
 ! =============================================================================
 
-<CreateXmlSchemaCollectionStatement> ::= CREATE XML SCHEMA COLLECTION <XmlSchemaCollectionNameQualified> AS <Expression>
+<CreateXmlSchemaCollectionStatement> ::= CREATE XML SCHEMA COLLECTION <XmlSchemaCollectionNameQualified> AS StringLiteral
+                                       | CREATE XML SCHEMA COLLECTION <XmlSchemaCollectionNameQualified> AS <VariableName>
 
 <DropXmlSchemaCollectionStatement> ::= DROP XML SCHEMA COLLECTION <XmlSchemaCollectionNameQualified>
 

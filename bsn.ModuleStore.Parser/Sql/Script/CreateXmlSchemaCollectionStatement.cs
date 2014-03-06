@@ -37,7 +37,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		private readonly Expression expression;
 		private readonly Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName;
 
-		[Rule("<CreateXmlSchemaCollectionStatement> ::= ~CREATE ~XML ~SCHEMA ~COLLECTION <XmlSchemaCollectionNameQualified> ~AS <Expression>")]
+		[Rule("<CreateXmlSchemaCollectionStatement> ::= ~CREATE ~XML ~SCHEMA ~COLLECTION <XmlSchemaCollectionNameQualified> ~AS <VariableName>")]
+		public CreateXmlSchemaCollectionStatement(Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName, VariableName variable): this(xmlSchemaCollectionName, ExpressionValue<VariableName>.CreateFrom(variable)) {}
+
+		[Rule("<CreateXmlSchemaCollectionStatement> ::= ~CREATE ~XML ~SCHEMA ~COLLECTION <XmlSchemaCollectionNameQualified> ~AS StringLiteral")]
 		public CreateXmlSchemaCollectionStatement(Qualified<SchemaName, XmlSchemaCollectionName> xmlSchemaCollectionName, Expression expression) {
 			Debug.Assert(xmlSchemaCollectionName != null);
 			Debug.Assert(expression != null);
@@ -80,7 +83,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("CERATE XML SCHEMA COLLECTION ");
+			writer.Write("CREATE XML SCHEMA COLLECTION ");
 			writer.WriteScript(xmlSchemaCollectionName, WhitespacePadding.None);
 			writer.Write(" AS ");
 			writer.WriteScript(expression, WhitespacePadding.None);

@@ -102,10 +102,8 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 					case SqlDbType.NChar:
 					case SqlDbType.NVarChar:
 						TypeNameNamedExtension extendedType = typedColumn.ColumnType.Name as TypeNameNamedExtension;
-						if (extendedType != null) {
-							if (string.Equals("MAX", extendedType.Extension.Value, StringComparison.OrdinalIgnoreCase)) {
-								row[columnSize] = -1;
-							}
+						if ((extendedType != null) && extendedType.IsMax) {
+							row[columnSize] = -1;
 						}
 						TypeNameWithPrecision lengthType = typedColumn.ColumnType.Name as TypeNameWithPrecision;
 						if (lengthType != null) {

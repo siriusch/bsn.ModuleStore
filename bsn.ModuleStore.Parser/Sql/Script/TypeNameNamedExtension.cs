@@ -34,23 +34,38 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class TypeNameNamedExtension: TypeNameExtended {
-		private readonly SqlIdentifier extension;
+		private readonly Qualified<SchemaName, XmlSchemaCollectionName> extension;
+		private readonly bool isMax;
 
-		[Rule("<TypeName> ::= Id ~'(' Id ~')'")]
-		[Rule("<TypeName> ::= QuotedId ~'(' Id ~')'")]
-		public TypeNameNamedExtension(SqlIdentifier identifier, SqlIdentifier extension): base(identifier) {
+		[Rule("<TypeName> ::= Id ~'(' <XmlSchemaCollectionNameQualified> ~')'")]
+		[Rule("<TypeName> ::= QuotedId ~'(' <XmlSchemaCollectionNameQualified> ~')'")]
+		public TypeNameNamedExtension(SqlIdentifier identifier, Qualified<SchemaName, XmlSchemaCollectionName> extension): base(identifier) {
 			Debug.Assert(extension != null);
 			this.extension = extension;
+			isMax = !extension.IsQualified && string.Equals(extension.Name.Value, "MAX", StringComparison.OrdinalIgnoreCase);
+			if (isMax) {
+				this.extension.LockOverride();
+			}
 		}
 
-		public SqlIdentifier Extension {
+		public Qualified<SchemaName, XmlSchemaCollectionName> Extension {
 			get {
 				return extension;
 			}
 		}
 
+		public bool IsMax {
+			get {
+				return isMax;
+			}
+		}
+
 		protected override void WriteArguments(SqlWriter writer) {
-			writer.Write(extension.Value);
+			if (isMax) {
+				writer.Write("MAX");
+			} else {
+				writer.WriteScript(extension, WhitespacePadding.None);
+			}
 		}
 	}
 }

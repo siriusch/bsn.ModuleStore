@@ -30,10 +30,17 @@
 using System;
 using System.Diagnostics;
 
+using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public sealed class ExpressionValue<T>: Expression where T: SqlScriptableToken {
+	public sealed class ExpressionValue<T>: Expression where T: SqlScriptableToken, IToken {
+		internal static ExpressionValue<T> CreateFrom(T valueSource) {
+			ExpressionValue<T> result = new ExpressionValue<T>(valueSource);
+			result.Initialize(valueSource.Symbol, valueSource.Position);
+			return result;
+		}
+
 		private readonly T valueSource;
 
 		[Rule("<Value> ::= <SystemVariableName>", typeof(VariableName))]
