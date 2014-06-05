@@ -207,11 +207,15 @@ namespace bsn.ModuleStore.Mapper {
 					log.TraceFormat("Acquired connection from connection provider");
 				}
 				profiler.Start(callInfo.GetProcedureName(mcm, connectionProvider.SchemaName), transaction != null);
+				bool rollback = false;
 				SqlDataReader reader = null;
 				try {
 					ownsConnection = (transaction == null) && (connection.State == ConnectionState.Closed);
 					if (ownsConnection) {
 						connection.Open();
+						if (connectionProvider.DefaultIsolationLevel != IsolationLevel.Unspecified) {
+							transaction = connection.BeginTransaction(connectionProvider.DefaultIsolationLevel);
+						}
 					}
 					if (connection.State != ConnectionState.Open) {
 						throw new InvalidOperationException("Connection is expected to be open");
@@ -346,12 +350,24 @@ namespace bsn.ModuleStore.Mapper {
 						}
 					}
 				} catch {
+					rollback = true;
 					if (reader != null) {
 						reader.Dispose();
 					}
 					throw;
 				} finally {
 					if (ownsConnection && (connection != null)) {
+						if (transaction != null) {
+							if (rollback) {
+								log.Debug("Rolling back transaction");
+								transaction.Rollback();
+							} else {
+								log.Debug("Committing transaction");
+								transaction.Commit();
+							}
+							log.Trace("Disposing transaction");
+							transaction.Dispose();
+						}
 						connection.Dispose();
 						log.Trace("Disposing connection");
 					}

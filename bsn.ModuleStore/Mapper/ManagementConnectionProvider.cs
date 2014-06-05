@@ -186,6 +186,12 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
+		public IsolationLevel DefaultIsolationLevel {
+			get {
+				return IsolationLevel.Unspecified;
+			}
+		}
+
 		public string SchemaName {
 			get {
 				return schemaName;

@@ -27,10 +27,15 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Data;
 using System.Data.SqlClient;
 
 namespace bsn.ModuleStore.Mapper {
 	public interface IConnectionProvider {
+		IsolationLevel DefaultIsolationLevel {
+			get;
+		}
+
 		string SchemaName {
 			get;
 		}

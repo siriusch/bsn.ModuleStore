@@ -28,6 +28,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 
@@ -49,6 +50,12 @@ namespace bsn.ModuleStore.Mapper {
 
 		private void DisplayInfoMessage(object sender, SqlInfoMessageEventArgs e) {
 			Trace.WriteLine(e.Message);
+		}
+
+		public IsolationLevel DefaultIsolationLevel {
+			get {
+				return IsolationLevel.Unspecified;
+			}
 		}
 
 		public string SchemaName {

@@ -1,6 +1,7 @@
 ﻿#if DEBUG
 
 using System;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
@@ -20,6 +21,12 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 
 		public SqlTransaction GetTransaction() {
 			return null;
+		}
+
+		public IsolationLevel DefaultIsolationLevel {
+			get {
+				return IsolationLevel.Unspecified;
+			}
 		}
 
 		public string SchemaName {
