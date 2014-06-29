@@ -129,10 +129,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 				byte[] bytes = value as byte[];
 				if (bytes != null) {
-					if (fieldOffset > bytes.Length) {
+					if (fieldOffset >= bytes.LongLength) {
 						return 0;
 					}
-					length = Math.Min(bytes.Length-(int)fieldOffset, length);
+					length = Math.Min((int)Math.Min(bytes.LongLength-fieldOffset, int.MaxValue), length);
 					Array.Copy(bytes, fieldOffset, buffer, bufferOffset, length);
 					return length;
 				}
@@ -171,21 +171,21 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 				string str = value as string;
 				if (str != null) {
-					if (fieldOffset > str.Length) {
+					if (fieldOffset >= str.Length) {
 						return 0;
 					}
 					length = Math.Min(str.Length-(int)fieldOffset, length);
 					for (i = 0; i < length; i++) {
-						buffer[bufferOffset+i] = str[i];
+						buffer[bufferOffset+i] = str[(int)fieldOffset+i];
 					}
 					return length;
 				}
 				char[] chars = value as char[];
 				if (chars != null) {
-					if (fieldOffset > chars.Length) {
+					if (fieldOffset >= chars.LongLength) {
 						return 0;
 					}
-					length = Math.Min(chars.Length-(int)fieldOffset, length);
+					length = Math.Min((int)Math.Min(chars.LongLength-fieldOffset, int.MaxValue), length);
 					Array.Copy(chars, fieldOffset, buffer, bufferOffset, length);
 					return length;
 				}
