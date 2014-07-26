@@ -29,7 +29,7 @@ namespace bsn.ModuleStore.Console.Commands {
 							using (SqlCommand command = connection.CreateCommand()) {
 								command.Transaction = transaction;
 								command.CommandType = CommandType.Text;
-								command.CommandText = sql;
+								command.CommandText = sql+';';
 								try {
 									command.ExecuteNonQuery();
 								} catch (Exception) {
