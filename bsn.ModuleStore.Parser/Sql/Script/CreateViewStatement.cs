@@ -59,12 +59,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override bool IsPartOfSchemaDefinition {
-			get {
-				return true;
-			}
-		}
-
 		public override ObjectCategory ObjectCategory {
 			get {
 				return ObjectCategory.View;
