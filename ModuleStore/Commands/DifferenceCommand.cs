@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 using bsn.CommandLine;
 using bsn.CommandLine.Context;
@@ -46,8 +47,23 @@ namespace bsn.ModuleStore.Console.Commands {
 			GetDatabaseEngine(sourceInventory, ref engine);
 			Inventory targetInventory = executionContext.GetInventory((Entities.Source)tags["target"], (bool)tags["directories"]);
 			GetDatabaseEngine(sourceInventory, ref engine);
-			foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> difference in Inventory.Compare(sourceInventory, targetInventory, engine)) {
-				executionContext.Output.WriteLine(string.Format(" {0} {1}: {2}", difference.Key.ObjectCategory, difference.Key.ObjectName, difference.Value));
+			using (executionContext.Output.Indent()) {
+				foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> difference in Inventory.Compare(sourceInventory, targetInventory, engine)) {
+					switch (difference.Value) {
+					case InventoryObjectDifference.None: executionContext.Output.SetForeground(Color.Gray);
+						break;
+					case InventoryObjectDifference.SourceOnly:
+						executionContext.Output.SetForeground(Color.Lime);
+						break;
+					case InventoryObjectDifference.TargetOnly:
+						executionContext.Output.SetForeground(Color.Red);
+						break;
+					case InventoryObjectDifference.Different:
+						executionContext.Output.SetForeground(Color.Yellow);
+						break;
+					}
+					executionContext.Output.WriteLine("{0} {1}: {2}", difference.Key.ObjectCategory, difference.Key.ObjectName, difference.Value);
+				}
 			}
 		}
 

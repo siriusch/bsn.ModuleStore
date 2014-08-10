@@ -30,13 +30,18 @@
 using System;
 
 using bsn.CommandLine;
+using bsn.GoldParser.Text;
 using bsn.ModuleStore.Console;
 
 namespace ModuleStore {
 	internal class Program {
 		private static void Main() {
-			Runner<ExecutionContext> runner = new Runner<ExecutionContext>(new ExecutionContext(Console.In, Console.Out));
-			runner.Run();
+			Runner<ExecutionContext> runner = new Runner<ExecutionContext>(new ExecutionContext(Console.In, new ConsoleTextWriter()));
+			try {
+				runner.Run();
+			} finally {
+				Console.ResetColor();
+			}
 		}
 	}
 }

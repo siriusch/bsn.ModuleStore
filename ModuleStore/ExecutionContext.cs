@@ -35,6 +35,7 @@ using System.Text;
 using System.Threading;
 
 using bsn.CommandLine;
+using bsn.GoldParser.Text;
 using bsn.ModuleStore.Console.Contexts;
 using bsn.ModuleStore.Console.Entities;
 using bsn.ModuleStore.Mapper;
@@ -67,7 +68,7 @@ namespace bsn.ModuleStore.Console {
 		private string schemaName;
 		private string serverName = ".";
 
-		public ExecutionContext(TextReader input, TextWriter output): base(new ModuleStoreContext(), input, output) {
+		public ExecutionContext(TextReader input, RichTextWriter output): base(new ModuleStoreContext(), input, output) {
 			// trigger async initialization on app start
 			ThreadPool.QueueUserWorkItem(state => ScriptParser.GetSemanticActions());
 			connection = new SqlConnection();
