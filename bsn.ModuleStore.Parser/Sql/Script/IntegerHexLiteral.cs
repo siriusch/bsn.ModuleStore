@@ -126,11 +126,11 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("0x");
+			writer.WriteLiteral("0x");
 			for (int i = 0; i < binaryValue.Length; i++) {
 				byte b = binaryValue[i];
-				writer.Write(IntToHexChar(b>>4));
-				writer.Write(IntToHexChar(b&15));
+				writer.WriteLiteral(IntToHexChar(b>>4));
+				writer.WriteLiteral(IntToHexChar(b&15));
 			}
 		}
 	}

@@ -55,7 +55,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected override void WriteColumnInternal(SqlWriter writer) {
-			writer.WriteScriptSequence(columns, WhitespacePadding.None, ", ");
+			writer.WriteScriptSequence(columns, WhitespacePadding.None, w => w.Write(", "));
 		}
 	}
 }

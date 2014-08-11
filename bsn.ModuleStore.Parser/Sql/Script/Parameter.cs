@@ -78,12 +78,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(parameterTypeName, WhitespacePadding.None);
 			WriteParameterQualifiers(writer);
 			if (readOnly) {
-				writer.Write(" READONLY");
+				writer.WriteKeyword(" READONLY");
 			}
 		}
 
 		protected virtual void WriteParameterQualifiers(SqlWriter writer) {
-			writer.WriteScript(defaultValue, WhitespacePadding.None, "=", null);
+			writer.WriteScript(defaultValue, WhitespacePadding.None, w => w.Write('='), null);
 		}
 	}
 }

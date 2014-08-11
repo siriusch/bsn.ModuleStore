@@ -72,7 +72,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(function, WhitespacePadding.None);
 			if (functions.Count > 0) {
 				writer.Write('.');
-				writer.WriteScriptSequence(functions, WhitespacePadding.None, ".");
+				writer.WriteScriptSequence(functions, WhitespacePadding.None, w => w.Write('.'));
 			}
 		}
 	}

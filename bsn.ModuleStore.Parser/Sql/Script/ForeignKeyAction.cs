@@ -57,10 +57,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("ON ");
+			writer.WriteKeyword("ON ");
 			writer.WriteEnum(operation, WhitespacePadding.None);
 			writer.Write(' ');
-			writer.Write(ActionString);
+			writer.WriteKeyword(ActionString);
 		}
 	}
 }

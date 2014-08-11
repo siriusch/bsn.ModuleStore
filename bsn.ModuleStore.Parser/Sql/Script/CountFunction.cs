@@ -65,7 +65,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("COUNT(");
+			writer.WriteFunction("COUNT");
+			writer.Write('(');
 			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(expression, WhitespacePadding.None);
 			writer.Write(')');

@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write(Key);
+			writer.WriteIdentifier(Key);
 			writer.Write(' ');
 			objectName.WriteTo(writer);
 		}

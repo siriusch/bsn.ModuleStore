@@ -46,7 +46,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public TableSimpleHint(SqlIdentifier id): this(id.Value) {}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write(id);
+			writer.WriteKeyword(id);
 		}
 	}
 }

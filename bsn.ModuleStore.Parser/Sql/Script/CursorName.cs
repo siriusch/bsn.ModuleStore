@@ -61,7 +61,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
 			Debug.Assert(!isPartOfQualifiedName);
 			if (global) {
-				writer.Write("GLOBAL ");
+				writer.WriteKeyword("GLOBAL ");
 			}
 			WriteNonGlobalInternal(writer);
 		}

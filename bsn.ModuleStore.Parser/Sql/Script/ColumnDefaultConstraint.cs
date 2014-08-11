@@ -53,7 +53,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write("DEFAULT (");
+			writer.WriteKeyword("DEFAULT ");
+			writer.Write('(');
 			writer.WriteScript(defaultValue, WhitespacePadding.None);
 			writer.Write(')');
 		}

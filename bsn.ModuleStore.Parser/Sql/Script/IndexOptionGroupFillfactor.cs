@@ -55,7 +55,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			// we ignore the fill factor when computing a hash, so that differences due to fill factor only are ignored
 			if (writer.Mode != SqlWriterMode.ForHashing) {
-				writer.Write("WITH FILLFACTOR=");
+				writer.WriteKeyword("WITH FILLFACTOR");
+				writer.Write('=');
 				writer.WriteScript(fillfactor, WhitespacePadding.None);
 			}
 		}

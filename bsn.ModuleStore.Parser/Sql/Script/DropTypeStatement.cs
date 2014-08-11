@@ -62,7 +62,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("DROP TYPE ");
+			writer.WriteKeyword("DROP TYPE ");
 			writer.WriteScript(typeName, WhitespacePadding.None);
 		}
 	}

@@ -68,10 +68,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.WriteScript(queryOptions, WhitespacePadding.NewlineAfter);
-			writer.IncreaseIndent();
-			writer.WriteScript(selectQuery, WhitespacePadding.None);
-			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteScript(selectQuery, WhitespacePadding.None);
+				writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
+			}
 		}
 	}
 }

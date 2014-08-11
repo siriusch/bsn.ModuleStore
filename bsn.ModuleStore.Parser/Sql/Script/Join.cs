@@ -54,7 +54,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write(JoinSpecifier);
+			writer.WriteKeyword(JoinSpecifier);
 			writer.Write(' ');
 			writer.WriteScript(joinSource, WhitespacePadding.None);
 		}

@@ -62,10 +62,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
-				writer.Write("USING XML INDEX ");
+				writer.WriteKeyword("USING XML INDEX ");
 				writer.WriteScript(indexName, WhitespacePadding.None);
 				writer.WriteLine();
-				writer.Write("FOR ");
+				writer.WriteKeyword("FOR ");
 				writer.Write(IndexForSpecifier);
 			}
 		}

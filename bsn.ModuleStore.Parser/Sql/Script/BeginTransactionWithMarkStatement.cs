@@ -51,7 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write(" WITH MARK");
+			writer.WriteKeyword(" WITH MARK");
 			writer.WriteScript(markName, WhitespacePadding.SpaceBefore);
 		}
 	}

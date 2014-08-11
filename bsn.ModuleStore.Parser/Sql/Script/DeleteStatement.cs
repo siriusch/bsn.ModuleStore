@@ -98,17 +98,17 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.WriteScript(queryOptions, WhitespacePadding.NewlineAfter);
-			writer.Write("DELETE");
-			writer.IncreaseIndent();
-			writer.WriteScript(topExpression, WhitespacePadding.SpaceBefore);
-			writer.WriteLine();
-			writer.Write("FROM ");
-			writer.WriteScript(destinationRowset, WhitespacePadding.None);
-			writer.WriteScript(outputClause, WhitespacePadding.SpaceBefore);
-			writer.WriteScript(fromClause, WhitespacePadding.SpaceBefore);
-			writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore, "WHERE ", null);
-			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("DELETE");
+			using (writer.Indent()) {
+				writer.WriteScript(topExpression, WhitespacePadding.SpaceBefore);
+				writer.WriteLine();
+				writer.WriteKeyword("FROM ");
+				writer.WriteScript(destinationRowset, WhitespacePadding.None);
+				writer.WriteScript(outputClause, WhitespacePadding.SpaceBefore);
+				writer.WriteScript(fromClause, WhitespacePadding.SpaceBefore);
+				writer.WriteScript(whereClause, WhitespacePadding.SpaceBefore, w => w.WriteKeyword("WHERE "), null);
+				writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
+			}
 		}
 	}
 }

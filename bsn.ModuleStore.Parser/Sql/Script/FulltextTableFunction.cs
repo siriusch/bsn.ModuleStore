@@ -87,8 +87,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteColumnInternal(writer);
 			writer.Write(", ");
 			writer.WriteScript(query, WhitespacePadding.None);
-			writer.WriteScript(language, WhitespacePadding.None, ", LANGUAGE ", null);
-			writer.WriteScript(top, WhitespacePadding.None, ", ", null);
+			writer.WriteScript(language, WhitespacePadding.None, w => {
+				w.Write(',');
+				w.WriteKeyword(" LANGUAGE ");
+			}, null);
+			writer.WriteScript(top, WhitespacePadding.None, w => w.Write(", "), null);
 			writer.Write(')');
 		}
 

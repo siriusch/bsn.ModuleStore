@@ -51,8 +51,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			Debug.Assert(HasValue);
-			writer.Write("WITH CHANGE_TRACKING ");
-			writer.Write(ChangeTrackingSpecifier);
+			writer.WriteKeyword("WITH CHANGE_TRACKING ");
+			writer.WriteKeyword(ChangeTrackingSpecifier);
 		}
 
 		public bool HasValue {

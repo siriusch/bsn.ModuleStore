@@ -66,7 +66,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write(operation);
+			writer.WriteOperator(operation);
 		}
 	}
 }

@@ -63,7 +63,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteCommentsTo(writer);
 			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			base.WriteTo(writer);
-			writer.Write(" IN ");
+			writer.WriteKeyword(" IN ");
 			writer.WriteScript(tuple, WhitespacePadding.None);
 		}
 	}

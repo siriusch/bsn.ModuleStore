@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		public TriggerTypeAfterToken() {}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("AFTER");
+			writer.WriteKeyword("AFTER");
 		}
 	}
 }

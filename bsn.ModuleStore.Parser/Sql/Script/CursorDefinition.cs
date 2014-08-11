@@ -80,12 +80,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("CURSOR");
+			writer.WriteKeyword("CURSOR");
 			foreach (string cursorOption in cursorOptions) {
 				writer.Write(' ');
 				writer.Write(cursorOption);
 			}
-			writer.Write(" FOR ");
+			writer.WriteKeyword(" FOR ");
 			writer.WriteScript(selectStatement, WhitespacePadding.None);
 			writer.WriteScript(cursorUpdate, WhitespacePadding.SpaceBefore);
 		}

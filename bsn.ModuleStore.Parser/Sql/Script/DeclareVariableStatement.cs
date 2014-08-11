@@ -51,8 +51,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("DECLARE ");
-			writer.WriteScriptSequence(declarations, WhitespacePadding.None, ", ");
+			writer.WriteKeyword("DECLARE ");
+			writer.WriteScriptSequence(declarations, WhitespacePadding.None, w => w.Write(", "));
 		}
 	}
 }

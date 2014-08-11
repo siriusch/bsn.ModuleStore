@@ -118,22 +118,23 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		private void WriteToInternal(SqlWriter writer, string command) {
 			WriteCommentsTo(writer);
-			writer.Write(command);
-			writer.Write(" VIEW ");
+			writer.WriteKeyword(command);
+			writer.WriteKeyword(" VIEW ");
 			writer.WriteScript(viewName, WhitespacePadding.None);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");
-				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, w => w.Write(", "));
 				writer.Write(')');
 			}
 			writer.WriteScript(viewOption, WhitespacePadding.SpaceBefore);
-			writer.IncreaseIndent();
-			writer.WriteLine(" AS");
-			writer.WriteScript(selectStatement, WhitespacePadding.None);
-			if (withCheckOption) {
-				writer.Write(" WITH CHECK OPTION");
+			using (writer.Indent()) {
+				writer.WriteKeyword(" AS");
+				writer.WriteLine();
+				writer.WriteScript(selectStatement, WhitespacePadding.None);
+				if (withCheckOption) {
+					writer.WriteKeyword(" WITH CHECK OPTION");
+				}
 			}
-			writer.DecreaseIndent();
 		}
 
 		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {

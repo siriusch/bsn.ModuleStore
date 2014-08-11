@@ -65,9 +65,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
 			if (IsBuiltinFunction) {
 				if ((writer.Engine == DatabaseEngine.SqlAzure) && (Value.Equals("NEWSEQUENTIALID", StringComparison.OrdinalIgnoreCase))) {
-					writer.Write(ScriptParser.GetBuiltinFunctionName("NEWID"));
+					writer.WriteFunction(ScriptParser.GetBuiltinFunctionName("NEWID"));
 				} else {
-					writer.Write(Value);
+					writer.WriteFunction(Value);
 				}
 			} else {
 				base.WriteToInternal(writer, true);

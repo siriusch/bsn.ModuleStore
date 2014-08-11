@@ -55,10 +55,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(returnTypeName, WhitespacePadding.None);
 			writer.WriteScript(Option, WhitespacePadding.SpaceBefore);
 			writer.WriteLine();
-			writer.Write("AS");
-			writer.IncreaseIndent();
-			writer.WriteScript(Body, WhitespacePadding.NewlineBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("AS");
+			using (writer.Indent()) {
+				writer.WriteScript(Body, WhitespacePadding.NewlineBefore);
+			}
 		}
 	}
 }

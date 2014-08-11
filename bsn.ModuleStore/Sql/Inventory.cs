@@ -36,6 +36,7 @@ using System.Text;
 
 using Common.Logging;
 
+using bsn.GoldParser.Text;
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
@@ -129,7 +130,8 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void Dump(string schemaName, TextWriter writer) {
+		public void Dump(string schemaName, RichTextWriter writer) {
+			writer.SetStyle(SqlTextKind.Comment);
 			writer.WriteLine("-- Inventory hash: {0}", BitConverter.ToString(GetInventoryHash(DatabaseEngine.Unknown)));
 			SqlWriter sqlWriter = new SqlWriter(writer, DatabaseEngine.Unknown);
 			SetQualification(schemaName);
@@ -138,15 +140,18 @@ namespace bsn.ModuleStore.Sql {
 					writer.WriteLine();
 					SetQualification(null);
 					try {
+						writer.SetStyle(SqlTextKind.Comment);
 						writer.WriteLine("-- Object hash: {0}", BitConverter.ToString(statement.GetHash(DatabaseEngine.Unknown)));
 					} finally {
 						UnsetQualification();
 					}
 					statement.WriteTo(sqlWriter);
+					writer.SetStyle(SqlTextKind.Normal);
 					writer.WriteLine(";");
 				}
 			} finally {
 				UnsetQualification();
+				writer.Reset();
 			}
 		}
 

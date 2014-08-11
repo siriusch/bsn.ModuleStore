@@ -40,7 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write("NOT FOR REPLICATION");
+			writer.WriteKeyword("NOT FOR REPLICATION");
 		}
 	}
 }

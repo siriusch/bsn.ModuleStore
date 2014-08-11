@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -100,13 +101,17 @@ namespace bsn.ModuleStore.Console.Commands {
 							deleteFileName.Attributes &= ~FileAttributes.ReadOnly;
 							deleteFileName.Delete();
 						} catch (SystemException ex) {
+							executionContext.Output.SetForeground(Color.Red);
 							executionContext.Output.Write(" --> failed: {0}", ex.Message);
+							executionContext.Output.Reset();
 						}
 						executionContext.Output.WriteLine();
 					}
 				}
 			} catch (Exception ex) {
+				executionContext.Output.SetForeground(Color.Red);
 				executionContext.Output.WriteLine("Error: "+ex.Message);
+				executionContext.Output.Reset();
 			}
 		}
 

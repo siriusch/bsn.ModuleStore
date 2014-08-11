@@ -67,22 +67,23 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.IncreaseIndent();
-			writer.Write("WHEN ");
-			WriteMatchedTo(writer);
-			writer.WriteLine(" THEN");
-			writer.WriteScript(operation, WhitespacePadding.None);
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteKeyword("WHEN ");
+				WriteMatchedTo(writer);
+				writer.WriteKeyword(" THEN");
+				writer.WriteLine();
+				writer.WriteScript(operation, WhitespacePadding.None);
+			}
 		}
 
 		protected virtual void WriteMatchedTo(SqlWriter writer) {
 			if (string.IsNullOrEmpty(NotMatchedBy)) {
-				writer.Write("MATCHED");
+				writer.WriteKeyword("MATCHED");
 			} else {
-				writer.Write("NOT MATCHED BY ");
-				writer.Write(NotMatchedBy);
+				writer.WriteKeyword("NOT MATCHED BY ");
+				writer.WriteKeyword(NotMatchedBy);
 			}
-			writer.WriteScript(predicate, WhitespacePadding.None, " AND ", "");
+			writer.WriteScript(predicate, WhitespacePadding.None, w => w.WriteOperator(" AND "), null);
 		}
 	}
 }

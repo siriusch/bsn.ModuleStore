@@ -38,7 +38,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public ColumnNotNullableConstraint() {}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("NOT NULL");
+			writer.WriteKeyword("NOT NULL");
 		}
 	}
 }

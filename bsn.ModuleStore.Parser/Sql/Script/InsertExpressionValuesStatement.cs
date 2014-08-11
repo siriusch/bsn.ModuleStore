@@ -55,20 +55,21 @@ namespace bsn.ModuleStore.Sql.Script {
 		protected override void WriteToInternal(SqlWriter writer) {
 			base.WriteToInternal(writer);
 			writer.WriteLine();
-			writer.IncreaseIndent();
-			string separator = "VALUES";
-			foreach (IEnumerable<Expression> expressions in valuesList) {
-				if (valuesList.Count > 1) {
-					writer.WriteLine(separator);
-				} else {
-					writer.Write("VALUES ");
+			writer.WriteKeyword("VALUES");
+			using (writer.Indent()) {
+				string separator = "";
+				foreach (IEnumerable<Expression> expressions in valuesList) {
+					if (valuesList.Count > 1) {
+						writer.WriteLine(separator);
+					} else {
+						writer.Write(' ');
+					}
+					separator = ",";
+					writer.Write("(");
+					writer.WriteScriptSequence(expressions, WhitespacePadding.None, w => w.Write(", "));
+					writer.Write(")");
 				}
-				separator = ",";
-				writer.Write("(");
-				writer.WriteScriptSequence(expressions, WhitespacePadding.None, ", ");
-				writer.Write(")");
 			}
-			writer.DecreaseIndent();
 		}
 	}
 }

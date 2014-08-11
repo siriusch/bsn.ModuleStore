@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public TriggerDatabaseTarget() {}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("DATABASE");
+			writer.WriteKeyword("DATABASE");
 		}
 	}
 }

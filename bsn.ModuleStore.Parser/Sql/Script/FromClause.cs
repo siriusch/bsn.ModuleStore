@@ -58,7 +58,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("FROM ");
+			writer.WriteKeyword("FROM ");
 			writer.WriteScript(source, WhitespacePadding.None);
 			writer.WriteScriptSequence(joins, WhitespacePadding.NewlineBefore, null);
 		}

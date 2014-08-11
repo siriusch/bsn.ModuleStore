@@ -69,11 +69,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("CONVERT(");
+			writer.WriteIdentifier("CONVERT");
+			writer.Write('(');
 			writer.WriteScript(typeName, WhitespacePadding.None);
 			writer.Write(", ");
 			writer.WriteScript(valueExpression, WhitespacePadding.None);
-			writer.WriteScript(style, WhitespacePadding.None, ", ", null);
+			writer.WriteScript(style, WhitespacePadding.None, w => w.Write(", "), null);
 			writer.Write(')');
 		}
 	}

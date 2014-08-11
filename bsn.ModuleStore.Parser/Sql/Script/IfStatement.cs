@@ -70,18 +70,18 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("IF ");
-			writer.IncreaseIndent();
-			writer.WriteScript(condition, WhitespacePadding.SpaceAfter);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("IF ");
+			using (writer.Indent()) {
+				writer.WriteScript(condition, WhitespacePadding.SpaceAfter);
+			}
 			if (thenStatement is StatementBlock) {
 				writer.WriteScript(thenStatement, WhitespacePadding.None);
 			} else {
-				writer.IncreaseIndent();
-				writer.WriteScript(thenStatement, WhitespacePadding.NewlineBefore);
-				writer.DecreaseIndent();
+				using (writer.Indent()) {
+					writer.WriteScript(thenStatement, WhitespacePadding.NewlineBefore);
+				}
 			}
-			writer.WriteScript(elseStatement, WhitespacePadding.None, " ELSE ", null);
+			writer.WriteScript(elseStatement, WhitespacePadding.None, w => w.WriteKeyword(" ELSE "), null);
 		}
 	}
 }

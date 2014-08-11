@@ -74,13 +74,13 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write(UniqueKindName);
+			writer.WriteKeyword(UniqueKindName);
 			writer.Write(' ');
 			writer.WriteEnum(clustered, WhitespacePadding.SpaceAfter);
 			writer.Write('(');
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(indexColumns, WhitespacePadding.NewlineBefore, ", ");
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(indexColumns, WhitespacePadding.NewlineBefore, w => w.Write(", "));
+			}
 			writer.WriteLine();
 			writer.Write(')');
 			writer.WriteScript(indexOptionGroup, WhitespacePadding.SpaceBefore);

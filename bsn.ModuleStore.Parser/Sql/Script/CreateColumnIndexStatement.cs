@@ -30,7 +30,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
@@ -98,35 +97,36 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("CREATE ");
+			writer.WriteKeyword("CREATE ");
 			if (unique) {
-				writer.Write("UNIQUE ");
+				writer.WriteKeyword("UNIQUE ");
 			}
 			writer.WriteEnum(clustered, WhitespacePadding.SpaceAfter);
-			writer.Write("INDEX ");
+			writer.WriteKeyword("INDEX ");
 			writer.WriteScript(IndexName, WhitespacePadding.None);
-			writer.Write(" ON ");
+			writer.WriteKeyword(" ON ");
 			writer.WriteScript(TableName, WhitespacePadding.None);
 			writer.Write(" (");
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(indexColumns, WhitespacePadding.NewlineBefore, ", ");
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(indexColumns, WhitespacePadding.NewlineBefore, w => w.Write(", "));
+			}
 			writer.WriteLine();
 			writer.Write(')');
 			if (includeColumnNames.Count > 0) {
-				writer.Write(" INCLUDE (");
-				writer.IncreaseIndent();
-				writer.WriteScriptSequence(includeColumnNames, WhitespacePadding.NewlineBefore, ", ");
-				writer.DecreaseIndent();
+				writer.WriteKeyword(" INCLUDE ");
+				writer.Write('(');
+				using (writer.Indent()) {
+					writer.WriteScriptSequence(includeColumnNames, WhitespacePadding.NewlineBefore, w => w.Write(", "));
+				}
 				writer.WriteLine();
 				writer.Write(')');
 			}
 			WhitespacePadding optionsPadding = WhitespacePadding.SpaceBefore;
 			if ((filter != null) && writer.IsAtLeast(DatabaseEngine.SqlServer2008)) {
 				writer.WriteLine();
-				writer.IncreaseIndent();
-				writer.WriteScript(filter, WhitespacePadding.None, "WHERE ", "");
-				writer.DecreaseIndent();
+				using (writer.Indent()) {
+					writer.WriteScript(filter, WhitespacePadding.None, w => w.WriteKeyword("WHERE "), null);
+				}
 				optionsPadding = WhitespacePadding.NewlineBefore;
 			}
 			writer.WriteScript(IndexOptions, optionsPadding);

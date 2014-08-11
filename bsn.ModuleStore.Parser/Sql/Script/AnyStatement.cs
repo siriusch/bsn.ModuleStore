@@ -40,7 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public AnyStatement(Identifier identifier, Sequence<Expression> expressions) {
 			using (StringWriter stringWriter = new StringWriter()) {
 				SqlWriter statementWriter = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
-				statementWriter.Write(identifier.Value);
+				statementWriter.WriteIdentifier(identifier.Value);
 				statementWriter.WriteScriptSequence(expressions, WhitespacePadding.SpaceBefore, null);
 				statementText = stringWriter.ToString();
 			}

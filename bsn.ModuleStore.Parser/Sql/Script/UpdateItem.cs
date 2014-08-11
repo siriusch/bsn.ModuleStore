@@ -59,9 +59,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(variableName, WhitespacePadding.None, null, "=");
-			writer.WriteScript(columnName, WhitespacePadding.None, null, "=");
-			writer.Write("DEFAULT");
+			writer.WriteScript(variableName, WhitespacePadding.None, null, w => w.Write('='));
+			writer.WriteScript(columnName, WhitespacePadding.None, null, w => w.Write('='));
+			writer.WriteKeyword("DEFAULT");
 		}
 	}
 }

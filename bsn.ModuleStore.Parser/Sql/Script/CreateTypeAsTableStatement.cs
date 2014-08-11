@@ -48,10 +48,11 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write("AS TABLE (");
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, ",");
-			writer.DecreaseIndent();
+			writer.WriteKeyword("AS TABLE ");
+			writer.Write('(');
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, w => w.Write(","));
+			}
 			writer.WriteLine();
 			writer.Write(')');
 		}

@@ -30,11 +30,11 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write(any ? "ANY" : "ALL");
+			writer.WriteKeyword(any ? "ANY" : "ALL");
 			writer.Write(" (");
-			writer.IncreaseIndent();
-			writer.WriteScript(subquery, WhitespacePadding.None);
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteScript(subquery, WhitespacePadding.None);
+			}
 			writer.Write(')');
 		}
 	}

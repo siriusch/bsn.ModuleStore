@@ -82,10 +82,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("EXEC ");
-			writer.WriteScript(resultVariableName, WhitespacePadding.None, null, "=");
+			writer.WriteKeyword("EXEC ");
+			writer.WriteScript(resultVariableName, WhitespacePadding.None, null, w => w.Write('='));
 			writer.WriteScript(procedureName, WhitespacePadding.None);
-			writer.WriteScriptSequence(parameters, WhitespacePadding.SpaceBefore, ", ");
+			writer.WriteScriptSequence(parameters, WhitespacePadding.SpaceBefore, w => w.Write(", "));
 			writer.WriteScript(option, WhitespacePadding.SpaceBefore);
 		}
 	}

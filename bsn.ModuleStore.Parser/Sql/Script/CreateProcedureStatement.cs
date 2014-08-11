@@ -119,19 +119,19 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		private void WriteToInternal(SqlWriter writer, string command) {
 			WriteCommentsTo(writer);
-			writer.Write(command);
-			writer.Write(" PROCEDURE ");
+			writer.WriteKeyword(command);
+			writer.WriteKeyword(" PROCEDURE ");
 			writer.WriteScript(procedureName, WhitespacePadding.None);
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(parameters, WhitespacePadding.NewlineBefore, ",");
-			writer.WriteScript(option, WhitespacePadding.NewlineAfter);
-			writer.WriteScript(replication, WhitespacePadding.NewlineAfter);
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(parameters, WhitespacePadding.NewlineBefore, w => w.Write(','));
+				writer.WriteScript(option, WhitespacePadding.NewlineAfter);
+				writer.WriteScript(replication, WhitespacePadding.NewlineAfter);
+			}
 			writer.WriteLine();
-			writer.Write("AS");
-			writer.IncreaseIndent();
-			writer.WriteScript(body, WhitespacePadding.NewlineBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("AS");
+			using (writer.Indent()) {
+				writer.WriteScript(body, WhitespacePadding.NewlineBefore);
+			}
 		}
 
 		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {

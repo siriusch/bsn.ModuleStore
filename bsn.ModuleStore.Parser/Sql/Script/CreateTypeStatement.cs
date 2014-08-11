@@ -74,7 +74,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("CREATE TYPE ");
+			writer.WriteKeyword("CREATE TYPE ");
 			writer.WriteScript(typeName, WhitespacePadding.SpaceAfter);
 		}
 

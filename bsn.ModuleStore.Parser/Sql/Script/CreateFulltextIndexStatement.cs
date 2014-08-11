@@ -92,14 +92,14 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("CREATE FULLTEXT INDEX ON TABLE ");
+			writer.WriteKeyword("CREATE FULLTEXT INDEX ON TABLE ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			if (columns.Count > 0) {
 				writer.Write(" (");
-				writer.WriteScriptSequence(columns, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(columns, WhitespacePadding.None, w => w.Write(", "));
 				writer.Write(')');
 			}
-			writer.Write(" KEY INDEX ");
+			writer.WriteKeyword(" KEY INDEX ");
 			writer.WriteScript(indexName, WhitespacePadding.None);
 			writer.WriteScript(changeTracking, WhitespacePadding.SpaceBefore);
 		}

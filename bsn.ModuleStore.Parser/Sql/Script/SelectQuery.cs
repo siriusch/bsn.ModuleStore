@@ -123,13 +123,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("SELECT ");
+			writer.WriteKeyword("SELECT ");
 			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(top, WhitespacePadding.SpaceAfter);
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(columnItems, WhitespacePadding.None, ", ");
-			writer.DecreaseIndent();
-			writer.WriteScript(intoClause, WhitespacePadding.NewlineBefore, "INTO ", null);
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(columnItems, WhitespacePadding.None, w => w.Write(", "));
+			}
+			writer.WriteScript(intoClause, WhitespacePadding.NewlineBefore, w => w.WriteKeyword("INTO "), null);
 			WriteToInternal(writer);
 			writer.WriteScript(forClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(unionClause, WhitespacePadding.NewlineBefore);
@@ -147,7 +147,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected virtual void WriteToInternal(SqlWriter writer) {
-			writer.WriteScript(whereClause, WhitespacePadding.NewlineBefore, "WHERE ", null);
+			writer.WriteScript(whereClause, WhitespacePadding.NewlineBefore, w => w.WriteKeyword("WHERE "), null);
 		}
 	}
 }

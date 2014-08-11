@@ -73,20 +73,20 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
-				writer.Write("OUTPUT ");
-				writer.IncreaseIndent();
-				writer.WriteScriptSequence(columnItems, WhitespacePadding.None, ", ");
-				if (destinationName != null) {
-					writer.WriteLine();
-					writer.Write("INTO ");
-					writer.WriteScript(destinationName, WhitespacePadding.None);
-					if (destinationColumnNames.Count > 0) {
-						writer.Write(" (");
-						writer.WriteScriptSequence(destinationColumnNames, WhitespacePadding.None, ", ");
-						writer.Write(')');
+				writer.WriteKeyword("OUTPUT ");
+				using (writer.Indent()) {
+					writer.WriteScriptSequence(columnItems, WhitespacePadding.None, w => w.Write(", "));
+					if (destinationName != null) {
+						writer.WriteLine();
+						writer.WriteKeyword("INTO ");
+						writer.WriteScript(destinationName, WhitespacePadding.None);
+						if (destinationColumnNames.Count > 0) {
+							writer.Write(" (");
+							writer.WriteScriptSequence(destinationColumnNames, WhitespacePadding.None, w => w.Write(", "));
+							writer.Write(')');
+						}
 					}
 				}
-				writer.DecreaseIndent();
 			}
 		}
 

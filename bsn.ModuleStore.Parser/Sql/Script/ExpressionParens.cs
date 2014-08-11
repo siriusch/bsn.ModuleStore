@@ -52,9 +52,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.Write('(');
-			writer.IncreaseIndent();
-			writer.WriteScript(expression, WhitespacePadding.None);
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteScript(expression, WhitespacePadding.None);
+			}
 			writer.Write(')');
 		}
 	}

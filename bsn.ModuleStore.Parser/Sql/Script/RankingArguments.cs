@@ -62,15 +62,15 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			if (partitions.Count > 0) {
-				writer.Write("PARTITION BY ");
-				writer.WriteScriptSequence(partitions, WhitespacePadding.None, ", ");
+				writer.WriteKeyword("PARTITION BY ");
+				writer.WriteScriptSequence(partitions, WhitespacePadding.None, w => w.Write(", "));
 				if (orders.Count > 0) {
 					writer.Write(' ');
 				}
 			}
 			if (orders.Count > 0) {
-				writer.Write("ORDER BY ");
-				writer.WriteScriptSequence(orders, WhitespacePadding.None, ", ");
+				writer.WriteKeyword("ORDER BY ");
+				writer.WriteScriptSequence(orders, WhitespacePadding.None, w => w.Write(", "));
 			}
 		}
 	}

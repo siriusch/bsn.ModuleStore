@@ -59,18 +59,19 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("INSERT ");
+			writer.WriteKeyword("INSERT ");
 			if (columnNames.Count > 0) {
-				writer.Write("(");
-				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, ", ");
+				writer.Write('(');
+				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, w => w.Write(", "));
 				writer.Write(") ");
 			}
 			if (expressions.Count > 0) {
-				writer.Write("VALUES (");
-				writer.WriteScriptSequence(expressions, WhitespacePadding.None, ", ");
-				writer.Write(")");
+				writer.WriteKeyword("VALUES ");
+				writer.Write('(');
+				writer.WriteScriptSequence(expressions, WhitespacePadding.None, w => w.Write(", "));
+				writer.Write(')');
 			} else {
-				writer.Write("DEFAULT VALUES");
+				writer.WriteKeyword("DEFAULT VALUES");
 			}
 		}
 	}

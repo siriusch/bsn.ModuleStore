@@ -58,11 +58,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			base.WriteTo(writer);
 			writer.WriteEnum(tableCheck, WhitespacePadding.SpaceAfter);
 			WriteCheckOperation(writer);
-			writer.Write(" CONSTRAINT ");
+			writer.WriteKeyword(" CONSTRAINT ");
 			if (constraintName != null) {
 				writer.WriteScript(constraintName, WhitespacePadding.None);
 			} else {
-				writer.Write("ALL");
+				writer.WriteKeyword("ALL");
 			}
 		}
 

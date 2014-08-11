@@ -81,13 +81,14 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("OPENXML (");
+			writer.WriteFunction("OPENXML");
+			writer.Write('(');
 			writer.WriteScript(variableName, WhitespacePadding.None);
 			writer.Write(", ");
 			stringValue.WriteTo(writer);
 			if (flags != 0) {
 				writer.Write(", ");
-				writer.Write(flags.ToString(NumberFormatInfo.InvariantInfo));
+				writer.WriteKeyword(flags.ToString(NumberFormatInfo.InvariantInfo));
 			}
 			writer.Write(')');
 			writer.WriteScript(schema, WhitespacePadding.SpaceBefore);

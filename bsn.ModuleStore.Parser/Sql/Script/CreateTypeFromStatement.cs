@@ -60,7 +60,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write("FROM");
+			writer.WriteKeyword("FROM");
 			writer.WriteScript(systemTypeName, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(constraint, WhitespacePadding.SpaceBefore);
 		}

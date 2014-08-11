@@ -43,8 +43,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("MAXRECURSION ");
-			writer.Write(maxRecursion.ToString(NumberFormatInfo.InvariantInfo));
+			writer.WriteKeyword("MAXRECURSION ");
+			writer.WriteLiteral(maxRecursion.ToString(NumberFormatInfo.InvariantInfo));
 		}
 	}
 }

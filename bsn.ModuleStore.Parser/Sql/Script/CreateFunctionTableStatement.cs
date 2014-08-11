@@ -64,18 +64,19 @@ namespace bsn.ModuleStore.Sql.Script {
 		protected override void WriteToInternal(SqlWriter writer, string command) {
 			base.WriteToInternal(writer, command);
 			writer.WriteScript(resultVariableName, WhitespacePadding.SpaceAfter);
-			writer.Write("TABLE (");
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, ";");
-			writer.DecreaseIndent();
+			writer.WriteKeyword("TABLE ");
+			writer.Write('(');
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, w => w.Write(';'));
+			}
 			writer.WriteLine();
 			writer.Write(')');
 			writer.WriteScript(Option, WhitespacePadding.SpaceBefore);
 			writer.WriteLine();
-			writer.Write("AS");
-			writer.IncreaseIndent();
-			writer.WriteScript(Body, WhitespacePadding.NewlineBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("AS");
+			using (writer.Indent()) {
+				writer.WriteScript(Body, WhitespacePadding.NewlineBefore);
+			}
 		}
 	}
 }

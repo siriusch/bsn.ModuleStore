@@ -70,7 +70,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(functionName, WhitespacePadding.None);
 			writer.Write('(');
-			writer.WriteScriptSequence(arguments, WhitespacePadding.None, ", ");
+			writer.WriteScriptSequence(arguments, WhitespacePadding.None, w => w.Write(", "));
 			writer.Write(')');
 		}
 

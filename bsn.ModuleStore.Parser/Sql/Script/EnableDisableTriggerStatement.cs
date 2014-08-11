@@ -61,13 +61,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write(" TRIGGER ");
+			writer.WriteKeyword(" TRIGGER ");
 			if (All) {
-				writer.Write("ALL");
+				writer.WriteKeyword("ALL");
 			} else {
-				writer.WriteScriptSequence(triggerNames, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(triggerNames, WhitespacePadding.None, w => w.Write(", "));
 			}
-			writer.Write(" ON ");
+			writer.WriteKeyword(" ON ");
 			writer.WriteScript(target, WhitespacePadding.None);
 		}
 	}

@@ -109,18 +109,18 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.WriteScript(queryOptions, WhitespacePadding.NewlineAfter);
-			writer.Write("UPDATE ");
-			writer.IncreaseIndent();
-			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
-			writer.WriteScript(destinationRowset, WhitespacePadding.None);
-			writer.WriteLine();
-			writer.Write("SET ");
-			writer.WriteScriptSequence(updateItems, WhitespacePadding.None, ", ");
-			writer.WriteScript(outputClause, WhitespacePadding.NewlineBefore);
-			writer.WriteScript(fromClause, WhitespacePadding.NewlineBefore);
-			writer.WriteScript(whereClause, WhitespacePadding.NewlineBefore, "WHERE ", null);
-			writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("UPDATE ");
+			using (writer.Indent()) {
+				writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
+				writer.WriteScript(destinationRowset, WhitespacePadding.None);
+				writer.WriteLine();
+				writer.WriteKeyword("SET ");
+				writer.WriteScriptSequence(updateItems, WhitespacePadding.None, w => w.Write(", "));
+				writer.WriteScript(outputClause, WhitespacePadding.NewlineBefore);
+				writer.WriteScript(fromClause, WhitespacePadding.NewlineBefore);
+				writer.WriteScript(whereClause, WhitespacePadding.NewlineBefore, w => w.WriteKeyword("WHERE "), null);
+				writer.WriteScript(queryHint, WhitespacePadding.SpaceBefore);
+			}
 		}
 	}
 }

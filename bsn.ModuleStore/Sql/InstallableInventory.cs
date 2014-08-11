@@ -63,35 +63,35 @@ namespace bsn.ModuleStore.Sql {
 				try {
 					using (StringWriter writer = new StringWriter(builder)) {
 						SqlWriter sqlWriter = new SqlWriter(writer, targetEngine);
-						sqlWriter.Write("CREATE SCHEMA");
-						sqlWriter.IncreaseIndent();
-						sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
-						DependencyResolver schemaResolver = new DependencyResolver();
-						foreach (IAlterableCreateStatement statement in createStatements) {
-							if (statement.IsPartOfSchemaDefinition) {
-								if (statement is CreateTableFragment) {
+						sqlWriter.WriteKeyword("CREATE SCHEMA");
+						using (sqlWriter.Indent()) {
+							sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
+							DependencyResolver schemaResolver = new DependencyResolver();
+							foreach (IAlterableCreateStatement statement in createStatements) {
+								if (statement.IsPartOfSchemaDefinition) {
+									if (statement is CreateTableFragment) {
+										sqlWriter.WriteLine();
+										statement.WriteTo(sqlWriter);
+										resolver.AddExistingObject(statement.ObjectName);
+										schemaResolver.AddExistingObject(statement.ObjectName);
+									} else {
+										schemaResolver.Add(statement);
+									}
+								} else {
+									resolver.Add(statement);
+								}
+							}
+							try {
+								foreach (IInstallStatement statement in schemaResolver.GetInOrder(true)) {
 									sqlWriter.WriteLine();
 									statement.WriteTo(sqlWriter);
 									resolver.AddExistingObject(statement.ObjectName);
-									schemaResolver.AddExistingObject(statement.ObjectName);
-								} else {
-									schemaResolver.Add(statement);
 								}
-							} else {
-								resolver.Add(statement);
+							} catch (InvalidOperationException ex) {
+								schemaResolver.TransferPendingObjects(resolver);
+								log.DebugFormat("SCHEMA CREATE trimmed because of {0} - processing continues", ex, ex.Message);
 							}
 						}
-						try {
-							foreach (IInstallStatement statement in schemaResolver.GetInOrder(true)) {
-								sqlWriter.WriteLine();
-								statement.WriteTo(sqlWriter);
-								resolver.AddExistingObject(statement.ObjectName);
-							}
-						} catch (InvalidOperationException ex) {
-							schemaResolver.TransferPendingObjects(resolver);
-							log.DebugFormat("SCHEMA CREATE trimmed because of {0} - processing continues", ex, ex.Message);
-						}
-						sqlWriter.DecreaseIndent();
 						yield return writer.ToString();
 					}
 				} finally {

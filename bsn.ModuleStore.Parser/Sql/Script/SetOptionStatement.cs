@@ -63,8 +63,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("SET ");
-			writer.Write(option);
+			writer.WriteKeyword("SET ");
+			writer.WriteKeyword(option);
 		}
 	}
 }

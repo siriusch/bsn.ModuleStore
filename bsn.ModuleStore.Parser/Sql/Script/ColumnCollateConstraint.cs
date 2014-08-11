@@ -49,7 +49,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("COLLATE ");
+			writer.WriteKeyword("COLLATE ");
 			writer.WriteScript(collation, WhitespacePadding.None);
 		}
 	}

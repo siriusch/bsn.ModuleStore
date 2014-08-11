@@ -42,7 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override sealed void WriteTo(SqlWriter writer) {
-			writer.Write(Keyword);
+			writer.WriteKeyword(Keyword);
 		}
 
 		protected string GetOriginalValue() {

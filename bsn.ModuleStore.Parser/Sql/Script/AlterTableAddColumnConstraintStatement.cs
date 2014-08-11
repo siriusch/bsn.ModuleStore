@@ -42,9 +42,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.WriteEnum(check, WhitespacePadding.SpaceAfter);
-			writer.Write("ADD ");
+			writer.WriteKeyword("ADD ");
 			writer.WriteScript(constraint, WhitespacePadding.None);
-			writer.Write(" FOR ");
+			writer.WriteKeyword(" FOR ");
 			writer.WriteScript(columnName, WhitespacePadding.None);
 		}
 

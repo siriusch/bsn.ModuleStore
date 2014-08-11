@@ -67,8 +67,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("FOR XML ");
-			writer.Write(KindSpecifier);
+			writer.WriteKeyword("FOR XML ");
+			writer.WriteKeyword(KindSpecifier);
 			if (elementName != null) {
 				writer.Write(" (");
 				writer.WriteScript(elementName, WhitespacePadding.None);
@@ -76,7 +76,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 			if (directives.Count > 0) {
 				writer.Write(", ");
-				writer.WriteScriptSequence(directives, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(directives, WhitespacePadding.None, w => w.Write(", "));
 			}
 		}
 	}

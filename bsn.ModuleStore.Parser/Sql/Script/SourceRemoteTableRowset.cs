@@ -80,9 +80,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(serverName, WhitespacePadding.None, null, ".");
-			writer.WriteScript(databaseName, WhitespacePadding.None, null, ".");
-			writer.WriteScript(schemaName, WhitespacePadding.None, null, ".");
+			writer.WriteScript(serverName, WhitespacePadding.None, null, w => w.Write('.'));
+			writer.WriteScript(databaseName, WhitespacePadding.None, null, w => w.Write('.'));
+			writer.WriteScript(schemaName, WhitespacePadding.None, null, w => w.Write('.'));
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			base.WriteTo(writer);
 		}

@@ -62,7 +62,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override void WriteArguments(SqlWriter writer) {
 			if (isMax) {
-				writer.Write("MAX");
+				writer.WriteKeyword("MAX");
 			} else {
 				writer.WriteScript(extension, WhitespacePadding.None);
 			}

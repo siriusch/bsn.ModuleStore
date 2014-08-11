@@ -62,7 +62,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.WriteScript(typeName, WhitespacePadding.None);
-			writer.WriteScript(initialization, WhitespacePadding.None, "=", null);
+			writer.WriteScript(initialization, WhitespacePadding.None, w => w.Write('='), null);
 		}
 	}
 }

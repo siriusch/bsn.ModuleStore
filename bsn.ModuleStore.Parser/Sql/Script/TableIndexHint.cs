@@ -48,8 +48,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("INDEX(");
-			writer.WriteScriptSequence(indexValues, WhitespacePadding.None, ", ");
+			writer.WriteKeyword("INDEX");
+			writer.Write('(');
+			writer.WriteScriptSequence(indexValues, WhitespacePadding.None, w => w.Write(", "));
 			writer.Write(')');
 		}
 	}

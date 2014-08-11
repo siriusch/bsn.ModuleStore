@@ -41,7 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public AlterTableCheckConstraintStatement(Qualified<SchemaName, TableName> tableName, TableCheckToken tableCheck): this(tableName, tableCheck, null) {}
 
 		protected override void WriteCheckOperation(SqlWriter writer) {
-			writer.Write("CHECK");
+			writer.WriteKeyword("CHECK");
 		}
 	}
 }

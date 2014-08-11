@@ -100,16 +100,16 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected virtual void WriteToInternal(SqlWriter writer, string command) {
 			WriteCommentsTo(writer);
-			writer.Write(command);
-			writer.Write(" FUNCTION ");
+			writer.WriteKeyword(command);
+			writer.WriteKeyword(" FUNCTION ");
 			writer.WriteScript(functionName, WhitespacePadding.None);
 			writer.Write(" (");
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(parameters, WhitespacePadding.NewlineBefore, ", ");
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(parameters, WhitespacePadding.NewlineBefore, w => w.Write(", "));
+			}
 			writer.WriteLine();
 			writer.WriteLine(")");
-			writer.Write("RETURNS ");
+			writer.WriteKeyword("RETURNS ");
 		}
 
 		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {

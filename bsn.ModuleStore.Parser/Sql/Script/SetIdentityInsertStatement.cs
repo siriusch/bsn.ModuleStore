@@ -60,7 +60,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("SET IDENTITY_INSERT ");
+			writer.WriteKeyword("SET IDENTITY_INSERT ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.WriteToggle(enabled, WhitespacePadding.SpaceBefore);
 		}

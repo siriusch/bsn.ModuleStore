@@ -512,6 +512,7 @@
     <Compile Include="Sql\Script\XmlSchemaCollectionName.cs" />
     <Compile Include="Sql\ScriptParser.cs" />
     <Compile Include="Sql\SqlSemanticProcessor.cs" />
+    <Compile Include="Sql\SqlTextKind.cs" />
     <Compile Include="Sql\SqlTokenizer.cs" />
     <Compile Include="Sql\SqlTypeMapping.cs" />
     <Compile Include="Sql\SqlWriter.cs" />

@@ -57,18 +57,19 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("BEGIN TRY");
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(tryStatements, WhitespacePadding.NewlineBefore, ";");
-			writer.DecreaseIndent();
+			writer.WriteKeyword("BEGIN TRY");
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(tryStatements, WhitespacePadding.NewlineBefore, w => w.Write(';'));
+			}
 			writer.WriteLine();
-			writer.WriteLine("END TRY");
-			writer.Write("BEGIN CATCH");
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(catchStatements, WhitespacePadding.NewlineBefore, ";");
-			writer.DecreaseIndent();
+			writer.WriteKeyword("END TRY");
 			writer.WriteLine();
-			writer.Write("END TRY");
+			writer.WriteKeyword("BEGIN CATCH");
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(catchStatements, WhitespacePadding.NewlineBefore, w => w.Write(';'));
+			}
+			writer.WriteLine();
+			writer.WriteKeyword("END CATCH");
 		}
 	}
 }

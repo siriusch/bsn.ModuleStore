@@ -115,26 +115,26 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.WriteScript(queryOptions, WhitespacePadding.NewlineAfter);
-			writer.Write("MERGE ");
-			writer.IncreaseIndent();
-			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
-			writer.WriteLine();
-			writer.IncreaseIndent();
-			writer.Write("INTO ");
-			writer.WriteScript(destinationRowset, WhitespacePadding.None);
-			writer.WriteScript(destinationAlias, WhitespacePadding.SpaceBefore);
-			writer.DecreaseIndent();
-			writer.WriteLine();
-			writer.Write("USING ");
-			writer.IncreaseIndent();
-			writer.WriteScript(sourceRowset, WhitespacePadding.None);
-			writer.Write(" ON ");
-			writer.WriteScript(predicate, WhitespacePadding.None);
-			writer.DecreaseIndent();
-			writer.WriteScriptSequence(whenMatchedCollection, WhitespacePadding.NewlineBefore, "");
-			writer.WriteScript(outputClause, WhitespacePadding.NewlineBefore);
-			writer.WriteScript(queryHint, WhitespacePadding.NewlineBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("MERGE ");
+			using (writer.Indent()) {
+				writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
+				writer.WriteLine();
+				using (writer.Indent()) {
+					writer.WriteKeyword("INTO ");
+					writer.WriteScript(destinationRowset, WhitespacePadding.None);
+					writer.WriteScript(destinationAlias, WhitespacePadding.SpaceBefore);
+				}
+				writer.WriteLine();
+				writer.WriteKeyword("USING ");
+				using (writer.Indent()) {
+					writer.WriteScript(sourceRowset, WhitespacePadding.None);
+					writer.WriteKeyword(" ON ");
+					writer.WriteScript(predicate, WhitespacePadding.None);
+				}
+				writer.WriteScriptSequence(whenMatchedCollection, WhitespacePadding.NewlineBefore, null);
+				writer.WriteScript(outputClause, WhitespacePadding.NewlineBefore);
+				writer.WriteScript(queryHint, WhitespacePadding.NewlineBefore);
+			}
 		}
 	}
 }

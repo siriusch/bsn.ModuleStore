@@ -58,11 +58,11 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override void WriteParameterQualifiers(SqlWriter writer) {
 			if (varying) {
-				writer.Write(" VARYING");
+				writer.WriteKeyword(" VARYING");
 			}
 			base.WriteParameterQualifiers(writer);
 			if (output) {
-				writer.Write(" OUTPUT");
+				writer.WriteKeyword(" OUTPUT");
 			}
 		}
 	}

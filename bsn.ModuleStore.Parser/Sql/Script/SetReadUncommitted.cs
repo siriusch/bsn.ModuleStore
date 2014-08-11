@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public SetReadUncommitted() {}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("READ UNCOMMITTED");
+			writer.WriteKeyword("READ UNCOMMITTED");
 		}
 	}
 }

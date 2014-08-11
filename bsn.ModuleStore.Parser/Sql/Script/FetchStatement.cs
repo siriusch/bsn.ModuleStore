@@ -71,15 +71,15 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("FETCH ");
+			writer.WriteKeyword("FETCH ");
 			writer.WriteScript(cursorPosition, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(cursorName, WhitespacePadding.None);
 			if (destinationVariables.Count > 0) {
-				writer.IncreaseIndent();
-				writer.WriteLine();
-				writer.Write("INTO ");
-				writer.WriteScriptSequence(destinationVariables, WhitespacePadding.None, ", ");
-				writer.DecreaseIndent();
+				using (writer.Indent()) {
+					writer.WriteLine();
+					writer.WriteKeyword("INTO ");
+					writer.WriteScriptSequence(destinationVariables, WhitespacePadding.None, w => w.Write(", "));
+				}
 			}
 		}
 	}

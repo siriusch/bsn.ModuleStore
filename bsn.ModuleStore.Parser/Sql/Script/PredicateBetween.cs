@@ -68,9 +68,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteCommentsTo(writer);
 			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			base.WriteTo(writer);
-			writer.Write(" BETWEEN ");
+			writer.WriteOperator(" BETWEEN ");
 			writer.WriteScript(lowerBound, WhitespacePadding.None);
-			writer.Write(" AND ");
+			writer.WriteOperator(" AND ");
 			writer.WriteScript(upperBound, WhitespacePadding.None);
 		}
 	}

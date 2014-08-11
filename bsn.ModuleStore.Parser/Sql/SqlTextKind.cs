@@ -1,7 +1,7 @@
-// bsn ModuleStore database versioning
+﻿// bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Ars�ne von Wyss - avw@gmx.ch
+// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -27,31 +27,16 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Diagnostics;
-
-using bsn.GoldParser.Semantic;
-
-namespace bsn.ModuleStore.Sql.Script {
-	public sealed class PrintStatement: Statement {
-		private readonly Expression expression;
-
-		[Rule("<PrintStatement> ::= ~PRINT <Expression>")]
-		public PrintStatement(Expression expression) {
-			Debug.Assert(expression != null);
-			this.expression = expression;
-		}
-
-		public Expression Expression {
-			get {
-				return expression;
-			}
-		}
-
-		public override void WriteTo(SqlWriter writer) {
-			WriteCommentsTo(writer);
-			writer.WriteKeyword("PRINT ");
-			writer.WriteScript(expression, WhitespacePadding.None);
-		}
+namespace bsn.ModuleStore.Sql {
+	public enum SqlTextKind {
+		Normal,
+		Keyword,
+		Type,
+		Function,
+		Operator,
+		Identifier,
+		Literal,
+		String,
+		Comment
 	}
 }

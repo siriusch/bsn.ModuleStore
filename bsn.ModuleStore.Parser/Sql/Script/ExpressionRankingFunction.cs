@@ -57,7 +57,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.WriteScript(functionCall, WhitespacePadding.None);
-			writer.Write(" OVER (");
+			writer.WriteKeyword(" OVER ");
+			writer.Write('(');
 			writer.WriteScript(rankingArguments, WhitespacePadding.None);
 			writer.Write(')');
 		}

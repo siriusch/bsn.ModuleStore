@@ -49,7 +49,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("AS ");
+			writer.WriteKeyword("AS ");
 			writer.WriteScript(expression, WhitespacePadding.None);
 			base.WriteTo(writer);
 		}

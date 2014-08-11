@@ -49,8 +49,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write(OperationSpecifier);
-			writer.Write(" TRANSACTION");
+			writer.WriteKeyword(OperationSpecifier);
+			writer.WriteKeyword(" TRANSACTION");
 			writer.WriteScript(transactionIdentifier, WhitespacePadding.SpaceBefore);
 		}
 	}

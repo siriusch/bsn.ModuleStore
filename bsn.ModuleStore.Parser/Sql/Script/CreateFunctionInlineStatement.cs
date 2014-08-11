@@ -39,13 +39,14 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override void WriteToInternal(SqlWriter writer, string command) {
 			base.WriteToInternal(writer, command);
-			writer.Write("TABLE");
+			writer.WriteKeyword("TABLE");
 			writer.WriteScript(Option, WhitespacePadding.SpaceBefore);
 			writer.WriteLine();
-			writer.Write("AS RETURN (");
-			writer.IncreaseIndent();
-			writer.WriteScript(Body, WhitespacePadding.NewlineBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("AS RETURN ");
+			writer.Write('(');
+			using (writer.Indent()) {
+				writer.WriteScript(Body, WhitespacePadding.NewlineBefore);
+			}
 			writer.WriteLine();
 			writer.Write(')');
 		}

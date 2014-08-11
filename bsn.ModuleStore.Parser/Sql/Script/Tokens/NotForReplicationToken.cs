@@ -43,7 +43,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("NOT FOR REPLICATION");
+			writer.WriteKeyword("NOT FOR REPLICATION");
 		}
 	}
 }

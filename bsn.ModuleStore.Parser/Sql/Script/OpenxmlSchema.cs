@@ -32,7 +32,8 @@ using System;
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class OpenxmlSchema: SqlScriptableToken {
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("WITH (");
+			writer.WriteKeyword("WITH ");
+			writer.Write('(');
 			WriteToInternal(writer);
 			writer.Write(')');
 		}

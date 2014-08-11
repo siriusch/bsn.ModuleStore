@@ -67,19 +67,20 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			if (HasValue) {
-				writer.Write("WITH ");
+				writer.WriteKeyword("WITH ");
 				if (namespaces.Count > 0) {
-					writer.IncreaseIndent();
-					writer.Write("XMLNAMESPACES (");
-					writer.WriteScriptSequence(namespaces, WhitespacePadding.NewlineBefore, ",");
-					writer.DecreaseIndent();
+					using (writer.Indent()) {
+						writer.WriteKeyword("XMLNAMESPACES ");
+						writer.Write('(');
+						writer.WriteScriptSequence(namespaces, WhitespacePadding.NewlineBefore, w => w.Write(','));
+					}
 					writer.WriteLine();
 					writer.Write(')');
 					if (commonTableExpressions.Count > 0) {
 						writer.WriteLine(",");
 					}
 				}
-				writer.WriteScriptSequence(commonTableExpressions, WhitespacePadding.None, ","+writer.NewLine);
+				writer.WriteScriptSequence(commonTableExpressions, WhitespacePadding.None, w => w.WriteLine(","));
 			}
 		}
 

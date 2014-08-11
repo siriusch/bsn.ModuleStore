@@ -74,10 +74,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.WriteScript(ParameterName, WhitespacePadding.None, null, "=");
+			writer.WriteScript(ParameterName, WhitespacePadding.None, null, w => w.Write('='));
 			writer.WriteScript(value, WhitespacePadding.None);
 			if (Output) {
-				writer.Write(" OUTPUT");
+				writer.WriteKeyword(" OUTPUT");
 			}
 		}
 	}

@@ -51,7 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("RETURN");
+			writer.WriteKeyword("RETURN");
 			writer.WriteScript(expression, WhitespacePadding.SpaceBefore);
 		}
 	}

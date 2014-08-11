@@ -45,18 +45,20 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.IncreaseIndent();
-			string separator = "(VALUES";
-			foreach (IEnumerable<Expression> expressions in valuesList) {
-				writer.WriteLine(separator);
-				separator = ",";
-				writer.Write("(");
-				writer.WriteScriptSequence(expressions, WhitespacePadding.None, ", ");
-				writer.Write(")");
+			using (writer.Indent()) {
+				writer.Write('(');
+				writer.WriteKeyword("VALUES");
+				string separator = "";
+				foreach (IEnumerable<Expression> expressions in valuesList) {
+					writer.WriteLine(separator);
+					separator = ",";
+					writer.Write("(");
+					writer.WriteScriptSequence(expressions, WhitespacePadding.None, w => w.Write(", "));
+					writer.Write(")");
+				}
 			}
-			writer.DecreaseIndent();
 			writer.WriteLine();
-			writer.Write(")");
+			writer.Write(')');
 			base.WriteTo(writer);
 		}
 	}

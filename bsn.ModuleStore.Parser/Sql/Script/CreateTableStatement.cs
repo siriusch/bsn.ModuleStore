@@ -106,16 +106,16 @@ namespace bsn.ModuleStore.Sql.Script {
 				throw new ArgumentNullException("definitionRewriter");
 			}
 			WriteCommentsTo(writer);
-			writer.Write("CREATE TABLE ");
+			writer.WriteKeyword("CREATE TABLE ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.Write(" (");
-			writer.IncreaseIndent();
-			IEnumerable<TableDefinition> tableDefinitions = definitions.Select(definitionRewriter);
-			if (writer.Mode == SqlWriterMode.ForHashing) {
-				tableDefinitions = tableDefinitions.OrderBy(td => (td != null) ? td.ToString(DatabaseEngine.Unknown) : string.Empty);
+			using (writer.Indent()) {
+				IEnumerable<TableDefinition> tableDefinitions = definitions.Select(definitionRewriter);
+				if (writer.Mode == SqlWriterMode.ForHashing) {
+					tableDefinitions = tableDefinitions.OrderBy(td => (td != null) ? td.ToString(DatabaseEngine.Unknown) : string.Empty);
+				}
+				writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, w => w.Write(','));
 			}
-			writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, ",");
-			writer.DecreaseIndent();
 			writer.WriteLine();
 			writer.Write(')');
 		}

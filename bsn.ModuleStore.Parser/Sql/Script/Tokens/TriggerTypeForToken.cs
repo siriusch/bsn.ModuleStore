@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		public TriggerTypeForToken() {}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("FOR");
+			writer.WriteKeyword("FOR");
 		}
 	}
 }

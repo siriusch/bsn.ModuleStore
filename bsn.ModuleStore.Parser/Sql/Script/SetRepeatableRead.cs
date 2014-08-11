@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public SetRepeatableRead() {}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("REPEATABLE READ");
+			writer.WriteKeyword("REPEATABLE READ");
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public ColumnPersistedConstraint() {}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("PERSISTED");
+			writer.WriteKeyword("PERSISTED");
 		}
 	}
 }

@@ -31,6 +31,8 @@ using System;
 
 using NUnit.Framework;
 
+#pragma warning disable 649
+
 namespace bsn.ModuleStore.Mapper.Serialization {
 	[TestFixture]
 	public class SqlSerializerTest: AssertionHelper {
@@ -99,3 +101,5 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 	}
 }
+
+#pragma warning restore 649

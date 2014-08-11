@@ -56,8 +56,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
 			writer.WriteEnum(check, WhitespacePadding.SpaceAfter);
-			writer.Write("ADD ");
-			writer.WriteScriptSequence(definitions, WhitespacePadding.None, ", ");
+			writer.WriteKeyword("ADD ");
+			writer.WriteScriptSequence(definitions, WhitespacePadding.None, w => w.Write(", "));
 		}
 
 		IQualifiedName<SchemaName> IApplicableTo<CreateTableStatement>.QualifiedName {

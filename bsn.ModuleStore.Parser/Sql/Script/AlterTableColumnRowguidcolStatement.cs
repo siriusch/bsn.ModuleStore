@@ -41,7 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			if (writer.Engine != DatabaseEngine.SqlAzure) {
 				base.WriteTo(writer);
-				writer.Write("ROWGUIDCOL");
+				writer.WriteKeyword("ROWGUIDCOL");
 			}
 		}
 	}

@@ -59,12 +59,13 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("DECLARE ");
+			writer.WriteKeyword("DECLARE ");
 			writer.WriteScript(variableName, WhitespacePadding.None);
-			writer.Write(" TABLE (");
-			writer.IncreaseIndent();
-			writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, ",");
-			writer.DecreaseIndent();
+			writer.WriteKeyword(" TABLE ");
+			writer.Write('(');
+			using (writer.Indent()) {
+				writer.WriteScriptSequence(tableDefinitions, WhitespacePadding.NewlineBefore, w => w.Write(','));
+			}
 			writer.WriteLine();
 			writer.Write(')');
 		}

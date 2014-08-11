@@ -83,9 +83,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("CREATE XML SCHEMA COLLECTION ");
+			writer.WriteKeyword("CREATE XML SCHEMA COLLECTION ");
 			writer.WriteScript(xmlSchemaCollectionName, WhitespacePadding.None);
-			writer.Write(" AS ");
+			writer.WriteKeyword(" AS ");
 			writer.WriteScript(expression, WhitespacePadding.None);
 		}
 

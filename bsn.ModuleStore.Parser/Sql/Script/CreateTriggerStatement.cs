@@ -127,10 +127,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		private void WriteToInternal(SqlWriter writer, string command) {
 			WriteCommentsTo(writer);
-			writer.Write(command);
-			writer.Write(" TRIGGER ");
+			writer.WriteKeyword(command);
+			writer.WriteKeyword(" TRIGGER ");
 			writer.WriteScript(triggerName, WhitespacePadding.None);
-			writer.Write(" ON ");
+			writer.WriteKeyword(" ON ");
 			writer.WriteScript(tableName, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(type, WhitespacePadding.SpaceAfter);
 			string prefix = null;
@@ -140,10 +140,10 @@ namespace bsn.ModuleStore.Sql.Script {
 				prefix = ", ";
 			}
 			writer.WriteScript(replication, WhitespacePadding.SpaceBefore);
-			writer.Write(" AS");
-			writer.IncreaseIndent();
-			writer.WriteScript(statement, WhitespacePadding.NewlineBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword(" AS");
+			using (writer.Indent()) {
+				writer.WriteScript(statement, WhitespacePadding.NewlineBefore);
+			}
 		}
 
 		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {

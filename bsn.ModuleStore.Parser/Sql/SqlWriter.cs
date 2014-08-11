@@ -30,11 +30,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 
+using bsn.GoldParser.Text;
 using bsn.ModuleStore.Sql.Script;
 
 namespace bsn.ModuleStore.Sql {
@@ -47,9 +46,7 @@ namespace bsn.ModuleStore.Sql {
 
 		private readonly DatabaseEngine engine;
 		private readonly SqlWriterMode mode;
-		private readonly TextWriter writer;
-		private string indentation = "    ";
-		private int indentationLevel;
+		private readonly RichTextWriter writer;
 
 		public SqlWriter(TextWriter writer, DatabaseEngine engine): this(writer, engine, SqlWriterMode.Normal) {}
 
@@ -57,9 +54,10 @@ namespace bsn.ModuleStore.Sql {
 			if (writer == null) {
 				throw new ArgumentNullException("writer");
 			}
-			this.writer = writer;
+			this.writer = writer as RichTextWriter ?? RichTextWriter.Wrap(writer);
 			this.engine = engine;
 			this.mode = mode;
+			Indentation = "    ";
 		}
 
 		public DatabaseEngine Engine {
@@ -70,10 +68,10 @@ namespace bsn.ModuleStore.Sql {
 
 		public string Indentation {
 			get {
-				return indentation;
+				return writer.IndentChars;
 			}
 			set {
-				indentation = value ?? string.Empty;
+				writer.IndentChars = value ?? string.Empty;
 			}
 		}
 
@@ -83,25 +81,8 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public string NewLine {
-			get {
-				StringBuilder result = new StringBuilder(Environment.NewLine);
-				if (!string.IsNullOrEmpty(indentation)) {
-					for (int i = 0; i < indentationLevel; i++) {
-						result.Append(indentation);
-					}
-				}
-				return result.ToString();
-			}
-		}
-
-		public void DecreaseIndent() {
-			indentationLevel--;
-			Debug.Assert(indentationLevel >= 0);
-		}
-
-		public void IncreaseIndent() {
-			indentationLevel++;
+		public IDisposable Indent() {
+			return writer.Indent();
 		}
 
 		public bool IsAtLeast(DatabaseEngine engine) {
@@ -109,23 +90,27 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public void Write(char data) {
+			if (!char.IsWhiteSpace(data)) {
+				writer.SetStyle(SqlTextKind.Normal);
+			}
 			writer.Write(data);
 		}
 
 		public void Write(string data) {
-			if (!string.IsNullOrEmpty(data)) {
-				writer.Write(data);
-			}
+			writer.SetStyle(SqlTextKind.Normal);
+			writer.Write(data);
 		}
 
 		public void WriteComment(string comment) {
 			if (mode == SqlWriterMode.Normal) {
-				WriteLine(comment);
+				writer.SetStyle(SqlTextKind.Comment);
+				writer.WriteLine(comment);
 			}
 		}
 
 		public void WriteDelimitedIdentifier(string value) {
 			if (!string.IsNullOrEmpty(value)) {
+				writer.SetStyle(SqlTextKind.Identifier);
 				if (value.IndexOf('[') >= 0) {
 					writer.Write('"');
 					writer.Write(value.Replace(@"""", @""""""));
@@ -141,7 +126,7 @@ namespace bsn.ModuleStore.Sql {
 		public void WriteDuplicateRestriction(bool? distinct, WhitespacePadding padding) {
 			if (distinct.HasValue) {
 				PaddingBefore(padding);
-				Write(distinct.Value ? "DISTINCT" : "ALL");
+				WriteKeyword(distinct.Value ? "DISTINCT" : "ALL");
 				PaddingAfter(padding);
 			}
 		}
@@ -151,10 +136,10 @@ namespace bsn.ModuleStore.Sql {
 				PaddingBefore(padding);
 				switch (clustered) {
 				case Clustered.Clustered:
-					Write("CLUSTERED");
+					WriteKeyword("CLUSTERED");
 					break;
 				case Clustered.Nonclustered:
-					Write("NONCLUSTERED");
+					WriteKeyword("NONCLUSTERED");
 					break;
 				}
 				PaddingAfter(padding);
@@ -166,10 +151,10 @@ namespace bsn.ModuleStore.Sql {
 				PaddingBefore(padding);
 				switch (order) {
 				case SortOrder.Ascending:
-					Write("ASC");
+					WriteKeyword("ASC");
 					break;
 				case SortOrder.Descending:
-					Write("DESC");
+					WriteKeyword("DESC");
 					break;
 				}
 				PaddingAfter(padding);
@@ -179,13 +164,13 @@ namespace bsn.ModuleStore.Sql {
 		public void WriteEnum(TableCheck tableCheck, WhitespacePadding padding) {
 			if (tableCheck != TableCheck.Unspecified) {
 				PaddingBefore(padding);
-				Write("WITH ");
+				WriteKeyword("WITH ");
 				switch (tableCheck) {
 				case TableCheck.Check:
-					Write("CHECK");
+					WriteKeyword("CHECK");
 					break;
 				case TableCheck.Nocheck:
-					Write("NOCHECK");
+					WriteKeyword("NOCHECK");
 					break;
 				}
 				PaddingAfter(padding);
@@ -195,7 +180,7 @@ namespace bsn.ModuleStore.Sql {
 		public void WriteEnum(DmlOperation operation, WhitespacePadding padding) {
 			if (operation != DmlOperation.None) {
 				PaddingBefore(padding);
-				Write(operation.ToString().ToUpperInvariant());
+				WriteKeyword(operation.ToString().ToUpperInvariant());
 				PaddingAfter(padding);
 			}
 		}
@@ -203,27 +188,55 @@ namespace bsn.ModuleStore.Sql {
 		public void WriteEnum(DdlOperation operation, WhitespacePadding padding) {
 			if (operation != DdlOperation.None) {
 				PaddingBefore(padding);
-				Write(operation.ToString().ToUpperInvariant());
+				WriteKeyword(operation.ToString().ToUpperInvariant());
 				PaddingAfter(padding);
 			}
 		}
 
+		public void WriteFunction(string value) {
+			writer.SetStyle(SqlTextKind.Function);
+			writer.Write(value);
+		}
+
+		public void WriteIdentifier(string value) {
+			writer.SetStyle(SqlTextKind.Identifier);
+			writer.Write(value);
+		}
+
+		public void WriteKeyword(string keyword) {
+			writer.SetStyle(SqlTextKind.Keyword);
+			writer.Write(keyword);
+		}
+
 		public void WriteLine(string text) {
-			if (!string.IsNullOrEmpty(text)) {
-				Write(text);
-			}
-			Write(NewLine);
+			writer.SetStyle(SqlTextKind.Normal);
+			writer.WriteLine(text);
 		}
 
 		public void WriteLine() {
-			WriteLine(string.Empty);
+			writer.WriteLine();
+		}
+
+		public void WriteLiteral(string value) {
+			writer.SetStyle(SqlTextKind.Literal);
+			writer.Write(value);
+		}
+
+		public void WriteLiteral(char value) {
+			writer.SetStyle(SqlTextKind.Literal);
+			writer.Write(value);
+		}
+
+		public void WriteOperator(string value) {
+			writer.SetStyle(SqlTextKind.Operator);
+			writer.Write(value);
 		}
 
 		public void WriteScript<T>(T value, WhitespacePadding padding) where T: SqlScriptableToken {
 			WriteScript(value, padding, null, null);
 		}
 
-		public void WriteScript<T>(T value, WhitespacePadding padding, string prefix, string suffix) where T: SqlScriptableToken {
+		public void WriteScript<T>(T value, WhitespacePadding padding, Action<SqlWriter> prefix, Action<SqlWriter> suffix) where T: SqlScriptableToken {
 			if (value != null) {
 				IOptional optional = value as IOptional;
 				if ((optional == null) || (optional.HasValue)) {
@@ -242,14 +255,14 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public void WriteScriptSequence<T>(IEnumerable<T> sequence, WhitespacePadding itemPadding, string itemSeparator) where T: SqlScriptableToken {
+		public void WriteScriptSequence<T>(IEnumerable<T> sequence, WhitespacePadding itemPadding, Action<SqlWriter> separator) where T: SqlScriptableToken {
 			if (sequence != null) {
 				IEnumerator<T> enumerator = sequence.Where(x => x != null).GetEnumerator();
 				if (enumerator.MoveNext()) {
 					PaddingBefore(itemPadding);
 					WriteScript(enumerator.Current, WhitespacePadding.None);
 					while (enumerator.MoveNext()) {
-						Write(itemSeparator);
+						Write(separator);
 						PaddingAfter(itemPadding);
 						PaddingBefore(itemPadding);
 						WriteScript(enumerator.Current, WhitespacePadding.None);
@@ -259,12 +272,22 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
+		public void WriteString(string value) {
+			writer.SetStyle(SqlTextKind.String);
+			writer.Write(value);
+		}
+
 		public void WriteToggle(bool? toggle, WhitespacePadding padding) {
 			if (toggle.HasValue) {
 				PaddingBefore(padding);
-				Write(toggle.Value ? "ON" : "OFF");
+				WriteKeyword(toggle.Value ? "ON" : "OFF");
 				PaddingAfter(padding);
 			}
+		}
+
+		public void WriteType(string value) {
+			writer.SetStyle(SqlTextKind.Type);
+			writer.Write(value);
 		}
 
 		internal void WriteIndexOptions(IEnumerable<IndexOption> indexOptions, WhitespacePadding itemPadding) {
@@ -272,8 +295,9 @@ namespace bsn.ModuleStore.Sql {
 			ICollection<IndexOption> indexOptionsToRender = indexOptions.Where(o => !(((engine == DatabaseEngine.SqlAzure) && azureUnsupportedIndexOption.Contains(o.Key.Value)) || ((mode == SqlWriterMode.ForHashing) && o.Key.Value.Equals("FILLFACTOR", StringComparison.OrdinalIgnoreCase)))).ToList();
 			if (indexOptionsToRender.Count > 0) {
 				PaddingBefore(itemPadding);
-				Write("WITH (");
-				WriteScriptSequence(indexOptionsToRender, WhitespacePadding.None, ", ");
+				WriteKeyword("WITH ");
+				Write('(');
+				WriteScriptSequence(indexOptionsToRender, WhitespacePadding.None, w => w.Write(", "));
 				Write(')');
 				PaddingAfter(itemPadding);
 			}
@@ -282,10 +306,10 @@ namespace bsn.ModuleStore.Sql {
 		private void PaddingAfter(WhitespacePadding padding) {
 			switch (padding) {
 			case WhitespacePadding.NewlineAfter:
-				WriteLine();
+				writer.WriteLine();
 				break;
 			case WhitespacePadding.SpaceAfter:
-				Write(' ');
+				writer.Write(' ');
 				break;
 			}
 		}
@@ -293,11 +317,17 @@ namespace bsn.ModuleStore.Sql {
 		private void PaddingBefore(WhitespacePadding padding) {
 			switch (padding) {
 			case WhitespacePadding.NewlineBefore:
-				WriteLine();
+				writer.WriteLine();
 				break;
 			case WhitespacePadding.SpaceBefore:
-				Write(' ');
+				writer.Write(' ');
 				break;
+			}
+		}
+
+		private void Write(Action<SqlWriter> action) {
+			if (action != null) {
+				action(this);
 			}
 		}
 	}

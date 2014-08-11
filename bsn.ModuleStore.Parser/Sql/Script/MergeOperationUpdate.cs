@@ -51,8 +51,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("UPDATE SET ");
-			writer.WriteScriptSequence(updateItems, WhitespacePadding.None, ", ");
+			writer.WriteKeyword("UPDATE SET ");
+			writer.WriteScriptSequence(updateItems, WhitespacePadding.None, w => w.Write(", "));
 		}
 	}
 }

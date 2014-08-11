@@ -52,7 +52,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write(original);
+			writer.WriteIdentifier(original);
 		}
 	}
 }

@@ -173,7 +173,7 @@ namespace bsn.ModuleStore.Sql {
 					buffer.Length = 0;
 					using (TextWriter writer = new StringWriter(buffer)) {
 						SqlWriter sqlWriter = new SqlWriter(writer, TargetEngine);
-						sqlWriter.Write("DROP SCHEMA ");
+						sqlWriter.WriteKeyword("DROP SCHEMA ");
 						new SchemaName(SchemaName).WriteTo(sqlWriter);
 					}
 					yield return buffer.ToString();

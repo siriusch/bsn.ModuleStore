@@ -84,13 +84,15 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write("FOREIGN KEY (");
-			writer.WriteScriptSequence(columnNames, WhitespacePadding.None, ", ");
-			writer.Write(") REFERENCES ");
+			writer.WriteKeyword("FOREIGN KEY ");
+			writer.Write('(');
+			writer.WriteScriptSequence(columnNames, WhitespacePadding.None, w => w.Write(", "));
+			writer.Write(')');
+			writer.WriteKeyword(" REFERENCES ");
 			writer.WriteScript(refTableName, WhitespacePadding.None);
 			if (refColumnNames.Count > 0) {
 				writer.Write(" (");
-				writer.WriteScriptSequence(refColumnNames, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(refColumnNames, WhitespacePadding.None, w => w.Write(", "));
 				writer.Write(')');
 			}
 			writer.WriteScriptSequence(keyActions, WhitespacePadding.SpaceBefore, null);

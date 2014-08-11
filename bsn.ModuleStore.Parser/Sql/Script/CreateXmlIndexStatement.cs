@@ -72,18 +72,18 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			Debug.Assert(writer.Engine != DatabaseEngine.SqlAzure);
 			WriteCommentsTo(writer);
-			writer.Write("CREATE ");
+			writer.WriteKeyword("CREATE ");
 			if (Primary) {
-				writer.Write("PRIMARY ");
+				writer.WriteKeyword("PRIMARY ");
 			}
-			writer.Write("XML INDEX ");
+			writer.WriteKeyword("XML INDEX ");
 			writer.WriteScript(IndexName, WhitespacePadding.None);
-			writer.Write(" ON ");
+			writer.WriteKeyword(" ON ");
 			writer.WriteScript(TableName, WhitespacePadding.None);
 			writer.Write(" (");
-			writer.IncreaseIndent();
-			writer.WriteScript(columnName, WhitespacePadding.NewlineBefore);
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteScript(columnName, WhitespacePadding.NewlineBefore);
+			}
 			writer.WriteLine();
 			writer.Write(") ");
 			writer.WriteScript(indexUsing, WhitespacePadding.None);

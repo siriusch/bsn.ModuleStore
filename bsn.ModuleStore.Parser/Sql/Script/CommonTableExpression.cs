@@ -70,13 +70,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(aliasName, WhitespacePadding.None);
 			if (columnNames.Count > 0) {
 				writer.Write(" (");
-				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, ", ");
+				writer.WriteScriptSequence(columnNames, WhitespacePadding.None, w => w.Write(", "));
 				writer.Write(')');
 			}
-			writer.Write(" AS (");
-			writer.IncreaseIndent();
-			writer.WriteScript(selectQuery, WhitespacePadding.NewlineBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword(" AS ");
+			writer.Write('(');
+			using (writer.Indent()) {
+				writer.WriteScript(selectQuery, WhitespacePadding.NewlineBefore);
+			}
 			writer.WriteLine();
 			writer.Write(')');
 		}

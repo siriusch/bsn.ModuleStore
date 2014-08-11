@@ -90,12 +90,12 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			if (isUnicode) {
-				writer.Write('N');
+				writer.WriteString("N");
 			}
-			writer.Write('\'');
-			writer.Write(Value.Replace("'", "''"));
-			writer.Write('\'');
-			writer.WriteScript(collation, WhitespacePadding.SpaceBefore, "COLLATE ", null);
+			writer.WriteString("\'");
+			writer.WriteString(Value.Replace("'", "''"));
+			writer.WriteString("\'");
+			writer.WriteScript(collation, WhitespacePadding.SpaceBefore, w => w.WriteKeyword("COLLATE "), null);
 		}
 	}
 }

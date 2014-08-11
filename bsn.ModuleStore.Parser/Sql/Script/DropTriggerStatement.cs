@@ -72,7 +72,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("DROP TRIGGER ");
+			writer.WriteKeyword("DROP TRIGGER ");
 			writer.WriteScript(triggerName, WhitespacePadding.None);
 		}
 

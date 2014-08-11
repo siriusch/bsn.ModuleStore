@@ -45,7 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			if (not) {
-				writer.Write(" NOT");
+				writer.WriteKeyword(" NOT");
 			}
 		}
 	}

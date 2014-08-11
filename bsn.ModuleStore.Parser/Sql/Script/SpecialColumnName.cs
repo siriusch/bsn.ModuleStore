@@ -35,7 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public SpecialColumnName(string value): base(value) {}
 
 		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
-			writer.Write(Value);
+			writer.WriteFunction(Value);
 		}
 	}
 }

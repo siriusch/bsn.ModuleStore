@@ -80,9 +80,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("DROP INDEX ");
+			writer.WriteKeyword("DROP INDEX ");
 			writer.WriteScript(indexName, WhitespacePadding.None);
-			writer.Write(" ON ");
+			writer.WriteKeyword(" ON ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.WriteScript(indexOptions, WhitespacePadding.SpaceBefore);
 		}

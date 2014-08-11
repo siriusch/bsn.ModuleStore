@@ -71,14 +71,15 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
-				writer.Write("TOP (");
+				writer.WriteKeyword("TOP ");
+				writer.Write('(');
 				writer.WriteScript(expression, WhitespacePadding.None);
 				writer.Write(')');
 				if (percent) {
-					writer.Write(" PERCENT");
+					writer.WriteKeyword(" PERCENT");
 				}
 				if (withTies) {
-					writer.Write(" WITH TIES");
+					writer.WriteKeyword(" WITH TIES");
 				}
 			}
 		}

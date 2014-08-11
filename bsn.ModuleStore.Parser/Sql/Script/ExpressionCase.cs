@@ -59,13 +59,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScriptSequence(whenItems, WhitespacePadding.NewlineBefore, null);
 			if (elseExpression != null) {
 				writer.WriteLine();
-				writer.Write("ELSE ");
-				writer.IncreaseIndent();
-				writer.WriteScript(elseExpression, WhitespacePadding.None);
-				writer.DecreaseIndent();
+				writer.WriteKeyword("ELSE ");
+				using (writer.Indent()) {
+					writer.WriteScript(elseExpression, WhitespacePadding.None);
+				}
 			}
 			writer.WriteLine();
-			writer.Write("END");
+			writer.WriteKeyword("END");
 		}
 	}
 }

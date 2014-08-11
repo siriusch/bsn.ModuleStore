@@ -62,7 +62,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("DROP VIEW ");
+			writer.WriteKeyword("DROP VIEW ");
 			writer.WriteScript(viewName, WhitespacePadding.None);
 		}
 	}

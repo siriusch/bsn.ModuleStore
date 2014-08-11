@@ -59,7 +59,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("IDENTITY");
+			writer.WriteKeyword("IDENTITY");
 			if (seed != null) {
 				Debug.Assert(increment != null);
 				writer.Write(" (");

@@ -41,7 +41,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write(" NOT NULL");
+			writer.WriteKeyword(" NOT NULL");
 		}
 	}
 }

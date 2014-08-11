@@ -68,10 +68,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("IDENTITY(");
+			writer.WriteKeyword("IDENTITY");
+			writer.Write('(');
 			writer.WriteScript(typeName, WhitespacePadding.None);
-			writer.WriteScript(seed, WhitespacePadding.None, ", ", null);
-			writer.WriteScript(increment, WhitespacePadding.None, ", ", null);
+			writer.WriteScript(seed, WhitespacePadding.None, w => w.Write(", "), null);
+			writer.WriteScript(increment, WhitespacePadding.None, w => w.Write(", "), null);
 			writer.Write(')');
 		}
 	}

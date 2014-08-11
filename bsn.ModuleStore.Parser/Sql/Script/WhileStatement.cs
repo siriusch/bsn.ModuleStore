@@ -59,7 +59,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("WHILE ");
+			writer.WriteKeyword("WHILE ");
 			writer.WriteScript(predicate, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(statement, WhitespacePadding.None);
 		}

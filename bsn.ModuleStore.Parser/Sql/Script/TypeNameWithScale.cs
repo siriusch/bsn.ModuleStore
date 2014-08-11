@@ -53,7 +53,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		protected override void WriteArguments(SqlWriter writer) {
 			base.WriteArguments(writer);
 			writer.Write(", ");
-			writer.Write(scale.ToString(NumberFormatInfo.InvariantInfo));
+			writer.WriteLiteral(scale.ToString(NumberFormatInfo.InvariantInfo));
 		}
 	}
 }

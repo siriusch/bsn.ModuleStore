@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		public TriggerAllServerTarget() {}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("ALL SERVER");
+			writer.WriteKeyword("ALL SERVER");
 		}
 	}
 }

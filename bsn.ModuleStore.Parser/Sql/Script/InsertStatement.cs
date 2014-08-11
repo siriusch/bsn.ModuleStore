@@ -71,15 +71,15 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.WriteScript(queryOptions, WhitespacePadding.NewlineAfter);
-			writer.Write("INSERT ");
-			writer.IncreaseIndent();
-			writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
-			writer.WriteLine();
-			writer.Write("INTO ");
-			writer.WriteScript(destinationRowset, WhitespacePadding.None);
-			WriteToInternal(writer);
-			writer.WriteScript(QueryHint, WhitespacePadding.NewlineBefore);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("INSERT ");
+			using (writer.Indent()) {
+				writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
+				writer.WriteLine();
+				writer.WriteKeyword("INTO ");
+				writer.WriteScript(destinationRowset, WhitespacePadding.None);
+				WriteToInternal(writer);
+				writer.WriteScript(QueryHint, WhitespacePadding.NewlineBefore);
+			}
 		}
 
 		protected abstract void WriteToInternal(SqlWriter writer);

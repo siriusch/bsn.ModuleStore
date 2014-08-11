@@ -64,7 +64,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write(@"OBJECT_ID(");
+			writer.WriteFunction("OBJECT_ID");
+			writer.Write('(');
 			using (StringWriter nameWriter = new StringWriter(CultureInfo.InvariantCulture)) {
 				objectName.WriteTo(new SqlWriter(nameWriter, writer.Engine, SqlWriterMode.NoComments));
 				new StringLiteral(nameWriter.ToString(), unicodeObjectName, null).WriteTo(writer);

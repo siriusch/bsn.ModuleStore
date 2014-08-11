@@ -43,11 +43,11 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			if (position != CursorPosition.None) {
-				writer.Write(position.ToString().ToUpperInvariant());
+				writer.WriteKeyword(position.ToString().ToUpperInvariant());
 				writer.Write(' ');
 			}
 			WriteOffset(writer);
-			writer.Write("FROM");
+			writer.WriteKeyword("FROM");
 		}
 
 		protected virtual void WriteOffset(SqlWriter writer) {}

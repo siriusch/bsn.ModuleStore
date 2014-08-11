@@ -56,14 +56,14 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("WHEN ");
-			writer.IncreaseIndent();
-			writer.WriteScript(condition, WhitespacePadding.None);
-			writer.DecreaseIndent();
-			writer.Write(" THEN ");
-			writer.IncreaseIndent();
-			writer.WriteScript(valueExpression, WhitespacePadding.None);
-			writer.DecreaseIndent();
+			writer.WriteKeyword("WHEN ");
+			using (writer.Indent()) {
+				writer.WriteScript(condition, WhitespacePadding.None);
+			}
+			writer.WriteKeyword(" THEN ");
+			using (writer.Indent()) {
+				writer.WriteScript(valueExpression, WhitespacePadding.None);
+			}
 		}
 	}
 }

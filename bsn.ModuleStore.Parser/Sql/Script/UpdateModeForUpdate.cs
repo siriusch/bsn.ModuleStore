@@ -57,10 +57,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("FOR UPDATE");
+			writer.WriteKeyword("FOR UPDATE");
 			if (columns.Count > 0) {
-				writer.Write(" OF ");
-				writer.WriteScriptSequence(columns, WhitespacePadding.None, ", ");
+				writer.WriteKeyword(" OF ");
+				writer.WriteScriptSequence(columns, WhitespacePadding.None, w => w.Write(", "));
 			}
 		}
 	}

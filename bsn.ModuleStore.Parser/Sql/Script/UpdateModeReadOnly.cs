@@ -43,7 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("READ ONLY");
+			writer.WriteKeyword("READ ONLY");
 		}
 	}
 }

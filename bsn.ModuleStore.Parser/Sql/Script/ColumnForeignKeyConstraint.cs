@@ -72,7 +72,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
-			writer.Write("REFERENCES ");
+			writer.WriteKeyword("REFERENCES ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.WriteScript(refColumnName, WhitespacePadding.SpaceBefore);
 			writer.WriteScriptSequence(keyActions, WhitespacePadding.SpaceBefore, null);

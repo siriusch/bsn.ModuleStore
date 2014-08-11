@@ -62,7 +62,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
-			writer.Write("DROP FULLTEXT INDEX ON ");
+			writer.WriteKeyword("DROP FULLTEXT INDEX ON ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 		}
 	}

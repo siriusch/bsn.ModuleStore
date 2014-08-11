@@ -109,14 +109,14 @@ namespace bsn.ModuleStore.Sql.Script {
 			base.WriteToInternal(writer);
 			if (groupByClause.Count > 0) {
 				writer.WriteLine();
-				writer.Write("GROUP BY ");
-				writer.WriteScriptSequence(groupByClause, WhitespacePadding.None, ", ");
+				writer.WriteKeyword("GROUP BY ");
+				writer.WriteScriptSequence(groupByClause, WhitespacePadding.None, w => w.Write(", "));
 			}
-			writer.WriteScript(havingClause, WhitespacePadding.NewlineBefore, "HAVING ", null);
+			writer.WriteScript(havingClause, WhitespacePadding.NewlineBefore, w => w.WriteKeyword("HAVING "), null);
 			if (orderList.Count > 0) {
 				writer.WriteLine();
-				writer.Write("ORDER BY ");
-				writer.WriteScriptSequence(orderList, WhitespacePadding.None, ", ");
+				writer.WriteKeyword("ORDER BY ");
+				writer.WriteScriptSequence(orderList, WhitespacePadding.None, w => w.Write(", "));
 			}
 		}
 	}

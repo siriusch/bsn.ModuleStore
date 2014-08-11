@@ -35,7 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("ROWGUIDCOL")]
 	public sealed class ColumnRowguidcolConstraint: ColumnConstraint {
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("ROWGUIDCOL");
+			writer.WriteKeyword("ROWGUIDCOL");
 		}
 	}
 }

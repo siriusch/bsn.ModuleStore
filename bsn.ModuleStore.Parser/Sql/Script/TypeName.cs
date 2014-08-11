@@ -64,7 +64,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (isPartOfQualifiedName || (!IsBuiltinType)) {
 				base.WriteToInternal(writer, isPartOfQualifiedName);
 			} else {
-				writer.Write(Value);
+				writer.WriteType(Value);
 			}
 		}
 	}

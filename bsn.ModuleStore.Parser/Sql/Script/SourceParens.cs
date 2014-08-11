@@ -59,10 +59,10 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write('(');
-			writer.IncreaseIndent();
-			writer.WriteScript(inner, WhitespacePadding.NewlineBefore);
-			writer.WriteScriptSequence(joins, WhitespacePadding.NewlineBefore, null);
-			writer.DecreaseIndent();
+			using (writer.Indent()) {
+				writer.WriteScript(inner, WhitespacePadding.NewlineBefore);
+				writer.WriteScriptSequence(joins, WhitespacePadding.NewlineBefore, null);
+			}
 			writer.WriteLine();
 			writer.Write(')');
 		}

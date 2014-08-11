@@ -74,9 +74,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteCommentsTo(writer);
 			writer.WriteScript(valueExpression, WhitespacePadding.None);
 			base.WriteTo(writer);
-			writer.Write(" LIKE ");
+			writer.WriteKeyword(" LIKE ");
 			writer.WriteScript(pattern, WhitespacePadding.None);
-			writer.WriteScript(escape, WhitespacePadding.None, "ESCAPE ", null);
+			writer.WriteScript(escape, WhitespacePadding.None, w => w.WriteKeyword("ESCAPE "), null);
 		}
 	}
 }

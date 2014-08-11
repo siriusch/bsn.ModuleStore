@@ -67,7 +67,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			writer.Write("EXTERNAL NAME ");
+			writer.WriteKeyword("EXTERNAL NAME ");
 			writer.WriteScript(assemblyName, WhitespacePadding.None);
 			writer.Write('.');
 			writer.WriteScript(className, WhitespacePadding.None);

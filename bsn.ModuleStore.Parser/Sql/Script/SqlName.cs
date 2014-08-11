@@ -54,7 +54,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected internal virtual void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
-			writer.Write(value);
+			writer.WriteIdentifier(value);
 		}
 
 		public int CompareTo(SqlName other) {

@@ -52,8 +52,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
-				writer.Write("WITH (");
-				writer.WriteScriptSequence(hints, WhitespacePadding.None, ", ");
+				writer.WriteKeyword("WITH ");
+				writer.Write('(');
+				writer.WriteScriptSequence(hints, WhitespacePadding.None, w => w.Write(", "));
 				writer.Write(')');
 			}
 		}

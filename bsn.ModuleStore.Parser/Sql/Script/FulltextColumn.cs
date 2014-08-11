@@ -66,8 +66,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName, WhitespacePadding.None);
-			writer.WriteScript(typeColumn, WhitespacePadding.SpaceBefore, "TYPE COLUMN ", null);
-			writer.WriteScript(language, WhitespacePadding.SpaceBefore, "LANGUAGE ", null);
+			writer.WriteScript(typeColumn, WhitespacePadding.SpaceBefore, w => w.WriteKeyword("TYPE COLUMN "), null);
+			writer.WriteScript(language, WhitespacePadding.SpaceBefore, w => w.WriteKeyword("LANGUAGE "), null);
 		}
 	}
 }
