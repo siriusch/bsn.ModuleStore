@@ -67,8 +67,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
+			writer.WriteKeyword("WHEN ");
 			using (writer.Indent()) {
-				writer.WriteKeyword("WHEN ");
 				WriteMatchedTo(writer);
 				writer.WriteKeyword(" THEN");
 				writer.WriteLine();

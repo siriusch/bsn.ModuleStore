@@ -60,15 +60,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteKeyword("BEGIN TRY");
 			using (writer.Indent()) {
 				writer.WriteScriptSequence(tryStatements, WhitespacePadding.NewlineBefore, w => w.Write(';'));
+				writer.WriteLine(";");
 			}
-			writer.WriteLine();
 			writer.WriteKeyword("END TRY");
 			writer.WriteLine();
 			writer.WriteKeyword("BEGIN CATCH");
 			using (writer.Indent()) {
 				writer.WriteScriptSequence(catchStatements, WhitespacePadding.NewlineBefore, w => w.Write(';'));
+				writer.WriteLine(";");
 			}
-			writer.WriteLine();
 			writer.WriteKeyword("END CATCH");
 		}
 	}

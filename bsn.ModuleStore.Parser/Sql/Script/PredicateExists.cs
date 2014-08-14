@@ -50,8 +50,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
+			writer.WriteKeyword("EXISTS ");
 			using (writer.Indent()) {
-				writer.WriteKeyword("EXISTS ");
 				writer.WriteLine("(");
 				writer.WriteScript(selectQuery, WhitespacePadding.None);
 			}

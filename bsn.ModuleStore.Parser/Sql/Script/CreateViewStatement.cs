@@ -127,9 +127,9 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.Write(')');
 			}
 			writer.WriteScript(viewOption, WhitespacePadding.SpaceBefore);
+			writer.WriteKeyword(" AS");
+			writer.WriteLine();
 			using (writer.Indent()) {
-				writer.WriteKeyword(" AS");
-				writer.WriteLine();
 				writer.WriteScript(selectStatement, WhitespacePadding.None);
 				if (withCheckOption) {
 					writer.WriteKeyword(" WITH CHECK OPTION");

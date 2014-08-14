@@ -122,8 +122,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public override void WriteTo(SqlWriter writer) {
-			writer.WriteKeyword("SELECT ");
+		internal void WriteToWithoutSelect(SqlWriter writer) {
 			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(top, WhitespacePadding.SpaceAfter);
 			using (writer.Indent()) {
@@ -133,6 +132,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteToInternal(writer);
 			writer.WriteScript(forClause, WhitespacePadding.SpaceBefore);
 			writer.WriteScript(unionClause, WhitespacePadding.NewlineBefore);
+		}
+
+		public override void WriteTo(SqlWriter writer) {
+			writer.WriteKeyword("SELECT ");
+			WriteToWithoutSelect(writer);
 		}
 
 		protected override void Initialize(Symbol symbol, LineInfo position) {

@@ -62,10 +62,11 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.WriteKeyword("BEGIN");
+			writer.WriteLine();
 			using (writer.Indent()) {
-				writer.WriteScriptSequence(statements, WhitespacePadding.NewlineBefore, w => w.Write(';'));
+				writer.WriteScriptSequence(statements, WhitespacePadding.None, w => w.WriteLine(";"));
+				writer.WriteLine(";");
 			}
-			writer.WriteLine(";");
 			writer.WriteKeyword("END");
 		}
 	}

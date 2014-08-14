@@ -119,8 +119,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			using (writer.Indent()) {
 				writer.WriteScript(topExpression, WhitespacePadding.SpaceAfter);
 				writer.WriteLine();
+				writer.WriteKeyword("INTO ");
 				using (writer.Indent()) {
-					writer.WriteKeyword("INTO ");
 					writer.WriteScript(destinationRowset, WhitespacePadding.None);
 					writer.WriteScript(destinationAlias, WhitespacePadding.SpaceBefore);
 				}
