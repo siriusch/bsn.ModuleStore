@@ -124,8 +124,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			WhitespacePadding optionsPadding = WhitespacePadding.SpaceBefore;
 			if ((filter != null) && writer.IsAtLeast(DatabaseEngine.SqlServer2008)) {
 				writer.WriteLine();
+				writer.WriteKeyword("WHERE ");
 				using (writer.Indent()) {
-					writer.WriteScript(filter, WhitespacePadding.None, w => w.WriteKeyword("WHERE "), null);
+					writer.WriteScript(filter, WhitespacePadding.None, null, null);
 				}
 				optionsPadding = WhitespacePadding.NewlineBefore;
 			}
