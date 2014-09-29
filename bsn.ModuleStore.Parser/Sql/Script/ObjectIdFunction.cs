@@ -35,11 +35,11 @@ using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public class ObjectIdFunction: FunctionCall {
-		private readonly IQualifiedName<SchemaName> objectName;
+		private readonly Qualified<SchemaName, ObjectName> objectName;
 		private readonly StringLiteral objectType;
 		private readonly bool unicodeObjectName;
 
-		public ObjectIdFunction(IQualifiedName<SchemaName> objectName, bool unicodeObjectName = true, StringLiteral objectType = null) {
+		public ObjectIdFunction(Qualified<SchemaName, ObjectName> objectName, bool unicodeObjectName = true, StringLiteral objectType = null) {
 			this.objectName = objectName;
 			this.objectType = objectType;
 			this.unicodeObjectName = unicodeObjectName;
@@ -51,7 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<FunctionCall> ::= ~OBJECT_ID ~'(' StringLiteral ~',' StringLiteral ~')'")]
 		public ObjectIdFunction(StringLiteral objectName, StringLiteral objectType): this(ScriptParser.ParseObjectName(objectName.Value), objectName.IsUnicode, objectType) {}
 
-		public IQualified<SchemaName> ObjectName {
+		public Qualified<SchemaName, ObjectName> ObjectName {
 			get {
 				return objectName;
 			}
