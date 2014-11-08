@@ -101,29 +101,6 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
-		public void TableWithFillFactor() {
-			ParseWithRoundtrip(@"CREATE TABLE [Acl].[tblACE] ( 
- [idAce] bigint IDENTITY(1, 1) NOT NULL, 
- [uidObject] uniqueidentifier NOT NULL, 
- [uidSubject] uniqueidentifier NOT NULL, 
- [iKind] tinyint NOT NULL, 
- [iLevel] tinyint NOT NULL, 
- [idRight] smallint NOT NULL, 
- [timestamp] timestamp NOT NULL, 
- CONSTRAINT [PK_tblACE] PRIMARY KEY CLUSTERED ( 
-		[idAce] ASC 
-) WITH FILLFACTOR = 90, 
- CONSTRAINT [UK_tblACE_uidSubject_uidObject_iKind_idRight] UNIQUE NONCLUSTERED ( 
-		[uidSubject] ASC, 
-		[uidObject] ASC, 
-		[iKind] ASC, 
-		[idRight] ASC 
-) WITH FILLFACTOR = 90, 
- CONSTRAINT [FK_tblACE_tblRight] FOREIGN KEY ([idRight]) REFERENCES [Acl].[tblRight] ([idRight]) ON DELETE CASCADE 
-);", 1, null);
-		}
-
-		[Test]
 		public void BeginTransaction() {
 			ParseWithRoundtrip(@"BEGIN TRAN", 1, null);
 		}
@@ -189,57 +166,6 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
-		public void CreateIndexWithOptions() {
-			ParseWithRoundtrip(@"CREATE NONCLUSTERED INDEX [IX_tblIndicatorTag_timestamp] ON [dbo].[tblIndicatorTag] (
-		 [timestamp] ASC
-) WITH (STATISTICS_NORECOMPUTE=OFF, IGNORE_DUP_KEY=OFF);", 1, null);
-		}
-
-		[Test]
-		public void CreateXmlSchemaCollection() {
-			ParseWithRoundtrip(@"CREATE XML SCHEMA COLLECTION [SicherheitssetSchema] AS N'<?xml version=""1.0"" ?>
-<xs:schema id=""Sicherheitsset""
-		targetNamespace=""http://weedu.ch/SecureTokenService/Sicherheitsset""
-		elementFormDefault=""qualified""
-		xmlns=""http://weedu.ch/SecureTokenService/Sicherheitsset""
-		xmlns:mstns=""http://weedu.ch/SecureTokenService/Sicherheitsset""
-		xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
-	<xs:element name=""Sicherheitsset"">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name=""Item"" minOccurs=""1"" maxOccurs=""unbounded"">
-					<xs:complexType>
-						<xs:attribute name=""GruppeId"" type=""xs:int"" use=""required"" />
-						<xs:attribute name=""Stufe"" type=""xs:int"" use=""required"" />
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-</xs:schema>';", 1, null);
-		}
-
-		[Test]
-		public void TypedXmlTypeVariable() {
-			ParseWithRoundtrip(@"DECLARE @xml xml([SicherheitssetSchema]);", 1, null);
-		}
-
-		[Test]
-		public void NvarcharMaxType() {
-			ParseWithRoundtrip(@"DECLARE @s nvarchar(max);", 1, null);
-		}
-
-		[Test]
-		public void TypedXmlTypeTableVar() {
-			ParseWithRoundtrip(@"DECLARE @tblSicherheitsset TABLE (
-		[Create] bit NOT NULL,
-		[EntitaetUid] uniqueidentifier NOT NULL UNIQUE,
-		[SicherheitssetUid] uniqueidentifier NOT NULL PRIMARY KEY,
-		[SicherheitssetXml] xml ([SicherheitssetSchema]) NOT NULL
-	);", 1, null);
-		}
-
-		[Test]
 		public void CreateFunctionWithReadonlyParameter() {
 			ParseWithRoundtrip(
 					@"CREATE FUNCTION [dbo].[fnIndicatorStructureResolve]
@@ -293,6 +219,13 @@ WITH  [IndicatorStructures]
 		}
 
 		[Test]
+		public void CreateIndexWithOptions() {
+			ParseWithRoundtrip(@"CREATE NONCLUSTERED INDEX [IX_tblIndicatorTag_timestamp] ON [dbo].[tblIndicatorTag] (
+		 [timestamp] ASC
+) WITH (STATISTICS_NORECOMPUTE=OFF, IGNORE_DUP_KEY=OFF);", 1, null);
+		}
+
+		[Test]
 		public void CreateTypeAsTable() {
 			ParseWithRoundtrip(@"CREATE TYPE dbo.LocationTableType AS TABLE 
 		( LocationName VARCHAR(50)
@@ -303,6 +236,30 @@ WITH  [IndicatorStructures]
 		public void CreateTypeFrom() {
 			ParseWithRoundtrip(@"CREATE TYPE dbo.SSN
 FROM varchar(11) NOT NULL ;", 1, null);
+		}
+
+		[Test]
+		public void CreateXmlSchemaCollection() {
+			ParseWithRoundtrip(@"CREATE XML SCHEMA COLLECTION [SicherheitssetSchema] AS N'<?xml version=""1.0"" ?>
+<xs:schema id=""Sicherheitsset""
+		targetNamespace=""http://weedu.ch/SecureTokenService/Sicherheitsset""
+		elementFormDefault=""qualified""
+		xmlns=""http://weedu.ch/SecureTokenService/Sicherheitsset""
+		xmlns:mstns=""http://weedu.ch/SecureTokenService/Sicherheitsset""
+		xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
+	<xs:element name=""Sicherheitsset"">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name=""Item"" minOccurs=""1"" maxOccurs=""unbounded"">
+					<xs:complexType>
+						<xs:attribute name=""GruppeId"" type=""xs:int"" use=""required"" />
+						<xs:attribute name=""Stufe"" type=""xs:int"" use=""required"" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>';", 1, null);
 		}
 
 		[Test]
@@ -323,6 +280,21 @@ FROM varchar(11) NOT NULL ;", 1, null);
 		[Test]
 		public void DropType() {
 			ParseWithRoundtrip(@"DROP TYPE dbo.SSN;", 1, null);
+		}
+
+		[Test]
+		public void ExecSpRenameColumn() {
+			ParseWithRoundtrip(@"EXEC sp_rename '[dbo].[SomeName].[column]', 'col', 'COLUMN'", 1, null);
+		}
+
+		[Test]
+		public void ExecSpRenameTable() {
+			ParseWithRoundtrip(@"EXEC sp_rename '[dbo].[SomeName]', 'tbl', 'TABLE'", 1, null);
+		}
+
+		[Test]
+		public void ExecSpRenameUnqualifiedTable() {
+			ParseWithRoundtrip(@"EXEC sp_rename '[SomeName]', 'tbl', 'TABLE'", 1, "test");
 		}
 
 		[Test]
@@ -454,6 +426,11 @@ WHEN NOT MATCHED BY TARGET THEN
 	INSERT (Name, ReasonType) VALUES (NewName, NewReasonType)
 OUTPUT $action INTO @SummaryOfChanges;",
 					1, null);
+		}
+
+		[Test]
+		public void NvarcharMaxType() {
+			ParseWithRoundtrip(@"DECLARE @s nvarchar(max);", 1, null);
 		}
 
 		[Test]
@@ -794,6 +771,44 @@ SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3, null);
 		[Test]
 		public void SyntaxError() {
 			Expect(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1, null), Throws.InstanceOf<ParseException>().With.Message.ContainsSubstring("SyntaxError"));
+		}
+
+		[Test]
+		public void TableWithFillFactor() {
+			ParseWithRoundtrip(@"CREATE TABLE [Acl].[tblACE] ( 
+ [idAce] bigint IDENTITY(1, 1) NOT NULL, 
+ [uidObject] uniqueidentifier NOT NULL, 
+ [uidSubject] uniqueidentifier NOT NULL, 
+ [iKind] tinyint NOT NULL, 
+ [iLevel] tinyint NOT NULL, 
+ [idRight] smallint NOT NULL, 
+ [timestamp] timestamp NOT NULL, 
+ CONSTRAINT [PK_tblACE] PRIMARY KEY CLUSTERED ( 
+		[idAce] ASC 
+) WITH FILLFACTOR = 90, 
+ CONSTRAINT [UK_tblACE_uidSubject_uidObject_iKind_idRight] UNIQUE NONCLUSTERED ( 
+		[uidSubject] ASC, 
+		[uidObject] ASC, 
+		[iKind] ASC, 
+		[idRight] ASC 
+) WITH FILLFACTOR = 90, 
+ CONSTRAINT [FK_tblACE_tblRight] FOREIGN KEY ([idRight]) REFERENCES [Acl].[tblRight] ([idRight]) ON DELETE CASCADE 
+);", 1, null);
+		}
+
+		[Test]
+		public void TypedXmlTypeTableVar() {
+			ParseWithRoundtrip(@"DECLARE @tblSicherheitsset TABLE (
+		[Create] bit NOT NULL,
+		[EntitaetUid] uniqueidentifier NOT NULL UNIQUE,
+		[SicherheitssetUid] uniqueidentifier NOT NULL PRIMARY KEY,
+		[SicherheitssetXml] xml ([SicherheitssetSchema]) NOT NULL
+	);", 1, null);
+		}
+
+		[Test]
+		public void TypedXmlTypeVariable() {
+			ParseWithRoundtrip(@"DECLARE @xml xml([SicherheitssetSchema]);", 1, null);
 		}
 
 		[Test]

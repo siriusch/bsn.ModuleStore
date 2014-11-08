@@ -35,7 +35,7 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public abstract class ExecuteParameter: SqlScriptableToken {}
 
-	public sealed class ExecuteParameter<T>: ExecuteParameter where T: SqlScriptableToken {
+	public class ExecuteParameter<T>: ExecuteParameter where T: SqlScriptableToken {
 		private readonly bool output;
 		private readonly ParameterName parameterName;
 		private readonly T value;
@@ -43,16 +43,18 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExecuteParameter> ::= <VariableName> <OptionalOutput>", typeof(VariableName))]
 		[Rule("<ExecuteParameter> ::= <SystemVariableName> <OptionalOutput>", typeof(VariableName))]
 		[Rule("<ExecuteParameter> ::= <Literal> <OptionalOutput>", typeof(Literal))]
-		public ExecuteParameter(T value, Optional<UnreservedKeyword> output): this(null, value, output) {}
+		public ExecuteParameter(T value, Optional<UnreservedKeyword> output): this(null, value, output.HasValue()) {}
 
 		[Rule("<ExecuteParameter> ::= <ParameterName> ~'=' <VariableName> <OptionalOutput>", typeof(VariableName))]
 		[Rule("<ExecuteParameter> ::= <ParameterName> ~'=' <SystemVariableName> <OptionalOutput>", typeof(VariableName))]
 		[Rule("<ExecuteParameter> ::= <ParameterName> ~'=' <Literal> <OptionalOutput>", typeof(Literal))]
-		public ExecuteParameter(ParameterName parameterName, T value, Optional<UnreservedKeyword> output) {
+		public ExecuteParameter(ParameterName parameterName, T value, Optional<UnreservedKeyword> output): this(parameterName, value, output.HasValue()) {}
+
+		protected ExecuteParameter(ParameterName parameterName, T value, bool output) {
 			Debug.Assert(value != null);
 			this.parameterName = parameterName;
 			this.value = value;
-			this.output = output.HasValue();
+			this.output = output;
 		}
 
 		public bool Output {
@@ -75,10 +77,14 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(ParameterName, WhitespacePadding.None, null, w => w.Write('='));
-			writer.WriteScript(value, WhitespacePadding.None);
+			WriteValueTo(writer);
 			if (Output) {
 				writer.WriteKeyword(" OUTPUT");
 			}
+		}
+
+		protected virtual void WriteValueTo(SqlWriter writer) {
+			writer.WriteScript(value, WhitespacePadding.None);
 		}
 	}
 }

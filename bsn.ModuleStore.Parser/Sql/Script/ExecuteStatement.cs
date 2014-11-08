@@ -44,13 +44,20 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExecuteStatement> ::= ~EXECUTE <VariableName> ~'=' <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>")]
 		public ExecuteStatement(VariableName resultVariableName, Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, OptionToken option) {
 			Debug.Assert(procedureName != null);
-			if (!procedureName.IsQualified && procedureName.Name.Value.StartsWith("sp_", StringComparison.OrdinalIgnoreCase)) {
-				procedureName.LockOverride();
-			}
 			this.resultVariableName = resultVariableName;
 			this.procedureName = procedureName;
 			this.parameters = parameters.ToList();
 			this.option = option;
+			if (!procedureName.IsQualified && procedureName.Name.Value.StartsWith("sp_", StringComparison.OrdinalIgnoreCase)) {
+				procedureName.LockOverride();
+				if (procedureName.Name.Value.Equals("sp_rename", StringComparison.OrdinalIgnoreCase) && (this.parameters.Count >= 2)) {
+					ExecuteParameter<Literal> objectNameParameter = (ExecuteParameter<Literal>)this.parameters[0];
+					if ((objectNameParameter != null) && (objectNameParameter.Value is StringLiteral)) {
+						Debug.Assert((objectNameParameter.ParameterName == null) || objectNameParameter.ParameterName.Value.Equals("@objname", StringComparison.OrdinalIgnoreCase));
+						this.parameters[0] = new ExecuteParameterObjectName(objectNameParameter.ParameterName, ((StringLiteral)objectNameParameter.Value), objectNameParameter.Output);
+					}
+				}
+			}
 		}
 
 		[Rule("<ExecuteStatement> ::= ~EXECUTE <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>")]
@@ -85,7 +92,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteKeyword("EXEC ");
 			writer.WriteScript(resultVariableName, WhitespacePadding.None, null, w => w.Write('='));
 			writer.WriteScript(procedureName, WhitespacePadding.None);
-			writer.WriteScriptSequence(parameters, WhitespacePadding.SpaceBefore, w => w.Write(", "));
+			writer.WriteScriptSequence(parameters, WhitespacePadding.SpaceBefore, w => w.Write(','));
 			writer.WriteScript(option, WhitespacePadding.SpaceBefore);
 		}
 	}
