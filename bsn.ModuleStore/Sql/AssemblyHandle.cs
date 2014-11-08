@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -49,20 +50,35 @@ namespace bsn.ModuleStore.Sql {
 				ApplyDeclaringMember(attribute, null);
 				result.Add(new KeyValuePair<T, string>(attribute, assemblyName));
 			}
-			foreach (Type type in assembly.GetTypes()) {
-				string typePrefix = type.Namespace;
-				foreach (T attribute in forMember(type)) {
-					ApplyDeclaringMember(attribute, type);
-					result.Add(new KeyValuePair<T, string>(attribute, typePrefix));
-				}
-				foreach (MemberInfo member in type.GetMembers(BindingFlags.Instance|BindingFlags.DeclaredOnly|BindingFlags.Public)) {
-					foreach (T attribute in forMember(member)) {
-						ApplyDeclaringMember(attribute, member);
+			foreach (Type type in GetTypes(assembly)) {
+				try {
+					string typePrefix = type.Namespace;
+					foreach (T attribute in forMember(type)) {
+						ApplyDeclaringMember(attribute, type);
 						result.Add(new KeyValuePair<T, string>(attribute, typePrefix));
 					}
+					foreach (MemberInfo member in type.GetMembers(BindingFlags.Instance|BindingFlags.DeclaredOnly|BindingFlags.Public)) {
+						foreach (T attribute in forMember(member)) {
+							ApplyDeclaringMember(attribute, member);
+							result.Add(new KeyValuePair<T, string>(attribute, typePrefix));
+						}
+					}
+				} catch (Exception ex) {
+					Debug.Write(ex);
 				}
 			}
 			return result.ToArray();
+		}
+
+		private static IEnumerable<Type> GetTypes(Assembly assembly) {
+			// The following is a hack to work around unspecific assembly load errors
+			Type[] types;
+			try {
+				types = assembly.GetTypes();
+			} catch (ReflectionTypeLoadException e) {
+				types = e.Types;
+			}
+			return types.Where(t => t != null);
 		}
 
 		private readonly Assembly assembly;
@@ -79,7 +95,7 @@ namespace bsn.ModuleStore.Sql {
 			if ((targets&
 			     (AttributeTargets.Delegate|AttributeTargets.Enum|AttributeTargets.Class|AttributeTargets.Struct|AttributeTargets.Interface|AttributeTargets.Property|AttributeTargets.Field|AttributeTargets.Event|AttributeTargets.Constructor|AttributeTargets.Method|AttributeTargets.Parameter|
 			      AttributeTargets.ReturnValue)) != 0) {
-				foreach (Type type in assembly.GetTypes()) {
+				foreach (Type type in GetTypes(assembly)) {
 					if (((type.IsEnum) && ((targets&AttributeTargets.Enum) != 0)) || ((type.IsValueType) && ((targets&AttributeTargets.Enum) != 0)) || ((type.IsInterface) && ((targets&AttributeTargets.Enum) != 0)) || ((type.IsSubclassOf(typeof(Delegate))) && ((targets&AttributeTargets.Enum) != 0)) ||
 					    ((targets&AttributeTargets.Class) != 0)) {
 						foreach (T attribute in type.GetCustomAttributes(typeof(T), inherit)) {
