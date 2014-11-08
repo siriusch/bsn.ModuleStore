@@ -65,6 +65,7 @@ namespace bsn.ModuleStore.Console.Commands {
 					executionContext.Output.WriteLine("{0} {1}: {2}", difference.Key.ObjectCategory, difference.Key.ObjectName, difference.Value);
 				}
 			}
+			executionContext.Output.Reset();
 		}
 
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
