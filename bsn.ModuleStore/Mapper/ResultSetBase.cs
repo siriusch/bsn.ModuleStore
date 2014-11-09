@@ -59,6 +59,12 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
+		public T[] ToArray() {
+			T[] result = new T[items.Count];
+			items.CopyTo(result, 0);
+			return result;
+		}
+
 		public override sealed int Count {
 			get {
 				return items.Count;
