@@ -46,7 +46,7 @@ namespace bsn.ModuleStore.Console.Commands {
 			if (inventory == null) {
 				throw new NotSupportedException("The selected inventory type cannot be used as installation source");
 			}
-			IEnumerable<string> sqlStatements = inventory.GenerateInstallSql(DatabaseEngine.Unknown, executionContext.Schema);
+			IEnumerable<string> sqlStatements = inventory.GenerateInstallSql(DatabaseEngine.Unknown, executionContext.Schema, "dbo");
 			ExecuteInternal(executionContext, tags, sqlStatements);
 		}
 

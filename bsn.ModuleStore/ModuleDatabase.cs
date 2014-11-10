@@ -127,6 +127,7 @@ namespace bsn.ModuleStore {
 		private readonly IModules moduleStore;
 		private bool disposed;
 		private bool? forceUpdateCheck;
+		private string schemaOwner;
 
 		public ModuleDatabase(string connectionString): this(connectionString, false) {}
 
@@ -137,6 +138,7 @@ namespace bsn.ModuleStore {
 			managementConnectionProvider = new ManagementConnectionProvider(connectionString, "ModuleStore");
 			moduleStore = SqlCallProxy.Create<IModules>(this, managementConnectionProvider);
 			Bootstrap.InitializeModuleStore(this);
+			schemaOwner = "dbo";
 		}
 
 		public bool AutoUpdate {
@@ -163,6 +165,15 @@ namespace bsn.ModuleStore {
 			}
 			set {
 				forceUpdateCheck = value;
+			}
+		}
+
+		public string SchemaOwner {
+			get {
+				return schemaOwner;
+			}
+			set {
+				schemaOwner = value;
 			}
 		}
 
@@ -305,7 +316,7 @@ namespace bsn.ModuleStore {
 				throw new ArgumentNullException("moduleSchema");
 			}
 			AssertSmoTransaction();
-			foreach (string sql in inventory.GenerateInstallSql(managementConnectionProvider.Engine, moduleSchema)) {
+			foreach (string sql in inventory.GenerateInstallSql(managementConnectionProvider.Engine, moduleSchema, schemaOwner)) {
 				log.DebugFormat("SQL install: ", sql);
 				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
 					command.Transaction = managementConnectionProvider.GetTransaction();

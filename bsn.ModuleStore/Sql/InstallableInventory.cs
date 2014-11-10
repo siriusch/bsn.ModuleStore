@@ -50,7 +50,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public IEnumerable<string> GenerateInstallSql(DatabaseEngine targetEngine, string schemaName) {
+		public IEnumerable<string> GenerateInstallSql(DatabaseEngine targetEngine, string schemaName, string ownerName) {
 			if (string.IsNullOrEmpty(schemaName)) {
 				throw new ArgumentNullException("schemaName");
 			}
@@ -66,6 +66,10 @@ namespace bsn.ModuleStore.Sql {
 						sqlWriter.WriteKeyword("CREATE SCHEMA");
 						using (sqlWriter.Indent()) {
 							sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
+							if (!string.IsNullOrEmpty(ownerName)) {
+								sqlWriter.Write(" AUTHORIZATION");
+								sqlWriter.WriteScript(new ObjectName(ownerName), WhitespacePadding.SpaceBefore);
+							}
 							DependencyResolver schemaResolver = new DependencyResolver();
 							foreach (IAlterableCreateStatement statement in createStatements) {
 								if (statement.IsPartOfSchemaDefinition) {
