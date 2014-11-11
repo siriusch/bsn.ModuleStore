@@ -30,12 +30,18 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 using bsn.GoldParser.Semantic;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExecuteStatement: Statement {
+		private static readonly Dictionary<string, int[]> objectNameParameters = new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase) {
+				{"sp_rename", new[] {0}},
+				{"sp_refreshsqlmodule", new[] {0}}
+		};
+
 		private readonly OptionToken option;
 		private readonly List<ExecuteParameter> parameters;
 		private readonly Qualified<SchemaName, ProcedureName> procedureName;
@@ -50,11 +56,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.option = option;
 			if (!procedureName.IsQualified && procedureName.Name.Value.StartsWith("sp_", StringComparison.OrdinalIgnoreCase)) {
 				procedureName.LockOverride();
-				if (procedureName.Name.Value.Equals("sp_rename", StringComparison.OrdinalIgnoreCase) && (this.parameters.Count >= 2)) {
-					ExecuteParameter<Literal> objectNameParameter = (ExecuteParameter<Literal>)this.parameters[0];
-					if ((objectNameParameter != null) && (objectNameParameter.Value is StringLiteral)) {
-						Debug.Assert((objectNameParameter.ParameterName == null) || objectNameParameter.ParameterName.Value.Equals("@objname", StringComparison.OrdinalIgnoreCase));
-						this.parameters[0] = new ExecuteParameterObjectName(objectNameParameter.ParameterName, ((StringLiteral)objectNameParameter.Value), objectNameParameter.Output);
+				int[] parameterPositions;
+				if (objectNameParameters.TryGetValue(procedureName.Name.Value, out parameterPositions)) {
+					foreach (int parameterPosition in parameterPositions.Where(p => this.parameters.Count > p)) {
+						ExecuteParameter<Literal> objectNameParameter = (ExecuteParameter<Literal>)this.parameters[parameterPosition];
+						if ((objectNameParameter != null) && (objectNameParameter.Value is StringLiteral)) {
+							this.parameters[parameterPosition] = new ExecuteParameterObjectName(objectNameParameter.ParameterName, ((StringLiteral)objectNameParameter.Value), objectNameParameter.Output);
+						}
 					}
 				}
 			}
