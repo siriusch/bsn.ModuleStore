@@ -211,6 +211,7 @@ namespace bsn.ModuleStore.Sql {
 									resolver.Add(pair.Key.CreateAlterStatement());
 								}
 							}
+							refreshObjectNames.Remove(pair.Key.ObjectName);
 						}
 						break;
 					case InventoryObjectDifference.SourceOnly:
