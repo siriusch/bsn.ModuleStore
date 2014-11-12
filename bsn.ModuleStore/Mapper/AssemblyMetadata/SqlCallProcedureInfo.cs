@@ -133,7 +133,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 						if (parameters[i] != null) {
 							throw new InvalidOperationException(string.Format("The constant parameter {0} on method {1}.{2} cannot be declared multiple times", parameterName, method.DeclaringType.FullName, method.Name));
 						}
-						parameters[i] = new SqlCallParameterConstant(parameter, parameterAttribute.Value);
+						parameters[i] = new SqlCallParameterConstant(script.ProcedureName, parameter, parameterAttribute.Value);
 						found = true;
 						break;
 					}
@@ -157,7 +157,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 					if (index >= parameters.Length) {
 						throw new InvalidOperationException(String.Format("The method {0}.{1} has more parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
 					}
-					SqlCallParameterInfo callParameterInfo = new SqlCallParameterInfo(serializationTypeInfoProvider, parameterInfo, script.Parameters[index], typeMappingProvider);
+					SqlCallParameterInfo callParameterInfo = new SqlCallParameterInfo(serializationTypeInfoProvider, parameterInfo, script.ProcedureName, script.Parameters[index], typeMappingProvider);
 					if (callParameterInfo.Direction != ParameterDirection.Input) {
 						outArgCount = methodParameters.Length;
 					}

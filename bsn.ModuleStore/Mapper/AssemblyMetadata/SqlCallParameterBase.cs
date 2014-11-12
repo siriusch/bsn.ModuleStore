@@ -52,12 +52,11 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 
 		private readonly ParameterDirection direction;
 		private readonly bool nullable;
-
 		private readonly string parameterName;
 		private readonly int size;
 		private readonly SqlDbType sqlType;
 
-		protected SqlCallParameterBase(ProcedureParameter parameter, ParameterDirection direction, bool nullable, bool isEnumerable) {
+		protected SqlCallParameterBase(ProcedureName procedureName, ProcedureParameter parameter, ParameterDirection direction, bool nullable, bool isEnumerable) {
 			if (parameter == null) {
 				throw new ArgumentNullException("parameter");
 			}
@@ -86,14 +85,14 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			this.nullable = nullable;
 			if (direction == ParameterDirection.Input) {
 				if (parameter.Output) {
-					throw new InvalidOperationException("An OUTPUT argument requires an out parameter");
+					throw new InvalidOperationException(string.Format("The {0} OUTPUT argument requires an out parameter in {1}", parameterName, procedureName));
 				}
 			} else {
 				if (!parameter.Output) {
-					throw new InvalidOperationException("An out parameter requires an OUTPUT argument");
+					throw new InvalidOperationException(string.Format("An out parameter requires argument {0} to be OUTPUT in {1}", parameterName, procedureName));
 				}
 				if (sqlType == SqlDbType.Structured) {
-					throw new NotSupportedException("Table valued parameters only support readonly inputs!");
+					throw new NotSupportedException(string.Format("Table valued argument {0} must be READONLY in {1}", parameterName, procedureName));
 				}
 			}
 		}
