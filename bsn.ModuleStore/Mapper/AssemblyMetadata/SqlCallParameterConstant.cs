@@ -38,7 +38,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 	internal class SqlCallParameterConstant: SqlCallParameterBase {
 		private readonly object value;
 
-		public SqlCallParameterConstant(Qualified<SchemaName, ProcedureName> procedureName, ProcedureParameter parameter, object value): base(procedureName, parameter, ParameterDirection.Input, value == null, false) {
+		public SqlCallParameterConstant(ProcedureName procedureName, ProcedureParameter parameter, object value): base(procedureName, parameter, ParameterDirection.Input, value == null, false) {
 			this.value = value;
 		}
 

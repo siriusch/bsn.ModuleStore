@@ -77,7 +77,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		private readonly ParameterInfo parameterInfo;
 		private readonly StructuredParameterSchema structuredSchema;
 
-		public SqlCallParameterInfo(ISerializationTypeInfoProvider serializationTypeInfoProvider, ParameterInfo param, Qualified<SchemaName, ProcedureName> procedureName, ProcedureParameter script, ISerializationTypeMappingProvider typeMappingProvider)
+		public SqlCallParameterInfo(ISerializationTypeInfoProvider serializationTypeInfoProvider, ParameterInfo param, ProcedureName procedureName, ProcedureParameter script, ISerializationTypeMappingProvider typeMappingProvider)
 				: base(procedureName, script, GetParameterDirection(param), GetParameterNullable(param), GetParameterEnumerable(param)) {
 			parameterInfo = param;
 			if (SqlType == SqlDbType.Structured) {
