@@ -35,36 +35,36 @@ using bsn.GoldParser.Parser;
 
 namespace bsn.ModuleStore.Sql.Script {
 	public static class SqlTokenExtensions {
-		internal static Identifier CreateIdentifier(this IToken token, Symbol identifierSymbol, string text) {
-			return new Identifier(text, identifierSymbol, token.Position);
+		internal static Identifier CreateIdentifier(this IToken that, Symbol identifierSymbol, string text) {
+			return new Identifier(text, identifierSymbol, that.Position);
 		}
 
-		public static bool HasValue<T>(this Optional<T> optional) where T: SqlToken {
-			return (optional != null) && (optional.Value != null);
+		public static bool HasValue<T>(this Optional<T> that) where T: SqlToken {
+			return (that != null) && (that.Value != null);
 		}
 
-		public static T[] ToArray<T>(this Optional<Sequence<T>> sequence) where T: SqlToken {
-			if (!sequence.HasValue()) {
+		public static T[] ToArray<T>(this Optional<Sequence<T>> that) where T: SqlToken {
+			if (!that.HasValue()) {
 				return new T[0];
 			}
-			return ToArray(sequence.Value);
+			return ToArray(that.Value);
 		}
 
-		public static T[] ToArray<T>(this Sequence<T> sequence) where T: SqlToken {
-			return ToList(sequence).ToArray();
+		public static T[] ToArray<T>(this Sequence<T> that) where T: SqlToken {
+			return ToList(that).ToArray();
 		}
 
-		public static List<T> ToList<T>(this Optional<Sequence<T>> sequence) where T: SqlToken {
-			if (!sequence.HasValue()) {
+		public static List<T> ToList<T>(this Optional<Sequence<T>> that) where T: SqlToken {
+			if (!that.HasValue()) {
 				return new List<T>(0);
 			}
-			return ToList(sequence.Value);
+			return ToList(that.Value);
 		}
 
-		public static List<T> ToList<T>(this Sequence<T> sequence) where T: SqlToken {
+		public static List<T> ToList<T>(this Sequence<T> that) where T: SqlToken {
 			List<T> result = new List<T>();
-			if (sequence != null) {
-				result.AddRange(sequence);
+			if (that != null) {
+				result.AddRange(that);
 			}
 			return result;
 		}

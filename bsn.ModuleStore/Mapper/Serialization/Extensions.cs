@@ -34,8 +34,8 @@ using System.Xml;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public static class Extensions {
-		public static SqlXml ToSqlXml(this string xml) {
-			return new SqlXml(XmlReader.Create(new StringReader(xml)));
+		public static SqlXml ToSqlXml(this string that) {
+			return new SqlXml(XmlReader.Create(new StringReader(that)));
 		}
 	}
 }

@@ -33,15 +33,15 @@ using System.Linq;
 
 namespace bsn.ModuleStore.Mapper {
 	public static class Extensions {
-		public static T? GetId<T>(this IIdentifiable<T> value) where T: struct, IEquatable<T> {
-			if (value != null) {
-				return value.Id;
+		public static T? GetId<T>(this IIdentifiable<T> that) where T: struct, IEquatable<T> {
+			if (that != null) {
+				return that.Id;
 			}
 			return null;
 		}
 
-		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<TValue> values) where TValue: IIdentifiable<TKey> where TKey: struct, IEquatable<TKey> {
-			return Enumerable.ToDictionary(values, v => v.Id);
+		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<TValue> that) where TValue: IIdentifiable<TKey> where TKey: struct, IEquatable<TKey> {
+			return Enumerable.ToDictionary(that, v => v.Id);
 		}
 	}
 }

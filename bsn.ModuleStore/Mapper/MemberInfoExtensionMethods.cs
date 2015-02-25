@@ -32,19 +32,19 @@ using System.Reflection;
 
 namespace bsn.ModuleStore.Mapper {
 	internal static class MemberInfoExtensionMethods {
-		public static Type GetMemberType(this MemberInfo memberInfo) {
-			if (memberInfo == null) {
-				throw new ArgumentNullException("memberInfo");
+		public static Type GetMemberType(this MemberInfo that) {
+			if (that == null) {
+				throw new ArgumentNullException("that");
 			}
-			FieldInfo fieldInfo = memberInfo as FieldInfo;
+			FieldInfo fieldInfo = that as FieldInfo;
 			if (fieldInfo != null) {
 				return fieldInfo.FieldType;
 			}
-			PropertyInfo propertyInfo = memberInfo as PropertyInfo;
+			PropertyInfo propertyInfo = that as PropertyInfo;
 			if (propertyInfo != null) {
 				return propertyInfo.PropertyType;
 			}
-			throw new ArgumentException("Only fields and properties are supported", "memberInfo");
+			throw new ArgumentException("Only fields and properties are supported", "that");
 		}
 	}
 }
