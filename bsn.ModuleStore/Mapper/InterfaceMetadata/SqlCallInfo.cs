@@ -20,12 +20,10 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				throw new ArgumentNullException("typeInfoProvider");
 			}
 			SqlCallInfo result;
-			if (!knownTypes.TryGetValue(interfaceType, out result)) {
-				lock (knownTypes) {
-					if (!knownTypes.TryGetValue(interfaceType, out result)) {
-						result = new SqlCallInfo(interfaceType, typeInfoProvider);
-						knownTypes.Add(interfaceType, result);
-					}
+			lock (knownTypes) {
+				if (!knownTypes.TryGetValue(interfaceType, out result)) {
+					result = new SqlCallInfo(interfaceType, typeInfoProvider);
+					knownTypes.Add(interfaceType, result);
 				}
 			}
 			return result;

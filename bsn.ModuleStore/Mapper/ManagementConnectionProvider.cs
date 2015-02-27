@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading;
 
 using Common.Logging;
 
@@ -209,6 +210,8 @@ namespace bsn.ModuleStore.Mapper {
 		public void Dispose() {
 			if (connection != null) {
 				try {
+					// don't block on dispose, therefore we don't lock
+					SqlTransaction transaction = Interlocked.Exchange(ref this.transaction, null);
 					if (transaction != null) {
 						transaction.Dispose();
 					}

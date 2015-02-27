@@ -28,6 +28,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -36,6 +37,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		protected XNodeMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override XmlReader GetXmlReader(object value) {
+			Debug.Assert(value != null);
 			return ((XNode)value).CreateReader();
 		}
 	}

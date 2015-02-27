@@ -52,7 +52,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			Debug.Assert(schema != null);
 			this.variableName = variableName;
 			this.stringValue = stringValue;
-			this.flags = (int)flags.Value;
+			this.flags = (flags == null) ? 0 : (int)flags.Value;
 			this.schema = schema;
 		}
 

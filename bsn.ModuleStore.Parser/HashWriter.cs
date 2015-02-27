@@ -34,7 +34,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace bsn.ModuleStore {
-	public class HashWriter: TextWriter, IEquatable<HashWriter> {
+	public sealed class HashWriter: TextWriter {
 		public static bool HashEqual(byte[] x, byte[] y) {
 			if ((x != null) && (y != null)) {
 				int commonLength = Math.Min(x.Length, y.Length);
@@ -118,13 +118,6 @@ namespace bsn.ModuleStore {
 			if (result != null) {
 				throw new InvalidOperationException("The hash has already been computed");
 			}
-		}
-
-		public bool Equals(HashWriter other) {
-			if (other != null) {
-				return Equals(other.hash.Hash);
-			}
-			return false;
 		}
 	}
 }

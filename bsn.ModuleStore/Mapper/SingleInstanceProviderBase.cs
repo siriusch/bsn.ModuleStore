@@ -74,7 +74,6 @@ namespace bsn.ModuleStore.Mapper {
 
 		internal const CachePolicy DefaultCachePolicy = CachePolicy.WeakReference;
 		private const int GCGeneration = 1;
-
 		private static readonly Dictionary<Type, CachePolicy> cachePolicy = new Dictionary<Type, CachePolicy>();
 
 		private readonly CachePolicy defaultCachePolicy;
@@ -131,8 +130,10 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected override void EndDeserialize(IDictionary<string, object> state) {
 			// some simple heuristic to determine when to perform a cleanup run
-			if (GC.CollectionCount(GCGeneration) > (lastCollection+(int)Math.Log(instances.Count))) {
-				CleanupCache();
+			lock (instances) {
+				if (GC.CollectionCount(GCGeneration) > (lastCollection+(int)Math.Log(instances.Count))) {
+					CleanupCache();
+				}
 			}
 			base.EndDeserialize(state);
 		}

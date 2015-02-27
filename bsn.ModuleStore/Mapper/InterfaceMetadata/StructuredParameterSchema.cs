@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -51,6 +52,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 						Type memberType = memberInfo.GetMemberType();
 						SqlColumnInfo sqlColumnInfo = typeInfo.Mapping.Columns[sqlColumn.Name];
 						StructuredParameterAttribute parameterAttribute = StructuredParameterAttribute.GetStructuredParameterAttribute(memberInfo);
+						Debug.Assert(parameterAttribute != null);
 						ColumnInfo ci = new ColumnInfo(sqlColumnInfos.Count, sqlColumnInfo.Name, GetDataTypeName(sqlColumnInfo, memberType), memberType);
 						DataRow row = NewRow();
 						row[columnName] = ci.ColumnName;
