@@ -64,7 +64,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private static readonly ILog log = LogManager.GetLogger<SerializationTypeInfo>();
 
 		// ReSharper disable UnusedMember.Local
-		private static Array ToArrayGeneric<T>(IEnumerable enumerable) {
+		public static Array ToArrayGeneric<T>(IEnumerable enumerable) {
 			// ReSharper restore UnusedMember.Local
 			List<T> list = new List<T>();
 			foreach (object obj in enumerable) {
