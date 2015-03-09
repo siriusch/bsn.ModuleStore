@@ -1460,12 +1460,14 @@ _NAMEONLY = '$NAMEONLY$'
 
 <Value> ::= <SystemVariableName>
           | <ColumnNameQualified>
-          | <VariableName> ! CLR UDT property, field and methods are not yet implemented
+          | <VariableName> ! CLR UDT property, field are not yet implemented
+!          | <VariableName> '.' <ObjectName>
+          | <VariableName> '.' <NamedFunctionList>
           | <ExpressionParens>
           | <ExpressionParens> '.' <NamedFunctionList>
           | <FunctionCall>
           | <FunctionCall> '.' <NamedFunctionList>
-          | <TableName> '.' <NamedFunctionList> ! should be <SchemaName> '.' <FunctionCall> - but that gives a reduce-reduce error
+          | <TableName> '.' <NamedFunctionList> ! should be <SchemaName> '.' <NamedFunctionList> - but that gives a reduce-reduce error
           | <TableName> '.' <ColumnName> '.' <NamedFunctionList> ! for functions such as .query() 
           | <FunctionCall> OVER '(' <RankingArguments> ')'
 

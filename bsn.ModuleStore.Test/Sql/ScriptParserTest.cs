@@ -106,6 +106,45 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		[Test]
+		public void FullCreateSP() {
+			ParseWithRoundtrip(@"CREATE PROCEDURE [dbo].[prcTypeUpdate]
+    @iSinceVersion bigint OUTPUT,
+    @uidType uniqueidentifier,
+    @sCode nvarchar(50),
+    @xMetadata xml
+AS
+    BEGIN
+        SET NOCOUNT ON;
+        SET XACT_ABORT ON;
+        DECLARE @tblTimestamp TABLE (
+            [timestamp] bigint NOT NULL PRIMARY KEY
+        );
+		DECLARE @uidPreferenceType uniqueidentifier=CASE WHEN (
+			SELECT @xMetadata.value('(/*/order)[1]', 'int')-t.xMetadata.value('(/*/order)[1]', 'int')
+			FROM dbo.tblType t
+			WHERE t.uidType=@uidType)<=0 THEN @uidType ELSE (
+			SELECT t.uidType 
+			FROM dbo.tblType t 
+			WHERE @xMetadata.value('(/*/order)[1]', 'int')=t.xMetadata.value('(/*/order)[1]', 'int'))
+			END;
+        UPDATE [dbo].[tblType]
+            SET [sCode]=COALESCE(@sCode COLLATE Latin1_General_CI_AS, [sCode]), [xMetadata]=COALESCE(@xMetadata, [xMetadata])
+            OUTPUT [INSERTED].[timestamp]
+                INTO @tblTimestamp
+            WHERE [uidType]=@uidType;
+		INSERT @tblTimestamp EXEC [dbo].prcTypeOrderFixup @uidPreferenceType;
+        EXEC [dbo].[prcList] @iSinceVersion OUTPUT;
+        WITH [cteTimestamp] AS (
+            SELECT [t].[timestamp], CAST(MIN_ACTIVE_ROWVERSION() AS bigint)+ROW_NUMBER() OVER (ORDER BY [t].[timestamp])-1 AS [continuous]
+            FROM @tblTimestamp AS [t]
+        )
+        SELECT @iSinceVersion=ISNULL(MAX([t].[timestamp])+1, @iSinceVersion)
+            FROM [cteTimestamp] AS [t]
+            WHERE [t].[timestamp]=[t].[continuous];
+    END;", 1, null);
+		}
+
+		[Test]
 		public void BeginTransactionIdentifierName() {
 			ParseWithRoundtrip(@"BEGIN TRANSACTION MyTrans", 1, null);
 		}

@@ -33,23 +33,24 @@ using System.Diagnostics;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public class ExpressionWithFunctionCalls: ExpressionFunctionCalls {
-		private readonly Expression expression;
+	public class ExpressionWithFunctionCalls<T>: ExpressionFunctionCalls where T: SqlScriptableToken {
+		private readonly T value;
 
-		[Rule("<Value> ::= <ExpressionParens> ~'.' <NamedFunctionList>")]
-		public ExpressionWithFunctionCalls(Expression expression, Sequence<NamedFunction> functions): base(functions.Item, functions.Next) {
-			Debug.Assert(expression != null);
-			this.expression = expression;
+		[Rule("<Value> ::= <ExpressionParens> ~'.' <NamedFunctionList>", typeof(Expression))]
+		[Rule("<Value> ::= <VariableName> ~'.' <NamedFunctionList>", typeof(VariableName))]
+		public ExpressionWithFunctionCalls(T value, Sequence<NamedFunction> functions): base(functions.Item, functions.Next) {
+			Debug.Assert(value != null);
+			this.value = value;
 		}
 
-		public Expression Expression {
+		public T Value {
 			get {
-				return expression;
+				return value;
 			}
 		}
 
 		protected override void WriteToInternal(SqlWriter writer) {
-			writer.WriteScript(expression, WhitespacePadding.None);
+			writer.WriteScript(value, WhitespacePadding.None);
 			writer.Write('.');
 			base.WriteToInternal(writer);
 		}
