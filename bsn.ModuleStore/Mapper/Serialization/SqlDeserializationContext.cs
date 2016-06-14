@@ -63,8 +63,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public ISerializationTypeInfo GetSerializationTypeInfo(Type type) {
-			return typeInfoProvider.GetSerializationTypeInfo(type);
+		public ISerializationTypeInfo GetSerializationTypeInfo(Type type, bool scalar) {
+			return typeInfoProvider.GetSerializationTypeInfo(type, scalar);
 		}
 
 		public bool IsDeserialized(object obj) {

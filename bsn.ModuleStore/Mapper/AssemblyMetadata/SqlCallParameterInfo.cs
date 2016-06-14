@@ -90,7 +90,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 					throw new ArgumentException(string.Format("The given structured parameter table type {0} cannot be found in the inventory", script.ParameterTypeName));
 				}
 				IDictionary<string, SqlColumnInfo> columnInfos;
-				ISerializationTypeInfo info = serializationTypeInfoProvider.GetSerializationTypeInfo(structuredType);
+				ISerializationTypeInfo info = serializationTypeInfoProvider.GetSerializationTypeInfo(structuredType, false);
 				if (info.SimpleConverter != null) {
 					string columnName = createTableTypeScript.TableDefinitions.OfType<TableColumnDefinition>().First(d => d.ColumnDefinition is TypedColumnDefinition).ColumnName.Value;
 					columnInfos = new Dictionary<string, SqlColumnInfo>(1);

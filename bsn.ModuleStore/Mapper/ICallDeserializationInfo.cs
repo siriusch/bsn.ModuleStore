@@ -46,6 +46,13 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		/// <summary>
+		/// Controls is a scalar return type is expected when calling a procedure.
+		/// </summary>
+		bool DeserializeScalar {
+			get;
+		}
+
+		/// <summary>
 		/// Controls the number of rows to deserialize when using the automatic Deserializer. This corresponds to the parameter passed to <see cref="SqlDeserializer{T}"/>.<see cref="SqlDeserializer{T}.Deserialize(int)"/>.
 		/// </summary>
 		int DeserializeRowLimit {

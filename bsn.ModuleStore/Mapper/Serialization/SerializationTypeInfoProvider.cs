@@ -32,7 +32,34 @@ using System.Collections.Generic;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SerializationTypeInfoProvider: ISerializationTypeInfoProvider {
-		private readonly Dictionary<Type, SerializationTypeInfo> infos = new Dictionary<Type, SerializationTypeInfo>();
+		private struct TypeKey: IEquatable<TypeKey> {
+			private readonly Type type;
+			private readonly bool scalar;
+
+			public TypeKey(Type type, bool scalar) {
+				this.type = type;
+				this.scalar = scalar;
+			}
+
+			public bool Equals(TypeKey other) {
+				return type.Equals(other.type) && scalar == other.scalar;
+			}
+
+			public override bool Equals(object obj) {
+				if (ReferenceEquals(null, obj)) {
+					return false;
+				}
+				return obj is TypeKey && Equals((TypeKey)obj);
+			}
+
+			public override int GetHashCode() {
+				unchecked {
+					return (type.GetHashCode()*397)^scalar.GetHashCode();
+				}
+			}
+		}
+
+		private readonly Dictionary<TypeKey, SerializationTypeInfo> infos = new Dictionary<TypeKey, SerializationTypeInfo>();
 		private readonly ISerializationTypeMappingProvider mappingProvider;
 
 		public SerializationTypeInfoProvider(): this(new SerializationTypeMappingProvider()) {}
@@ -44,12 +71,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			this.mappingProvider = mappingProvider;
 		}
 
-		public ISerializationTypeInfo GetSerializationTypeInfo(Type type) {
+		public ISerializationTypeInfo GetSerializationTypeInfo(Type type, bool scalar) {
 			SerializationTypeInfo result;
+			TypeKey key = new TypeKey(type, scalar);
 			lock (infos) {
-				if (!infos.TryGetValue(type, out result)) {
-					result = new SerializationTypeInfo(type, mappingProvider);
-					infos.Add(type, result);
+				if (!infos.TryGetValue(key, out result)) {
+					result = new SerializationTypeInfo(type, scalar, mappingProvider);
+					infos.Add(key, result);
 				}
 			}
 			return result;

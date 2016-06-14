@@ -28,6 +28,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		private readonly bool deserializeCallConstructor;
 		private readonly bool deserializeReturnNullOnEmptyReader;
 		private readonly int deserializeRowLimit;
+		private readonly bool deserializeScalar;
 		private readonly string name;
 		private readonly int outArgCount;
 		private readonly SqlCallParameterInfo[] parameters;
@@ -64,7 +65,8 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				}
 			}
 			parameters = sortedParams.Select(p => p.Value).ToArray();
-			returnTypeInfo = typeInfoProvider.GetSerializationTypeInfo(method.ReturnType);
+			deserializeScalar = procedure.UseReturnValue == SqlReturnValue.Scalar;
+			returnTypeInfo = typeInfoProvider.GetSerializationTypeInfo(method.ReturnType, deserializeScalar);
 			if ((procedure.UseReturnValue != SqlReturnValue.Auto) || (method.ReturnType != typeof(void))) {
 				useReturnValue = (procedure.UseReturnValue == SqlReturnValue.ReturnValue) || ((procedure.UseReturnValue == SqlReturnValue.Auto) && (typeInfoProvider.TypeMappingProvider.GetMapping(method.ReturnType).DbType == SqlDbType.Int));
 			}
@@ -73,6 +75,37 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		public string ProcedureName {
 			get {
 				return string.IsNullOrEmpty(schemaName) ? '['+name+']' : '['+schemaName+"].["+name+']';
+			}
+		}
+
+		public bool DeserializeCallConstructor {
+			get {
+				return deserializeCallConstructor;
+			}
+		}
+
+		public bool DeserializeScalar {
+			get {
+				return deserializeScalar;
+			}
+		}
+
+		public int DeserializeRowLimit {
+			get {
+				return deserializeRowLimit;
+			}
+		}
+
+		public bool RequireTransaction {
+#warning check RequireTransationProperty
+			get {
+				return false;
+			}
+		}
+
+		public bool DeserializeReturnNullOnEmptyReader {
+			get {
+				return deserializeReturnNullOnEmptyReader;
 			}
 		}
 
@@ -99,31 +132,6 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			procedureReturnTypeInfo = returnTypeInfo;
 			procedureInfo = this;
 			return result;
-		}
-
-		public bool DeserializeCallConstructor {
-			get {
-				return deserializeCallConstructor;
-			}
-		}
-
-		public int DeserializeRowLimit {
-			get {
-				return deserializeRowLimit;
-			}
-		}
-
-		public bool RequireTransaction {
-#warning check RequireTransationProperty
-			get {
-				return false;
-			}
-		}
-
-		public bool DeserializeReturnNullOnEmptyReader {
-			get {
-				return deserializeReturnNullOnEmptyReader;
-			}
 		}
 	}
 }

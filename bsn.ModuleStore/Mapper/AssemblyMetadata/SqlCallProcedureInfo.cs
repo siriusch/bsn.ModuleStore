@@ -167,7 +167,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			if (parameters.Any(p => p == null)) {
 				throw new InvalidOperationException(String.Format("The method {0}.{1} has less parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
 			}
-			returnTypeInfo = serializationTypeInfoProvider.GetSerializationTypeInfo(method.ReturnType);
+			returnTypeInfo = serializationTypeInfoProvider.GetSerializationTypeInfo(method.ReturnType, proc.UseReturnValue==SqlReturnValue.Scalar);
 			if ((proc.UseReturnValue != SqlReturnValue.Auto) || (method.ReturnType != typeof(void))) {
 				useReturnValue = (proc.UseReturnValue == SqlReturnValue.ReturnValue) || ((proc.UseReturnValue == SqlReturnValue.Auto) && (typeMappingProvider.GetMapping(method.ReturnType).DbType == SqlDbType.Int));
 			}

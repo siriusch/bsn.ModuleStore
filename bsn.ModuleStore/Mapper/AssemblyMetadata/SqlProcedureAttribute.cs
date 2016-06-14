@@ -110,6 +110,12 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			}
 		}
 
+		public bool DeserializeScalar {
+			get {
+				return useReturnValue == SqlReturnValue.Scalar;
+			}
+		}
+
 		/// <summary>
 		/// Controls the number of rows to deserialize when using the automatic Deserializer. This corresponds to the parameter passed to <see cref="SqlDeserializer{T}"/>.<see cref="SqlDeserializer{T}.Deserialize(int)"/>.
 		/// </summary>

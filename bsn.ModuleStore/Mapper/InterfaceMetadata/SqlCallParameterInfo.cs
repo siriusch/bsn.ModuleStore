@@ -143,7 +143,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				outArgPosition = outArgCount++;
 			}
 			if (sqlType == SqlDbType.Structured) {
-				structuredSchema = new StructuredParameterSchema(typeInfoProvider.GetSerializationTypeInfo(parameterType.GetGenericArguments()[0]), typeInfoProvider.TypeMappingProvider);
+				structuredSchema = new StructuredParameterSchema(typeInfoProvider.GetSerializationTypeInfo(parameterType.GetGenericArguments()[0], false), typeInfoProvider.TypeMappingProvider);
 			}
 			if ((sqlType == SqlDbType.Udt) && string.IsNullOrEmpty(arg.UserDefinedTypeName)) {
 				userDefinedTypeName = GetClrUserDefinedTypeName(parameter.ParameterType);
@@ -200,7 +200,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				value = GetDataTableValue(value, disposeList);
 				break;
 			}
-			ISerializationTypeInfo typeInfo = typeInfoProvider.GetSerializationTypeInfo(parameterType);
+			ISerializationTypeInfo typeInfo = typeInfoProvider.GetSerializationTypeInfo(parameterType, false);
 			if (typeInfo.SimpleConverter != null) {
 				value = typeInfo.SimpleConverter.ProcessToDb(value);
 			}

@@ -35,6 +35,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			get;
 		}
 
-		ISerializationTypeInfo GetSerializationTypeInfo(Type type);
+		ISerializationTypeInfo GetSerializationTypeInfo(Type type, bool scalar);
 	}
 }

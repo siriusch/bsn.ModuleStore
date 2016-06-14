@@ -38,6 +38,8 @@ using Common.Logging;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SerializationTypeInfo: ISerializationTypeInfo {
+		private static readonly ILog log = LogManager.GetLogger<SerializationTypeInfo>();
+
 		private static class ToArray<T> {
 #pragma warning disable 169
 			// ReSharper disable StaticFieldInGenericType
@@ -61,8 +63,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		private static readonly ILog log = LogManager.GetLogger<SerializationTypeInfo>();
-
 		// ReSharper disable UnusedMember.Local
 		public static Array ToArrayGeneric<T>(IEnumerable enumerable) {
 			// ReSharper restore UnusedMember.Local
@@ -82,19 +82,23 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private readonly IMemberConverter simpleConverter;
 		private readonly Type type;
 
-		public SerializationTypeInfo(Type type, ISerializationTypeMappingProvider typeMappingProvider) {
+		public SerializationTypeInfo(Type type, bool scalar, ISerializationTypeMappingProvider typeMappingProvider) {
 			this.type = type;
-			if (type.IsArray) {
-				if (type.GetArrayRank() != 1) {
-					throw new NotSupportedException("Only arrays with one dimension are supported by the DbDeserializer");
-				}
-				instanceType = type.GetElementType();
-				Debug.Assert(instanceType != null);
-			} else if ((type == typeof(string)) || (!type.TryGetIEnumerableElementType(out instanceType))) {
+			if (scalar) {
 				instanceType = type;
-			}
-			if (instanceType.IsArray) {
-				throw new NotSupportedException("Nested arrays cannot be deserialized by the DbDeserializer");
+			} else {
+				if (type.IsArray) {
+					if (type.GetArrayRank() != 1) {
+						throw new NotSupportedException("Only arrays with one dimension are supported by the DbDeserializer");
+					}
+					instanceType = type.GetElementType();
+					Debug.Assert(instanceType != null);
+				} else if ((type == typeof(string)) || (!type.TryGetIEnumerableElementType(out instanceType))) {
+					instanceType = type;
+				}
+				if (instanceType.IsArray) {
+					throw new NotSupportedException("Nested arrays cannot be deserialized by the DbDeserializer");
+				}
 			}
 			requiresNotification = typeof(ISqlDeserializationHook).IsAssignableFrom(instanceType);
 			mapping = typeMappingProvider.GetMapping(instanceType);
