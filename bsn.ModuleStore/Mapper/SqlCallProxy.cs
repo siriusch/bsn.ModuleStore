@@ -305,7 +305,7 @@ namespace bsn.ModuleStore.Mapper {
 											if (procInfo.DeserializeReturnNullOnEmptyReader) {
 												returnValue = null;
 											} else if (returnTypeInfo.Type.IsArray) {
-												returnValue = Array.CreateInstance(returnTypeInfo.InstanceType, 0);
+												returnValue = Array.CreateInstance(returnTypeInfo.Type.GetElementType(), 0);
 											} else if (returnTypeInfo.IsCollection) {
 												returnValue = returnTypeInfo.CreateList();
 											} else {
