@@ -206,10 +206,13 @@ namespace bsn.ModuleStore.Mapper {
 						foreach (XElement element in root.Elements(elementName)) {
 							XAttribute lang = element.Attribute(XmlLang);
 							if ((lang == null) ? (cultureId.Length == 0) : (lang.Value == cultureId)) {
+								if (string.IsNullOrEmpty(element.Value) && cultureFallback) {
+									break;
+								}
 								return element;
 							}
 						}
-						if ((!cultureFallback) || (culture == CultureInfo.InvariantCulture)) {
+						if ((!cultureFallback) || culture.Equals(CultureInfo.InvariantCulture)) {
 							culture = null;
 						} else {
 							culture = culture.Parent;
