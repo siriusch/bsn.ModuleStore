@@ -32,18 +32,36 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-using NUnit.Framework;
+using Xunit;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	[TestFixture]
-	public class MembersMethodsTest: AssertionHelper {
-		private class Members {
-			// ReSharper disable FieldCanBeMadeReadOnly.Local
-			private int a;
-			private Guid? b;
-			private object c;
-			// ReSharper restore FieldCanBeMadeReadOnly.Local
+	public class MembersMethodsTest {
+		public struct GuidStruct {
+			public GuidStruct(Guid a, Guid b) {
+				this.a = a;
+				this.b = b;
+			}
 
+			public Guid A {
+				get {
+					return a;
+				}
+			}
+
+			public Guid B {
+				get {
+					return b;
+				}
+			}
+
+			// ReSharper disable FieldCanBeMadeReadOnly.Local
+			private Guid a;
+
+			private Guid b;
+			// ReSharper restore FieldCanBeMadeReadOnly.Local
+		}
+
+		private class Members {
 			public Members() {}
 
 			public Members(int a, Guid? b, object c): this() {
@@ -69,6 +87,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					return c;
 				}
 			}
+#pragma warning disable 169
+			// ReSharper disable FieldCanBeMadeReadOnly.Local
+			private int a;
+			private Guid? b;
+			private object c;
+			// ReSharper restore FieldCanBeMadeReadOnly.Local
+#pragma warning restore 169
 		}
 
 		private struct Struct {
@@ -89,31 +114,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public struct GuidStruct {
-			// ReSharper disable FieldCanBeMadeReadOnly.Local
-			private Guid a;
-
-			private Guid b;
-			// ReSharper restore FieldCanBeMadeReadOnly.Local
-
-			public GuidStruct(Guid a, Guid b) {
-				this.a = a;
-				this.b = b;
-			}
-
-			public Guid A {
-				get {
-					return a;
-				}
-			}
-
-			public Guid B {
-				get {
-					return b;
-				}
-			}
-		}
-
 		private static readonly MemberInfo[] members = GetMemberFields<Members>();
 
 		private static FieldInfo[] GetMemberFields<T>() {
@@ -122,108 +122,108 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			return result;
 		}
 
-		[Test]
+		[Fact]
 		public void CreateObjectMethods() {
 			MembersMethods.Get(members);
 		}
 
-		[Test]
+		[Fact]
 		public void CreateStructMethods() {
 			MembersMethods.Get(GetMemberFields<Struct>());
 		}
 
-		[Test]
+		[Fact]
 		public void ExtractMembers() {
 			Members x = new Members(1, Guid.NewGuid(), new object());
 			object[] data = new object[3];
 			MembersMethods.Get(members).ExtractMembers(x, data);
-			Expect(data[0], EqualTo(x.A));
-			Expect(data[1], EqualTo(x.B));
-			Expect(data[2], EqualTo(x.C));
+			Assert.Equal(x.A, data[0]);
+			Assert.Equal(x.B, data[1]);
+			Assert.Equal(x.C, data[2]);
 		}
 
-		[Test]
+		[Fact]
 		public void ExtractStructMembers() {
 			Struct x = new Struct(1);
 			object[] data = new object[1];
 			MembersMethods.Get(GetMemberFields<Struct>()).ExtractMembers(x, data);
-			Expect(data[0], EqualTo(x.A));
+			Assert.Equal(x.A, data[0]);
 		}
 
-		[Test]
+		[Fact]
 		public void GetMemberNullableValueType() {
 			Guid? guid = Guid.NewGuid();
 			Members x = new Members(0, guid, null);
-			Expect(MembersMethods.Get(members).GetMember(x, 1), EqualTo(guid));
+			Assert.Equal(guid, MembersMethods.Get(members).GetMember(x, 1));
 		}
 
-		[Test]
+		[Fact]
 		public void GetMemberNullableValueTypeNull() {
 			Members x = new Members(0, null, null);
-			Expect(MembersMethods.Get(members).GetMember(x, 1), Null);
+			Assert.Null(MembersMethods.Get(members).GetMember(x, 1));
 		}
 
-		[Test]
+		[Fact]
 		public void GetMemberReferenceType() {
 			object obj = new object();
 			Members x = new Members(0, null, obj);
-			Expect(MembersMethods.Get(members).GetMember(x, 2), EqualTo(obj));
+			Assert.Equal(obj, MembersMethods.Get(members).GetMember(x, 2));
 		}
 
-		[Test]
+		[Fact]
 		public void GetMemberReferenceTypeNull() {
 			Members x = new Members(0, null, null);
-			Expect(MembersMethods.Get(members).GetMember(x, 2), Null);
+			Assert.Null(MembersMethods.Get(members).GetMember(x, 2));
 		}
 
-		[Test]
+		[Fact]
 		public void GetMemberValueType() {
 			Members x = new Members(1, null, null);
-			Expect(MembersMethods.Get(members).GetMember(x, 0), EqualTo(1));
+			Assert.Equal(1, MembersMethods.Get(members).GetMember(x, 0));
 		}
 
-		[Test]
+		[Fact]
 		public void MethodsCache() {
 			// ReSharper disable EqualExpressionComparison
-			Expect(ReferenceEquals(MembersMethods.Get(members).GetMember, MembersMethods.Get(members).GetMember));
-			Expect(ReferenceEquals(MembersMethods.Get(members).PopulateMembers, MembersMethods.Get(members).PopulateMembers));
+			Assert.Same(MembersMethods.Get(members).GetMember, MembersMethods.Get(members).GetMember);
+			Assert.Same(MembersMethods.Get(members).PopulateMembers, MembersMethods.Get(members).PopulateMembers);
 			// ReSharper restore EqualExpressionComparison
 		}
 
-		[Test]
+		[Fact]
 		public void PopulateMembersInitial() {
 			Members x = new Members();
 			Guid guid = Guid.NewGuid();
 			object obj = new object();
 			MembersMethods.Get(members).PopulateMembers(x, new[] {1, guid, obj});
-			Expect(x.A, EqualTo(1));
-			Expect(x.B, EqualTo(guid));
-			Expect(x.C, EqualTo(obj));
+			Assert.Equal(1, x.A);
+			Assert.Equal(guid, x.B);
+			Assert.Equal(obj, x.C);
 		}
 
-		[Test]
+		[Fact]
 		public void PopulateMembersOverride() {
 			Members x = new Members();
 			MembersMethods membersMethods = MembersMethods.Get(members);
 			membersMethods.PopulateMembers(x, new[] {1, Guid.NewGuid(), new object()});
 			membersMethods.PopulateMembers(x, new object[] {2, null, null});
-			Expect(x.A, EqualTo(2));
-			Expect(x.B, Null);
-			Expect(x.C, Null);
+			Assert.Equal(2, x.A);
+			Assert.Null(x.B);
+			Assert.Null(x.C);
 		}
 
-		[Test]
+		[Fact]
 		public void PopulateMembersStruct() {
 			object o = new GuidStruct();
 			Guid guid1 = Guid.NewGuid();
 			Guid guid2 = Guid.NewGuid();
 			MembersMethods.Get(GetMemberFields<GuidStruct>()).PopulateMembers(o, new object[] {guid1, guid2});
 			GuidStruct x = (GuidStruct)o;
-			Expect(x.A, EqualTo(guid1));
-			Expect(x.B, EqualTo(guid2));
+			Assert.Equal(guid1, x.A);
+			Assert.Equal(guid2, x.B);
 		}
 
-		[Test]
+		[Fact]
 		public void PopulateNullInNonNullField() {
 			Assert.Throws<NullReferenceException>(delegate {
 				try {

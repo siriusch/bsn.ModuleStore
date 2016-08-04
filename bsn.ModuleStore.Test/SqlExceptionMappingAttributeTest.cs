@@ -31,14 +31,13 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-using NUnit.Framework;
-
 using bsn.ModuleStore.Bootstrapper;
 using bsn.ModuleStore.Mapper.AssemblyMetadata;
 
+using Xunit;
+
 namespace bsn.ModuleStore {
-	[TestFixture]
-	public class SqlExceptionMappingAttributeTest: AssertionHelper {
+	public class SqlExceptionMappingAttributeTest {
 		public enum Level {
 			Assembly,
 			Type,
@@ -76,24 +75,25 @@ namespace bsn.ModuleStore {
 			return result;
 		}
 
-		[TestCase(Level.Assembly, null, null, null, Level.Type, null, null, null)]
-		[TestCase(Level.Assembly, null, null, null, Level.Method, null, null, null)]
-		[TestCase(Level.Type, null, null, null, Level.Method, null, null, null)]
-		[TestCase(Level.Assembly, null, null, null, Level.Assembly, 50000, null, null)]
-		[TestCase(Level.Assembly, null, null, null, Level.Assembly, null, (byte)16, null)]
-		[TestCase(Level.Assembly, null, null, null, Level.Assembly, null, null, (byte)0)]
-		[TestCase(Level.Assembly, null, null, (byte)0, Level.Assembly, null, (byte)16, null)]
-		[TestCase(Level.Assembly, null, null, (byte)0, Level.Assembly, 50000, null, null)]
-		[TestCase(Level.Assembly, null, (byte)16, null, Level.Assembly, 50000, null, null)]
-		[TestCase(Level.Assembly, null, (byte)10, null, Level.Assembly, null, (byte)16, null)]
-		[TestCase(Level.Assembly, 51000, (byte)16, (byte)255, Level.Assembly, 50000, (byte)25, (byte)255)]
-		[TestCase(Level.Assembly, 51000, (byte)16, (byte)255, Level.Assembly, 50000, (byte)17, (byte)0)]
+		[Theory]
+		[InlineData(Level.Assembly, null, null, null, Level.Type, null, null, null)]
+		[InlineData(Level.Assembly, null, null, null, Level.Method, null, null, null)]
+		[InlineData(Level.Type, null, null, null, Level.Method, null, null, null)]
+		[InlineData(Level.Assembly, null, null, null, Level.Assembly, 50000, null, null)]
+		[InlineData(Level.Assembly, null, null, null, Level.Assembly, null, (byte)16, null)]
+		[InlineData(Level.Assembly, null, null, null, Level.Assembly, null, null, (byte)0)]
+		[InlineData(Level.Assembly, null, null, (byte)0, Level.Assembly, null, (byte)16, null)]
+		[InlineData(Level.Assembly, null, null, (byte)0, Level.Assembly, 50000, null, null)]
+		[InlineData(Level.Assembly, null, (byte)16, null, Level.Assembly, 50000, null, null)]
+		[InlineData(Level.Assembly, null, (byte)10, null, Level.Assembly, null, (byte)16, null)]
+		[InlineData(Level.Assembly, 51000, (byte)16, (byte)255, Level.Assembly, 50000, (byte)25, (byte)255)]
+		[InlineData(Level.Assembly, 51000, (byte)16, (byte)255, Level.Assembly, 50000, (byte)17, (byte)0)]
 		public void SpecificityCompare(Level xLevel, int? xMessageId, byte? xSeverity, byte? xState, Level yLevel, int? yMessageId, byte? ySeverity, byte? yState) {
 			SqlExceptionMappingAttribute x = Create<Exception>(xLevel, xMessageId, xSeverity, xState);
 			SqlExceptionMappingAttribute y = Create<Exception>(yLevel, yMessageId, ySeverity, yState);
-			Expect(x.ComputeSpecificity() < y.ComputeSpecificity());
-			Expect(((IComparable<SqlExceptionMappingAttribute>)x).CompareTo(y) < 0);
-			Expect(((IComparable<SqlExceptionMappingAttribute>)y).CompareTo(x) > 0);
+			Assert.True(x.ComputeSpecificity() < y.ComputeSpecificity());
+			Assert.True(((IComparable<SqlExceptionMappingAttribute>)x).CompareTo(y) < 0);
+			Assert.True(((IComparable<SqlExceptionMappingAttribute>)y).CompareTo(x) > 0);
 		}
 	}
 }

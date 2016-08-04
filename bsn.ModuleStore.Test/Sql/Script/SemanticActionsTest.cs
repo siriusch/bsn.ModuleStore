@@ -29,22 +29,20 @@
 
 using System;
 
-using NUnit.Framework;
-
 using bsn.GoldParser.Grammar;
 using bsn.GoldParser.Semantic;
 
-namespace bsn.ModuleStore.Sql.Script {
-	[TestFixture]
-	public class SemanticActionsTest: AssertionHelper {
-		private CompiledGrammar grammar;
+using Xunit;
 
-		[TestFixtureSetUp]
-		public void SetUp() {
+namespace bsn.ModuleStore.Sql.Script {
+	public class SemanticActionsTest {
+		private readonly CompiledGrammar grammar;
+
+		public SemanticActionsTest() {
 			grammar = ScriptParser.GetGrammar();
 		}
 
-		[Test]
+		[Fact]
 		public void ConsistencyCheck() {
 			new SemanticTypeActions<SqlToken>(grammar).Initialize(true);
 		}

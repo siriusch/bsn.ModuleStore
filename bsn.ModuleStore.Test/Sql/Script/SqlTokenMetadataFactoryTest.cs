@@ -27,12 +27,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using NUnit.Framework;
+using Xunit;
 
-namespace bsn.ModuleStore.Sql.Script {
-	[TestFixture]
-	public class SqlTokenMetadataFactoryTest: AssertionHelper {
-		[Test]
+namespace bsn.ModuleStore.Sql.Script {public class SqlTokenMetadataFactoryTest {
+		[Fact]
 		public void CheckFieldToPropertyRelations() {
 			SqlTokenMetadataFactory.CheckFieldsAndProperties();
 		}

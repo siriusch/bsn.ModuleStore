@@ -31,11 +31,10 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-using NUnit.Framework;
+using Xunit;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	[TestFixture]
-	public class MembersKeyTest: AssertionHelper {
+	public class MembersKeyTest {
 		private class MembersA {
 #pragma warning disable 169
 			private int a;
@@ -51,57 +50,57 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 #pragma warning restore 169
 		}
 
-		private class MembersD: MembersA {}
-
 		private class MembersC: MembersA {
 #pragma warning disable 169
 			private object c;
 #pragma warning restore 169
 		}
 
+		private class MembersD: MembersA {}
+
 		private static readonly MemberInfo[] membersA = typeof(MembersA).GetAllFieldsAndProperties().ToArray();
 		private static readonly MemberInfo[] membersB = typeof(MembersB).GetAllFieldsAndProperties().ToArray();
 		private static readonly MemberInfo[] membersC = typeof(MembersC).GetAllFieldsAndProperties().ToArray();
 		private static readonly MemberInfo[] membersD = typeof(MembersD).GetAllFieldsAndProperties().ToArray();
 
-		[Test]
+		[Fact]
 		public void CommonType() {
-			Expect(MembersKey.GetCommonType(membersC), EqualTo(typeof(MembersC)));
+			Assert.Equal(typeof(MembersC), MembersKey.GetCommonType(membersC));
 		}
 
-		[Test]
+		[Fact]
 		public void Different() {
-			Expect(new MembersKey(membersA), Not.EqualTo(new MembersKey(membersB)));
+			Assert.NotEqual(new MembersKey(membersA), new MembersKey(membersB));
 		}
 
-		[Test]
+		[Fact]
 		public void DifferentHashCode() {
-			Expect(new MembersKey(membersA).GetHashCode(), Not.EqualTo(new MembersKey(membersB).GetHashCode()));
+			Assert.NotEqual(new MembersKey(membersA).GetHashCode(), new MembersKey(membersB).GetHashCode());
 		}
 
-		[Test]
+		[Fact]
 		public void DifferentHashCodeWithEmpty() {
-			Expect(new MembersKey(membersA).GetHashCode(), Not.EqualTo(new MembersKey().GetHashCode()));
+			Assert.NotEqual(new MembersKey(membersA).GetHashCode(), new MembersKey().GetHashCode());
 		}
 
-		[Test]
+		[Fact]
 		public void DifferentWithEmpty() {
-			Expect(new MembersKey(membersA), Not.EqualTo(new MembersKey()));
+			Assert.NotEqual(new MembersKey(membersA), new MembersKey());
 		}
 
-		[Test]
+		[Fact]
 		public void Equal() {
-			Expect(new MembersKey(membersA), EqualTo(new MembersKey(membersD)));
+			Assert.Equal(new MembersKey(membersA), new MembersKey(membersD));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualHashCode() {
-			Expect(new MembersKey(membersA).GetHashCode(), EqualTo(new MembersKey(membersD).GetHashCode()));
+			Assert.Equal(new MembersKey(membersA).GetHashCode(), new MembersKey(membersD).GetHashCode());
 		}
 
-		[Test]
+		[Fact]
 		public void EqualHashCodeWithEmpty() {
-			Expect(new MembersKey().GetHashCode(), EqualTo(new MembersKey().GetHashCode()));
+			Assert.Equal(new MembersKey().GetHashCode(), new MembersKey().GetHashCode());
 		}
 	}
 }

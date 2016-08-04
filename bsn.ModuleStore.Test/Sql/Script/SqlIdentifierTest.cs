@@ -29,30 +29,29 @@
 
 using System;
 
-using NUnit.Framework;
+using Xunit;
 
 namespace bsn.ModuleStore.Sql.Script {
-	[TestFixture]
-	public class SqlIdentifierTest: AssertionHelper {
-		[Test]
+	public class SqlIdentifierTest {
+		[Fact]
 		public void TryDequoteBracket() {
 			string result;
-			Expect(QuotedIdentifier.TryDequote("[Cool \" Stuff]", out result));
-			Expect(result, EqualTo("Cool \" Stuff"));
+			Assert.True(QuotedIdentifier.TryDequote("[Cool \" Stuff]", out result));
+			Assert.Equal("Cool \" Stuff", result);
 		}
 
-		[Test]
+		[Fact]
 		public void TryDequoteQuote() {
 			string result;
-			Expect(QuotedIdentifier.TryDequote("\"Cool [ Stuff\"", out result));
-			Expect(result, EqualTo("Cool [ Stuff"));
+			Assert.True(QuotedIdentifier.TryDequote("\"Cool [ Stuff\"", out result));
+			Assert.Equal("Cool [ Stuff", result);
 		}
 
-		[Test]
+		[Fact]
 		public void TryDequoteQuoteWithInnerQuote() {
 			string result;
-			Expect(QuotedIdentifier.TryDequote("\"Cool \"\" Stuff\"", out result));
-			Expect(result, EqualTo("Cool \" Stuff"));
+			Assert.True(QuotedIdentifier.TryDequote("\"Cool \"\" Stuff\"", out result));
+			Assert.Equal("Cool \" Stuff", result);
 		}
 	}
 }

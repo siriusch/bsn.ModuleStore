@@ -29,117 +29,116 @@
 
 using System;
 
-using NUnit.Framework;
+using Xunit;
 
 namespace bsn.ModuleStore.Sql.Script {
-	[TestFixture]
-	public class SqlQualifiedNameTest: AssertionHelper {
-		[Test]
+	public class SqlQualifiedNameTest {
+		[Fact]
 		public void CompareToEquivalent() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("DBO"), new TableName("ABC"));
-			Expect(x.CompareTo(y), EqualTo(0));
+			Assert.Equal(0, x.CompareTo(y));
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToIdentical() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
-			Expect(x.CompareTo(y), EqualTo(0));
+			Assert.Equal(0, x.CompareTo(y));
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToLargerName() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("xyz"));
-			Expect(x.CompareTo(y), LessThan(0));
+			Assert.True(x.CompareTo(y) < 0);
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToLargerSchema() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("xyz"), new TableName("abc"));
-			Expect(x.CompareTo(y), LessThan(0));
+			Assert.True(x.CompareTo(y) < 0);
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToNull() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
-			Expect(x.CompareTo(null), GreaterThan(0));
+			Assert.True(x.CompareTo(null) > 0);
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToSelf() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
-			Expect(x.CompareTo(x), EqualTo(0));
+			Assert.Equal(0, x.CompareTo(x));
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToSimilar() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, FunctionName>(new SchemaName("dbo"), new FunctionName("abc"));
-			Expect(x.CompareTo(y), GreaterThan(0));
+			Assert.True(x.CompareTo(y) > 0);
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToSmallerName() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("xyz"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
-			Expect(x.CompareTo(y), GreaterThan(0));
+			Assert.True(x.CompareTo(y) > 0);
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToSmallerSchema() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("xyz"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
-			Expect(x.CompareTo(y), GreaterThan(0));
+			Assert.True(x.CompareTo(y) > 0);
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToDifferentName() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("xyz"));
-			Expect(x.Equals(y), False);
+			Assert.False(x.Equals(y));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToDifferentSchema() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("xyz"), new TableName("abc"));
-			Expect(x.Equals(y), False);
+			Assert.False(x.Equals(y));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToEquivalent() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("DBO"), new TableName("ABC"));
-			Expect(x.Equals(y), True);
+			Assert.True(x.Equals(y));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToIdentical() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
-			Expect(x.Equals(y), True);
+			Assert.True(x.Equals(y));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToNull() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
-			Expect(x.Equals(null), False);
+			Assert.False(x.Equals(null));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToSelf() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
-			Expect(x.Equals(x), True);
+			Assert.True(x.Equals(x));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToSimilar() {
 			IQualifiedName<SchemaName> x = new Qualified<SchemaName, TableName>(new SchemaName("dbo"), new TableName("abc"));
 			IQualifiedName<SchemaName> y = new Qualified<SchemaName, FunctionName>(new SchemaName("dbo"), new FunctionName("abc"));
-			Expect(x.Equals(y), False);
+			Assert.False(x.Equals(y));
 		}
 	}
 }

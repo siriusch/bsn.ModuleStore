@@ -29,9 +29,8 @@
 
 using System;
 
-using NUnit.Framework;
+using Xunit;
 
 namespace bsn.ModuleStore.Sql {
-	//	[TestFixture]
-	public class DatabaseInventoryTest: AssertionHelper {}
+	//public class DatabaseInventoryTest {}
 }

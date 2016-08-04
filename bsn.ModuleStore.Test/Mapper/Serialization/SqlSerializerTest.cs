@@ -29,13 +29,12 @@
 
 using System;
 
-using NUnit.Framework;
+using Xunit;
 
 #pragma warning disable 649
 
 namespace bsn.ModuleStore.Mapper.Serialization {
-	[TestFixture]
-	public class SqlSerializerTest: AssertionHelper {
+	public class SqlSerializerTest {
 		public class Inner {
 			[SqlColumn("id")]
 			private Guid id;
@@ -67,37 +66,37 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		[Test]
+		[Fact]
 		public void Mocking() {
 			var data = new {
-					uidAssemblyGuid = Guid.NewGuid(),
-					uidModule = Guid.NewGuid(),
-					sSchema = "ModuleStore",
-					fSchemaExists = true,
-					dtSetup = DateTime.UtcNow,
-					binSetupHash = new byte[20],
-					dtUpdate = DateTime.UtcNow.AddHours(-1),
-					iUpdateVersion = 1
+				uidAssemblyGuid = Guid.NewGuid(),
+				uidModule = Guid.NewGuid(),
+				sSchema = "ModuleStore",
+				fSchemaExists = true,
+				dtSetup = DateTime.UtcNow,
+				binSetupHash = new byte[20],
+				dtUpdate = DateTime.UtcNow.AddHours(-1),
+				iUpdateVersion = 1
 			};
 			Module module = SqlDeserializer<Module>.Mock(data);
-			Expect(module.AssemblyGuid, Is.EqualTo(data.uidAssemblyGuid));
-			Expect(module.Id, Is.EqualTo(data.uidModule));
-			Expect(module.Schema, Is.EqualTo(data.sSchema));
-			Expect(module.SchemaExists, Is.EqualTo(true));
-			Expect(module.SetupDate, Is.EqualTo(data.dtSetup));
-			Expect(module.UpdateDate, Is.EqualTo(data.dtUpdate));
-			Expect(module.UpdateVersion, Is.EqualTo(data.iUpdateVersion));
+			Assert.Equal(data.uidAssemblyGuid, module.AssemblyGuid);
+			Assert.Equal(data.uidModule, module.Id);
+			Assert.Equal(data.sSchema, module.Schema);
+			Assert.Equal(data.fSchemaExists, module.SchemaExists);
+			Assert.Equal(data.dtSetup, module.SetupDate);
+			Assert.Equal(data.dtUpdate, module.UpdateDate);
+			Assert.Equal(data.iUpdateVersion, module.UpdateVersion);
 		}
 
-		[Test]
+		[Fact]
 		public void MockingNestedDeserialize() {
 			var data = new {
-					id = Guid.NewGuid(),
-					val = "Value"
+				id = Guid.NewGuid(),
+				val = "Value"
 			};
 			Outer outer = SqlDeserializer<Outer>.Mock(data);
-			Expect(outer.Inner.Id, Is.EqualTo(data.id));
-			Expect(outer.Val, Is.EqualTo(data.val));
+			Assert.Equal(data.id, outer.Inner.Id);
+			Assert.Equal(data.val, outer.Val);
 		}
 	}
 }

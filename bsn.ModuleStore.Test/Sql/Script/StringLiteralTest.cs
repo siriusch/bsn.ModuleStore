@@ -29,86 +29,85 @@
 
 using System;
 
-using NUnit.Framework;
+using Xunit;
 
 namespace bsn.ModuleStore.Sql.Script {
-	[TestFixture]
-	public class StringLiteralTest: AssertionHelper {
-		[Test]
+	public class StringLiteralTest {
+		[Fact]
 		public void ParseIsUnicodeFalse() {
-			Expect(!StringLiteral.ParseIsUnicode("'Plain ol'' ASCII'"));
+			Assert.False(StringLiteral.ParseIsUnicode("'Plain ol'' ASCII'"));
 		}
 
-		[Test]
-		[ExpectedException(typeof(NullReferenceException))]
+		[Fact]
 		public void ParseIsUnicodeNull() {
-			StringLiteral.ParseIsUnicode(null);
+			Assert.Throws<NullReferenceException>(() => StringLiteral.ParseIsUnicode(null))
+					;
 		}
 
-		[Test]
+		[Fact]
 		public void ParseIsUnicodeTrueLower() {
-			Expect(StringLiteral.ParseIsUnicode("n'This isn''t ANSI! äöü'"));
+			Assert.True(StringLiteral.ParseIsUnicode("n'This isn''t ANSI! äöü'"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseIsUnicodeTrueUpper() {
-			Expect(StringLiteral.ParseIsUnicode("N'This isn''t ANSI! äöü'"));
+			Assert.True(StringLiteral.ParseIsUnicode("N'This isn''t ANSI! äöü'"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueAscii() {
-			Expect(StringLiteral.ParseValue("'Plain ol'' ASCII'"), EqualTo("Plain ol' ASCII"));
+			Assert.Equal("Plain ol' ASCII", StringLiteral.ParseValue("'Plain ol'' ASCII'"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueEmptyAscii() {
-			Expect(StringLiteral.ParseValue("''"), EqualTo(""));
+			Assert.Equal("", StringLiteral.ParseValue("''"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueEmptyUnicode() {
-			Expect(StringLiteral.ParseValue("N''"), EqualTo(""));
+			Assert.Equal("", StringLiteral.ParseValue("N''"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueEscapeEnd() {
-			Expect(StringLiteral.ParseValue("'End'''"), EqualTo("End'"));
+			Assert.Equal("End'", StringLiteral.ParseValue("'End'''"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueEscapeOnlyAscii() {
-			Expect(StringLiteral.ParseValue("''''"), EqualTo("'"));
+			Assert.Equal("'", StringLiteral.ParseValue("''''"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueEscapeOnlyUnicode() {
-			Expect(StringLiteral.ParseValue("N''''"), EqualTo("'"));
+			Assert.Equal("'", StringLiteral.ParseValue("N''''"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueEscapeStartAscii() {
-			Expect(StringLiteral.ParseValue("'''Start'"), EqualTo("'Start"));
+			Assert.Equal("'Start", StringLiteral.ParseValue("'''Start'"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueEscapeStartUnicode() {
-			Expect(StringLiteral.ParseValue("N'''Start'"), EqualTo("'Start"));
+			Assert.Equal("'Start", StringLiteral.ParseValue("N'''Start'"));
 		}
 
-		[Test]
-		[ExpectedException(typeof(NullReferenceException))]
+		[Fact]
 		public void ParseValueNull() {
-			StringLiteral.ParseIsUnicode(null);
+			Assert.Throws<NullReferenceException>(() => StringLiteral.ParseIsUnicode(null));
+			;
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueSimple() {
-			Expect(StringLiteral.ParseValue("'A string'"), EqualTo("A string"));
+			Assert.Equal("A string", StringLiteral.ParseValue("'A string'"));
 		}
 
-		[Test]
+		[Fact]
 		public void ParseValueUnicode() {
-			Expect(StringLiteral.ParseValue("N'This isn''t ANSI! äöü'"), EqualTo("This isn't ANSI! äöü"));
+			Assert.Equal("This isn't ANSI! äöü", StringLiteral.ParseValue("N'This isn''t ANSI! äöü'"));
 		}
 	}
 }

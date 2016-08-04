@@ -29,96 +29,95 @@
 
 using System;
 
-using NUnit.Framework;
+using Xunit;
 
 namespace bsn.ModuleStore.Sql.Script {
-	[TestFixture]
-	public class SqlNameTest: AssertionHelper {
-		[Test]
+	public class SqlNameTest {
+		[Fact]
 		public void CompareToEquivalent() {
 			SqlName x = new TableName("abc");
 			SqlName y = new TableName("ABC");
-			Expect(x.CompareTo(y), EqualTo(0));
+			Assert.Equal(0, x.CompareTo(y));
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToIdentical() {
 			SqlName x = new TableName("abc");
 			SqlName y = new TableName("abc");
-			Expect(x.CompareTo(y), EqualTo(0));
+			Assert.Equal(0, x.CompareTo(y));
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToLarger() {
 			SqlName x = new TableName("abc");
 			SqlName y = new TableName("xyz");
-			Expect(x.CompareTo(y), LessThan(0));
+			Assert.True(x.CompareTo(y) < 0);
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToNull() {
 			SqlName x = new TableName("abc");
-			Expect(x.CompareTo(null), GreaterThan(0));
+			Assert.True(x.CompareTo(null) > 0);
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToSelf() {
 			SqlName x = new TableName("abc");
-			Expect(x.CompareTo(x), EqualTo(0));
+			Assert.Equal(0, x.CompareTo(x));
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToSimilar() {
 			SqlName x = new TableName("abc");
 			SqlName y = new CollationName("abc");
-			Expect(x.CompareTo(y), GreaterThan(0));
+			Assert.True(x.CompareTo(y) > 0);
 		}
 
-		[Test]
+		[Fact]
 		public void CompareToSmaller() {
 			SqlName x = new TableName("xyz");
 			SqlName y = new TableName("abc");
-			Expect(x.CompareTo(y), GreaterThan(0));
+			Assert.True(x.CompareTo(y) > 0);
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToDifferent() {
 			SqlName x = new TableName("abc");
 			SqlName y = new TableName("xyz");
-			Expect(x.Equals(y), False);
+			Assert.False(x.Equals(y));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToEquivalent() {
 			SqlName x = new TableName("abc");
 			SqlName y = new TableName("ABC");
-			Expect(x.Equals(y), True);
+			Assert.True(x.Equals(y));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToIdentical() {
 			SqlName x = new TableName("abc");
 			SqlName y = new TableName("abc");
-			Expect(x.Equals(y), True);
+			Assert.True(x.Equals(y));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToNull() {
 			SqlName x = new TableName("abc");
-			Expect(x.Equals(null), False);
+			Assert.False(x.Equals(null));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToSelf() {
 			SqlName x = new TableName("abc");
-			Expect(x.Equals(x), True);
+			Assert.True(x.Equals(x));
 		}
 
-		[Test]
+		[Fact]
 		public void EqualsToSimilar() {
 			SqlName x = new TableName("abc");
 			SqlName y = new CollationName("abc");
-			Expect(x.Equals(y), False);
+			Assert.False(x.Equals(y));
 		}
 	}
 }
