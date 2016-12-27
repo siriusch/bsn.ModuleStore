@@ -36,13 +36,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="bsn.CommandLine, Version=1.0.3909.39203, Culture=neutral, PublicKeyToken=efd7d300630fec10, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\bsn.CommandLine.dll</HintPath>
+    <Reference Include="bsn.CommandLine, Version=2.0.72.0, Culture=neutral, PublicKeyToken=efd7d300630fec10, processorArchitecture=MSIL">
+      <HintPath>..\packages\bsn.CommandLine.2.0.72\lib\bsn.CommandLine.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="bsn.GoldParser, Version=1.0.3909.31041, Culture=neutral, PublicKeyToken=3d58c5c8efc41aa9, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\bsn.GoldParser.dll</HintPath>
+    <Reference Include="bsn.GoldParser, Version=2.0.77.0, Culture=neutral, PublicKeyToken=efd7d300630fec10, processorArchitecture=MSIL">
+      <HintPath>..\packages\bsn.GoldParser.2.0.77\lib\bsn.GoldParser.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collections\" />

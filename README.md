@@ -1,15 +1,22 @@
-﻿bsn ModuleStore database versioning
------------------------------------
+bsn ModuleStore database versioning
+===================================
 
-Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+Copyright 2009-2016 by Arsène von Wyss - arsene.vonwyss@sirius.ch
 
 Development has been supported by Sirius Technologies AG, Basel
 
-Source:
+What is it?
+-----------
 
-https://bsn-modulestore.googlecode.com/hg/
+The toolset manages database migrations and contains a simple ORM. It is used by some applications at Sirius Technologies AG.
 
-License:
+Source
+------
+
+[https://github.com/siriusch/bsn.ModuleStore](https://github.com/siriusch/bsn.ModuleStore)
+
+License
+-------
 
 The library is distributed under the GNU Lesser General Public License:
 http://www.gnu.org/licenses/lgpl.html
