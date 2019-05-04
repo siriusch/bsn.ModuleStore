@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -36,10 +36,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-using Common.Logging;
-
 using bsn.ModuleStore.Sql.Script;
 using bsn.ModuleStore.Sql.Script.Tokens;
+
+using Common.Logging;
 
 namespace bsn.ModuleStore.Sql {
 	public class AssemblyInventory: InstallableInventory {
@@ -57,22 +57,6 @@ namespace bsn.ModuleStore.Sql {
 					cachedInventories.Add(assembly, result);
 				}
 				return result;
-			}
-		}
-
-		private static IEnumerable<IInstallStatement> HandleDependendObjects(IInstallStatement statement, DatabaseInventory inventory, ICollection<string> droppedObjects) {
-			DependencyDisablingAlterStatement dependencyAltering = statement as DependencyDisablingAlterStatement;
-			if (dependencyAltering != null) {
-				ICollection<IAlterableCreateStatement> dependencyObjects = dependencyAltering.GetDependencyObjects(inventory, droppedObjects);
-				foreach (IAlterableCreateStatement dependencyObject in dependencyObjects) {
-					yield return dependencyObject.CreateDropStatement();
-				}
-				yield return statement;
-				foreach (IAlterableCreateStatement dependencyObject in dependencyObjects) {
-					yield return dependencyObject;
-				}
-			} else {
-				yield return statement;
 			}
 		}
 
@@ -324,6 +308,24 @@ namespace bsn.ModuleStore.Sql {
 				string message = string.Format("The assembly {0} requires a database engine version {1}, but the database engine version is {2}", assembly.AssemblyName.FullName, requiredEngineVersion, engineVersion);
 				log.ErrorFormat(message);
 				throw new InvalidOperationException(message);
+			}
+		}
+
+		private IEnumerable<IInstallStatement> HandleDependendObjects(IInstallStatement statement, DatabaseInventory inventory, ICollection<string> droppedObjects) {
+			DependencyDisablingAlterStatement dependencyAltering = statement as DependencyDisablingAlterStatement;
+			if (dependencyAltering != null) {
+				ICollection<IAlterableCreateStatement> dependencyObjects = dependencyAltering.GetDependencyObjects(inventory, droppedObjects);
+				foreach (IAlterableCreateStatement dependencyObject in dependencyObjects) {
+					yield return dependencyObject.CreateDropStatement();
+				}
+				yield return statement;
+				foreach (IAlterableCreateStatement dependencyObject in dependencyObjects) {
+					// Take the new version of the object in order to avoid errors
+					var newDependentObject = (IAlterableCreateStatement)Objects.SingleOrDefault(o => string.Equals(o.ObjectName, dependencyObject.ObjectName, StringComparison.OrdinalIgnoreCase));
+					yield return newDependentObject ?? dependencyObject;
+				}
+			} else {
+				yield return statement;
 			}
 		}
 
