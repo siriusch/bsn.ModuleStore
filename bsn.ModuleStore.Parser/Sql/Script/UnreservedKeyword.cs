@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -73,6 +73,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("NOWAIT")]
 	[Terminal("OBJECT_ID")]
 	[Terminal("ONLY")]
+	[Terminal("OFFSET")]
 	[Terminal("OUTPUT")]
 	[Terminal("PARTITION")]
 	[Terminal("PATH")]
@@ -87,6 +88,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("RELATIVE")]
 	[Terminal("REPEATABLE")]
 	[Terminal("RETURNS")]
+	[Terminal("ROWS")]
 	[Terminal("SCHEMABINDING")]
 	[Terminal("SERVER")]
 	[Terminal("SETERROR")]

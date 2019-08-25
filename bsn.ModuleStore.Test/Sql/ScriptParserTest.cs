@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -700,6 +700,34 @@ PRINT 'Cool'", 3, null);
 		}
 
 		[Fact]
+		public void SelectOffset() {
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET 10 ROW", 1, "dbo");
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET 10 ROWS", 1, "dbo");
+		}
+
+		[Fact]
+		public void SelectOffsetSubquery() {
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET (SELECT 10) ROW", 1, "dbo");
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET (SELECT 10) ROWS", 1, "dbo");
+		}
+
+		[Fact]
+		public void SelectOffsetFetch() {
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET 10 ROWS FETCH NEXT 10 ROW ONLY", 1, "dbo");
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY", 1, "dbo");
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET 10 ROWS FETCH FIRST 10 ROW ONLY", 1, "dbo");
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET 10 ROWS FETCH FIRST 10 ROWS ONLY", 1, "dbo");
+		}
+
+		[Fact]
+		public void SelectOffsetFetchSubquery() {
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET (SELECT 10) ROWS FETCH NEXT (SELECT 10) ROW ONLY", 1, "dbo");
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET (SELECT 10) ROWS FETCH NEXT (SELECT 10) ROWS ONLY", 1, "dbo");
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET (SELECT 10) ROWS FETCH FIRST (SELECT 10) ROW ONLY", 1, "dbo");
+			ParseWithRoundtrip(@"SELECT * FROM dbo.TableA ORDER BY x, y OFFSET (SELECT 10) ROWS FETCH FIRST (SELECT 10) ROWS ONLY", 1, "dbo");
+		}
+
+		[Fact]
 		public void SelectValuesRowset() {
 			ParseWithRoundtrip(@"SELECT * FROM (VALUES (1,2,3),(4,5,6)) AS Ints (x, y, z);", 1, "dbo");
 		}
@@ -707,6 +735,11 @@ PRINT 'Cool'", 3, null);
 		[Fact]
 		public void SelectVariableWhere() {
 			ParseWithRoundtrip(@"SELECT @x=1 WHERE EXISTS (SELECT * FROM dbo.tbl)", 1, "dbo");
+		}
+
+		[Fact]
+		public void SelectEmptyBinary() {
+			ParseWithRoundtrip(@"SELECT 0x", 1, "dbo");
 		}
 
 		[Fact]

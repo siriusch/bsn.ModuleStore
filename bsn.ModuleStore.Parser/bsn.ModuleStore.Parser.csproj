@@ -313,6 +313,7 @@
     <Compile Include="Sql\Script\OperationNameToken.cs" />
     <Compile Include="Sql\Script\OperationToken.cs" />
     <Compile Include="Sql\Script\Optional.cs" />
+    <Compile Include="Sql\Script\OptionalOrderOffsetFetchClause.cs" />
     <Compile Include="Sql\Script\OrderExpression.cs" />
     <Compile Include="Sql\Script\OuterApply.cs" />
     <Compile Include="Sql\Script\OutputClause.cs" />

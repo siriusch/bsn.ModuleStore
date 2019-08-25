@@ -41,7 +41,7 @@ Comment Line  = '--'
 StringLiteral  = N?(''{String Ch}*'')+
 IntegerLiteral = {Digit}+
 RealLiteral    = {Digit}+'.'{Digit}+|{Digit}+('.'{Digit}+)?[eE][+-]?{Digit}+
-HexLiteral     = 0x{Hex Ch}+
+HexLiteral     = 0x{Hex Ch}*
 
 ! We use a simplified name convention, which does not allow user/schema, database or server to be specified
 Id           = {Letter}{Id Ch Standard}*
@@ -267,6 +267,7 @@ NAME = NAME
 NEXT = NEXT
 NO = NO
 NOWAIT = NOWAIT
+OFFSET = OFFSET
 ONLY = ONLY
 OUTPUT = OUT(PUT)?
 PARTITION = PARTITION
@@ -281,6 +282,7 @@ RECOMPILE = RECOMPILE
 RELATIVE = RELATIVE
 REPEATABLE = REPEATABLE
 RETURNS = RETURNS
+ROWS = ROWS?
 SCHEMABINDING = SCHEMABINDING
 SERVER = SERVER
 SETERROR = SETERROR
@@ -1164,14 +1166,14 @@ _NAMEONLY = '$NAMEONLY$'
 
 <SelectStatement> ::= <QueryOptions> <SelectQuery> <QueryHint>
 
-<SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>
-                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
-                | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>
-                | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
-                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>
-                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
-                | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <RowsetCombineClause>
-                | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderClause> <ForClause>
+<SelectQuery> ::= SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderOffsetFetchClause> <RowsetCombineClause>
+                | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderOffsetFetchClause> <ForClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderOffsetFetchClause> <RowsetCombineClause>
+                | SELECT <Restriction> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderOffsetFetchClause> <ForClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderOffsetFetchClause> <RowsetCombineClause>
+                | SELECT <TopLegacy> <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderOffsetFetchClause> <ForClause>
+                | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderOffsetFetchClause> <RowsetCombineClause>
+                | SELECT <ColumnItemList> <IntoClause> <FromClause> <WhereClause> <GroupClause> <HavingClause> <OptionalOrderOffsetFetchClause> <ForClause>
                 | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>
                 | SELECT <Restriction> <TopLegacy> <ColumnItemList> <IntoClause> <WhereClause> <ForClause>
                 | SELECT <Restriction> <ColumnItemList> <IntoClause> <WhereClause> <RowsetCombineClause>
@@ -1294,6 +1296,12 @@ _NAMEONLY = '$NAMEONLY$'
 <OrderType> ::= ASC
               | DESC
               |
+
+<OptionalOrderOffsetFetchClause> ::= <OrderClause> OFFSET <Expression> ROWS FETCH NEXT <Expression> ROWS ONLY
+                                   | <OrderClause> OFFSET <Expression> ROWS FETCH FIRST <Expression> ROWS ONLY
+                                   | <OrderClause> OFFSET <Expression> ROWS
+                                   | <OrderClause> 
+                                   |
 
 <HavingClause> ::= HAVING <Predicate>
                  |
