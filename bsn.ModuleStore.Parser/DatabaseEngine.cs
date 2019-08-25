@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -35,6 +35,10 @@ namespace bsn.ModuleStore {
 		SqlServer2005 = 9,
 		SqlServer2008 = 10,
 		SqlServer2012 = 11,
+		SqlServer2014 = 12,
+		SqlServer2016 = 13,
+		SqlServer2017 = 14,
+		SqlServer2019 = 15,
 		SqlAzure = 110
 	}
 }

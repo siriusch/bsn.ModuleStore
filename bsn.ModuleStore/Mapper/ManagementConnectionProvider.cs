@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -93,6 +93,18 @@ namespace bsn.ModuleStore.Mapper {
 						break;
 					case 11:
 						engine = DatabaseEngine.SqlServer2012;
+						break;
+					case 12:
+						engine = DatabaseEngine.SqlServer2014;
+						break;
+					case 13:
+						engine = DatabaseEngine.SqlServer2016;
+						break;
+					case 14:
+						engine = DatabaseEngine.SqlServer2017;
+						break;
+					case 15:
+						engine = DatabaseEngine.SqlServer2019;
 						break;
 					default:
 						engine = DatabaseEngine.Unknown;
