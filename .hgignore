@@ -5,3 +5,4 @@ syntax: glob
 *.user
 *.cache
 packages
+.vs
