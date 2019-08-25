@@ -269,6 +269,7 @@
     <Compile Include="Sql\Script\IntegerHexLiteral.cs" />
     <Compile Include="Sql\Script\IntegerLiteral.cs" />
     <Compile Include="Sql\Script\IntersectClause.cs" />
+    <Compile Include="Sql\Script\INumericLiteral.cs" />
     <Compile Include="Sql\Script\IObjectBoundStatement.cs" />
     <Compile Include="Sql\Script\IOptional.cs" />
     <Compile Include="Sql\Script\IQualified.cs" />

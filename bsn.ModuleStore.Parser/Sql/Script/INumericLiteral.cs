@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2019 by Arsène von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -27,37 +27,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Globalization;
-
-using bsn.GoldParser.Grammar;
 using bsn.GoldParser.Parser;
-using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
-	[Terminal("RealLiteral")]
-	public sealed class RealLiteral: NumericLiteral<double> {
-		public RealLiteral(string value): this(double.Parse(value, NumberFormatInfo.InvariantInfo)) { }
-
-		internal RealLiteral(double value): base(value) { }
-
-		private RealLiteral(double value, Symbol symbol, LineInfo position): this(value) {
-			Initialize(symbol, position);
-		}
-
-		public override double AsDouble {
-			get {
-				return Value;
-			}
-		}
-
-		public override bool TryGetNegativeAsPositive(out Literal literal) {
-			if (Value < 0) {
-				literal = new RealLiteral(-Value, ((IToken)this).Symbol, ((IToken)this).Position);
-				return true;
-			}
-			literal = null;
-			return false;
-		}
+	internal interface INumericLiteral: IToken {
+		bool TryGetNegativeAsPositive(out Literal literal);
 	}
 }

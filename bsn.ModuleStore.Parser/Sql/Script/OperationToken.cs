@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -30,6 +30,8 @@
 using System;
 using System.Diagnostics;
 
+using bsn.GoldParser.Grammar;
+using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -57,6 +59,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		public OperationToken(string operation) {
 			Debug.Assert(operation != null);
 			this.operation = operation;
+		}
+
+		internal OperationToken(string operation, Symbol symbol, LineInfo position): this(operation) {
+			Initialize(symbol, position);
 		}
 
 		public string Operation {

@@ -524,7 +524,29 @@ AS
 
 		[Fact]
 		public void ParseExecWithMultipleArguments() {
-			ParseWithRoundtrip(@"EXEC spMyProc 'a', 24, @b = 10, @@rownumber, @c, @d = @e", 1, null);
+			ParseWithRoundtrip(@"EXEC spMyProc 'a', 24, -1, -2.5, @b = 10, @@rownumber, @c, @d = @e", 1, null);
+		}
+
+		[Fact]
+		public void ParseExpressionWithMinus() {
+			ParseWithRoundtrip(@"SELECT 1-1", 1, null);
+		}
+
+		[Fact]
+		public void ParseExpressionWithNegative1() {
+			ParseWithRoundtrip(@"SELECT -1", 1, null);
+		}
+
+		[Fact]
+		public void ParseExpressionWithNegative2()
+		{
+			ParseWithRoundtrip(@"SELECT 1+-1", 1, null);
+		}
+
+		[Fact]
+		public void ParseExpressionWithNegative3()
+		{
+			ParseWithRoundtrip(@"SELECT 1+-(-1)", 1, null);
 		}
 
 		[Fact]

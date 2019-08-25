@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -43,8 +43,7 @@ namespace bsn.ModuleStore.Sql {
 		private readonly SemanticActions<SqlToken> actions;
 		private readonly List<KeyValuePair<int, string>> comments = new List<KeyValuePair<int, string>>();
 		private readonly List<string> pendingComments = new List<string>();
-		private SqlToken lastToken;
-		private bool repeatToken;
+		private readonly Queue<SqlToken> injectedTokens = new Queue<SqlToken>();
 
 		public SqlTokenizer(TextReader textReader, SemanticActions<SqlToken> actions): base(textReader, actions.Grammar) {
 			this.actions = actions;
@@ -68,15 +67,13 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public override ParseMessage NextToken(out SqlToken token) {
-			if (repeatToken) {
-				repeatToken = false;
-				Debug.Assert(lastToken != null);
-				token = lastToken;
-				lastToken = null;
-				return ParseMessage.TokenRead;
+			ParseMessage parseMessage;
+			if (injectedTokens.Count > 0) {
+				token = injectedTokens.Dequeue();
+				parseMessage = ParseMessage.TokenRead;
+			} else {
+				parseMessage = base.NextToken(out token);
 			}
-			ParseMessage parseMessage = base.NextToken(out token);
-			lastToken = (parseMessage == ParseMessage.TokenRead) ? token : null;
 			return parseMessage;
 		}
 
@@ -101,16 +98,15 @@ namespace bsn.ModuleStore.Sql {
 			return token;
 		}
 
-		internal bool RepeatToken() {
-			repeatToken = (lastToken != null);
-			return repeatToken;
-		}
-
 		private void TransferPendingComments(int index) {
 			foreach (string comment in pendingComments) {
 				comments.Add(new KeyValuePair<int, string>(index, comment));
 			}
 			pendingComments.Clear();
+		}
+
+		internal void InjectToken(SqlToken token) {
+			injectedTokens.Enqueue(token);
 		}
 	}
 }

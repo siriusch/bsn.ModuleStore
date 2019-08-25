@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -30,11 +30,13 @@
 using System;
 
 namespace bsn.ModuleStore.Sql.Script {
-	public abstract class NumericLiteral<T>: Literal<T> where T: IConvertible {
+	public abstract class NumericLiteral<T>: Literal<T>, INumericLiteral where T: IConvertible {
 		protected NumericLiteral(T value): base(value) {}
 
 		public abstract double AsDouble {
 			get;
 		}
+
+		public abstract bool TryGetNegativeAsPositive(out Literal literal);
 	}
 }

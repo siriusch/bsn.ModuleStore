@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -86,13 +86,13 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		private static char IntToHexChar(int i) {
 			unchecked {
-				return (char)('0'+(i/10)*7+i);
+				return (char)('0'+(i / 10) * 7+i);
 			}
 		}
 
 		internal static byte[] ParseBinary(string value) {
-			byte[] result = new byte[(value.Length-1)/2];
-			int offset = 2-(value.Length%2);
+			byte[] result = new byte[(value.Length-1) / 2];
+			int offset = 2-(value.Length % 2);
 			unchecked {
 				for (int i = 0; i < result.Length; i++) {
 					result[i] = (byte)((HexCharToInt(value[offset++])<<4)+HexCharToInt(value[offset++]));
@@ -103,7 +103,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		private readonly byte[] binaryValue;
 
-		public IntegerHexLiteral(string value): this(ParseBinary(value)) {}
+		public IntegerHexLiteral(string value): this(ParseBinary(value)) { }
 
 		internal IntegerHexLiteral(byte[] binaryValue): base(BinaryToLong(binaryValue)) {
 			this.binaryValue = binaryValue;
@@ -122,6 +122,11 @@ namespace bsn.ModuleStore.Sql.Script {
 				}
 			}
 			return true;
+		}
+
+		public override bool TryGetNegativeAsPositive(out Literal literal) {
+			literal = null;
+			return false;
 		}
 
 		public override void WriteTo(SqlWriter writer) {

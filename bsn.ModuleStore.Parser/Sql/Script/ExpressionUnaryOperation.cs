@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -30,6 +30,8 @@
 using System;
 using System.Diagnostics;
 
+using bsn.GoldParser.Grammar;
+using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
@@ -62,6 +64,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			WriteCommentsTo(writer);
 			writer.WriteScript(operation, WhitespacePadding.None);
 			writer.WriteScript(expression, WhitespacePadding.None);
+		}
+
+		internal void InitializeInternal(Symbol expressionUnarySymbol, LineInfo lineInfo) {
+			Initialize(expressionUnarySymbol, lineInfo);
 		}
 	}
 }

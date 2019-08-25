@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -42,13 +42,16 @@ namespace bsn.ModuleStore.Sql {
 	internal class SqlSemanticProcessor: SemanticProcessor<SqlToken> {
 		private readonly Symbol identifierSymbol;
 		private readonly Symbol terminatorSymbol;
+		private readonly Symbol minusSymbol;
 		private readonly SqlTokenizer tokenizer;
+		private IToken lastError = null;
 
 		public SqlSemanticProcessor(TextReader reader, SemanticActions<SqlToken> actions): this(new SqlTokenizer(reader, actions), actions) {}
 
 		public SqlSemanticProcessor(SqlTokenizer tokenizer, SemanticActions<SqlToken> actions): base(tokenizer, actions) {
 			terminatorSymbol = actions.Grammar.GetSymbolByName("';'");
 			identifierSymbol = actions.Grammar.GetSymbolByName("Id");
+			minusSymbol = actions.Grammar.GetSymbolByName("'-'");
 			Debug.Assert(terminatorSymbol != null);
 			this.tokenizer = tokenizer;
 		}
@@ -68,18 +71,23 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		protected override bool RetrySyntaxError(ref SqlToken currentToken) {
-			UnreservedKeyword unreservedKeyword = currentToken as UnreservedKeyword;
-			if (unreservedKeyword != null) {
+			// We may have a keyword (non-reserved by the spec) which could be an identifier
+			if (currentToken is UnreservedKeyword unreservedKeyword) {
 				currentToken = unreservedKeyword.AsIdentifier(identifierSymbol);
 				return true;
 			}
-			if (((IToken)currentToken).Symbol != terminatorSymbol) {
-				if (tokenizer.RepeatToken()) {
-					InsignificantToken terminator = new InsignificantToken();
-					terminator.InitializeInternal(terminatorSymbol, ((IToken)currentToken).Position);
-					currentToken = terminator;
-					return true;
-				}
+			// We could have a negative number literal where an unary operation is expected
+			if (currentToken is INumericLiteral numericLiteral && numericLiteral.TryGetNegativeAsPositive(out var positiveLiteral)) {
+				tokenizer.InjectToken(positiveLiteral);
+				currentToken = new OperationToken("-", minusSymbol, numericLiteral.Position);
+				return true;
+			}
+			// We could be missing a separator (semi-colon)
+			if (((IToken)currentToken).Symbol != terminatorSymbol && (currentToken != lastError)) {
+				lastError = currentToken;
+				tokenizer.InjectToken(currentToken);
+				currentToken = new InsignificantToken(terminatorSymbol, ((IToken)currentToken).Position); ;
+				return true;
 			}
 			return false;
 		}

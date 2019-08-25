@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -30,19 +30,34 @@
 using System;
 using System.Globalization;
 
+using bsn.GoldParser.Grammar;
+using bsn.GoldParser.Parser;
 using bsn.GoldParser.Semantic;
 
 namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("IntegerLiteral")]
 	public class IntegerLiteral: NumericLiteral<long> {
-		public IntegerLiteral(string value): this(long.Parse(value, NumberFormatInfo.InvariantInfo)) {}
+		public IntegerLiteral(string value): this(long.Parse(value, NumberFormatInfo.InvariantInfo)) { }
 
-		internal IntegerLiteral(long value): base(value) {}
+		internal IntegerLiteral(long value): base(value) { }
+
+		private IntegerLiteral(long value, Symbol symbol, LineInfo position): this(value) {
+			base.Initialize(symbol, position);
+		}
 
 		public override double AsDouble {
 			get {
 				return Value;
 			}
+		}
+
+		public override bool TryGetNegativeAsPositive(out Literal literal) {
+			if (Value < 0) {
+				literal = new IntegerLiteral(-Value, ((IToken)this).Symbol, ((IToken)this).Position);
+				return true;
+			}
+			literal = null;
+			return false;
 		}
 	}
 }

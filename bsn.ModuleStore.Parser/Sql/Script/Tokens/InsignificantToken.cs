@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -56,9 +56,9 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<OptionalInto> ::= ~INTO")]
 		[Rule("<OptionalFrom> ::=")]
 		[Rule("<OptionalFrom> ::= ~FROM")]
-		public InsignificantToken() {}
+		public InsignificantToken() { }
 
-		internal void InitializeInternal(Symbol symbol, LineInfo lineInfo) {
+		internal InsignificantToken(Symbol symbol, LineInfo lineInfo) {
 			base.Initialize(symbol, lineInfo);
 		}
 	}
