@@ -5,15 +5,15 @@
 		<version>1.0.0</version>
 		<authors>avonwyss</authors>
 		<owners>avonwyss</owners>
-		<licenseUrl>https://www.gnu.org/licenses/lgpl-3.0.en.html</licenseUrl>
+		<license type="expression">LGPL-3.0</license>
 		<projectUrl>https://github.com/siriusch/bsn.ModuleStore</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Library for SQL Server access, migration and source versioning</description>
-		<copyright>Copyright 2009-2016 Arsène von Wyss</copyright>
+		<copyright>Copyright 2009-2020 Arsène von Wyss</copyright>
 		<tags>bsn ModuleStore</tags>
 		<dependencies>
 			<dependency id="bsn.GoldParser" version="2.0.77" />
-			<dependency id="Common.Logging" version="3.3.1" />
+			<dependency id="NLog" version="4.0.0" />
 		</dependencies>
 	</metadata>
 	<files>
