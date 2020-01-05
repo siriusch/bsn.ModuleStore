@@ -14,10 +14,10 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 
 		internal static SqlCallInfo Get(Type interfaceType, ISerializationTypeInfoProvider typeInfoProvider) {
 			if (interfaceType == null) {
-				throw new ArgumentNullException("interfaceType");
+				throw new ArgumentNullException(nameof(interfaceType));
 			}
 			if (typeInfoProvider == null) {
-				throw new ArgumentNullException("typeInfoProvider");
+				throw new ArgumentNullException(nameof(typeInfoProvider));
 			}
 			SqlCallInfo result;
 			lock (knownTypes) {
@@ -36,18 +36,17 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		private SqlCallInfo(Type interfaceType, ISerializationTypeInfoProvider typeInfoProvider) {
 			Debug.Assert(interfaceType != null);
 			if (interfaceType == null) {
-				throw new ArgumentNullException("interfaceType");
+				throw new ArgumentNullException(nameof(interfaceType));
 			}
 			if (typeInfoProvider == null) {
-				throw new ArgumentNullException("typeInfoProvider");
+				throw new ArgumentNullException(nameof(typeInfoProvider));
 			}
 			if ((!interfaceType.IsInterface) || (interfaceType.IsGenericTypeDefinition) || (!typeof(IStoredProcedures).IsAssignableFrom(interfaceType))) {
 				throw new ArgumentException("interfaceType");
 			}
 			this.interfaceType = interfaceType;
-			foreach (MemberInfo memberInfo in interfaceType.GetMembers()) {
-				MethodInfo methodInfo = memberInfo as MethodInfo;
-				if (methodInfo == null) {
+			foreach (var memberInfo in interfaceType.GetMembers()) {
+				if (!(memberInfo is MethodInfo methodInfo)) {
 					throw new InvalidOperationException("Only methods are supported");
 				}
 				if (methodInfo.Name != "Dispose") {
@@ -58,8 +57,8 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 
 		public IEnumerable<SqlCommand> CreateCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out SqlParameter[] outParameters, out ISerializationTypeInfo returnTypeInfo, out ICallDeserializationInfo procInfo, out XmlNameTable xmlNameTable,
 		                                              IList<IDisposable> disposeList) {
-			List<SqlCommand> sqlCommands = new List<SqlCommand>();
-			SqlCommand sqlCommand = methods[mcm.MethodBase].GetCommand(mcm, connection, out returnValue, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList);
+			var sqlCommands = new List<SqlCommand>();
+			var sqlCommand = methods[mcm.MethodBase].GetCommand(mcm, connection, out returnValue, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList);
 			sqlCommands.Add(sqlCommand);
 			return sqlCommands;
 		}
@@ -73,10 +72,6 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			return new ReturnMessage(exception, mcm);
 		}
 
-		public Type InterfaceType {
-			get {
-				return interfaceType;
-			}
-		}
+		public Type InterfaceType => interfaceType;
 	}
 }

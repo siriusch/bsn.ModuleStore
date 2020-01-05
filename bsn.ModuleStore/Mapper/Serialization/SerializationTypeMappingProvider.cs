@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public ISerializationTypeMapping GetMapping(Type type) {
 			if (type == null) {
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 			ISerializationTypeMapping result;
 			lock (mappings) {

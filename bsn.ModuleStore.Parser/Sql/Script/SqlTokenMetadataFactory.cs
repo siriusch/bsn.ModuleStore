@@ -41,11 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				isCommonTableExpressionScope = type.GetCustomAttributes(typeof(CommonTableExpressionScopeAttribute), true).Length > 0;
 			}
 
-			public bool IsCommonTableExpressionScope {
-				get {
-					return isCommonTableExpressionScope;
-				}
-			}
+			public bool IsCommonTableExpressionScope => isCommonTableExpressionScope;
 
 			public abstract IEnumerable<SqlToken> EnumerateTokensUntyped(SqlToken instance, Type skipNestedOfType);
 		}
@@ -69,16 +65,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 
 			public IEnumerable<SqlToken> GetEnumerator(TInstance instance) {
-				foreach (TItem item in propertyGetter(instance)) {
+				foreach (var item in propertyGetter(instance)) {
 					yield return item;
 				}
 			}
 
-			public bool IsPriority {
-				get {
-					return isPriority;
-				}
-			}
+			public bool IsPriority => isPriority;
 		}
 
 		private class SqlTokenMetadata<TToken, TTokenBase>: SqlTokenMetadata, ISqlTokenMetadata<TToken> where TToken: TTokenBase
@@ -87,7 +79,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				if (type.IsInterface) {
 					yield return type;
 				}
-				foreach (Type @interface in type.GetInterfaces()) {
+				foreach (var @interface in type.GetInterfaces()) {
 					yield return @interface;
 				}
 			}
@@ -109,35 +101,35 @@ namespace bsn.ModuleStore.Sql.Script {
 				if (checkFieldErrors != null) {
 					propertyNames = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
 				}
-				List<Func<TToken, SqlToken>> instances = new List<Func<TToken, SqlToken>>();
-				List<ISqlTokenEnumeratorGetter<TToken>> enumerators = new List<ISqlTokenEnumeratorGetter<TToken>>();
-				foreach (PropertyInfo property in typeof(TToken).GetProperties(BindingFlags.DeclaredOnly|BindingFlags.Instance|BindingFlags.Public)) {
-					MethodInfo propertyGetter = property.GetGetMethod();
+				var instances = new List<Func<TToken, SqlToken>>();
+				var enumerators = new List<ISqlTokenEnumeratorGetter<TToken>>();
+				foreach (var property in typeof(TToken).GetProperties(BindingFlags.DeclaredOnly|BindingFlags.Instance|BindingFlags.Public)) {
+					var propertyGetter = property.GetGetMethod();
 					if (propertyGetter != null) {
 						if (typeof(SqlToken).IsAssignableFrom(property.PropertyType)) {
 							if ((propertyNames != null) && (!property.IsDefined(typeof(SkipConsistencyCheckAttribute), true))) {
 								propertyNames.Add(property.Name, false);
 							}
-							Type delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), typeof(SqlToken));
-							bool isPriority = typeof(QueryOptions).IsAssignableFrom(property.PropertyType);
-							Func<TToken, SqlToken> getter = (Func<TToken, SqlToken>)Delegate.CreateDelegate(delegateType, propertyGetter);
+							var delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), typeof(SqlToken));
+							var isPriority = typeof(QueryOptions).IsAssignableFrom(property.PropertyType);
+							var getter = (Func<TToken, SqlToken>)Delegate.CreateDelegate(delegateType, propertyGetter);
 							if (isPriority) {
 								instances.Insert(0, getter);
 							} else {
 								instances.Add(getter);
 							}
 						} else {
-							foreach (Type @interface in GetInterfaces(property.PropertyType)) {
+							foreach (var @interface in GetInterfaces(property.PropertyType)) {
 								if (@interface.IsGenericType && (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
-									Type enumerationType = @interface.GetGenericArguments()[0];
+									var enumerationType = @interface.GetGenericArguments()[0];
 									if (typeof(SqlToken).IsAssignableFrom(enumerationType)) {
 										if ((propertyNames != null) && (!property.IsDefined(typeof(SkipConsistencyCheckAttribute), true))) {
 											propertyNames.Add(property.Name, true);
 										}
-										Type delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), @interface);
-										Type getterType = typeof(SqlTokenEnumeratorGetter<,>).MakeGenericType(typeof(TToken), enumerationType);
-										bool isPriority = typeof(CommonTableExpression).IsAssignableFrom(enumerationType);
-										ISqlTokenEnumeratorGetter<TToken> getter = (ISqlTokenEnumeratorGetter<TToken>)Activator.CreateInstance(getterType, Delegate.CreateDelegate(delegateType, propertyGetter), isPriority);
+										var delegateType = typeof(Func<,>).MakeGenericType(typeof(TToken), @interface);
+										var getterType = typeof(SqlTokenEnumeratorGetter<,>).MakeGenericType(typeof(TToken), enumerationType);
+										var isPriority = typeof(CommonTableExpression).IsAssignableFrom(enumerationType);
+										var getter = (ISqlTokenEnumeratorGetter<TToken>)Activator.CreateInstance(getterType, Delegate.CreateDelegate(delegateType, propertyGetter), isPriority);
 										if (isPriority) {
 											enumerators.Insert(0, getter);
 										} else {
@@ -163,19 +155,19 @@ namespace bsn.ModuleStore.Sql.Script {
 
 			[Conditional("DEBUG")]
 			private void CheckFieldNames(Dictionary<string, bool> propertyNames, ICollection<string> checkFieldErrors) {
-				foreach (FieldInfo field in typeof(TToken).GetFields(BindingFlags.DeclaredOnly|BindingFlags.Instance|BindingFlags.NonPublic|BindingFlags.Public)) {
+				foreach (var field in typeof(TToken).GetFields(BindingFlags.DeclaredOnly|BindingFlags.Instance|BindingFlags.NonPublic|BindingFlags.Public)) {
 					if (!field.IsDefined(typeof(SkipConsistencyCheckAttribute), true)) {
 						if (typeof(SqlToken).IsAssignableFrom(field.FieldType)) {
 							if (!propertyNames.Remove(field.Name)) {
-								checkFieldErrors.Add(string.Format("Missing instance property: {0}", field.Name));
+								checkFieldErrors.Add($"Missing instance property: {field.Name}");
 							}
 						} else {
-							foreach (Type @interface in field.FieldType.GetInterfaces()) {
+							foreach (var @interface in field.FieldType.GetInterfaces()) {
 								if (@interface.IsGenericType && (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
-									Type enumerationType = @interface.GetGenericArguments()[0];
+									var enumerationType = @interface.GetGenericArguments()[0];
 									if (typeof(SqlToken).IsAssignableFrom(enumerationType)) {
 										if (!propertyNames.Remove(field.Name)) {
-											checkFieldErrors.Add(string.Format("Missing enumerator property: {0}", field.Name));
+											checkFieldErrors.Add($"Missing enumerator property: {field.Name}");
 										}
 										break;
 									}
@@ -184,24 +176,24 @@ namespace bsn.ModuleStore.Sql.Script {
 						}
 					}
 				}
-				foreach (KeyValuePair<string, bool> propertyName in propertyNames) {
+				foreach (var propertyName in propertyNames) {
 					if (propertyName.Value) {
-						checkFieldErrors.Add(string.Format("Instance property without field: {0}", propertyName));
+						checkFieldErrors.Add($"Instance property without field: {propertyName}");
 					} else {
-						checkFieldErrors.Add(string.Format("Enumerator property without field: {0}", propertyName));
+						checkFieldErrors.Add($"Enumerator property without field: {propertyName}");
 					}
 				}
 			}
 
 			public IEnumerable<SqlToken> EnumerateTokens(TToken instance, Type skipNestedOfType) {
 				if (instance != null) {
-					using (IEnumerator<ISqlTokenEnumeratorGetter<TToken>> enumerators = enumeratorGetters.GetEnumerator()) {
-						bool hasEnumerator = enumerators.MoveNext();
+					using (var enumerators = enumeratorGetters.GetEnumerator()) {
+						var hasEnumerator = enumerators.MoveNext();
 						while (hasEnumerator) {
-							ISqlTokenEnumeratorGetter<TToken> current = enumerators.Current;
+							var current = enumerators.Current;
 							Debug.Assert(current != null);
 							if (current.IsPriority) {
-								foreach (SqlToken token in current.GetEnumerator(instance)) {
+								foreach (var token in current.GetEnumerator(instance)) {
 									if (ShouldYieldToken(token, skipNestedOfType)) {
 										yield return token;
 									}
@@ -212,21 +204,21 @@ namespace bsn.ModuleStore.Sql.Script {
 							hasEnumerator = enumerators.MoveNext();
 						}
 						if (baseMetadata != null) {
-							foreach (SqlToken token in baseMetadata.EnumerateTokens(instance, skipNestedOfType)) {
+							foreach (var token in baseMetadata.EnumerateTokens(instance, skipNestedOfType)) {
 								yield return token;
 							}
 						}
-						foreach (Func<TToken, SqlToken> instanceGetter in instanceGetters) {
-							SqlToken token = instanceGetter(instance);
+						foreach (var instanceGetter in instanceGetters) {
+							var token = instanceGetter(instance);
 							if (ShouldYieldToken(token, skipNestedOfType)) {
 								yield return token;
 							}
 						}
 						if (hasEnumerator) {
 							do {
-								ISqlTokenEnumeratorGetter<TToken> current = enumerators.Current;
+								var current = enumerators.Current;
 								Debug.Assert(current != null);
-								foreach (SqlToken token in current.GetEnumerator(instance)) {
+								foreach (var token in current.GetEnumerator(instance)) {
 									if (ShouldYieldToken(token, skipNestedOfType)) {
 										yield return token;
 									}
@@ -242,18 +234,18 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Conditional("DEBUG")]
 		internal static void CheckFieldsAndProperties() {
-			List<string> errors = new List<string>();
-			List<string> localErrors = new List<string>();
+			var errors = new List<string>();
+			var localErrors = new List<string>();
 			lock (tokenMetadata) {
 				tokenMetadata.Clear();
-				int typeCount = 0;
-				foreach (Type type in typeof(SqlToken).Assembly.GetTypes()) {
+				var typeCount = 0;
+				foreach (var type in typeof(SqlToken).Assembly.GetTypes()) {
 					if ((!type.IsGenericTypeDefinition) && typeof(SqlToken).IsAssignableFrom(type)) {
 						typeCount++;
 						localErrors.Clear();
 						GetTokenMetadataInternal(type, localErrors);
-						foreach (string error in localErrors) {
-							errors.Add(string.Format("{0}: {1}", type, error));
+						foreach (var error in localErrors) {
+							errors.Add($"{type}: {error}");
 						}
 					}
 				}
@@ -270,8 +262,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal static SqlTokenMetadata GetTokenMetadataInternal(Type tokenType, ICollection<string> checkFieldErrors) {
 			lock (tokenMetadata) {
-				SqlTokenMetadata value;
-				if (tokenMetadata.TryGetValue(tokenType, out value)) {
+				if (tokenMetadata.TryGetValue(tokenType, out var value)) {
 					return value;
 				}
 				//Debug.WriteLine("Getting token metadata: "+tokenType.FullName);
@@ -285,8 +276,8 @@ namespace bsn.ModuleStore.Sql.Script {
 					//Debug.Write("--> ");
 					baseMetadata = GetTokenMetadataInternal(baseType, checkFieldErrors);
 				}
-				Type[] constructorParameters = new[] {typeof(ISqlTokenMetadata<>).MakeGenericType(baseType), typeof(ICollection<string>)};
-				ConstructorInfo constructor = typeof(SqlTokenMetadata<,>).MakeGenericType(tokenType, baseType).GetConstructor(constructorParameters);
+				var constructorParameters = new[] {typeof(ISqlTokenMetadata<>).MakeGenericType(baseType), typeof(ICollection<string>)};
+				var constructor = typeof(SqlTokenMetadata<,>).MakeGenericType(tokenType, baseType).GetConstructor(constructorParameters);
 				try {
 					value = (SqlTokenMetadata)constructor.Invoke(new[] {baseMetadata, checkFieldErrors});
 				} catch (Exception ex) {

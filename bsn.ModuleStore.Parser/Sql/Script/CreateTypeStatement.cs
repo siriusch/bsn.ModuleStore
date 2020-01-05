@@ -39,38 +39,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.typeName = typeName;
 		}
 
-		public override ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.Type;
-			}
-		}
+		public override ObjectCategory ObjectCategory => ObjectCategory.Type;
 
 		public override string ObjectName {
-			get {
-				return typeName.Name.Value;
-			}
-			set {
-				typeName.Name = new TypeName(value);
-			}
+			get => typeName.Name.Value;
+			set => typeName.Name = new TypeName(value);
 		}
 
-		public Qualified<SchemaName, TypeName> TypeName {
-			get {
-				return typeName;
-			}
-		}
+		public Qualified<SchemaName, TypeName> TypeName => typeName;
 
-		protected override bool DisableUsagesForUpdate {
-			get {
-				return true;
-			}
-		}
+		protected override bool DisableUsagesForUpdate => true;
 
-		protected override SchemaName SchemaName {
-			get {
-				return typeName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => typeName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

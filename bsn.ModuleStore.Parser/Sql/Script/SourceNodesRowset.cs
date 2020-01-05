@@ -40,11 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.functionCall = functionCall;
 		}
 
-		public NamedFunction FunctionCall {
-			get {
-				return functionCall;
-			}
-		}
+		public NamedFunction FunctionCall => functionCall;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(functionCall, WhitespacePadding.None);

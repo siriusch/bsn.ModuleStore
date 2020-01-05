@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class TableColumnDefinition: TableDefinition {
 		internal static void AssertIsNotWildcard(ColumnName columnName) {
 			if (columnName.IsWildcard) {
-				throw new ArgumentException("Wilcard column names are not allowed for table column definitions", "columnName");
+				throw new ArgumentException("Wilcard column names are not allowed for table column definitions", nameof(columnName));
 			}
 		}
 
@@ -52,17 +52,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnDefinition = columnDefinition;
 		}
 
-		public ColumnDefinition ColumnDefinition {
-			get {
-				return columnDefinition;
-			}
-		}
+		public ColumnDefinition ColumnDefinition => columnDefinition;
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName, WhitespacePadding.SpaceAfter);

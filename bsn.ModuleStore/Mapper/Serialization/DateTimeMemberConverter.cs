@@ -38,7 +38,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override object ProcessFromDb(IDeserializerContext context, int column) {
-			object result = base.ProcessFromDb(context, column);
+			var result = base.ProcessFromDb(context, column);
 			if (result != null) {
 				result = DateTime.SpecifyKind(Convert.ToDateTime(result), dateTimeKind);
 			}
@@ -46,9 +46,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override object ProcessToDb(object value) {
-			object result = base.ProcessToDb(value);
+			var result = base.ProcessToDb(value);
 			if ((result != DBNull.Value) && (result != null) && (result is DateTime)) {
-				DateTime dateTime = (DateTime)result;
+				var dateTime = (DateTime)result;
 				if (dateTime.Kind != dateTimeKind) {
 					result = DateTime.SpecifyKind(dateTime, dateTimeKind);
 				}

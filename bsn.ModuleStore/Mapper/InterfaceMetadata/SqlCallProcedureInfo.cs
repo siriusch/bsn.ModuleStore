@@ -40,27 +40,27 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 
 		public SqlCallProcedureInfo(MethodInfo method, ISerializationTypeInfoProvider typeInfoProvider) {
 			if (method == null) {
-				throw new ArgumentNullException("method");
+				throw new ArgumentNullException(nameof(method));
 			}
 			if (typeInfoProvider == null) {
-				throw new ArgumentNullException("typeInfoProvider");
+				throw new ArgumentNullException(nameof(typeInfoProvider));
 			}
-			SqlProcAttribute procedure = GetSqlProcAttribute(method);
+			var procedure = GetSqlProcAttribute(method);
 			schemaName = procedure.SchemaName;
 			name = procedure.Name;
 			timeout = procedure.Timeout;
 			deserializeReturnNullOnEmptyReader = procedure.DeserializeReturnNullOnEmptyReader;
 			deserializeRowLimit = procedure.DeserializeRowLimit;
 			deserializeCallConstructor = procedure.DeserializeCallConstructor;
-			SortedDictionary<int, SqlCallParameterInfo> sortedParams = new SortedDictionary<int, SqlCallParameterInfo>();
+			var sortedParams = new SortedDictionary<int, SqlCallParameterInfo>();
 			outArgCount = 0;
-			foreach (ParameterInfo parameterInfo in method.GetParameters()) {
+			foreach (var parameterInfo in method.GetParameters()) {
 				if ((parameterInfo.GetCustomAttributes(typeof(SqlNameTableAttribute), true).Length > 0) || (typeof(XmlNameTable).IsAssignableFrom(parameterInfo.ParameterType))) {
 					if (xmlNameTableParameter == null) {
 						xmlNameTableParameter = parameterInfo;
 					}
 				} else {
-					SqlCallParameterInfo sqlParameterInfo = new SqlCallParameterInfo(parameterInfo, typeInfoProvider, ref outArgCount);
+					var sqlParameterInfo = new SqlCallParameterInfo(parameterInfo, typeInfoProvider, ref outArgCount);
 					sortedParams.Add(parameterInfo.Position, sqlParameterInfo);
 				}
 			}
@@ -72,29 +72,13 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			}
 		}
 
-		public string ProcedureName {
-			get {
-				return string.IsNullOrEmpty(schemaName) ? '['+name+']' : '['+schemaName+"].["+name+']';
-			}
-		}
+		public string ProcedureName => string.IsNullOrEmpty(schemaName) ? '['+name+']' : '['+schemaName+"].["+name+']';
 
-		public bool DeserializeCallConstructor {
-			get {
-				return deserializeCallConstructor;
-			}
-		}
+		public bool DeserializeCallConstructor => deserializeCallConstructor;
 
-		public bool DeserializeScalar {
-			get {
-				return deserializeScalar;
-			}
-		}
+		public bool DeserializeScalar => deserializeScalar;
 
-		public int DeserializeRowLimit {
-			get {
-				return deserializeRowLimit;
-			}
-		}
+		public int DeserializeRowLimit => deserializeRowLimit;
 
 		public bool RequireTransaction {
 #warning check RequireTransationProperty
@@ -103,14 +87,10 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			}
 		}
 
-		public bool DeserializeReturnNullOnEmptyReader {
-			get {
-				return deserializeReturnNullOnEmptyReader;
-			}
-		}
+		public bool DeserializeReturnNullOnEmptyReader => deserializeReturnNullOnEmptyReader;
 
 		public SqlCommand GetCommand(IMethodCallMessage mcm, SqlConnection connection, out SqlParameter returnParameter, out SqlParameter[] outArgs, out ISerializationTypeInfo procedureReturnTypeInfo, out ICallDeserializationInfo procedureInfo, out XmlNameTable xmlNameTable, IList<IDisposable> disposeList) {
-			SqlCommand result = connection.CreateCommand();
+			var result = connection.CreateCommand();
 			result.CommandText = ProcedureName;
 			result.CommandType = CommandType.StoredProcedure;
 			if (timeout > 0) {
@@ -118,7 +98,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			}
 			outArgs = new SqlParameter[outArgCount];
 			xmlNameTable = xmlNameTableParameter != null ? (XmlNameTable)mcm.GetArg(xmlNameTableParameter.Position) : null;
-			foreach (SqlCallParameterInfo factory in parameters) {
+			foreach (var factory in parameters) {
 				result.Parameters.Add(factory.GetSqlParameter(result, mcm, outArgs, disposeList));
 			}
 			if (useReturnValue) {

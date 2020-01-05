@@ -55,23 +55,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.right = right;
 		}
 
-		public Expression Left {
-			get {
-				return left;
-			}
-		}
+		public Expression Left => left;
 
-		public OperationToken Operation {
-			get {
-				return operation;
-			}
-		}
+		public OperationToken Operation => operation;
 
-		public Expression Right {
-			get {
-				return right;
-			}
-		}
+		public Expression Right => right;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 	[Terminal("DISTINCT")]
 	[Terminal("SOME")]
 	public sealed class DuplicateRestrictionDistinctToken : DuplicateRestrictionToken {
-		public override bool Distinct {
-			get {
-				return true;
-			}
-		}
+		public override bool Distinct => true;
 	}
 }

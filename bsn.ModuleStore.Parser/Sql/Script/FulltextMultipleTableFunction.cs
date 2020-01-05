@@ -48,11 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columns = columns.ToList();
 		}
 
-		public IEnumerable<ColumnName> Columns {
-			get {
-				return columns;
-			}
-		}
+		public IEnumerable<ColumnName> Columns => columns;
 
 		protected override void WriteColumnInternal(SqlWriter writer) {
 			writer.WriteScriptSequence(columns, WhitespacePadding.None, w => w.Write(", "));

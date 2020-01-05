@@ -41,11 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.function = function;
 		}
 
-		public FunctionCall Function {
-			get {
-				return function;
-			}
-		}
+		public FunctionCall Function => function;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteCommentsTo(writer);

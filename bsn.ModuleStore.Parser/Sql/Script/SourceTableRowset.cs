@@ -44,17 +44,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableHints = tableHints;
 		}
 
-		public TableHintGroup TableHints {
-			get {
-				return tableHints;
-			}
-		}
+		public TableHintGroup TableHints => tableHints;
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableName => tableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(tableName, WhitespacePadding.None);

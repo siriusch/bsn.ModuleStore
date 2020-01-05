@@ -51,17 +51,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.functions = functions.ToList();
 		}
 
-		public FunctionCall Function {
-			get {
-				return function;
-			}
-		}
+		public FunctionCall Function => function;
 
-		public IEnumerable<NamedFunction> Functions {
-			get {
-				return functions;
-			}
-		}
+		public IEnumerable<NamedFunction> Functions => functions;
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

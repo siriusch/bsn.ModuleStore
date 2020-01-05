@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<ViewOptionalAttribute> ::= ~WITH ~VIEW_METADATA")]
 		public OptionViewMetadataToken() {}
 
-		protected override string OptionSpecifier {
-			get {
-				return "VIEW_METADATA";
-			}
-		}
+		protected override string OptionSpecifier => "VIEW_METADATA";
 	}
 }

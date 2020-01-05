@@ -44,17 +44,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columns = columns.ToList();
 		}
 
-		public IEnumerable<ColumnName> Columns {
-			get {
-				return columns;
-			}
-		}
+		public IEnumerable<ColumnName> Columns => columns;
 
-		public override UpdateModeKind Kind {
-			get {
-				return UpdateModeKind.ForUpdate;
-			}
-		}
+		public override UpdateModeKind Kind => UpdateModeKind.ForUpdate;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("FOR UPDATE");

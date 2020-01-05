@@ -54,12 +54,8 @@ namespace bsn.ModuleStore.Mapper {
 		/// Determine whether a column is allowed to be null
 		/// </summary>
 		public bool NotNull {
-			get {
-				return notNull;
-			}
-			set {
-				notNull = value;
-			}
+			get => notNull;
+			set => notNull = value;
 		}
 	}
 }

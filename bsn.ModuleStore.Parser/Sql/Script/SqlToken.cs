@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -45,24 +45,22 @@ namespace bsn.ModuleStore.Sql.Script {
 		internal IEnumerable<IQualifiedName<SchemaName>> GetInnerSchemaQualifiedNames(Predicate<string> checkSchemaName) {
 			return GetInnerTokens(delegate(IQualifiedName<SchemaName> name, CommonTableExpressionScope scope) {
 				if (!name.LockedOverride) {
-					SchemaName qualification = name.Qualification;
+					var qualification = name.Qualification;
 					if (qualification != null) {
 						Debug.Assert(!string.IsNullOrEmpty(qualification.Value));
 						return checkSchemaName(qualification.Value);
 					}
-					TableName tableName = name.Name as TableName;
+					var tableName = name.Name as TableName;
 					if (((tableName != null) || (name.Name is ViewName)) && scope.ContainsName(name.Name.Value)) {
 						return false;
 					}
 					if (tableName != null) {
 						return !tableName.Value.StartsWith("#");
 					}
-					TypeName typeName = name.Name as TypeName;
-					if (typeName != null) {
+					if (name.Name is TypeName typeName) {
 						return !typeName.IsBuiltinType;
 					}
-					FunctionName functionName = name.Name as FunctionName;
-					if (functionName != null) {
+					if (name.Name is FunctionName functionName) {
 						return !functionName.IsBuiltinFunction;
 					}
 					return true;
@@ -72,20 +70,18 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		internal IEnumerable<T> GetInnerTokens<T>(Func<T, CommonTableExpressionScope, bool> predicate, Type skipNestedOfType) where T: class {
-			Queue<KeyValuePair<SqlToken, CommonTableExpressionScope>> itemsToProcess = new Queue<KeyValuePair<SqlToken, CommonTableExpressionScope>>();
+			var itemsToProcess = new Queue<KeyValuePair<SqlToken, CommonTableExpressionScope>>();
 			itemsToProcess.Enqueue(new KeyValuePair<SqlToken, CommonTableExpressionScope>(this, new CommonTableExpressionScope(null)));
 			do {
-				KeyValuePair<SqlToken, CommonTableExpressionScope> pair = itemsToProcess.Dequeue();
+				var pair = itemsToProcess.Dequeue();
 				Debug.Assert(pair.Key != null);
-				SqlTokenMetadataFactory.SqlTokenMetadata tokenMetadata = SqlTokenMetadataFactory.GetTokenMetadataInternal(pair.Key.GetType(), null);
-				CommonTableExpressionScope scope = tokenMetadata.IsCommonTableExpressionScope ? new CommonTableExpressionScope(pair.Value) : pair.Value;
-				foreach (SqlToken innerToken in tokenMetadata.EnumerateTokensUntyped(pair.Key, skipNestedOfType)) {
-					CommonTableExpression cte = innerToken as CommonTableExpression;
-					if (cte != null) {
+				var tokenMetadata = SqlTokenMetadataFactory.GetTokenMetadataInternal(pair.Key.GetType(), null);
+				var scope = tokenMetadata.IsCommonTableExpressionScope ? new CommonTableExpressionScope(pair.Value) : pair.Value;
+				foreach (var innerToken in tokenMetadata.EnumerateTokensUntyped(pair.Key, skipNestedOfType)) {
+					if (innerToken is CommonTableExpression cte) {
 						scope.AddName(cte.AliasName.Value);
 					}
-					T typedInnerToken = innerToken as T;
-					if (typedInnerToken != null) {
+					if (innerToken is T typedInnerToken) {
 						if ((predicate == null) || predicate(typedInnerToken, scope)) {
 							yield return typedInnerToken;
 						}
@@ -97,9 +93,9 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal void LockInnerUnqualifiedTableNames(Predicate<string> lockPredicate) {
 			if (lockPredicate == null) {
-				throw new ArgumentNullException("lockPredicate");
+				throw new ArgumentNullException(nameof(lockPredicate));
 			}
-			foreach (IQualifiedName<SchemaName> schemaQualifiedName in GetInnerSchemaQualifiedNames(s => false)) {
+			foreach (var schemaQualifiedName in GetInnerSchemaQualifiedNames(s => false)) {
 				if (lockPredicate(schemaQualifiedName.Name.Value)) {
 					schemaQualifiedName.LockOverride();
 				}

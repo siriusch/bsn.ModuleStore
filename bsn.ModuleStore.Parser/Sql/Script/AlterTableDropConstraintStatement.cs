@@ -43,11 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.constraintName = constraintName;
 		}
 
-		public ConstraintName ConstraintName {
-			get {
-				return constraintName;
-			}
-		}
+		public ConstraintName ConstraintName => constraintName;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
@@ -55,16 +51,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(constraintName, WhitespacePadding.None);
 		}
 
-		string IObjectBoundStatement.ObjectName {
-			get {
-				return constraintName.Value;
-			}
-		}
+		string IObjectBoundStatement.ObjectName => constraintName.Value;
 
-		bool IInstallStatement.IsPartOfSchemaDefinition {
-			get {
-				return false;
-			}
-		}
+		bool IInstallStatement.IsPartOfSchemaDefinition => false;
 	}
 }

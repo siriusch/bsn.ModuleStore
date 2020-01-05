@@ -49,23 +49,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.increment = increment;
 		}
 
-		public IntegerLiteral Increment {
-			get {
-				return increment;
-			}
-		}
+		public IntegerLiteral Increment => increment;
 
-		public IntegerLiteral Seed {
-			get {
-				return seed;
-			}
-		}
+		public IntegerLiteral Seed => seed;
 
-		public TypeName TypeName {
-			get {
-				return typeName;
-			}
-		}
+		public TypeName TypeName => typeName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("IDENTITY");

@@ -59,15 +59,11 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public QuotedIdentifier(string id): base(id) {
 			if (!TryDequote(id, out value)) {
-				throw new ArgumentException("Malformed identifier", "id");
+				throw new ArgumentException("Malformed identifier", nameof(id));
 			}
 		}
 
-		public override string Value {
-			get {
-				return value;
-			}
-		}
+		public override string Value => value;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteDelimitedIdentifier(value);

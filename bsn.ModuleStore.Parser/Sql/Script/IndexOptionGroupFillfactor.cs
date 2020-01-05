@@ -40,17 +40,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.fillfactor = fillfactor;
 		}
 
-		public IntegerLiteral Fillfactor {
-			get {
-				return fillfactor;
-			}
-		}
+		public IntegerLiteral Fillfactor => fillfactor;
 
-		public override bool HasValue {
-			get {
-				return true;
-			}
-		}
+		public override bool HasValue => true;
 
 		public override void WriteTo(SqlWriter writer) {
 			// we ignore the fill factor when computing a hash, so that differences due to fill factor only are ignored

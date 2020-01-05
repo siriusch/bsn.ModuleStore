@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<ProcedureOptionGroup> ::= ~WITH ~RECOMPILE")]
 		public OptionRecompileToken() {}
 
-		protected override string OptionSpecifier {
-			get {
-				return "RECOMPILE";
-			}
-		}
+		protected override string OptionSpecifier => "RECOMPILE";
 	}
 }

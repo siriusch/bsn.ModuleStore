@@ -43,11 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.value = value;
 		}
 
-		public SelectQuery Value {
-			get {
-				return value;
-			}
-		}
+		public SelectQuery Value => value;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

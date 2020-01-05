@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<OptionalFunctionOption> ::= ~WITH ~RETURNS ~NULL ~ON ~NULL ~INPUT")]
 		public FunctionOptionReturnsNullOnNullInputToken() {}
 
-		protected override string OptionSpecifier {
-			get {
-				return "RETURNS NULL ON NULL INPUT";
-			}
-		}
+		protected override string OptionSpecifier => "RETURNS NULL ON NULL INPUT";
 	}
 }

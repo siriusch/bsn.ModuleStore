@@ -38,10 +38,10 @@ namespace bsn.ModuleStore.Mapper {
 	internal static class TypeExtensionMethods {
 		public static IEnumerable<MemberInfo> GetAllFieldsAndProperties(this Type type) {
 			while (type != null) {
-				foreach (FieldInfo field in type.GetFields(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
+				foreach (var field in type.GetFields(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
 					yield return field;
 				}
-				foreach (PropertyInfo property in type.GetProperties(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
+				foreach (var property in type.GetProperties(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)) {
 					yield return property;
 				}
 				type = type.BaseType;
@@ -62,7 +62,7 @@ namespace bsn.ModuleStore.Mapper {
 		/// <returns>True if the type is recognized as nullable type.</returns>
 		public static bool IsNullableType(this Type type) {
 			if (type == null) {
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 			return type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(Nullable<>));
 		}
@@ -74,7 +74,7 @@ namespace bsn.ModuleStore.Mapper {
 		/// <returns>True if the type is recognized as XML type.</returns>
 		public static bool IsXmlType(this Type type) {
 			if (type == null) {
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 			return typeof(XContainer).IsAssignableFrom(type) || typeof(XmlReader).IsAssignableFrom(type) || typeof(XPathNavigator).IsAssignableFrom(type) || typeof(IXPathNavigable).IsAssignableFrom(type);
 		}
@@ -84,7 +84,7 @@ namespace bsn.ModuleStore.Mapper {
 			if (elementType != null) {
 				return true;
 			}
-			foreach (Type interfaceType in type.GetInterfaces()) {
+			foreach (var interfaceType in type.GetInterfaces()) {
 				elementType = GetElementTypeOfIEnumerable(interfaceType);
 				if (elementType != null) {
 					return true;

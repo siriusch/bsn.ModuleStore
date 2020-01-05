@@ -35,11 +35,7 @@ namespace bsn.ModuleStore.Mapper {
 	public sealed class ReferenceEqualityComparer<T>: IEqualityComparer<T> where T: class {
 		private static readonly ReferenceEqualityComparer<T> @default = new ReferenceEqualityComparer<T>();
 
-		public static ReferenceEqualityComparer<T> Default {
-			get {
-				return @default;
-			}
-		}
+		public static ReferenceEqualityComparer<T> Default => @default;
 
 		private ReferenceEqualityComparer() {}
 

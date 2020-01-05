@@ -37,11 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.not = not;
 		}
 
-		public bool Not {
-			get {
-				return not;
-			}
-		}
+		public bool Not => not;
 
 		public override void WriteTo(SqlWriter writer) {
 			if (not) {

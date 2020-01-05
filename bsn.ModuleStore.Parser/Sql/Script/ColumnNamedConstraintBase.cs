@@ -37,11 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.constraintName = constraintName;
 		}
 
-		public ConstraintName ConstraintName {
-			get {
-				return constraintName;
-			}
-		}
+		public ConstraintName ConstraintName => constraintName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(constraintName, WhitespacePadding.SpaceAfter, w => w.WriteKeyword("CONSTRAINT "), null);

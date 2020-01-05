@@ -43,11 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			valueExpressions = value.ToList();
 		}
 
-		public IEnumerable<Expression> ValueExpressions {
-			get {
-				return valueExpressions;
-			}
-		}
+		public IEnumerable<Expression> ValueExpressions => valueExpressions;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

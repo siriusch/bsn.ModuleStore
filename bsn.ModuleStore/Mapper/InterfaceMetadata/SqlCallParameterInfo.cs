@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2011 by Arsène von Wyss - avw@gmx.ch
@@ -48,12 +48,12 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		internal static string GetClrUserDefinedTypeName(Type type) {
 			//string schemaName = ((argInfo != null) && !String.IsNullOrEmpty(argInfo.SchemaName)) ? argInfo.SchemaName.Replace("[", "").Replace("]", "") : "dbo";
 #warning check schemaname handling on GetClrUserDefinedTypeName
-			string schemaName = "dbo";
-			Type clrType = type.IsNullableType() ? type.GetGenericArguments()[0] : type;
-			SqlUserDefinedTypeAttribute[] attributes = (SqlUserDefinedTypeAttribute[])clrType.GetCustomAttributes(typeof(SqlUserDefinedTypeAttribute), false);
+			var schemaName = "dbo";
+			var clrType = type.IsNullableType() ? type.GetGenericArguments()[0] : type;
+			var attributes = (SqlUserDefinedTypeAttribute[])clrType.GetCustomAttributes(typeof(SqlUserDefinedTypeAttribute), false);
 			if (attributes.Length > 0) {
-				string typeName = attributes[0].Name.Replace("[", "").Replace("]", "");
-				return String.Format("[{0}].[{1}]", schemaName, typeName);
+				var typeName = attributes[0].Name.Replace("[", "").Replace("]", "");
+				return $"[{schemaName}].[{typeName}]";
 			}
 			return String.Empty;
 		}
@@ -72,21 +72,19 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		}
 
 		private static object GetXmlValue(object value, IList<IDisposable> disposeList) {
-			XmlReader reader = value as XmlReader;
-			if (reader == null) {
-				XPathNavigator navigator = value as XPathNavigator;
+			if (!(value is XmlReader reader)) {
+				var navigator = value as XPathNavigator;
 				if (navigator == null) {
-					IXPathNavigable navigable = value as IXPathNavigable;
-					if (navigable != null) {
+					switch (value) {
+					case IXPathNavigable navigable:
 						navigator = navigable.CreateNavigator();
-					} else {
-						XNode node = value as XNode;
-						if (node != null) {
-							navigator = node.CreateNavigator();
-						}
+						break;
+					case XNode node:
+						navigator = node.CreateNavigator();
+						break;
 					}
 					if (navigator == null) {
-						throw new NotSupportedException(String.Format("XML could not be retrieved from value of type {0}.", value.GetType()));
+						throw new NotSupportedException($"XML could not be retrieved from value of type {value.GetType()}.");
 					}
 				}
 				reader = navigator.ReadSubtree();
@@ -109,13 +107,13 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 
 		public SqlCallParameterInfo(ParameterInfo parameter, ISerializationTypeInfoProvider typeInfoProvider, ref int outArgCount) {
 			if (parameter == null) {
-				throw new ArgumentNullException("parameter");
+				throw new ArgumentNullException(nameof(parameter));
 			}
 			if (typeInfoProvider == null) {
-				throw new ArgumentNullException("typeInfoProvider");
+				throw new ArgumentNullException(nameof(typeInfoProvider));
 			}
 			this.typeInfoProvider = typeInfoProvider;
-			SqlArgAttribute arg = GetSqlArgAttribute(parameter);
+			var arg = GetSqlArgAttribute(parameter);
 			parameterName = arg.Name;
 			parameterType = parameter.ParameterType;
 			if (parameterType.IsByRef) {
@@ -150,43 +148,35 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			}
 		}
 
-		public int Position {
-			get {
-				return position;
-			}
-		}
+		public int Position => position;
 
 		public SqlParameter GetSqlParameter(SqlCommand command, IMethodCallMessage mcm, SqlParameter[] outArgs, IList<IDisposable> disposeList) {
-			SqlParameter parameter = command.CreateParameter();
+			var parameter = command.CreateParameter();
 			parameter.ParameterName = parameterName;
 			parameter.IsNullable = nullable;
 			if (size > 0) {
 				parameter.Size = size;
 			}
 			parameter.Direction = direction;
-			object value = mcm.GetArg(position);
+			var value = mcm.GetArg(position);
 			switch (sqlType) {
 			case SqlDbType.SmallInt:
-				IIdentifiable<short> identifiableShort = value as IIdentifiable<short>;
-				if (identifiableShort != null) {
+				if (value is IIdentifiable<short> identifiableShort) {
 					value = identifiableShort.Id;
 				}
 				break;
 			case SqlDbType.Int:
-				IIdentifiable<int> identifiableInt = value as IIdentifiable<int>;
-				if (identifiableInt != null) {
+				if (value is IIdentifiable<int> identifiableInt) {
 					value = identifiableInt.Id;
 				}
 				break;
 			case SqlDbType.BigInt:
-				IIdentifiable<long> identifiableLong = value as IIdentifiable<long>;
-				if (identifiableLong != null) {
+				if (value is IIdentifiable<long> identifiableLong) {
 					value = identifiableLong.Id;
 				}
 				break;
 			case SqlDbType.UniqueIdentifier:
-				IIdentifiable<Guid> identifiableGuid = value as IIdentifiable<Guid>;
-				if (identifiableGuid != null) {
+				if (value is IIdentifiable<Guid> identifiableGuid) {
 					value = identifiableGuid.Id;
 				}
 				break;
@@ -200,7 +190,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				value = GetDataTableValue(value, disposeList);
 				break;
 			}
-			ISerializationTypeInfo typeInfo = typeInfoProvider.GetSerializationTypeInfo(parameterType, false);
+			var typeInfo = typeInfoProvider.GetSerializationTypeInfo(parameterType, false);
 			if (typeInfo.SimpleConverter != null) {
 				value = typeInfo.SimpleConverter.ProcessToDb(value);
 			}
@@ -213,11 +203,10 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		}
 
 		private object GetDataTableValue(object value, IList<IDisposable> disposeList) {
-			IEnumerable values = value as IEnumerable;
-			if (values == null) {
-				throw new ArgumentException(string.Format("The value passed in for parameter '{0}' is castable to IEnumerable", parameterName));
+			if (!(value is IEnumerable values)) {
+				throw new ArgumentException($"The value passed in for parameter '{parameterName}' is castable to IEnumerable");
 			}
-			StructuredParameterReader dataReader = new StructuredParameterReader(structuredSchema, values);
+			var dataReader = new StructuredParameterReader(structuredSchema, values);
 			disposeList.Add(dataReader);
 			return dataReader;
 		}

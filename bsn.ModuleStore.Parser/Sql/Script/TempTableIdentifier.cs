@@ -35,8 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("TempTableId")]
 	public class TempTableIdentifier: SqlIdentifier {
 		private static string Dequote(string name) {
-			string unquotedName;
-			if (QuotedIdentifier.TryDequote(name, out unquotedName)) {
+			if (QuotedIdentifier.TryDequote(name, out var unquotedName)) {
 				return unquotedName;
 			}
 			return name;

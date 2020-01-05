@@ -45,17 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableDefinitions = tableDefinitions.ToList();
 		}
 
-		public IEnumerable<TableDefinition> TableDefinitions {
-			get {
-				return tableDefinitions;
-			}
-		}
+		public IEnumerable<TableDefinition> TableDefinitions => tableDefinitions;
 
-		public VariableName VariableName {
-			get {
-				return variableName;
-			}
-		}
+		public VariableName VariableName => variableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

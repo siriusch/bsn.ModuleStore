@@ -20,21 +20,21 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		public StructuredParameterSchema(ISerializationTypeInfo typeInfo, ISerializationTypeMappingProvider typeMappingProvider)
 		{
 			SetupColumns(typeInfo.Type.Name, typeInfo.Type.Namespace);
-			DataColumn columnName = Columns[SchemaTableColumn.ColumnName];
-			DataColumn allowDbNull = Columns[SchemaTableColumn.AllowDBNull];
-			DataColumn dataType = Columns[SchemaTableColumn.DataType];
+			var columnName = Columns[SchemaTableColumn.ColumnName];
+			var allowDbNull = Columns[SchemaTableColumn.AllowDBNull];
+			var dataType = Columns[SchemaTableColumn.DataType];
 			/* DataColumn numericScale = Columns[SchemaTableColumn.NumericScale];
 			DataColumn numericPrecision = Columns[SchemaTableColumn.NumericPrecision];
 			DataColumn columnSize = Columns[SchemaTableColumn.ColumnSize]; */
-			DataColumn baseColumnName = Columns[SchemaTableColumn.BaseColumnName];
-			DataColumn providerType = Columns[SchemaTableColumn.ProviderType];
-			DataColumn nonVersionedProviderType = Columns[SchemaTableColumn.NonVersionedProviderType];
-			DataColumn columnOrdinal = Columns[SchemaTableColumn.ColumnOrdinal];
-			List<SqlColumnInfo> sqlColumnInfos = new List<SqlColumnInfo>();
-			List<ColumnInfo> columns = new List<ColumnInfo>();
-			Dictionary<SqlColumnInfo, int> columnIndices = new Dictionary<SqlColumnInfo, int>();
+			var baseColumnName = Columns[SchemaTableColumn.BaseColumnName];
+			var providerType = Columns[SchemaTableColumn.ProviderType];
+			var nonVersionedProviderType = Columns[SchemaTableColumn.NonVersionedProviderType];
+			var columnOrdinal = Columns[SchemaTableColumn.ColumnOrdinal];
+			var sqlColumnInfos = new List<SqlColumnInfo>();
+			var columns = new List<ColumnInfo>();
+			var columnIndices = new Dictionary<SqlColumnInfo, int>();
 			if (typeInfo.Mapping.IsNativeType) {
-				DataRow row = NewRow();
+				var row = NewRow();
 				row[columnName] = "value";
 				row[columnOrdinal] = 0;
 				row[dataType] = typeInfo.Type;
@@ -43,18 +43,18 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 				row[providerType] = (int)typeInfo.Mapping.DbType;
 				Rows.Add(row);
 				columns.Add(new ColumnInfo(0, "value", Enum.GetName(typeof(SqlDbType), typeInfo.Mapping.DbType), typeInfo.Type));
-				IMemberConverter memberConverter = MemberConverter.Get(typeInfo.Type, false, "value", 0, DateTimeKind.Unspecified);
+				var memberConverter = MemberConverter.Get(typeInfo.Type, false, "value", 0, DateTimeKind.Unspecified);
 				sqlColumnInfos.Add(new SqlColumnInfo(typeMappingProvider.GetMapping(typeInfo.Type), "value", memberConverter));
 			} else {
-				foreach (MemberInfo memberInfo in typeInfo.Type.GetAllFieldsAndProperties()) {
-					SqlColumnAttribute sqlColumn = SqlColumnAttributeBase.Get<SqlColumnAttribute>(memberInfo, false);
+				foreach (var memberInfo in typeInfo.Type.GetAllFieldsAndProperties()) {
+					var sqlColumn = SqlColumnAttributeBase.Get<SqlColumnAttribute>(memberInfo, false);
 					if (sqlColumn != null) {
-						Type memberType = memberInfo.GetMemberType();
-						SqlColumnInfo sqlColumnInfo = typeInfo.Mapping.Columns[sqlColumn.Name];
-						StructuredParameterAttribute parameterAttribute = StructuredParameterAttribute.GetStructuredParameterAttribute(memberInfo);
+						var memberType = memberInfo.GetMemberType();
+						var sqlColumnInfo = typeInfo.Mapping.Columns[sqlColumn.Name];
+						var parameterAttribute = StructuredParameterAttribute.GetStructuredParameterAttribute(memberInfo);
 						Debug.Assert(parameterAttribute != null);
-						ColumnInfo ci = new ColumnInfo(sqlColumnInfos.Count, sqlColumnInfo.Name, GetDataTypeName(sqlColumnInfo, memberType), memberType);
-						DataRow row = NewRow();
+						var ci = new ColumnInfo(sqlColumnInfos.Count, sqlColumnInfo.Name, GetDataTypeName(sqlColumnInfo, memberType), memberType);
+						var row = NewRow();
 						row[columnName] = ci.ColumnName;
 						row[columnOrdinal] = parameterAttribute.Position;
 						row[dataType] = Nullable.GetUnderlyingType(ci.DataType) ?? ci.DataType;

@@ -49,29 +49,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.readOnly = readOnly.HasValue();
 		}
 
-		public Literal DefaultValue {
-			get {
-				return defaultValue;
-			}
-		}
+		public Literal DefaultValue => defaultValue;
 
-		public ParameterName ParameterName {
-			get {
-				return parameterName;
-			}
-		}
+		public ParameterName ParameterName => parameterName;
 
-		public Qualified<SchemaName, TypeName> ParameterTypeName {
-			get {
-				return parameterTypeName;
-			}
-		}
+		public Qualified<SchemaName, TypeName> ParameterTypeName => parameterTypeName;
 
-		public bool ReadOnly {
-			get {
-				return readOnly;
-			}
-		}
+		public bool ReadOnly => readOnly;
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			writer.WriteScript(parameterName, WhitespacePadding.SpaceAfter);

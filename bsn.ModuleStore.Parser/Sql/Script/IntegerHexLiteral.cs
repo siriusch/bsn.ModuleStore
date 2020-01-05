@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public sealed class IntegerHexLiteral: IntegerLiteral {
 		private static long BinaryToLong(byte[] binary) {
 			long result = 0;
-			for (int i = 0; i < binary.Length; i++) {
+			for (var i = 0; i < binary.Length; i++) {
 				result = (result<<8)+binary[i];
 			}
 			return result;
@@ -91,10 +91,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		internal static byte[] ParseBinary(string value) {
-			byte[] result = new byte[(value.Length-1) / 2];
-			int offset = 2-(value.Length % 2);
+			var result = new byte[(value.Length-1) / 2];
+			var offset = 2-(value.Length % 2);
 			unchecked {
-				for (int i = 0; i < result.Length; i++) {
+				for (var i = 0; i < result.Length; i++) {
 					result[i] = (byte)((HexCharToInt(value[offset++])<<4)+HexCharToInt(value[offset++]));
 				}
 			}
@@ -109,14 +109,10 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.binaryValue = binaryValue;
 		}
 
-		public byte[] BinaryValue {
-			get {
-				return binaryValue;
-			}
-		}
+		public byte[] BinaryValue => binaryValue;
 
 		public bool IsLongFitting() {
-			for (int i = 8; i < binaryValue.Length; i++) {
+			for (var i = 8; i < binaryValue.Length; i++) {
 				if (binaryValue[i] > 0) {
 					return false;
 				}
@@ -132,8 +128,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			writer.WriteLiteral("0x");
-			for (int i = 0; i < binaryValue.Length; i++) {
-				byte b = binaryValue[i];
+			for (var i = 0; i < binaryValue.Length; i++) {
+				var b = binaryValue[i];
 				writer.WriteLiteral(IntToHexChar(b>>4));
 				writer.WriteLiteral(IntToHexChar(b&15));
 			}

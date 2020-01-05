@@ -44,11 +44,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.precision = precision.Value;
 		}
 
-		public long Precision {
-			get {
-				return precision;
-			}
-		}
+		public long Precision => precision;
 
 		protected override void WriteArguments(SqlWriter writer) {
 			writer.WriteLiteral(precision.ToString(NumberFormatInfo.InvariantInfo));

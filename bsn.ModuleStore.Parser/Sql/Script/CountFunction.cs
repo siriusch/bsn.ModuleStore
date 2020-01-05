@@ -52,17 +52,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expression = expression;
 		}
 
-		public SqlScriptableToken Expression {
-			get {
-				return expression;
-			}
-		}
+		public SqlScriptableToken Expression => expression;
 
-		public bool? Restriction {
-			get {
-				return restriction;
-			}
-		}
+		public bool? Restriction => restriction;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteFunction("COUNT");

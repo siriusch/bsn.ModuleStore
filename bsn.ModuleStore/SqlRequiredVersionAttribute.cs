@@ -38,10 +38,6 @@ namespace bsn.ModuleStore {
 			this.requiredEngineVersion = requiredEngineVersion;
 		}
 
-		public int RequiredEngineVersion {
-			get {
-				return requiredEngineVersion;
-			}
-		}
+		public int RequiredEngineVersion => requiredEngineVersion;
 	}
 }

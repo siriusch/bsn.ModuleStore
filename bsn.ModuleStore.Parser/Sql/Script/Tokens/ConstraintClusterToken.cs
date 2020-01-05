@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<ConstraintCluster> ::=")]
 		public ConstraintClusterToken() {}
 
-		public virtual Clustered Clustered {
-			get {
-				return Clustered.Unspecified;
-			}
-		}
+		public virtual Clustered Clustered => Clustered.Unspecified;
 	}
 }

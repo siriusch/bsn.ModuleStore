@@ -55,29 +55,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableName = tableName;
 		}
 
-		public Identifier DatabaseName {
-			get {
-				return databaseName;
-			}
-		}
+		public Identifier DatabaseName => databaseName;
 
-		public SchemaName SchemaName {
-			get {
-				return schemaName;
-			}
-		}
+		public SchemaName SchemaName => schemaName;
 
-		public Identifier ServerName {
-			get {
-				return serverName;
-			}
-		}
+		public Identifier ServerName => serverName;
 
-		public TableName TableName {
-			get {
-				return tableName;
-			}
-		}
+		public TableName TableName => tableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(serverName, WhitespacePadding.None, null, w => w.Write('.'));

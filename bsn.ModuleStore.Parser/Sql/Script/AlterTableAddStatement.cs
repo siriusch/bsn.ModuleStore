@@ -47,11 +47,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.definitions = definitions.ToList();
 		}
 
-		public IEnumerable<TableDefinition> Definitions {
-			get {
-				return definitions;
-			}
-		}
+		public IEnumerable<TableDefinition> Definitions => definitions;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
@@ -60,20 +56,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScriptSequence(definitions, WhitespacePadding.None, w => w.Write(", "));
 		}
 
-		IQualifiedName<SchemaName> IApplicableTo<CreateTableStatement>.QualifiedName {
-			get {
-				return TableName;
-			}
-		}
+		IQualifiedName<SchemaName> IApplicableTo<CreateTableStatement>.QualifiedName => TableName;
 
 		public void ApplyTo(CreateTableStatement instance) {
 			instance.Definitions.AddRange(definitions);
 		}
 
-		string IObjectBoundStatement.ObjectName {
-			get {
-				return TableName.Name.Value;
-			}
-		}
+		string IObjectBoundStatement.ObjectName => TableName.Name.Value;
 	}
 }

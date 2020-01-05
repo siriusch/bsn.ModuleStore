@@ -15,16 +15,16 @@ namespace bsn.ModuleStore.Sql {
 		private static readonly Dictionary<string, IList<SqlTypeMapping>> byName = new Dictionary<string, IList<SqlTypeMapping>>(StringComparer.OrdinalIgnoreCase);
 
 		static SqlTypeMapping() {
-			using (Stream stream = typeof(SqlTypeMapping).Assembly.GetManifestResourceStream(typeof(SqlTypeMapping), "SqlTypes.xml")) {
+			using (var stream = typeof(SqlTypeMapping).Assembly.GetManifestResourceStream(typeof(SqlTypeMapping), "SqlTypes.xml")) {
 				Debug.Assert(stream != null);
-				using (XmlReader reader = XmlReader.Create(stream)) {
-					XDocument doc = XDocument.Load(reader);
+				using (var reader = XmlReader.Create(stream)) {
+					var doc = XDocument.Load(reader);
 					Debug.Assert(doc.Root != null);
-					foreach (SqlTypeMapping mapping in doc.Root.Elements("type").Select(e => new SqlTypeMapping(e))) {
-						foreach (string name in mapping.Names) {
+					foreach (var mapping in doc.Root.Elements("type").Select(e => new SqlTypeMapping(e))) {
+						foreach (var name in mapping.Names) {
 							Append(byName, name, mapping);
 						}
-						foreach (Type clrType in mapping.Types) {
+						foreach (var clrType in mapping.Types) {
 							Append(byClrType, clrType, mapping);
 						}
 						if (mapping.SqlType.HasValue) {
@@ -39,8 +39,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private static void Append<T>(Dictionary<T, IList<SqlTypeMapping>> items, T key, SqlTypeMapping value) {
-			IList<SqlTypeMapping> list;
-			if (!items.TryGetValue(key, out list)) {
+			if (!items.TryGetValue(key, out var list)) {
 				list = new List<SqlTypeMapping>(1);
 				items.Add(key, list);
 			}
@@ -48,8 +47,8 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private static void Finalize<T>(Dictionary<T, IList<SqlTypeMapping>> items) {
-			foreach (T key in items.Keys.ToList()) {
-				List<SqlTypeMapping> list = (List<SqlTypeMapping>)items[key];
+			foreach (var key in items.Keys.ToList()) {
+				var list = (List<SqlTypeMapping>)items[key];
 				list.Sort((x, y) => y.Engine-x.Engine);
 				items[key] = list.ToArray();
 			}
@@ -57,14 +56,14 @@ namespace bsn.ModuleStore.Sql {
 
 		public static SqlTypeMapping Get(string name, DatabaseEngine engineVersion) {
 			if (name == null) {
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 			return Get(byName, name, engineVersion);
 		}
 
 		public static SqlTypeMapping Get(Type clrType, DatabaseEngine engineVersion) {
 			if (clrType == null) {
-				throw new ArgumentNullException("clrType");
+				throw new ArgumentNullException(nameof(clrType));
 			}
 			return Get(byClrType, clrType, engineVersion);
 		}
@@ -74,8 +73,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private static SqlTypeMapping Get<T>(Dictionary<T, IList<SqlTypeMapping>> items, T key, DatabaseEngine engineVersion) {
-			IList<SqlTypeMapping> typeMappings;
-			if (items.TryGetValue(key, out typeMappings)) {
+			if (items.TryGetValue(key, out var typeMappings)) {
 				return typeMappings.FirstOrDefault(m => m.Engine <= engineVersion);
 			}
 			return null;
@@ -83,14 +81,13 @@ namespace bsn.ModuleStore.Sql {
 
 		public static bool IsBuiltinTypeName(string name) {
 			if (name == null) {
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 			return byName.ContainsKey(name);
 		}
 
 		internal static bool TryGetBuiltinTypeName(ref string name) {
-			IList<SqlTypeMapping> typeMappings;
-			if (byName.TryGetValue(name, out typeMappings)) {
+			if (byName.TryGetValue(name, out var typeMappings)) {
 				name = typeMappings.First().Name;
 				return true;
 			}
@@ -104,13 +101,13 @@ namespace bsn.ModuleStore.Sql {
 
 		private SqlTypeMapping(XElement element) {
 			if (element == null) {
-				throw new ArgumentNullException("element");
+				throw new ArgumentNullException(nameof(element));
 			}
-			XAttribute nameAttribute = element.Attribute("name");
+			var nameAttribute = element.Attribute("name");
 			if (nameAttribute == null) {
-				throw new ArgumentException("A name is required", "element");
+				throw new ArgumentException("A name is required", nameof(element));
 			}
-			XAttribute attribute = element.Attribute("alias");
+			var attribute = element.Attribute("alias");
 			names = Array.AsReadOnly(attribute != null ? new[] {nameAttribute.Value, attribute.Value} : new[] {nameAttribute.Value});
 			attribute = element.Attribute("dbType");
 			if (attribute != null) {
@@ -123,34 +120,14 @@ namespace bsn.ModuleStore.Sql {
 			types = Array.AsReadOnly(element.Elements("clr").Attributes("name").Select(a => Type.GetType(a.Value, true, false)).ToArray());
 		}
 
-		public DatabaseEngine Engine {
-			get {
-				return engine;
-			}
-		}
+		public DatabaseEngine Engine => engine;
 
-		public string Name {
-			get {
-				return names[0];
-			}
-		}
+		public string Name => names[0];
 
-		public ReadOnlyCollection<string> Names {
-			get {
-				return names;
-			}
-		}
+		public ReadOnlyCollection<string> Names => names;
 
-		public SqlDbType? SqlType {
-			get {
-				return sqlType;
-			}
-		}
+		public SqlDbType? SqlType => sqlType;
 
-		public ReadOnlyCollection<Type> Types {
-			get {
-				return types;
-			}
-		}
+		public ReadOnlyCollection<Type> Types => types;
 	}
 }

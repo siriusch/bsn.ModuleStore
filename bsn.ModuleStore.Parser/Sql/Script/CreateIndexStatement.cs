@@ -45,44 +45,20 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.indexOptions = indexOptions;
 		}
 
-		public IndexName IndexName {
-			get {
-				return indexName;
-			}
-		}
+		public IndexName IndexName => indexName;
 
-		public IndexOptionGroup IndexOptions {
-			get {
-				return indexOptions;
-			}
-		}
+		public IndexOptionGroup IndexOptions => indexOptions;
 
-		public override sealed ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.Index;
-			}
-		}
+		public override sealed ObjectCategory ObjectCategory => ObjectCategory.Index;
 
 		public override string ObjectName {
-			get {
-				return indexName.Value;
-			}
-			set {
-				indexName = new IndexName(value);
-			}
+			get => indexName.Value;
+			set => indexName = new IndexName(value);
 		}
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableName => tableName;
 
-		protected override SchemaName SchemaName {
-			get {
-				return tableName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => tableName.Qualification;
 
 		protected override IInstallStatement CreateDropStatement() {
 			return new DropIndexStatement(indexName, tableName, null);

@@ -45,11 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.defaultValue = defaultValue;
 		}
 
-		public Expression DefaultValue {
-			get {
-				return defaultValue;
-			}
-		}
+		public Expression DefaultValue => defaultValue;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

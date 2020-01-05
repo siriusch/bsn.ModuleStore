@@ -68,8 +68,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public bool IsDeserialized(object obj) {
-			bool result;
-			return deserialized.TryGetValue(obj, out result) && result;
+			return deserialized.TryGetValue(obj, out var result) && result;
 		}
 
 		public bool TryGetInstance(Type instanceType, object identity, out object result, out InstanceOrigin instanceOrigin) {
@@ -94,8 +93,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				stateProvider.EndDeserialize(state);
 			}
 			if (deserialized.ContainsValue(false)) {
-				StringBuilder error = new StringBuilder("Some objects were created as forward reference but were missing in the result set");
-				foreach (KeyValuePair<Type, int> pair in deserialized.Where(p => !p.Value).Select(p => p.Key).GroupBy(o => o.GetType(), (t, o) => new KeyValuePair<Type, int>(t, o.Count()))) {
+				var error = new StringBuilder("Some objects were created as forward reference but were missing in the result set");
+				foreach (var pair in deserialized.Where(p => !p.Value).Select(p => p.Key).GroupBy(o => o.GetType(), (t, o) => new KeyValuePair<Type, int>(t, o.Count()))) {
 					error.AppendLine();
 					error.AppendFormat("Found {0} unresolved forward references of the type {1} in resultset", pair.Value, pair.Key);
 				}

@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -45,35 +45,30 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 
 		internal SqlCallInfo(AssemblyInventory inventory, ISerializationTypeInfoProvider serializationTypeInfoProvider, Type interfaceType, ISerializationTypeMappingProvider typeMappingProvider) {
 			if (inventory == null) {
-				throw new ArgumentNullException("inventory");
+				throw new ArgumentNullException(nameof(inventory));
 			}
 			if (serializationTypeInfoProvider == null) {
-				throw new ArgumentNullException("serializationTypeInfoProvider");
+				throw new ArgumentNullException(nameof(serializationTypeInfoProvider));
 			}
 			Debug.Assert(interfaceType != null);
 			if ((!interfaceType.IsInterface) || (interfaceType.IsGenericTypeDefinition) || (!typeof(IStoredProcedures).IsAssignableFrom(interfaceType))) {
-				throw new ArgumentException("The interface must inherit from IStoredProcedures", "interfaceType");
+				throw new ArgumentException("The interface must inherit from IStoredProcedures", nameof(interfaceType));
 			}
 			this.interfaceType = interfaceType;
-			foreach (Type innerInterface in interfaceType.GetInterfaces()) {
+			foreach (var innerInterface in interfaceType.GetInterfaces()) {
 				if (innerInterface != typeof(IStoredProcedures)) {
-					throw new ArgumentException("The interface cannot inherit from other interfaces then IStoredProcedures", "interfaceType");
+					throw new ArgumentException("The interface cannot inherit from other interfaces then IStoredProcedures", nameof(interfaceType));
 				}
 			}
-			foreach (MemberInfo memberInfo in interfaceType.GetMembers(BindingFlags.Instance|BindingFlags.Public|BindingFlags.DeclaredOnly)) {
-				MethodInfo methodInfo = memberInfo as MethodInfo;
-				if (methodInfo == null) {
-					throw new ArgumentException("Only methods are supported on the IStoredProcedures interfaces", "interfaceType");
+			foreach (var memberInfo in interfaceType.GetMembers(BindingFlags.Instance|BindingFlags.Public|BindingFlags.DeclaredOnly)) {
+				if (!(memberInfo is MethodInfo methodInfo)) {
+					throw new ArgumentException("Only methods are supported on the IStoredProcedures interfaces", nameof(interfaceType));
 				}
 				methods.Add(methodInfo, new SqlCallProcedureInfo(inventory, serializationTypeInfoProvider, methodInfo, typeMappingProvider));
 			}
 		}
 
-		public Type InterfaceType {
-			get {
-				return interfaceType;
-			}
-		}
+		public Type InterfaceType => interfaceType;
 
 		public IEnumerable<SqlCommand> CreateCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnValue, out SqlParameter[] outParameters, out ISerializationTypeInfo returnTypeInfo, out ICallDeserializationInfo procInfo, out XmlNameTable xmlNameTable,
 		                                              IList<IDisposable> disposeList) {
@@ -81,7 +76,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		}
 
 		public string GetProcedureName(IMethodCallMessage mcm, string schemaName) {
-			string procedureName = methods[mcm.MethodBase].ProcedureName;
+			var procedureName = methods[mcm.MethodBase].ProcedureName;
 			return string.IsNullOrEmpty(schemaName) ? '['+procedureName+']' : '['+schemaName+"].["+procedureName+']';
 		}
 

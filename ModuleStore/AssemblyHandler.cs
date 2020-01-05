@@ -51,11 +51,7 @@ namespace bsn.ModuleStore.Console {
 				assembly = Assembly.ReflectionOnlyLoadFrom(assemblyFile);
 			}
 
-			public AssemblyName AssemblyName {
-				get {
-					return assembly.GetName();
-				}
-			}
+			public AssemblyName AssemblyName => assembly.GetName();
 
 			public KeyValuePair<CustomAttributeInfo, string>[] GetAssemblyCustomAttributeData() {
 				// ReSharper disable RedundantTypeArgumentsOfMethod
@@ -97,25 +93,25 @@ namespace bsn.ModuleStore.Console {
 
 		public AssemblyHandler(FileInfo assemblyFileName) {
 			if (assemblyFileName == null) {
-				throw new ArgumentNullException("assemblyFileName");
+				throw new ArgumentNullException(nameof(assemblyFileName));
 			}
-			AppDomainSetup setupInfo = new AppDomainSetup();
+			var setupInfo = new AppDomainSetup();
 			setupInfo.ApplicationBase = assemblyFileName.DirectoryName;
-			XDocument doc =
+			var doc =
 					new XDocument(new XElement("configuration",
 					                           new XElement("runtime", new XElement(asmV1+"assemblyBinding", DefineAssemblyCodeBase(typeof(SqlToken).Assembly.GetName()), DefineAssemblyCodeBase(typeof(SqlAssemblyAttribute).Assembly.GetName()), DefineAssemblyCodeBase(typeof(AssemblyHandler).Assembly.GetName())))));
-			using (MemoryStream stream = new MemoryStream()) {
-				using (XmlWriter writer = XmlWriter.Create(stream)) {
+			using (var stream = new MemoryStream()) {
+				using (var writer = XmlWriter.Create(stream)) {
 					doc.WriteTo(writer);
 				}
 				setupInfo.SetConfigurationBytes(stream.GetBuffer());
 				Debug.WriteLine(Encoding.UTF8.GetString(stream.GetBuffer()), "Codebase information");
 			}
-			AppDomain newDomain = AppDomain.CreateDomain("ModuleStore Assembly Discovery AppDomain", null, setupInfo);
-			string typeName = typeof(ReflectionAssemblyHandle).FullName;
+			var newDomain = AppDomain.CreateDomain("ModuleStore Assembly Discovery AppDomain", null, setupInfo);
+			var typeName = typeof(ReflectionAssemblyHandle).FullName;
 			Debug.Assert(!string.IsNullOrEmpty(typeName));
 			try {
-				string assemblyReflectionLoaderTypeName = typeof(AssemblyReflectionLoader).FullName;
+				var assemblyReflectionLoaderTypeName = typeof(AssemblyReflectionLoader).FullName;
 				Debug.Assert(!string.IsNullOrEmpty(assemblyReflectionLoaderTypeName));
 				newDomain.CreateInstance(typeof(AssemblyReflectionLoader).Assembly.FullName, assemblyReflectionLoaderTypeName);
 				handle = (ReflectionAssemblyHandle)newDomain.CreateInstanceAndUnwrap(typeof(ReflectionAssemblyHandle).Assembly.FullName, typeName, false, BindingFlags.Default, null, new object[] {assemblyFileName.FullName}, null, null, null);
@@ -161,11 +157,11 @@ namespace bsn.ModuleStore.Console {
 		}
 
 		private object[] ResolveArguments(ICollection<KeyValuePair<QualifiedTypeNameInfo, object>> constructorArguments) {
-			List<object> result = new List<object>();
-			using (IEnumerator<KeyValuePair<QualifiedTypeNameInfo, object>> enumerator = constructorArguments.GetEnumerator()) {
+			var result = new List<object>();
+			using (var enumerator = constructorArguments.GetEnumerator()) {
 				while (enumerator.MoveNext()) {
 					if (enumerator.Current.Key.FindType(true) == typeof(Type)) {
-						QualifiedTypeNameInfo typeName = (QualifiedTypeNameInfo)enumerator.Current.Value;
+						var typeName = (QualifiedTypeNameInfo)enumerator.Current.Value;
 						if (enumerator.MoveNext()) {
 							if (enumerator.Current.Key.FindType(true) == typeof(string)) {
 								result.Add(null);
@@ -187,27 +183,26 @@ namespace bsn.ModuleStore.Console {
 		}
 
 		public KeyValuePair<T, string>[] GetCustomAttributes<T>() where T: Attribute {
-			KeyValuePair<CustomAttributeInfo, string>[] assemblyCustomAttributeData = handle.GetAssemblyCustomAttributeData();
+			var assemblyCustomAttributeData = handle.GetAssemblyCustomAttributeData();
 			if (assemblyCustomAttributeData.Length == 0) {
 				return new KeyValuePair<T, string>[0];
 			}
-			Dictionary<string, Assembly> execAssemblies = new Dictionary<string, Assembly>();
-			foreach (Assembly execAssembly in AppDomain.CurrentDomain.GetAssemblies()) {
+			var execAssemblies = new Dictionary<string, Assembly>();
+			foreach (var execAssembly in AppDomain.CurrentDomain.GetAssemblies()) {
 				execAssemblies.Add(execAssembly.FullName, execAssembly);
 			}
-			string moduleStoreAssemblyName = typeof(SqlAssemblyAttribute).Assembly.FullName;
-			List<KeyValuePair<T, string>> result = new List<KeyValuePair<T, string>>(assemblyCustomAttributeData.Length);
-			foreach (KeyValuePair<CustomAttributeInfo, string> customAttributeData in assemblyCustomAttributeData) {
-				Assembly execAssembly;
-				if (execAssemblies.TryGetValue(rxAssemblyMatcher.Replace(customAttributeData.Key.AttributeType.AssemblyName, moduleStoreAssemblyName), out execAssembly)) {
-					Type execAttributeType = execAssembly.GetType(customAttributeData.Key.AttributeType.TypeName);
+			var moduleStoreAssemblyName = typeof(SqlAssemblyAttribute).Assembly.FullName;
+			var result = new List<KeyValuePair<T, string>>(assemblyCustomAttributeData.Length);
+			foreach (var customAttributeData in assemblyCustomAttributeData) {
+				if (execAssemblies.TryGetValue(rxAssemblyMatcher.Replace(customAttributeData.Key.AttributeType.AssemblyName, moduleStoreAssemblyName), out var execAssembly)) {
+					var execAttributeType = execAssembly.GetType(customAttributeData.Key.AttributeType.TypeName);
 					if (typeof(T).IsAssignableFrom(execAttributeType)) {
-						ConstructorInfo execConstructor = execAttributeType.GetConstructor(customAttributeData.Key.ConstructorArguments.Select(a => a.Key.FindType(true)).ToArray());
+						var execConstructor = execAttributeType.GetConstructor(customAttributeData.Key.ConstructorArguments.Select(a => a.Key.FindType(true)).ToArray());
 						Debug.Assert(execConstructor != null);
-						T attribute = (T)execConstructor.Invoke(ResolveArguments(customAttributeData.Key.ConstructorArguments));
+						var attribute = (T)execConstructor.Invoke(ResolveArguments(customAttributeData.Key.ConstructorArguments));
 						if (customAttributeData.Key.NamedArguments != null) {
-							foreach (KeyValuePair<TypeMemberInfo, object> namedArgument in customAttributeData.Key.NamedArguments) {
-								MemberInfo execMember = execAttributeType.GetMember(namedArgument.Key.MemberName, namedArgument.Key.MemberType, BindingFlags.Instance|BindingFlags.Public).FirstOrDefault();
+							foreach (var namedArgument in customAttributeData.Key.NamedArguments) {
+								var execMember = execAttributeType.GetMember(namedArgument.Key.MemberName, namedArgument.Key.MemberType, BindingFlags.Instance|BindingFlags.Public).FirstOrDefault();
 								if (execMember != null) {
 									switch (execMember.MemberType) {
 									case MemberTypes.Property:
@@ -229,11 +224,7 @@ namespace bsn.ModuleStore.Console {
 			return result.ToArray();
 		}
 
-		public AssemblyName AssemblyName {
-			get {
-				return handle.AssemblyName;
-			}
-		}
+		public AssemblyName AssemblyName => handle.AssemblyName;
 
 		public string[] GetManifestResourceNames() {
 			return handle.GetManifestResourceNames();

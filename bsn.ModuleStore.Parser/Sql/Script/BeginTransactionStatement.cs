@@ -37,10 +37,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<BeginTransactionStatement> ::= ~BEGIN ~TRANSACTION <TransactionIdentifier>")]
 		public BeginTransactionStatement(SqlName transactionIdentifier): base(transactionIdentifier) {}
 
-		protected override string OperationSpecifier {
-			get {
-				return "BEGIN";
-			}
-		}
+		protected override string OperationSpecifier => "BEGIN";
 	}
 }

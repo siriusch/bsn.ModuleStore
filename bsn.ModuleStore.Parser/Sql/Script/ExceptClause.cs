@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<RowsetCombineClause> ::= ~EXCEPT <SelectQuery>")]
 		public ExceptClause(SelectQuery selectQuery): base(selectQuery) {}
 
-		protected override string CombineSpecifier {
-			get {
-				return "EXCEPT";
-			}
-		}
+		protected override string CombineSpecifier => "EXCEPT";
 	}
 }

@@ -48,17 +48,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public Qualified<SchemaName, XmlSchemaCollectionName> Extension {
-			get {
-				return extension;
-			}
-		}
+		public Qualified<SchemaName, XmlSchemaCollectionName> Extension => extension;
 
-		public bool IsMax {
-			get {
-				return isMax;
-			}
-		}
+		public bool IsMax => isMax;
 
 		protected override void WriteArguments(SqlWriter writer) {
 			if (isMax) {

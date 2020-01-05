@@ -39,11 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.joinSource = joinSource;
 		}
 
-		public Source JoinSource {
-			get {
-				return joinSource;
-			}
-		}
+		public Source JoinSource => joinSource;
 
 		public abstract JoinKind Kind {
 			get;

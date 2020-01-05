@@ -45,11 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.keyword = keyword;
 		}
 
-		public ReservedKeyword Keyword {
-			get {
-				return keyword;
-			}
-		}
+		public ReservedKeyword Keyword => keyword;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(keyword, WhitespacePadding.None);

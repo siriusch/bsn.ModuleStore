@@ -38,11 +38,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.selectQuery = selectQuery;
 		}
 
-		public SelectQuery SelectQuery {
-			get {
-				return selectQuery;
-			}
-		}
+		public SelectQuery SelectQuery => selectQuery;
 
 		protected abstract string CombineSpecifier {
 			get;

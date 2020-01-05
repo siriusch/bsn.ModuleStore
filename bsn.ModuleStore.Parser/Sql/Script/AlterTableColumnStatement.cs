@@ -40,11 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnName = columnName;
 		}
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

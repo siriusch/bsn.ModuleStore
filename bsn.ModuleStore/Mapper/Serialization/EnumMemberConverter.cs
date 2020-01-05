@@ -39,14 +39,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			Debug.Assert(underlyingType != null);
 		}
 
-		public override Type DbClrType {
-			get {
-				return underlyingType;
-			}
-		}
+		public override Type DbClrType => underlyingType;
 
 		public override object ProcessFromDb(IDeserializerContext context, int column) {
-			object result = base.ProcessFromDb(context, column);
+			var result = base.ProcessFromDb(context, column);
 			if (result != null) {
 				switch (Type.GetTypeCode(result.GetType())) {
 				case TypeCode.String:

@@ -39,11 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			value = name;
 		}
 
-		public string Value {
-			get {
-				return value;
-			}
-		}
+		public string Value => value;
 
 		public override int GetHashCode() {
 			return value.GetHashCode()^GetType().GetHashCode();
@@ -64,7 +60,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			if (other == this) {
 				return 0;
 			}
-			int diff = StringComparer.OrdinalIgnoreCase.Compare(value, other.value);
+			var diff = StringComparer.OrdinalIgnoreCase.Compare(value, other.value);
 			if (diff == 0) {
 				diff = StringComparer.Ordinal.Compare(GetType().FullName, other.GetType().FullName);
 			}

@@ -39,11 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Join> ::= ~INNER <JoinHint> ~JOIN <Source> ~ON <Predicate>")]
 		public InnerJoin(Optional<KeywordToken> hint, Source joinSource, Predicate predicate): base(hint, joinSource, predicate) {}
 
-		public override JoinKind Kind {
-			get {
-				return JoinKind.Inner;
-			}
-		}
+		public override JoinKind Kind => JoinKind.Inner;
 
 		protected override string JoinSpecifier {
 			get {

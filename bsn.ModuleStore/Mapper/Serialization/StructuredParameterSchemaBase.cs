@@ -49,66 +49,34 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				this.dataType = dataType;
 			}
 
-			public string ColumnName {
-				get {
-					return columnName;
-				}
-			}
+			public string ColumnName => columnName;
 
-			public Type DataType {
-				get {
-					return dataType;
-				}
-			}
+			public Type DataType => dataType;
 
-			public int? FieldIndex {
-				get {
-					return fieldIndex;
-				}
-			}
+			public int? FieldIndex => fieldIndex;
 
-			public string TypeName {
-				get {
-					return typeName;
-				}
-			}
+			public string TypeName => typeName;
 		}
 
 		private ColumnInfo[] columnInfos;
 		private Action<object, object[]> extractMembers;
 		private ReadOnlyCollection<SqlColumnInfo> mappedColumns;
 
-		public int ColumnCount {
-			get {
-				return columnInfos.Length;
-			}
-		}
+		public int ColumnCount => columnInfos.Length;
 
 		public Action<object, object[]> ExtractMembers {
-			get {
-				return extractMembers;
-			}
-			protected set {
-				extractMembers = value;
-			}
+			get => extractMembers;
+			protected set => extractMembers = value;
 		}
 
 		public ReadOnlyCollection<SqlColumnInfo> MappedColumns {
-			get {
-				return mappedColumns;
-			}
-			protected set {
-				mappedColumns = value;
-			}
+			get => mappedColumns;
+			protected set => mappedColumns = value;
 		}
 
 		protected ColumnInfo[] ColumnsInfos {
-			get {
-				return columnInfos;
-			}
-			set {
-				columnInfos = value;
-			}
+			get => columnInfos;
+			set => columnInfos = value;
 		}
 
 		public DbDataReader CreateReader(IEnumerable items) {
@@ -129,7 +97,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public bool TryGetFieldIndexOfColumn(int columnIndex, out int fieldIndex) {
 			if ((columnIndex >= 0) && (columnIndex < columnInfos.Length)) {
-				int? result = columnInfos[columnIndex].FieldIndex;
+				var result = columnInfos[columnIndex].FieldIndex;
 				fieldIndex = result.GetValueOrDefault();
 				return result.HasValue;
 			}
@@ -148,32 +116,32 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			 * schemaTable.Columns.Add("IsColumnSet", typeof(Boolean));
 			 */
 			Locale = CultureInfo.InvariantCulture;
-			DataColumn columnName = new DataColumn(SchemaTableColumn.ColumnName, typeof(string));
-			DataColumn columnOrdinal = new DataColumn(SchemaTableColumn.ColumnOrdinal, typeof(int));
-			DataColumn columnSize = new DataColumn(SchemaTableColumn.ColumnSize, typeof(int));
-			DataColumn numericPrecision = new DataColumn(SchemaTableColumn.NumericPrecision, typeof(short));
-			DataColumn numericScale = new DataColumn(SchemaTableColumn.NumericScale, typeof(short));
-			DataColumn dataType = new DataColumn(SchemaTableColumn.DataType, typeof(Type));
-			DataColumn providerType = new DataColumn(SchemaTableColumn.ProviderType, typeof(int));
-			DataColumn isLong = new DataColumn(SchemaTableColumn.IsLong, typeof(bool));
-			DataColumn allowDbNull = new DataColumn(SchemaTableColumn.AllowDBNull, typeof(bool));
-			DataColumn isReadOnly = new DataColumn(SchemaTableOptionalColumn.IsReadOnly, typeof(bool));
-			DataColumn isRowVersion = new DataColumn(SchemaTableOptionalColumn.IsRowVersion, typeof(bool));
-			DataColumn isUnique = new DataColumn(SchemaTableColumn.IsUnique, typeof(bool));
-			DataColumn isKey = new DataColumn(SchemaTableColumn.IsKey, typeof(bool));
-			DataColumn isAutoIncrement = new DataColumn(SchemaTableOptionalColumn.IsAutoIncrement, typeof(bool));
-			DataColumn baseSchemaName = new DataColumn(SchemaTableColumn.BaseSchemaName, typeof(string));
-			DataColumn baseCatalogName = new DataColumn(SchemaTableOptionalColumn.BaseCatalogName, typeof(string));
-			DataColumn baseTableName = new DataColumn(SchemaTableColumn.BaseTableName, typeof(string));
-			DataColumn baseColumnName = new DataColumn(SchemaTableColumn.BaseColumnName, typeof(string));
-			DataColumn autoIncrementSeed = new DataColumn(SchemaTableOptionalColumn.AutoIncrementSeed, typeof(long));
-			DataColumn autoIncrementStep = new DataColumn(SchemaTableOptionalColumn.AutoIncrementStep, typeof(long));
-			DataColumn defaultValue = new DataColumn(SchemaTableOptionalColumn.DefaultValue, typeof(object));
-			DataColumn expression = new DataColumn(SchemaTableOptionalColumn.Expression, typeof(string));
-			DataColumn columnMapping = new DataColumn(SchemaTableOptionalColumn.ColumnMapping, typeof(MappingType));
-			DataColumn baseTableNamespace = new DataColumn(SchemaTableOptionalColumn.BaseTableNamespace, typeof(string));
-			DataColumn baseColumnNamespace = new DataColumn(SchemaTableOptionalColumn.BaseColumnNamespace, typeof(string));
-			DataColumn nonVersionedProviderType = new DataColumn(SchemaTableColumn.NonVersionedProviderType, typeof(int));
+			var columnName = new DataColumn(SchemaTableColumn.ColumnName, typeof(string));
+			var columnOrdinal = new DataColumn(SchemaTableColumn.ColumnOrdinal, typeof(int));
+			var columnSize = new DataColumn(SchemaTableColumn.ColumnSize, typeof(int));
+			var numericPrecision = new DataColumn(SchemaTableColumn.NumericPrecision, typeof(short));
+			var numericScale = new DataColumn(SchemaTableColumn.NumericScale, typeof(short));
+			var dataType = new DataColumn(SchemaTableColumn.DataType, typeof(Type));
+			var providerType = new DataColumn(SchemaTableColumn.ProviderType, typeof(int));
+			var isLong = new DataColumn(SchemaTableColumn.IsLong, typeof(bool));
+			var allowDbNull = new DataColumn(SchemaTableColumn.AllowDBNull, typeof(bool));
+			var isReadOnly = new DataColumn(SchemaTableOptionalColumn.IsReadOnly, typeof(bool));
+			var isRowVersion = new DataColumn(SchemaTableOptionalColumn.IsRowVersion, typeof(bool));
+			var isUnique = new DataColumn(SchemaTableColumn.IsUnique, typeof(bool));
+			var isKey = new DataColumn(SchemaTableColumn.IsKey, typeof(bool));
+			var isAutoIncrement = new DataColumn(SchemaTableOptionalColumn.IsAutoIncrement, typeof(bool));
+			var baseSchemaName = new DataColumn(SchemaTableColumn.BaseSchemaName, typeof(string));
+			var baseCatalogName = new DataColumn(SchemaTableOptionalColumn.BaseCatalogName, typeof(string));
+			var baseTableName = new DataColumn(SchemaTableColumn.BaseTableName, typeof(string));
+			var baseColumnName = new DataColumn(SchemaTableColumn.BaseColumnName, typeof(string));
+			var autoIncrementSeed = new DataColumn(SchemaTableOptionalColumn.AutoIncrementSeed, typeof(long));
+			var autoIncrementStep = new DataColumn(SchemaTableOptionalColumn.AutoIncrementStep, typeof(long));
+			var defaultValue = new DataColumn(SchemaTableOptionalColumn.DefaultValue, typeof(object));
+			var expression = new DataColumn(SchemaTableOptionalColumn.Expression, typeof(string));
+			var columnMapping = new DataColumn(SchemaTableOptionalColumn.ColumnMapping, typeof(MappingType));
+			var baseTableNamespace = new DataColumn(SchemaTableOptionalColumn.BaseTableNamespace, typeof(string));
+			var baseColumnNamespace = new DataColumn(SchemaTableOptionalColumn.BaseColumnNamespace, typeof(string));
+			var nonVersionedProviderType = new DataColumn(SchemaTableColumn.NonVersionedProviderType, typeof(int));
 			columnSize.DefaultValue = -1;
 			baseTableName.DefaultValue = tableName;
 			baseSchemaName.DefaultValue = schemaname;

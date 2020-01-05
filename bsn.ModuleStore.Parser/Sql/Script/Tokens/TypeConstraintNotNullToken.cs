@@ -34,11 +34,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<TypeConstraint> ::= ~NOT ~NULL")]
 		public TypeConstraintNotNullToken() {}
 
-		public override TypeConstraint Constraint {
-			get {
-				return TypeConstraint.NotNull;
-			}
-		}
+		public override TypeConstraint Constraint => TypeConstraint.NotNull;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword(" NOT NULL");

@@ -44,11 +44,7 @@ namespace bsn.ModuleStore.Mapper {
 			get;
 		}
 
-		public virtual Type InnerResultSetType {
-			get {
-				return null;
-			}
-		}
+		public virtual Type InnerResultSetType => null;
 
 		protected internal abstract void Load(SqlDeserializationContext context, SqlDataReader reader);
 	}
@@ -64,8 +60,8 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected internal override void Load(SqlDeserializationContext context, SqlDataReader reader) {
 			if (reader.HasRows) {
-				List<T> result = new List<T>(512);
-				using (SqlDeserializer<T> deserializer = new SqlDeserializer<T>(context, reader)) {
+				var result = new List<T>(512);
+				using (var deserializer = new SqlDeserializer<T>(context, reader)) {
 					deserializer.DisposeReader = false;
 					result.AddRange(deserializer.DeserializeInstances());
 				}
@@ -89,17 +85,9 @@ namespace bsn.ModuleStore.Mapper {
 
 		public ResultSet(TInner inner, params T[] items): this(inner, (IEnumerable<T>)items) {}
 
-		public TInner Inner {
-			get {
-				return inner;
-			}
-		}
+		public TInner Inner => inner;
 
-		public override sealed Type InnerResultSetType {
-			get {
-				return typeof(TInner);
-			}
-		}
+		public override sealed Type InnerResultSetType => typeof(TInner);
 
 		protected internal override void Load(SqlDeserializationContext context, SqlDataReader reader) {
 			base.Load(context, reader);

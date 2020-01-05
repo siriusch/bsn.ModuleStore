@@ -37,17 +37,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.constraintName = constraintName;
 		}
 
-		public ConstraintName ConstraintName {
-			get {
-				return constraintName;
-			}
-		}
+		public ConstraintName ConstraintName => constraintName;
 
-		internal virtual bool IsPartOfSchemaDefinition {
-			get {
-				return false;
-			}
-		}
+		internal virtual bool IsPartOfSchemaDefinition => false;
 
 		public override void WriteTo(SqlWriter writer) {
 			if (constraintName != null) {
@@ -58,7 +50,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal AlterTableDropConstraintStatement CreateDropStatement(Qualified<SchemaName, TableName> tableName) {
 			if (tableName == null) {
-				throw new ArgumentNullException("tableName");
+				throw new ArgumentNullException(nameof(tableName));
 			}
 			return new AlterTableDropConstraintStatement(tableName, ConstraintName);
 		}

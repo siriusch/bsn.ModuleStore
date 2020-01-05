@@ -43,11 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.value = value.On;
 		}
 
-		public bool Value {
-			get {
-				return value;
-			}
-		}
+		public bool Value => value;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

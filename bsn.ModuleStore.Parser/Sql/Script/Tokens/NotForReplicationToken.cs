@@ -36,11 +36,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<OptionalNotForReplication> ::= ~NOT ~FOR ~REPLICATION")]
 		public NotForReplicationToken() {}
 
-		public override bool? ForReplication {
-			get {
-				return false;
-			}
-		}
+		public override bool? ForReplication => false;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("NOT FOR REPLICATION");

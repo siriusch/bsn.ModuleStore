@@ -44,23 +44,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.language = language;
 		}
 
-		public ReservedKeyword Keyword {
-			get {
-				return keyword;
-			}
-		}
+		public ReservedKeyword Keyword => keyword;
 
-		public Literal Language {
-			get {
-				return language;
-			}
-		}
+		public Literal Language => language;
 
-		public Expression Query {
-			get {
-				return query;
-			}
-		}
+		public Expression Query => query;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(keyword, WhitespacePadding.None);

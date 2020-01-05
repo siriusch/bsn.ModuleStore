@@ -36,7 +36,7 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script {
 	public sealed class ExpressionValue<T>: Expression where T: SqlScriptableToken, IToken {
 		internal static ExpressionValue<T> CreateFrom(T valueSource) {
-			ExpressionValue<T> result = new ExpressionValue<T>(valueSource);
+			var result = new ExpressionValue<T>(valueSource);
 			result.Initialize(valueSource.Symbol, valueSource.Position);
 			return result;
 		}
@@ -51,11 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.valueSource = valueSource;
 		}
 
-		public T ValueSource {
-			get {
-				return valueSource;
-			}
-		}
+		public T ValueSource => valueSource;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

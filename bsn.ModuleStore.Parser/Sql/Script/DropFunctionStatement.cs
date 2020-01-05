@@ -42,23 +42,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.functionName = functionName;
 		}
 
-		public Qualified<SchemaName, FunctionName> FunctionName {
-			get {
-				return functionName;
-			}
-		}
+		public Qualified<SchemaName, FunctionName> FunctionName => functionName;
 
-		public override string ObjectName {
-			get {
-				return functionName.Name.Value;
-			}
-		}
+		public override string ObjectName => functionName.Name.Value;
 
-		protected override SchemaName SchemaName {
-			get {
-				return functionName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => functionName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

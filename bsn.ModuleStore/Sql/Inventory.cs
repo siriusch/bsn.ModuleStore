@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -34,7 +34,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Common.Logging;
+using NLog;
 
 using bsn.GoldParser.Text;
 using bsn.ModuleStore.Sql.Script;
@@ -42,25 +42,25 @@ using bsn.ModuleStore.Sql.Script;
 namespace bsn.ModuleStore.Sql {
 	public abstract class Inventory: IQualified<SchemaName> {
 		private static readonly byte[] hashXor = new byte[] {0xDA, 0x39, 0xA3, 0xEE, 0x5E, 0x6B, 0x4B, 0x0D, 0x32, 0x55, 0xBF, 0xEF, 0x95, 0x60, 0x18, 0x90, 0xAF, 0xD8, 0x07, 0x09};
-		private static readonly ILog log = LogManager.GetLogger<Inventory>();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		public static IEnumerable<KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>> Compare(Inventory source, Inventory target, DatabaseEngine engine) {
 			if (source == null) {
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (target == null) {
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 			}
-			using (IEnumerator<IAlterableCreateStatement> sourceEnumerator = GetOrderedFragments(source, engine).GetEnumerator()) {
-				using (IEnumerator<IAlterableCreateStatement> targetEnumerator = GetOrderedFragments(target, engine).GetEnumerator()) {
-					bool hasSource = sourceEnumerator.MoveNext();
-					bool hasTarget = targetEnumerator.MoveNext();
+			using (var sourceEnumerator = GetOrderedFragments(source, engine).GetEnumerator()) {
+				using (var targetEnumerator = GetOrderedFragments(target, engine).GetEnumerator()) {
+					var hasSource = sourceEnumerator.MoveNext();
+					var hasTarget = targetEnumerator.MoveNext();
 					while (hasSource && hasTarget) {
-						IAlterableCreateStatement sourceStatement = sourceEnumerator.Current;
+						var sourceStatement = sourceEnumerator.Current;
 						Debug.Assert(sourceStatement != null);
-						IAlterableCreateStatement targetStatement = targetEnumerator.Current;
+						var targetStatement = targetEnumerator.Current;
 						Debug.Assert(targetStatement != null);
-						int diff = string.Compare(sourceStatement.ObjectName, targetStatement.ObjectName, StringComparison.OrdinalIgnoreCase);
+						var diff = string.Compare(sourceStatement.ObjectName, targetStatement.ObjectName, StringComparison.OrdinalIgnoreCase);
 						if (diff < 0) {
 							yield return new KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>(sourceStatement, InventoryObjectDifference.SourceOnly);
 							hasSource = sourceEnumerator.MoveNext();
@@ -91,7 +91,7 @@ namespace bsn.ModuleStore.Sql {
 
 		protected static string WriteStatement(IScriptableStatement statement, StringBuilder buffer, DatabaseEngine targetEngine) {
 			buffer.Length = 0;
-			using (StringWriter writer = new StringWriter(buffer)) {
+			using (var writer = new StringWriter(buffer)) {
 				statement.WriteTo(new SqlWriter(writer, targetEngine));
 			}
 			return buffer.ToString();
@@ -105,38 +105,26 @@ namespace bsn.ModuleStore.Sql {
 			qualificationStack.Push(null);
 		}
 
-		public bool IsEmpty {
-			get {
-				return objects.Count == 0;
-			}
-		}
+		public bool IsEmpty => objects.Count == 0;
 
-		public ICollection<CreateStatement> Objects {
-			get {
-				return objects.Values;
-			}
-		}
+		public ICollection<CreateStatement> Objects => objects.Values;
 
 		protected internal string ObjectSchema {
 			get {
-				SchemaName qualification = qualificationStack.Peek();
+				var qualification = qualificationStack.Peek();
 				return (qualification == null) ? string.Empty : qualification.Value;
 			}
 		}
 
-		protected HashSet<string> ObjectSchemas {
-			get {
-				return objectSchemas;
-			}
-		}
+		protected HashSet<string> ObjectSchemas => objectSchemas;
 
 		public void Dump(string schemaName, RichTextWriter writer) {
 			writer.SetStyle(SqlTextKind.Comment);
 			writer.WriteLine("-- Inventory hash: {0}", BitConverter.ToString(GetInventoryHash(DatabaseEngine.Unknown)));
-			SqlWriter sqlWriter = new SqlWriter(writer, DatabaseEngine.Unknown);
+			var sqlWriter = new SqlWriter(writer, DatabaseEngine.Unknown);
 			SetQualification(schemaName);
 			try {
-				foreach (CreateStatement statement in objects.OrderBy(pair => pair.Key).Select(pair => pair.Value)) {
+				foreach (var statement in objects.OrderBy(pair => pair.Key).Select(pair => pair.Value)) {
 					writer.WriteLine();
 					SetQualification(null);
 					try {
@@ -156,9 +144,9 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public T Find<T>(string objectName) where T: CreateStatement {
-			T result = FindInternal<T>(objectName);
+			var result = FindInternal<T>(objectName);
 			if (result == null) {
-				throw new ArgumentException(string.Format("The {0} object [{1}] does not exist", typeof(T).Name, objectName), "objectName");
+				throw new ArgumentException($"The {typeof(T).Name} object [{objectName}] does not exist", nameof(objectName));
 			}
 			return result;
 		}
@@ -166,15 +154,15 @@ namespace bsn.ModuleStore.Sql {
 		public byte[] GetInventoryHash(DatabaseEngine targetEngine) {
 			SetQualification(null);
 			try {
-				using (HashWriter writer = new HashWriter()) {
-					SqlWriter sqlWriter = new SqlWriter(writer, targetEngine, SqlWriterMode.ForHashing);
-					foreach (CreateStatement statement in objects.Values) {
+				using (var writer = new HashWriter()) {
+					var sqlWriter = new SqlWriter(writer, targetEngine, SqlWriterMode.ForHashing);
+					foreach (var statement in objects.Values) {
 						if (statement.DoesApplyToEngine(targetEngine)) {
 							statement.WriteTo(sqlWriter);
 						}
 					}
-					byte[] inventoryHash = writer.ToArray();
-					for (int i = 0; i < hashXor.Length; i++) {
+					var inventoryHash = writer.ToArray();
+					for (var i = 0; i < hashXor.Length; i++) {
 						inventoryHash[i] ^= hashXor[i];
 					}
 					return inventoryHash;
@@ -186,7 +174,7 @@ namespace bsn.ModuleStore.Sql {
 
 		public bool IsSameInventoryHash(DatabaseEngine targetEngine, byte[] inventoryHash) {
 			if (inventoryHash == null) {
-				throw new ArgumentNullException("inventoryHash");
+				throw new ArgumentNullException(nameof(inventoryHash));
 			}
 			return HashWriter.HashEqual(GetInventoryHash(targetEngine), inventoryHash);
 		}
@@ -206,10 +194,10 @@ namespace bsn.ModuleStore.Sql {
 
 		protected virtual void AddObject(CreateStatement createStatement) {
 			if (createStatement == null) {
-				throw new ArgumentNullException("createStatement");
+				throw new ArgumentNullException(nameof(createStatement));
 			}
 			objectSchemas.Add(createStatement.ObjectSchema);
-			foreach (IQualifiedName<SchemaName> qualifiedName in createStatement.GetObjectSchemaQualifiedNames()) {
+			foreach (var qualifiedName in createStatement.GetObjectSchemaQualifiedNames()) {
 				qualifiedName.SetOverride(this);
 			}
 			createStatement.ComputeHashCode();
@@ -217,37 +205,31 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		protected IEnumerable<CreateStatement> ProcessSingleScript(TextReader scriptReader, Action<Statement> unsupportedStatementFound) {
-			List<CreateStatement> objects = new List<CreateStatement>();
+			var objects = new List<CreateStatement>();
 			CreateTableStatement createTable = null;
 			if (log.IsTraceEnabled) {
-				string sql = scriptReader.ReadToEnd();
+				var sql = scriptReader.ReadToEnd();
 				scriptReader = new StringReader(sql);
-				log.TraceFormat("Processing SQL script:\n{0}", sql);
+				log.Trace("Processing SQL script:\n{sql}", sql);
 			}
-			foreach (Statement statement in ScriptParser.Parse(scriptReader)) {
+			foreach (var statement in ScriptParser.Parse(scriptReader)) {
 				if (!((statement is SetOptionStatement) || (statement is AlterTableCheckConstraintStatementBase))) {
-					IApplicableTo<CreateTableStatement> addToTable = statement as IApplicableTo<CreateTableStatement>;
-					if (addToTable != null) {
+					if (statement is IApplicableTo<CreateTableStatement> addToTable) {
 						if ((createTable == null) || (!createTable.TableName.Name.Equals(addToTable.QualifiedName.Name))) {
 							throw DatabaseInventory.CreateException("Statement tries to modify another table:", statement, DatabaseEngine.Unknown);
 						}
 						addToTable.ApplyTo(createTable);
+					} else if (!(statement is CreateStatement createStatement)) {
+						unsupportedStatementFound?.Invoke(statement);
 					} else {
-						CreateStatement createStatement = statement as CreateStatement;
-						if (createStatement == null) {
-							if (unsupportedStatementFound != null) {
-								unsupportedStatementFound(statement);
-							}
-						} else {
-							if (createStatement is CreateTableStatement) {
-								createTable = (CreateTableStatement)createStatement;
-							}
-							objects.Add(createStatement);
+						if (createStatement is CreateTableStatement createTableStatement) {
+							createTable = createTableStatement;
 						}
+						objects.Add(createStatement);
 					}
 				}
 			}
-			foreach (CreateStatement statement in objects) {
+			foreach (var statement in objects) {
 				AddObject(statement);
 			}
 			return objects;
@@ -255,19 +237,14 @@ namespace bsn.ModuleStore.Sql {
 
 		private T FindInternal<T>(string objectName) where T: CreateStatement {
 			if (objectName == null) {
-				throw new ArgumentNullException("objectName");
+				throw new ArgumentNullException(nameof(objectName));
 			}
-			CreateStatement statement;
-			if (objects.TryGetValue(objectName, out statement)) {
+			if (objects.TryGetValue(objectName, out var statement)) {
 				return statement as T;
 			}
 			return null;
 		}
 
-		SchemaName IQualified<SchemaName>.Qualification {
-			get {
-				return qualificationStack.Peek();
-			}
-		}
+		SchemaName IQualified<SchemaName>.Qualification => qualificationStack.Peek();
 	}
 }

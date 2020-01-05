@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<SaveTransactionStatement> ::= ~SAVE ~TRANSACTION <TransactionIdentifier>")]
 		public SaveTransactionStatement(SqlName transactionIdentifier): base(transactionIdentifier) {}
 
-		protected override string OperationSpecifier {
-			get {
-				return "SAVE";
-			}
-		}
+		protected override string OperationSpecifier => "SAVE";
 	}
 }

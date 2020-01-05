@@ -45,10 +45,10 @@ namespace bsn.ModuleStore.Console.Configurations {
 			if (executionContext.Connected) {
 				executionContext.Output.WriteLine("Server: {0}", executionContext.Server);
 				executionContext.Output.WriteLine("Database: {0}", executionContext.Database);
-				string connectionString = executionContext.GetConnectionString();
+				var connectionString = executionContext.GetConnectionString();
 				executionContext.Output.WriteLine("Connection string: {0}", connectionString);
 				executionContext.Output.WriteLine("Database Type: {0}", ModuleDatabase.GetDatabaseType(executionContext.Connection));
-				using (ManagementConnectionProvider provider = new ManagementConnectionProvider(executionContext.Connection, "dbo")) {
+				using (var provider = new ManagementConnectionProvider(executionContext.Connection, "dbo")) {
 					executionContext.Output.WriteLine("Database Engine: {0}", provider.Engine);
 					executionContext.Output.WriteLine("Database Edition: {0}", provider.EngineEdition);
 					executionContext.Output.WriteLine("Database Version: {0}", provider.EngineVersion);

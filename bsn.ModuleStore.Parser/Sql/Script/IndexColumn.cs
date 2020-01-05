@@ -44,17 +44,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.order = order.Order;
 		}
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
-		public SortOrder Order {
-			get {
-				return order;
-			}
-		}
+		public SortOrder Order => order;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName, WhitespacePadding.None);

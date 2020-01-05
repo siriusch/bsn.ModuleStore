@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<OptionalFunctionOption> ::= ~WITH ~CALLED ~ON ~NULL ~INPUT")]
 		public OptionCalledOnNullInputToken() {}
 
-		protected override string OptionSpecifier {
-			get {
-				return "CALLED ON NULL INPUT";
-			}
-		}
+		protected override string OptionSpecifier => "CALLED ON NULL INPUT";
 	}
 }

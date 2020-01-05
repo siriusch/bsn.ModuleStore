@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -41,7 +41,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		private static readonly Dictionary<string, SqlDbType> knownDbTypes = GetKnownDbTypes();
 
 		private static Dictionary<string, SqlDbType> GetKnownDbTypes() {
-			Dictionary<string, SqlDbType> result = Enum.GetValues(typeof(SqlDbType)).Cast<SqlDbType>().ToDictionary(x => x.ToString(), x => x, StringComparer.OrdinalIgnoreCase);
+			var result = Enum.GetValues(typeof(SqlDbType)).Cast<SqlDbType>().ToDictionary(x => x.ToString(), x => x, StringComparer.OrdinalIgnoreCase);
 			result.Remove(SqlDbType.Udt.ToString());
 			result.Remove(SqlDbType.Variant.ToString());
 			result.Remove(SqlDbType.Structured.ToString());
@@ -58,18 +58,17 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 
 		protected SqlCallParameterBase(ProcedureName procedureName, ProcedureParameter parameter, ParameterDirection direction, bool nullable, bool isEnumerable) {
 			if (parameter == null) {
-				throw new ArgumentNullException("parameter");
+				throw new ArgumentNullException(nameof(parameter));
 			}
 			parameterName = parameter.ParameterName.Value;
 			if (direction == ParameterDirection.ReturnValue) {
-				throw new ArgumentOutOfRangeException("direction");
+				throw new ArgumentOutOfRangeException(nameof(direction));
 			}
 			this.direction = direction;
 			if (parameter.ParameterTypeName.IsQualified || (!knownDbTypes.TryGetValue(parameter.ParameterTypeName.Name.Value, out sqlType))) {
 				sqlType = isEnumerable ? SqlDbType.Structured : SqlDbType.Udt;
 			} else {
-				TypeNameWithPrecision typeNameEx = parameter.ParameterTypeName.Name as TypeNameWithPrecision;
-				if (typeNameEx != null) {
+				if (parameter.ParameterTypeName.Name is TypeNameWithPrecision typeNameEx) {
 					switch (sqlType) {
 					case SqlDbType.Binary:
 					case SqlDbType.VarBinary:
@@ -85,44 +84,28 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			this.nullable = nullable;
 			if (direction == ParameterDirection.Input) {
 				if (parameter.Output) {
-					throw new InvalidOperationException(string.Format("The {0} OUTPUT argument requires an out parameter in {1}", parameterName, procedureName));
+					throw new InvalidOperationException($"The {parameterName} OUTPUT argument requires an out parameter in {procedureName}");
 				}
 			} else {
 				if (!parameter.Output) {
-					throw new InvalidOperationException(string.Format("An out parameter requires argument {0} to be OUTPUT in {1}", parameterName, procedureName));
+					throw new InvalidOperationException($"An out parameter requires argument {parameterName} to be OUTPUT in {procedureName}");
 				}
 				if (sqlType == SqlDbType.Structured) {
-					throw new NotSupportedException(string.Format("Table valued argument {0} must be READONLY in {1}", parameterName, procedureName));
+					throw new NotSupportedException($"Table valued argument {parameterName} must be READONLY in {procedureName}");
 				}
 			}
 		}
 
-		public ParameterDirection Direction {
-			get {
-				return direction;
-			}
-		}
+		public ParameterDirection Direction => direction;
 
-		public bool Nullable {
-			get {
-				return nullable;
-			}
-		}
+		public bool Nullable => nullable;
 
-		public int Size {
-			get {
-				return size;
-			}
-		}
+		public int Size => size;
 
-		public SqlDbType SqlType {
-			get {
-				return sqlType;
-			}
-		}
+		public SqlDbType SqlType => sqlType;
 
 		public SqlParameter GetSqlParameter(SqlCommand command, IMethodCallMessage mcm, SqlParameter[] outArgs, IList<IDisposable> disposeList) {
-			SqlParameter parameter = command.CreateParameter();
+			var parameter = command.CreateParameter();
 			parameter.ParameterName = parameterName;
 			parameter.IsNullable = nullable;
 			parameter.Direction = direction;
@@ -138,7 +121,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		}
 
 		protected virtual int GetOutArgIndex() {
-			throw new NotSupportedException(string.Format("The {0} type does not support output parameters", GetType().Name));
+			throw new NotSupportedException($"The {GetType().Name} type does not support output parameters");
 		}
 
 		protected abstract object SetParameterValue(IMethodCallMessage mcm, IList<IDisposable> disposables);

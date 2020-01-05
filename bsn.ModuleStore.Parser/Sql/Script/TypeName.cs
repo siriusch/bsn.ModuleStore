@@ -36,9 +36,9 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class TypeName: SqlQuotedName {
 		private static KeyValuePair<string, bool> FormatName(string name) {
 			if (string.IsNullOrEmpty(name)) {
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
-			bool isBuiltIn = SqlTypeMapping.TryGetBuiltinTypeName(ref name);
+			var isBuiltIn = SqlTypeMapping.TryGetBuiltinTypeName(ref name);
 			return new KeyValuePair<string, bool>(name, isBuiltIn);
 		}
 
@@ -54,11 +54,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			builtinType = typeName.Value;
 		}
 
-		public bool IsBuiltinType {
-			get {
-				return builtinType;
-			}
-		}
+		public bool IsBuiltinType => builtinType;
 
 		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
 			if (isPartOfQualifiedName || (!IsBuiltinType)) {

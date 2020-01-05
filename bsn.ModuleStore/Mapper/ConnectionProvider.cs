@@ -39,10 +39,10 @@ namespace bsn.ModuleStore.Mapper {
 
 		public ConnectionProvider(string connectionString, string schemaName) {
 			if (string.IsNullOrEmpty(connectionString)) {
-				throw new ArgumentNullException("connectionString");
+				throw new ArgumentNullException(nameof(connectionString));
 			}
 			if (string.IsNullOrEmpty(schemaName)) {
-				throw new ArgumentNullException("schemaName");
+				throw new ArgumentNullException(nameof(schemaName));
 			}
 			this.connectionString = connectionString;
 			this.schemaName = schemaName;
@@ -52,20 +52,12 @@ namespace bsn.ModuleStore.Mapper {
 			Trace.WriteLine(e.Message);
 		}
 
-		public IsolationLevel DefaultIsolationLevel {
-			get {
-				return IsolationLevel.Unspecified;
-			}
-		}
+		public IsolationLevel DefaultIsolationLevel => IsolationLevel.Unspecified;
 
-		public string SchemaName {
-			get {
-				return schemaName;
-			}
-		}
+		public string SchemaName => schemaName;
 
 		public SqlConnection GetConnection() {
-			SqlConnection connection = new SqlConnection(connectionString);
+			var connection = new SqlConnection(connectionString);
 			connection.InfoMessage += DisplayInfoMessage;
 			return connection;
 		}

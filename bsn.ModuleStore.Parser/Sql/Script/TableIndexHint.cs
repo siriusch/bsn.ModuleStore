@@ -41,11 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.indexValues = indexValues.ToList();
 		}
 
-		public IEnumerable<IntegerLiteral> IndexValues {
-			get {
-				return indexValues;
-			}
-		}
+		public IEnumerable<IntegerLiteral> IndexValues => indexValues;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("INDEX");

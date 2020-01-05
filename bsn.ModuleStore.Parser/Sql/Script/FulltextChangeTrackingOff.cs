@@ -36,16 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<FulltextChangeTracking> ::= ~WITH ~CHANGE_TRACKING ~OFF")]
 		public FulltextChangeTrackingOff() {}
 
-		public override FulltextChangeTrackingKind ChangeTracking {
-			get {
-				return FulltextChangeTrackingKind.Off;
-			}
-		}
+		public override FulltextChangeTrackingKind ChangeTracking => FulltextChangeTrackingKind.Off;
 
-		protected override string ChangeTrackingSpecifier {
-			get {
-				return "OFF";
-			}
-		}
+		protected override string ChangeTrackingSpecifier => "OFF";
 	}
 }

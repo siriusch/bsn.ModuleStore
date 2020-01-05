@@ -80,17 +80,17 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private static Dictionary<string, string> LoadFromFile(string filename) {
-			Dictionary<string, string> result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			using (Stream stream = typeof(ScriptParser).Assembly.GetManifestResourceStream(typeof(ScriptParser), filename)) {
+			var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			using (var stream = typeof(ScriptParser).Assembly.GetManifestResourceStream(typeof(ScriptParser), filename)) {
 				Debug.Assert(stream != null);
 				using (TextReader reader = new StreamReader(stream, true)) {
-					for (string line = reader.ReadLine(); line != null; line = reader.ReadLine()) {
+					for (var line = reader.ReadLine(); line != null; line = reader.ReadLine()) {
 						line = line.Trim();
 						if (line.Length > 0) {
 							try {
 								result.Add(line, line);
 							} catch (ArgumentException) {
-								Debug.WriteLine(string.Format("Duplicate entry {0} in file {1}", line, filename));
+								Debug.WriteLine($"Duplicate entry {line} in file {filename}");
 							}
 						}
 					}
@@ -100,14 +100,14 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public static IEnumerable<Statement> Parse(string sql) {
-			using (StringReader reader = new StringReader(sql)) {
+			using (var reader = new StringReader(sql)) {
 				return Parse(reader);
 			}
 		}
 
 		public static IEnumerable<Statement> Parse(TextReader sql) {
-			ParseMessage parseMessage = ParseMessage.None;
-			SqlSemanticProcessor processor = new SqlSemanticProcessor(sql, GetSemanticActions());
+			var parseMessage = ParseMessage.None;
+			var processor = new SqlSemanticProcessor(sql, GetSemanticActions());
 			try {
 				parseMessage = processor.ParseAll();
 			} catch (Exception ex) {
@@ -124,8 +124,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		internal static bool TryGetBuiltinFunctionName(ref string name) {
-			string result;
-			if (builtinFunctions.TryGetValue(name, out result)) {
+			if (builtinFunctions.TryGetValue(name, out var result)) {
 				name = result;
 				return true;
 			}
@@ -133,8 +132,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		internal static bool TryGetReservedWord(ref string word) {
-			string result;
-			if (reservedWords.TryGetValue(word, out result)) {
+			if (reservedWords.TryGetValue(word, out var result)) {
 				word = result;
 				return true;
 			}

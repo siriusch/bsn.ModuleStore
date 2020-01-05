@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<RowsetCombineClause> ::= ~INTERSECT <SelectQuery>")]
 		public IntersectClause(SelectQuery selectQuery): base(selectQuery) {}
 
-		protected override string CombineSpecifier {
-			get {
-				return "INTERSECT";
-			}
-		}
+		protected override string CombineSpecifier => "INTERSECT";
 	}
 }

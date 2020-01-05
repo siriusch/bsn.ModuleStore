@@ -41,17 +41,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.hint = hint;
 		}
 
-		public KeywordToken Hint {
-			get {
-				return hint;
-			}
-		}
+		public KeywordToken Hint => hint;
 
-		public Predicate Predicate {
-			get {
-				return predicate;
-			}
-		}
+		public Predicate Predicate => predicate;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

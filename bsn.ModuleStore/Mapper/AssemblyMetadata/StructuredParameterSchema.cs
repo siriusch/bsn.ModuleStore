@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -41,58 +41,58 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 	internal class StructuredParameterSchema: StructuredParameterSchemaBase {
 		public StructuredParameterSchema(CreateTypeAsTableStatement script, IDictionary<string, SqlColumnInfo> columnInfos) {
 			if (script == null) {
-				throw new ArgumentNullException("script");
+				throw new ArgumentNullException(nameof(script));
 			}
 			if (columnInfos == null) {
-				throw new ArgumentNullException("columnInfos");
+				throw new ArgumentNullException(nameof(columnInfos));
 			}
 			SetupColumns(script.ObjectName, script.ObjectSchema);
-			DataColumn columnName = Columns[SchemaTableColumn.ColumnName];
-			DataColumn allowDbNull = Columns[SchemaTableColumn.AllowDBNull];
-			DataColumn dataType = Columns[SchemaTableColumn.DataType];
-			DataColumn numericScale = Columns[SchemaTableColumn.NumericScale];
-			DataColumn numericPrecision = Columns[SchemaTableColumn.NumericPrecision];
-			DataColumn columnSize = Columns[SchemaTableColumn.ColumnSize];
-			DataColumn baseColumnName = Columns[SchemaTableColumn.BaseColumnName];
-			DataColumn providerType = Columns[SchemaTableColumn.ProviderType];
-			DataColumn nonVersionedProviderType = Columns[SchemaTableColumn.NonVersionedProviderType];
-			DataColumn columnOrdinal = Columns[SchemaTableColumn.ColumnOrdinal];
+			var columnName = Columns[SchemaTableColumn.ColumnName];
+			var allowDbNull = Columns[SchemaTableColumn.AllowDBNull];
+			var dataType = Columns[SchemaTableColumn.DataType];
+			var numericScale = Columns[SchemaTableColumn.NumericScale];
+			var numericPrecision = Columns[SchemaTableColumn.NumericPrecision];
+			var columnSize = Columns[SchemaTableColumn.ColumnSize];
+			var baseColumnName = Columns[SchemaTableColumn.BaseColumnName];
+			var providerType = Columns[SchemaTableColumn.ProviderType];
+			var nonVersionedProviderType = Columns[SchemaTableColumn.NonVersionedProviderType];
+			var columnOrdinal = Columns[SchemaTableColumn.ColumnOrdinal];
 			//			if (schema.HasNestedSerializers) {
 			//				throw new NotSupportedException("Nested serialization is not supported for table valued parameters!");
 			//			}
-			List<SqlColumnInfo> sqlColumnInfos = new List<SqlColumnInfo>();
-			List<ColumnInfo> columns = new List<ColumnInfo>();
-			foreach (TableColumnDefinition column in script.TableDefinitions.OfType<TableColumnDefinition>()) {
+			var sqlColumnInfos = new List<SqlColumnInfo>();
+			var columns = new List<ColumnInfo>();
+			foreach (var column in script.TableDefinitions.OfType<TableColumnDefinition>()) {
 				int? fieldIndex = null;
 				string columnType = null;
-				Type columnDataType = typeof(object);
-				DataRow row = NewRow();
+				var columnDataType = typeof(object);
+				var row = NewRow();
 				row[columnName] = column.ColumnName.Value;
-				bool notNull = column.ColumnDefinition.Constraints.OfType<ColumnNotNullableConstraint>().Any();
+				var notNull = column.ColumnDefinition.Constraints.OfType<ColumnNotNullableConstraint>().Any();
 				row[allowDbNull] = !notNull;
-				SqlColumnInfo info;
-				if (columnInfos.TryGetValue(column.ColumnName.Value, out info)) {
+				if (columnInfos.TryGetValue(column.ColumnName.Value, out var info)) {
 					columnDataType = info.Converter.DbClrType;
 				} else if (notNull) {
-					throw new InvalidOperationException(string.Format("The column {0} on the table type {1} is not nullable, but the re is no matching column for it", column.ColumnName, script.ObjectName));
+					throw new InvalidOperationException($"The column {column.ColumnName} on the table type {script.ObjectName} is not nullable, but the re is no matching column for it");
 				} else {
-					Debug.Fail(string.Format("No matching field for column {0} of table type {1}", column.ColumnName, script.ObjectName));
+					Debug.Fail($"No matching field for column {column.ColumnName} of table type {script.ObjectName}");
 				}
 				row[dataType] = columnDataType;
-				TypedColumnDefinition typedColumn = column.ColumnDefinition as TypedColumnDefinition;
-				if (typedColumn != null) {
+				if (column.ColumnDefinition is TypedColumnDefinition typedColumn) {
 					columnType = typedColumn.ColumnType.ToString();
 					switch (info.DbType) {
 					case SqlDbType.Decimal:
-						TypeNameWithScale scaledType = typedColumn.ColumnType.Name as TypeNameWithScale;
-						if (scaledType != null) {
+						switch (typedColumn.ColumnType.Name) {
+						case TypeNameWithScale scaledType:
 							row[numericScale] = scaledType.Scale;
+							break;
 						}
 						goto case SqlDbType.Float;
 					case SqlDbType.Float:
-						TypeNameWithPrecision precisionType = typedColumn.ColumnType.Name as TypeNameWithPrecision;
-						if (precisionType != null) {
+						switch (typedColumn.ColumnType.Name) {
+						case TypeNameWithPrecision precisionType:
 							row[numericPrecision] = precisionType.Precision;
+							break;
 						}
 						break;
 					case SqlDbType.Binary:
@@ -101,13 +101,13 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 					case SqlDbType.VarChar:
 					case SqlDbType.NChar:
 					case SqlDbType.NVarChar:
-						TypeNameNamedExtension extendedType = typedColumn.ColumnType.Name as TypeNameNamedExtension;
-						if ((extendedType != null) && extendedType.IsMax) {
+						switch (typedColumn.ColumnType.Name) {
+						case TypeNameNamedExtension extendedType when extendedType.IsMax:
 							row[columnSize] = -1;
-						}
-						TypeNameWithPrecision lengthType = typedColumn.ColumnType.Name as TypeNameWithPrecision;
-						if (lengthType != null) {
+							break;
+						case TypeNameWithPrecision lengthType:
 							row[columnSize] = lengthType.Precision;
+							break;
 						}
 						break;
 					}

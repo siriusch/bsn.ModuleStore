@@ -46,17 +46,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			enabled = toggle.On;
 		}
 
-		public bool Enabled {
-			get {
-				return enabled;
-			}
-		}
+		public bool Enabled => enabled;
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableName => tableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

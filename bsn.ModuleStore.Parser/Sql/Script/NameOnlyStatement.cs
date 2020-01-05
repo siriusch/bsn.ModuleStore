@@ -41,11 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.objectName = objectName;
 		}
 
-		public Qualified<SchemaName, ObjectName> ObjectName {
-			get {
-				return objectName;
-			}
-		}
+		public Qualified<SchemaName, ObjectName> ObjectName => objectName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteIdentifier(Key);

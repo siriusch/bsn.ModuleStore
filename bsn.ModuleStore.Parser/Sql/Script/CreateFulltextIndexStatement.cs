@@ -51,44 +51,20 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.changeTracking = changeTracking;
 		}
 
-		public FulltextChangeTracking ChangeTracking {
-			get {
-				return changeTracking;
-			}
-		}
+		public FulltextChangeTracking ChangeTracking => changeTracking;
 
-		public IEnumerable<FulltextColumn> Columns {
-			get {
-				return columns;
-			}
-		}
+		public IEnumerable<FulltextColumn> Columns => columns;
 
-		public IndexName IndexName {
-			get {
-				return indexName;
-			}
-		}
+		public IndexName IndexName => indexName;
 
-		public override ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.Index;
-			}
-		}
+		public override ObjectCategory ObjectCategory => ObjectCategory.Index;
 
 		public override string ObjectName {
-			get {
-				return indexName.Value;
-			}
-			set {
-				indexName = new IndexName(value);
-			}
+			get => indexName.Value;
+			set => indexName = new IndexName(value);
 		}
 
-		protected override SchemaName SchemaName {
-			get {
-				return tableName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => tableName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
@@ -108,10 +84,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			return new DropFulltextStatement(tableName);
 		}
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableName => tableName;
 	}
 }

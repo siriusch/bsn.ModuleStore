@@ -49,17 +49,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableHints = tableHints;
 		}
 
-		public T Name {
-			get {
-				return name;
-			}
-		}
+		public T Name => name;
 
-		public TableHintGroup TableHints {
-			get {
-				return tableHints;
-			}
-		}
+		public TableHintGroup TableHints => tableHints;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(name, WhitespacePadding.None);

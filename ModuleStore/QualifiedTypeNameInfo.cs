@@ -42,17 +42,9 @@ namespace bsn.ModuleStore.Console {
 			this.typeName = typeName;
 		}
 
-		public string AssemblyName {
-			get {
-				return assemblyName;
-			}
-		}
+		public string AssemblyName => assemblyName;
 
-		public string TypeName {
-			get {
-				return typeName;
-			}
-		}
+		public string TypeName => typeName;
 
 		public bool Equals(QualifiedTypeNameInfo other) {
 			return Equals(other.assemblyName, assemblyName) && Equals(other.typeName, typeName);
@@ -73,7 +65,7 @@ namespace bsn.ModuleStore.Console {
 		}
 
 		public string GetAssemblyQualifiedName() {
-			return String.Format("{0}, {1}", typeName, assemblyName);
+			return $"{typeName}, {assemblyName}";
 		}
 
 		public override int GetHashCode() {

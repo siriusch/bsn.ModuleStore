@@ -47,43 +47,43 @@ namespace bsn.ModuleStore.Console.Commands {
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
 			try {
-				Encoding encoding = Encoding.GetEncoding((string)tags["encoding"]);
-				DirectoryInfo baseDirectory = Directory.CreateDirectory(Path.Combine(executionContext.ScriptPath, (string)tags["path"]));
+				var encoding = Encoding.GetEncoding((string)tags["encoding"]);
+				var baseDirectory = Directory.CreateDirectory(Path.Combine(executionContext.ScriptPath, (string)tags["path"]));
 				executionContext.Output.WriteLine("Scripting to {0} (Encoding: {1})...", baseDirectory.FullName, encoding.WebName);
 				DatabaseInventory inventory;
-				using (ManagementConnectionProvider provider = new ManagementConnectionProvider(executionContext.Connection, executionContext.Schema)) {
+				using (var provider = new ManagementConnectionProvider(executionContext.Connection, executionContext.Schema)) {
 					inventory = new DatabaseInventory(provider, executionContext.Schema);
 				}
-				HashSet<string> filesToDelete = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				var filesToDelete = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				if ((bool)tags["delete"]) {
-					foreach (FileInfo fileInfo in baseDirectory.GetFiles("*.sql", SearchOption.AllDirectories)) {
+					foreach (var fileInfo in baseDirectory.GetFiles("*.sql", SearchOption.AllDirectories)) {
 						filesToDelete.Add(fileInfo.FullName);
 					}
 				}
-				bool objectDirectories = (bool)tags["directories"];
+				var objectDirectories = (bool)tags["directories"];
 				inventory.SetQualification(string.IsNullOrEmpty((string)tags["schema"]) ? "dbo" : (string)tags["schema"]);
 				try {
-					foreach (CreateStatement statement in inventory.Objects.Where(statement => !(statement is CreateIndexStatement))) {
-						string categoryName = string.Empty;
+					foreach (var statement in inventory.Objects.Where(statement => !(statement is CreateIndexStatement))) {
+						var categoryName = string.Empty;
 						if (objectDirectories) {
 							categoryName = statement.ObjectCategory+"s\\";
 						}
-						string objectName = statement.ObjectName;
-						string fileRelativePath = string.Format("{0}{1}.sql", categoryName, objectName);
+						var objectName = statement.ObjectName;
+						var fileRelativePath = $"{categoryName}{objectName}.sql";
 						executionContext.Output.WriteLine("* Scripting {0}", fileRelativePath);
-						FileInfo scriptFileName = new FileInfo(Path.Combine(baseDirectory.FullName, fileRelativePath));
+						var scriptFileName = new FileInfo(Path.Combine(baseDirectory.FullName, fileRelativePath));
 						filesToDelete.Remove(scriptFileName.FullName);
 						if (scriptFileName.Exists) {
 							scriptFileName.Attributes &= ~FileAttributes.ReadOnly;
 						} else {
 							Directory.CreateDirectory(scriptFileName.DirectoryName);
 						}
-						using (FileStream stream = scriptFileName.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
-							using (StreamWriter writer = new StreamWriter(stream, encoding)) {
-								SqlWriter sqlWriter = new SqlWriter(writer, DatabaseEngine.Unknown);
+						using (var stream = scriptFileName.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
+							using (var writer = new StreamWriter(stream, encoding)) {
+								var sqlWriter = new SqlWriter(writer, DatabaseEngine.Unknown);
 								statement.WriteTo(sqlWriter);
 								sqlWriter.WriteLine(";");
-								foreach (CreateIndexStatement createIndexStatement in inventory.Objects.OfType<CreateIndexStatement>().Where(s => s.TableName.Name.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.IndexName.Value)) {
+								foreach (var createIndexStatement in inventory.Objects.OfType<CreateIndexStatement>().Where(s => s.TableName.Name.Value.Equals(objectName, StringComparison.OrdinalIgnoreCase)).OrderBy(s => s.IndexName.Value)) {
 									writer.WriteLine();
 									createIndexStatement.WriteTo(sqlWriter);
 									sqlWriter.WriteLine(";");
@@ -94,7 +94,7 @@ namespace bsn.ModuleStore.Console.Commands {
 				} finally {
 					inventory.UnsetQualification();
 				}
-				foreach (FileInfo deleteFileName in filesToDelete.Select(f => new FileInfo(f))) {
+				foreach (var deleteFileName in filesToDelete.Select(f => new FileInfo(f))) {
 					if (deleteFileName.Exists) {
 						executionContext.Output.Write("- Deleting {0}...", deleteFileName.FullName.Substring(baseDirectory.FullName.Length+1));
 						try {

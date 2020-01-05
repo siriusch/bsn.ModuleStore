@@ -43,17 +43,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.valueExpression = valueExpression;
 		}
 
-		public T Condition {
-			get {
-				return condition;
-			}
-		}
+		public T Condition => condition;
 
-		public Expression ValueExpression {
-			get {
-				return valueExpression;
-			}
-		}
+		public Expression ValueExpression => valueExpression;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("WHEN ");

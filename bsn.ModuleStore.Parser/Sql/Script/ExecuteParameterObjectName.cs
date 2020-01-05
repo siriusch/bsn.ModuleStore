@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		protected override void WriteValueTo(SqlWriter writer) {
-			using (StringWriter nameWriter = new StringWriter(CultureInfo.InvariantCulture)) {
+			using (var nameWriter = new StringWriter(CultureInfo.InvariantCulture)) {
 				Value.WriteTo(new SqlWriter(nameWriter, writer.Engine, SqlWriterMode.NoComments));
 				if (!string.IsNullOrEmpty(columnName)) {
 					nameWriter.Write('.');

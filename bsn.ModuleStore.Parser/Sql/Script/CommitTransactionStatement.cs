@@ -41,10 +41,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CommitTransactionStatement> ::= ~COMMIT ~TRANSACTION <TransactionIdentifier>")]
 		public CommitTransactionStatement(SqlName transactionIdentifier): base(transactionIdentifier) {}
 
-		protected override string OperationSpecifier {
-			get {
-				return "COMMIT";
-			}
-		}
+		protected override string OperationSpecifier => "COMMIT";
 	}
 }

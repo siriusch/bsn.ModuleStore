@@ -44,11 +44,10 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public static ModuleAssemblyInfo Get(Assembly assembly) {
 			if (assembly == null) {
-				throw new ArgumentNullException("assembly");
+				throw new ArgumentNullException(nameof(assembly));
 			}
 			lock (cache) {
-				ModuleAssemblyInfo result;
-				if (!cache.TryGetValue(assembly, out result)) {
+				if (!cache.TryGetValue(assembly, out var result)) {
 					result = new ModuleAssemblyInfo(assembly);
 					cache.Add(assembly, result);
 				}
@@ -63,36 +62,24 @@ namespace bsn.ModuleStore.Bootstrapper {
 		private ModuleAssemblyInfo(Assembly assembly) {
 			this.assembly = assembly;
 			inventory = AssemblyInventory.Get(assembly);
-			using (IEnumerator<GuidAttribute> guidAttributeEnumerator = assembly.GetCustomAttributes(typeof(GuidAttribute), true).Cast<GuidAttribute>().GetEnumerator()) {
+			using (var guidAttributeEnumerator = assembly.GetCustomAttributes(typeof(GuidAttribute), true).Cast<GuidAttribute>().GetEnumerator()) {
 				if (guidAttributeEnumerator.MoveNext()) {
-					GuidAttribute guidAttribute = guidAttributeEnumerator.Current;
+					var guidAttribute = guidAttributeEnumerator.Current;
 					Debug.Assert(guidAttribute != null);
 					assemblyGuid = new Guid(guidAttribute.Value);
 				} else {
-					Debug.WriteLine(string.Format("Inferring GUID from assembly short name for assembly {0}", assembly.FullName));
-					using (MD5 md5 = MD5.Create()) {
+					Debug.WriteLine($"Inferring GUID from assembly short name for assembly {assembly.FullName}");
+					using (var md5 = MD5.Create()) {
 						assemblyGuid = new Guid(md5.ComputeHash(Encoding.Unicode.GetBytes(assembly.GetName().Name)));
 					}
 				}
 			}
 		}
 
-		public Assembly Assembly {
-			get {
-				return assembly;
-			}
-		}
+		public Assembly Assembly => assembly;
 
-		public Guid AssemblyGuid {
-			get {
-				return assemblyGuid;
-			}
-		}
+		public Guid AssemblyGuid => assemblyGuid;
 
-		public AssemblyInventory Inventory {
-			get {
-				return inventory;
-			}
-		}
+		public AssemblyInventory Inventory => inventory;
 	}
 }

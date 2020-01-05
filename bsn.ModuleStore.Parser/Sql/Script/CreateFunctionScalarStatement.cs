@@ -44,11 +44,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.returnTypeName = returnTypeName;
 		}
 
-		public Qualified<SchemaName, TypeName> ReturnTypeName {
-			get {
-				return returnTypeName;
-			}
-		}
+		public Qualified<SchemaName, TypeName> ReturnTypeName => returnTypeName;
 
 		protected override void WriteToInternal(SqlWriter writer, string command) {
 			base.WriteToInternal(writer, command);

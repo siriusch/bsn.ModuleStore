@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -32,18 +32,18 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 
-using Common.Logging;
+using NLog;
 
 namespace bsn.ModuleStore.Bootstrapper {
 	internal static class Bootstrap {
-		private static readonly ILog log = LogManager.GetLogger(typeof(Bootstrap));
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		private static void CreateModuleStoreSchema(ModuleDatabase database, string dbName, ModuleInstanceCache cache) {
 			database.ManagementConnectionProvider.BeginTransaction();
-			bool commit = false;
+			var commit = false;
 			try {
 				database.CreateInstanceDatabaseSchema(cache.AssemblyInfo.Inventory, "ModuleStore");
-				using (SqlCommand command = database.ManagementConnectionProvider.GetConnection().CreateCommand()) {
+				using (var command = database.ManagementConnectionProvider.GetConnection().CreateCommand()) {
 					command.Transaction = database.ManagementConnectionProvider.GetTransaction();
 					command.CommandType = CommandType.Text;
 					command.CommandText = "INSERT [ModuleStore].[tblModule] ([uidAssemblyGuid], [sSchema], [sAssemblyName], [binSetupHash], [iUpdateVersion]) VALUES (@uidAssemblyGuid, 'ModuleStore', @sAssemblyName, @binSetupHash, @iUpdateVersion)";
@@ -57,11 +57,11 @@ namespace bsn.ModuleStore.Bootstrapper {
 			} finally {
 				database.ManagementConnectionProvider.EndTransaction(commit);
 			}
-			Trace.WriteLine(string.Format("Installed ModuleStore in database {0}", dbName));
+			Trace.WriteLine($"Installed ModuleStore in database {dbName}");
 		}
 
 		internal static DatabaseType GetDatabaseType(string connectionString, out string dbName) {
-			using (SqlConnection connection = new SqlConnection(connectionString)) {
+			using (var connection = new SqlConnection(connectionString)) {
 				dbName = connection.Database;
 				connection.Open();
 				return GetDatabaseType(connection, dbName);
@@ -70,30 +70,30 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		internal static DatabaseType GetDatabaseType(SqlConnection connection) {
 			if (connection == null) {
-				throw new ArgumentNullException("connection");
+				throw new ArgumentNullException(nameof(connection));
 			}
 			return GetDatabaseType(connection, connection.Database);
 		}
 
 		private static DatabaseType GetDatabaseType(SqlConnection connection, string dbName) {
-			using (SqlCommand command = connection.CreateCommand()) {
+			using (var command = connection.CreateCommand()) {
 				command.CommandText = "SELECT DB_ID(@dbname)";
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@dbname", dbName);
-				object dbId = command.ExecuteScalar();
+				var dbId = command.ExecuteScalar();
 				if (dbId == DBNull.Value) {
 					return DatabaseType.None;
 				}
 			}
 			Debug.Assert(connection.Database.Equals(dbName, StringComparison.OrdinalIgnoreCase));
-			using (SqlCommand command = connection.CreateCommand()) {
+			using (var command = connection.CreateCommand()) {
 				command.CommandText = "SELECT COUNT(*) FROM [INFORMATION_SCHEMA].[SCHEMATA] WHERE [SCHEMA_NAME]='ModuleStore'";
 				command.CommandType = CommandType.Text;
 				if (Convert.ToBoolean(command.ExecuteScalar())) {
 					return DatabaseType.ModuleStore;
 				}
 			}
-			using (SqlCommand command = connection.CreateCommand()) {
+			using (var command = connection.CreateCommand()) {
 				command.CommandText = "SELECT COUNT(*) FROM [INFORMATION_SCHEMA].[TABLES] WHERE [TABLE_NAME] <> 'sysdiagrams'";
 				command.CommandType = CommandType.Text;
 				if (Convert.ToInt32(command.ExecuteScalar()) == 0) {
@@ -104,20 +104,19 @@ namespace bsn.ModuleStore.Bootstrapper {
 		}
 
 		public static void InitializeModuleStore(ModuleDatabase database) {
-			bool commit = false;
+			var commit = false;
 			database.ManagementConnectionProvider.BeginTransaction();
 			try {
 				log.Trace("Got ModuleStore proxy");
-				string dbName;
-				ModuleInstanceCache cache = database.GetModuleInstanceCache(typeof(IModules).Assembly);
-				switch (GetDatabaseType(database.ConnectionString, out dbName)) {
+				var cache = database.GetModuleInstanceCache(typeof(IModules).Assembly);
+				switch (GetDatabaseType(database.ConnectionString, out var dbName)) {
 				case DatabaseType.Other:
-					log.ErrorFormat("The database {0} is not a ModuleStore database", dbName);
-					throw new InvalidOperationException(string.Format("The database {0} is not a ModuleStore database", dbName));
+					log.Error("The database {dbName} is not a ModuleStore database", dbName);
+					throw new InvalidOperationException($"The database {dbName} is not a ModuleStore database");
 				case DatabaseType.Empty:
 					if (!database.AutoUpdate) {
-						log.ErrorFormat("The database {0} is empty, but ModuleStore is not allowed to initialize it", dbName);
-						throw new InvalidOperationException(string.Format("The database {0} is empty", dbName));
+						log.Error("The database {dbName} is empty, but ModuleStore is not allowed to initialize it", dbName);
+						throw new InvalidOperationException($"The database {dbName} is empty");
 					}
 					log.Debug("Create ModuleStore schema start");
 					CreateModuleStoreSchema(database, dbName, cache);
@@ -131,12 +130,12 @@ namespace bsn.ModuleStore.Bootstrapper {
 					}
 					break;
 				case DatabaseType.None:
-					log.ErrorFormat("The database {0} does not exist", dbName);
-					throw new InvalidOperationException(string.Format("The database {0} does not exist", dbName));
+					log.Error("The database {dbName} does not exist", dbName);
+					throw new InvalidOperationException($"The database {dbName} does not exist");
 				}
 				commit = true;
 			} catch (Exception ex) {
-				log.Error("ModuleStore initialization failed", ex);
+				log.Error(ex, "ModuleStore initialization failed");
 				throw;
 			} finally {
 				database.ManagementConnectionProvider.EndTransaction(commit);

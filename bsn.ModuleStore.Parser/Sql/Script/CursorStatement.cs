@@ -39,10 +39,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.cursorName = cursorName;
 		}
 
-		public CursorName CursorName {
-			get {
-				return cursorName;
-			}
-		}
+		public CursorName CursorName => cursorName;
 	}
 }

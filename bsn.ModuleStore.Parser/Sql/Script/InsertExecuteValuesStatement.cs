@@ -43,11 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.executeStatement = executeStatement;
 		}
 
-		public ExecuteStatement ExecuteStatement {
-			get {
-				return executeStatement;
-			}
-		}
+		public ExecuteStatement ExecuteStatement => executeStatement;
 
 		protected override void WriteToInternal(SqlWriter writer) {
 			base.WriteToInternal(writer);

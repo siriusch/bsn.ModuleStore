@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -38,34 +38,17 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.owner = owner;
 		}
 
-		public TCreateStatement Owner {
-			get {
-				return owner;
-			}
-		}
+		public TCreateStatement Owner => owner;
 
-		public virtual string ObjectName {
-			get {
-				return owner.ObjectName;
-			}
-		}
+		public virtual string ObjectName => owner.ObjectName;
 
-		public virtual bool DisableUsagesForUpdate {
-			get {
-				IAlterableCreateStatement alterable = owner as IAlterableCreateStatement;
-				return (alterable != null) && alterable.DisableUsagesForUpdate;
-			}
-		}
+		public virtual bool DisableUsagesForUpdate => (owner is IAlterableCreateStatement alterable) && alterable.DisableUsagesForUpdate;
 
-		public virtual ObjectCategory ObjectCategory {
-			get {
-				return owner.ObjectCategory;
-			}
-		}
+		public virtual ObjectCategory ObjectCategory => owner.ObjectCategory;
 
 		public virtual IInstallStatement CreateAlterStatement() {
 			if (AlterUsingUpdateScript) {
-				throw new NotSupportedException(string.Format("{0} objects must be altered using an update script", ObjectCategory));
+				throw new NotSupportedException($"{ObjectCategory} objects must be altered using an update script");
 			}
 			return new CompoundInstallStatement(ObjectName, CreateDropStatement(), this);
 		}
@@ -84,16 +67,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			owner.WriteTo(writer);
 		}
 
-		public virtual bool AlterUsingUpdateScript {
-			get {
-				return false;
-			}
-		}
+		public virtual bool AlterUsingUpdateScript => false;
 
-		public virtual bool IsPartOfSchemaDefinition {
-			get {
-				return false;
-			}
-		}
+		public virtual bool IsPartOfSchemaDefinition => false;
 	}
 }

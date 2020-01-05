@@ -39,11 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.key = key;
 		}
 
-		public Identifier Key {
-			get {
-				return key;
-			}
-		}
+		public Identifier Key => key;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(key, WhitespacePadding.None);

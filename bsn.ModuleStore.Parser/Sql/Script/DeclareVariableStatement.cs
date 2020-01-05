@@ -43,11 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.declarations = declarations.ToList();
 		}
 
-		public IEnumerable<DeclareItem> Declarations {
-			get {
-				return declarations;
-			}
-		}
+		public IEnumerable<DeclareItem> Declarations => declarations;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

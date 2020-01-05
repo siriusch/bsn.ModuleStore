@@ -45,11 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			Initialize(symbol, position);
 		}
 
-		public override double AsDouble {
-			get {
-				return Value;
-			}
-		}
+		public override double AsDouble => Value;
 
 		public override bool TryGetNegativeAsPositive(out Literal literal) {
 			if (Value < 0) {

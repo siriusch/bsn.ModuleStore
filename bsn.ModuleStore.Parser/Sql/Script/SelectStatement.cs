@@ -47,23 +47,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.queryHint = queryHint;
 		}
 
-		public QueryHint QueryHint {
-			get {
-				return queryHint;
-			}
-		}
+		public QueryHint QueryHint => queryHint;
 
-		public QueryOptions QueryOptions {
-			get {
-				return queryOptions;
-			}
-		}
+		public QueryOptions QueryOptions => queryOptions;
 
-		public SelectQuery SelectQuery {
-			get {
-				return selectQuery;
-			}
-		}
+		public SelectQuery SelectQuery => selectQuery;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

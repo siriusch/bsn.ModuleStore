@@ -35,22 +35,19 @@ namespace bsn.ModuleStore.Sql.Script {
 	public class SqlIdentifierTest {
 		[Fact]
 		public void TryDequoteBracket() {
-			string result;
-			Assert.True(QuotedIdentifier.TryDequote("[Cool \" Stuff]", out result));
+			Assert.True(QuotedIdentifier.TryDequote("[Cool \" Stuff]", out var result));
 			Assert.Equal("Cool \" Stuff", result);
 		}
 
 		[Fact]
 		public void TryDequoteQuote() {
-			string result;
-			Assert.True(QuotedIdentifier.TryDequote("\"Cool [ Stuff\"", out result));
+			Assert.True(QuotedIdentifier.TryDequote("\"Cool [ Stuff\"", out var result));
 			Assert.Equal("Cool [ Stuff", result);
 		}
 
 		[Fact]
 		public void TryDequoteQuoteWithInnerQuote() {
-			string result;
-			Assert.True(QuotedIdentifier.TryDequote("\"Cool \"\" Stuff\"", out result));
+			Assert.True(QuotedIdentifier.TryDequote("\"Cool \"\" Stuff\"", out var result));
 			Assert.Equal("Cool \" Stuff", result);
 		}
 	}

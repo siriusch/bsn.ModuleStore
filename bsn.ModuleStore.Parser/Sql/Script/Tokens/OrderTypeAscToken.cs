@@ -35,10 +35,6 @@ using bsn.GoldParser.Semantic;
 namespace bsn.ModuleStore.Sql.Script.Tokens {
 	[Terminal("ASC")]
 	public sealed class OrderTypeAscToken: OrderTypeToken {
-		public override SortOrder Order {
-			get {
-				return SortOrder.Ascending;
-			}
-		}
+		public override SortOrder Order => SortOrder.Ascending;
 	}
 }

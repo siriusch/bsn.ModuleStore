@@ -44,11 +44,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.scale = scale.Value;
 		}
 
-		public long Scale {
-			get {
-				return scale;
-			}
-		}
+		public long Scale => scale;
 
 		protected override void WriteArguments(SqlWriter writer) {
 			base.WriteArguments(writer);

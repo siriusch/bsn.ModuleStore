@@ -52,17 +52,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<QueryOptions> ::=")]
 		public QueryOptions(): this(null, null) {}
 
-		public IEnumerable<CommonTableExpression> CommonTableExpressions {
-			get {
-				return commonTableExpressions;
-			}
-		}
+		public IEnumerable<CommonTableExpression> CommonTableExpressions => commonTableExpressions;
 
-		public IEnumerable<XmlNamespace> Namespaces {
-			get {
-				return namespaces;
-			}
-		}
+		public IEnumerable<XmlNamespace> Namespaces => namespaces;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
@@ -84,10 +76,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool HasValue {
-			get {
-				return (namespaces.Count+commonTableExpressions.Count) > 0;
-			}
-		}
+		public bool HasValue => (namespaces.Count+commonTableExpressions.Count) > 0;
 	}
 }

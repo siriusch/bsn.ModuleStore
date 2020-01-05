@@ -48,23 +48,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.methodName = methodName;
 		}
 
-		public SqlAssemblyName AssemblyName {
-			get {
-				return assemblyName;
-			}
-		}
+		public SqlAssemblyName AssemblyName => assemblyName;
 
-		public ClassName ClassName {
-			get {
-				return className;
-			}
-		}
+		public ClassName ClassName => className;
 
-		public MethodName MethodName {
-			get {
-				return methodName;
-			}
-		}
+		public MethodName MethodName => methodName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("EXTERNAL NAME ");

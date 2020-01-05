@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -39,15 +39,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<PredicateParens> ::= ~'(' <Predicate> ~')'")]
 		public PredicateParens(Predicate predicate) {
 			Debug.Assert(predicate != null);
-			PredicateParens parens = predicate as PredicateParens;
-			this.predicate = parens != null ? parens.predicate : predicate;
+			this.predicate = predicate is PredicateParens parens ? parens.predicate : predicate;
 		}
 
-		public Predicate Predicate {
-			get {
-				return predicate;
-			}
-		}
+		public Predicate Predicate => predicate;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

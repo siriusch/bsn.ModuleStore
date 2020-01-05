@@ -51,11 +51,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.column = column;
 		}
 
-		public ColumnName Column {
-			get {
-				return column;
-			}
-		}
+		public ColumnName Column => column;
 
 		protected override void WriteColumnInternal(SqlWriter writer) {
 			writer.WriteScript(column, WhitespacePadding.None);

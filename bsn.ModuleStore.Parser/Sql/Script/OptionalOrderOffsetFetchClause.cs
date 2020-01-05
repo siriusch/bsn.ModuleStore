@@ -56,29 +56,12 @@ namespace bsn.ModuleStore.Sql.Script
 		[Rule("<OptionalOrderOffsetFetchClause> ::=")]
 		public OptionalOrderOffsetFetchClause(): this(null, null, null) {}
 
-		public Sequence<OrderExpression> OrderList
-		{
-			get {
-				return orderList;
-			}
-		}
+		public Sequence<OrderExpression> OrderList => orderList;
 
-		public Expression OffsetExpression {
-			get {
-				return offsetExpression;
-			}
-		}
+		public Expression OffsetExpression => offsetExpression;
 
-		public Expression FetchExpression {
-			get {
-				return fetchExpression;
-			}
-		}
+		public Expression FetchExpression => fetchExpression;
 
-		public bool HasValue {
-			get {
-				return orderList != null;
-			}
-		}
+		public bool HasValue => orderList != null;
 	}
 }

@@ -65,35 +65,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			includeColumnNames = columnNames.ToList();
 		}
 
-		public Clustered Clustered {
-			get {
-				return clustered;
-			}
-		}
+		public Clustered Clustered => clustered;
 
-		public Predicate Filter {
-			get {
-				return filter;
-			}
-		}
+		public Predicate Filter => filter;
 
-		public IEnumerable<ColumnName> IncludeColumnNames {
-			get {
-				return includeColumnNames;
-			}
-		}
+		public IEnumerable<ColumnName> IncludeColumnNames => includeColumnNames;
 
-		public IEnumerable<IndexColumn> IndexColumns {
-			get {
-				return indexColumns;
-			}
-		}
+		public IEnumerable<IndexColumn> IndexColumns => indexColumns;
 
-		public bool Unique {
-			get {
-				return unique;
-			}
-		}
+		public bool Unique => unique;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
@@ -121,7 +101,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				writer.WriteLine();
 				writer.Write(')');
 			}
-			WhitespacePadding optionsPadding = WhitespacePadding.SpaceBefore;
+			var optionsPadding = WhitespacePadding.SpaceBefore;
 			if ((filter != null) && writer.IsAtLeast(DatabaseEngine.SqlServer2008)) {
 				writer.WriteLine();
 				writer.WriteKeyword("WHERE ");

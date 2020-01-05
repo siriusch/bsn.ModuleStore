@@ -49,11 +49,7 @@ namespace bsn.ModuleStore.Sql {
 					         .ToList();
 		}
 
-		public string ObjectName {
-			get {
-				return alterStatement.ObjectName;
-			}
-		}
+		public string ObjectName => alterStatement.ObjectName;
 
 		public bool Equals(IHashableStatement other, DatabaseEngine engine) {
 			return alterStatement.Equals(other, engine);
@@ -71,10 +67,6 @@ namespace bsn.ModuleStore.Sql {
 			alterStatement.WriteTo(writer);
 		}
 
-		public bool IsPartOfSchemaDefinition {
-			get {
-				return alterStatement.IsPartOfSchemaDefinition;
-			}
-		}
+		public bool IsPartOfSchemaDefinition => alterStatement.IsPartOfSchemaDefinition;
 	}
 }

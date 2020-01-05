@@ -42,17 +42,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.output = output;
 		}
 
-		public IEnumerable<ColumnName> ColumnNames {
-			get {
-				return columnNames;
-			}
-		}
+		public IEnumerable<ColumnName> ColumnNames => columnNames;
 
-		public OutputClause Output {
-			get {
-				return output;
-			}
-		}
+		public OutputClause Output => output;
 
 		protected override void WriteToInternal(SqlWriter writer) {
 			if (columnNames.Count > 0) {

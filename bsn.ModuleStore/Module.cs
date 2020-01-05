@@ -66,62 +66,26 @@ namespace bsn.ModuleStore {
 
 		private ModuleInstanceCache owner;
 
-		public Guid AssemblyGuid {
-			get {
-				return assemblyGuid;
-			}
-		}
+		public Guid AssemblyGuid => assemblyGuid;
 
-		public ModuleDatabase Database {
-			get {
-				return owner.Owner;
-			}
-		}
+		public ModuleDatabase Database => owner.Owner;
 
-		public Guid Id {
-			get {
-				return id;
-			}
-		}
+		public Guid Id => id;
 
-		public string Schema {
-			get {
-				return schema;
-			}
-		}
+		public string Schema => schema;
 
-		public bool SchemaExists {
-			get {
-				return schemaExists;
-			}
-		}
+		public bool SchemaExists => schemaExists;
 
-		public DateTime SetupDate {
-			get {
-				return setupDate;
-			}
-		}
+		public DateTime SetupDate => setupDate;
 
-		public byte[] SetupHash {
-			get {
-				return setupHash;
-			}
-		}
+		public byte[] SetupHash => setupHash;
 
-		public DateTime UpdateDate {
-			get {
-				return updateDate ?? setupDate;
-			}
-		}
+		public DateTime UpdateDate => updateDate ?? setupDate;
 
-		public int UpdateVersion {
-			get {
-				return updateVersion;
-			}
-		}
+		public int UpdateVersion => updateVersion;
 
 		public DatabaseInventory GetInventory() {
-			ModuleDatabase database = owner.Owner;
+			var database = owner.Owner;
 			database.ManagementConnectionProvider.BeginTransaction();
 			try {
 				return new DatabaseInventory(database.ManagementConnectionProvider, schema);
@@ -132,7 +96,7 @@ namespace bsn.ModuleStore {
 
 		internal void SetOwner(ModuleInstanceCache owner) {
 			if (owner == null) {
-				throw new ArgumentNullException("owner");
+				throw new ArgumentNullException(nameof(owner));
 			}
 			this.owner = owner;
 			Debug.Assert(owner.AssemblyInfo.AssemblyGuid == assemblyGuid);

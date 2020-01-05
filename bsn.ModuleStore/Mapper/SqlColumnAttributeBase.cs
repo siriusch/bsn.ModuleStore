@@ -16,9 +16,9 @@ namespace bsn.ModuleStore.Mapper {
 		/// <returns>The <see cref="SqlColumnAttribute"/> for the member.</returns>
 		public static T Get<T>(MemberInfo member, bool autoCreate) where T: SqlColumnAttributeBase, new() {
 			if (member == null) {
-				throw new ArgumentNullException("member");
+				throw new ArgumentNullException(nameof(member));
 			}
-			T result = member.GetCustomAttributes(typeof(T), true).Cast<T>().FirstOrDefault();
+			var result = member.GetCustomAttributes(typeof(T), true).Cast<T>().FirstOrDefault();
 			if (result == null) {
 				if (!autoCreate) {
 					return null;
@@ -49,49 +49,33 @@ namespace bsn.ModuleStore.Mapper {
 		/// </summary>
 		/// <value>The kind of the date time.</value>
 		public DateTimeKind DateTimeKind {
-			get {
-				return dateTimeKind;
-			}
-			set {
-				dateTimeKind = value;
-			}
+			get => dateTimeKind;
+			set => dateTimeKind = value;
 		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the column <see cref="SqlColumnAttribute"/> is a foreign key to an instance cached by identity in the provider.
 		/// </summary>
 		public bool GetCachedByIdentity {
-			get {
-				return getCachedByIdentity;
-			}
-			set {
-				getCachedByIdentity = value;
-			}
+			get => getCachedByIdentity;
+			set => getCachedByIdentity = value;
 		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the column <see cref="SqlColumnAttribute"/> is an identity column for this data type.
 		/// </summary>
 		public bool Identity {
-			get {
-				return identity;
-			}
-			set {
-				identity = value;
-			}
+			get => identity;
+			set => identity = value;
 		}
 
 		/// <summary>
 		/// The name for the database binding.
 		/// </summary>
-		public string Name {
-			get {
-				return name;
-			}
-		}
+		public string Name => name;
 
 		public SqlColumnAttributeBase CloneWithName(string newName) {
-			SqlColumnAttributeBase result = (SqlColumnAttributeBase)MemberwiseClone();
+			var result = (SqlColumnAttributeBase)MemberwiseClone();
 			result.name = newName;
 			return result;
 		}

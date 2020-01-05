@@ -62,7 +62,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public static List<T> ToList<T>(this Sequence<T> that) where T: SqlToken {
-			List<T> result = new List<T>();
+			var result = new List<T>();
 			if (that != null) {
 				result.AddRange(that);
 			}

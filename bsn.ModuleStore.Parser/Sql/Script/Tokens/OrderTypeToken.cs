@@ -37,10 +37,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<OrderType> ::=")]
 		public OrderTypeToken() {}
 
-		public virtual SortOrder Order {
-			get {
-				return SortOrder.Unspecified;
-			}
-		}
+		public virtual SortOrder Order => SortOrder.Unspecified;
 	}
 }

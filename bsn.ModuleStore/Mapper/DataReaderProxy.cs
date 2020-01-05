@@ -66,10 +66,10 @@ namespace bsn.ModuleStore.Mapper {
 
 		internal DataReaderProxy(IDataReader reader, Type type, ISerializationTypeMappingProvider serializationTypeMappingProvider): base(type) {
 			if (reader == null) {
-				throw new ArgumentNullException("reader");
+				throw new ArgumentNullException(nameof(reader));
 			}
 			if (serializationTypeMappingProvider == null) {
-				throw new ArgumentNullException("serializationTypeMappingProvider");
+				throw new ArgumentNullException(nameof(serializationTypeMappingProvider));
 			}
 			this.reader = reader;
 			this.serializationTypeMappingProvider = serializationTypeMappingProvider;
@@ -81,9 +81,9 @@ namespace bsn.ModuleStore.Mapper {
 		/// Handle a method invocation. This is called by the proxy and should not be called explicitly.
 		/// </summary>
 		public override IMessage Invoke(IMessage msg) {
-			IMethodCallMessage mcm = (IMethodCallMessage)msg;
+			var mcm = (IMethodCallMessage)msg;
 			try {
-				string methodName = mcm.MethodName;
+				var methodName = mcm.MethodName;
 				if (disposed) {
 					if (methodName == "Dispose") {
 						return new ReturnMessage(null, null, 0, mcm.LogicalCallContext, mcm); // ignore repeated Dispose()
@@ -101,9 +101,9 @@ namespace bsn.ModuleStore.Mapper {
 					disposed = reader.NextResult();
 					if (disposed) {
 						try {
-							MethodBase methodBase = mcm.MethodBase;
+							var methodBase = mcm.MethodBase;
 							if (methodBase.IsGenericMethod) {
-								Type[] genericArguments = methodBase.GetGenericArguments();
+								var genericArguments = methodBase.GetGenericArguments();
 								if ((genericArguments.Length == 1) && typeof(ITypedDataReader).IsAssignableFrom(genericArguments[0])) {
 									return new ReturnMessage(new DataReaderProxy(reader, genericArguments[0], serializationTypeMappingProvider).GetTransparentProxy(), null, 0, mcm.LogicalCallContext, mcm);
 								}
@@ -119,10 +119,8 @@ namespace bsn.ModuleStore.Mapper {
 					if (methodName == currentPropertyGetter) {
 						returnValue = reader; // the reader implements IDataRecord
 					} else {
-						KeyValuePair<int, Type> column;
-						if (!columns.TryGetValue(methodName, out column)) {
-							KeyValuePair<string, Type> columnInfo;
-							if (readerInfo.TryGetColumnInfo(methodName, out columnInfo)) {
+						if (!columns.TryGetValue(methodName, out var column)) {
+							if (readerInfo.TryGetColumnInfo(methodName, out var columnInfo)) {
 								column = new KeyValuePair<int, Type>(reader.GetOrdinal(columnInfo.Key), columnInfo.Value);
 								columns.Add(methodName, column);
 							} else {

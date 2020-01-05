@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -42,7 +42,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 
-using Common.Logging;
+using NLog;
 
 using bsn.ModuleStore.Mapper;
 using bsn.ModuleStore.Sql.Script;
@@ -57,7 +57,7 @@ namespace bsn.ModuleStore.Sql {
 			// ReSharper restore UnusedMember.Local
 		}
 
-		private static readonly ILog log = LogManager.GetLogger<DatabaseInventory>();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 		private static readonly ICollection<Type> objectsToRename = new HashSet<Type> {
 				typeof(CreateFunctionStatement),
 				typeof(CreateProcedureStatement),
@@ -67,17 +67,17 @@ namespace bsn.ModuleStore.Sql {
 		private static readonly XslCompiledTransform userObjectList = LoadTransform("UserObjectList.xslt");
 
 		internal static Exception CreateException(string message, SqlScriptableToken token, DatabaseEngine targetEngine) {
-			StringWriter writer = new StringWriter();
+			var writer = new StringWriter();
 			writer.WriteLine(message);
 			token.WriteTo(new SqlWriter(writer, targetEngine));
 			return new InvalidOperationException(writer.ToString());
 		}
 
 		private static XslCompiledTransform LoadTransform(string embeddedResourceName) {
-			XslCompiledTransform transform = new XslCompiledTransform(Debugger.IsAttached);
-			using (Stream stream = typeof(DatabaseInventory).Assembly.GetManifestResourceStream(typeof(DatabaseInventory), embeddedResourceName)) {
+			var transform = new XslCompiledTransform(Debugger.IsAttached);
+			using (var stream = typeof(DatabaseInventory).Assembly.GetManifestResourceStream(typeof(DatabaseInventory), embeddedResourceName)) {
 				Debug.Assert(stream != null);
-				using (XmlReader reader = XmlReader.Create(stream)) {
+				using (var reader = XmlReader.Create(stream)) {
 					transform.Load(reader, new XsltSettings(false, false), null);
 				}
 			}
@@ -90,42 +90,43 @@ namespace bsn.ModuleStore.Sql {
 		public DatabaseInventory(ManagementConnectionProvider database, string schemaName)
 				: base() {
 			if (database == null) {
-				throw new ArgumentNullException("database");
+				throw new ArgumentNullException(nameof(database));
 			}
 			targetEngine = database.Engine;
 			this.schemaName = schemaName;
-			XsltArgumentList arguments = CreateArguments(database);
-			using (SqlCommand command = database.GetConnection().CreateCommand()) {
+			var arguments = CreateArguments(database);
+			using (var command = database.GetConnection().CreateCommand()) {
 				command.Transaction = database.GetTransaction();
 				command.CommandType = CommandType.Text;
 				command.Parameters.AddWithValue("@sSchema", schemaName);
-				using (StringWriter writer = new StringWriter()) {
+				using (var writer = new StringWriter()) {
 					userObjectList.Transform(new XDocument().CreateReader(), arguments, writer);
-					command.CommandText = Regex.Replace(writer.ToString(), @"\s+", " ");
-					// ReSharper disable AccessToDisposedClosure
-					log.Trace(l => l(writer.ToString()));
-					// ReSharper restore AccessToDisposedClosure
+					var commandText = writer.ToString();
+					command.CommandText = Regex.Replace(commandText, @"\s+", " ");
+					log.Trace("Command: {sql}", commandText);
 				}
-				using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleResult)) {
-					int definitionColumn = reader.GetOrdinal("xDefinition");
-					int nameColumn = reader.GetOrdinal("sName");
-					StringBuilder builder = new StringBuilder(65520);
+				using (var reader = command.ExecuteReader(CommandBehavior.SingleResult)) {
+					var definitionColumn = reader.GetOrdinal("xDefinition");
+					var nameColumn = reader.GetOrdinal("sName");
+					var builder = new StringBuilder(65520);
 					while (reader.Read()) {
 						builder.Length = 0;
-						using (StringWriter writer = new StringWriter(builder)) {
-							SqlXml xml = reader.GetSqlXml(definitionColumn);
+						using (var writer = new StringWriter(builder)) {
+							var xml = reader.GetSqlXml(definitionColumn);
 							scripter.Transform(xml.CreateReader(), arguments, writer);
-							// ReSharper disable AccessToDisposedClosure
-							log.Trace(l => l("Object name: {0}\n  XML: {1}\n  SQL: {2}", reader.GetString(nameColumn), xml.Value, writer));
-							// ReSharper restore AccessToDisposedClosure
+							if (log.IsTraceEnabled) {
+								log.Trace("Object name: {objectName}\n  XML: {xml}\n  SQL: {sql}", reader.GetString(nameColumn), xml.Value, builder.ToString());
+							}
 						}
 						try {
 							try {
-								using (StringReader scriptReader = new StringReader(builder.ToString())) {
-									CreateStatement objectStatement = ProcessSingleScript(scriptReader, statement => {
-										log.Error(l => l("Cannot process statement error: {0}", statement));
+								using (var scriptReader = new StringReader(builder.ToString())) {
+									var objectStatement = ProcessSingleScript(scriptReader, statement => {
+										if (log.IsErrorEnabled) {
+											log.Error("Cannot process statement error: {statement}", statement.ToString());
+										}
 										throw CreateException("Cannot process statement:", statement, TargetEngine);
-									}).SingleOrDefault(statement => objectsToRename.Any(t => t.IsAssignableFrom(statement.GetType())));
+									}).SingleOrDefault(statement => objectsToRename.Any(t => t.IsInstanceOfType(statement)));
 									if (objectStatement != null) {
 										objectStatement.ObjectName = reader.GetString(nameColumn);
 									}
@@ -143,36 +144,27 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public string SchemaName {
-			get {
-				return schemaName;
-			}
-		}
+		public string SchemaName => schemaName;
 
-		public DatabaseEngine TargetEngine {
-			get {
-				return targetEngine;
-			}
-		}
+		public DatabaseEngine TargetEngine => targetEngine;
 
 		public IEnumerable<string> GenerateUninstallSql() {
-			StringBuilder buffer = new StringBuilder(512);
+			var buffer = new StringBuilder(512);
 			SetQualification(SchemaName);
 			try {
-				DependencyResolver resolver = new DependencyResolver();
-				foreach (IAlterableCreateStatement statement in Objects.SelectMany(o => o.CreateStatementFragments(CreateFragmentMode.Alter))) {
+				var resolver = new DependencyResolver();
+				foreach (var statement in Objects.SelectMany(o => o.CreateStatementFragments(CreateFragmentMode.Alter))) {
 					resolver.Add(statement);
 				}
 				foreach (IAlterableCreateStatement statement in resolver.GetInOrder(true).Where(s => !(s is CreateIndexStatement)).Reverse()) {
-					AlterTableAddConstraintFragment addConstraint = statement as AlterTableAddConstraintFragment;
-					if ((addConstraint == null) || !(addConstraint.Constraint is TableUniqueConstraintBase)) {
+					if ((!(statement is AlterTableAddConstraintFragment addConstraint)) || !(addConstraint.Constraint is TableUniqueConstraintBase)) {
 						yield return WriteStatement(statement.CreateDropStatement(), buffer, TargetEngine);
 					}
 				}
 				if (!schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase)) {
 					buffer.Length = 0;
 					using (TextWriter writer = new StringWriter(buffer)) {
-						SqlWriter sqlWriter = new SqlWriter(writer, TargetEngine);
+						var sqlWriter = new SqlWriter(writer, TargetEngine);
 						sqlWriter.WriteKeyword("DROP SCHEMA ");
 						new SchemaName(SchemaName).WriteTo(sqlWriter);
 					}
@@ -185,14 +177,14 @@ namespace bsn.ModuleStore.Sql {
 
 		protected override void AddObject(CreateStatement createStatement) {
 			if (createStatement == null) {
-				throw new ArgumentNullException("createStatement");
+				throw new ArgumentNullException(nameof(createStatement));
 			}
 			createStatement.ObjectSchema = schemaName;
 			base.AddObject(createStatement);
 		}
 
 		private XsltArgumentList CreateArguments(ManagementConnectionProvider database) {
-			XsltArgumentList arguments = new XsltArgumentList();
+			var arguments = new XsltArgumentList();
 			arguments.AddExtensionObject("urn:utils", new XsltUtils());
 			arguments.AddParam("engine", "", targetEngine.ToString());
 			arguments.AddParam("azure", "", targetEngine == DatabaseEngine.SqlAzure);

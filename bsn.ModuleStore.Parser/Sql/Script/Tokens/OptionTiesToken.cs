@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<OptionalWithTies> ::= ~WITH ~TIES")]
 		public OptionTiesToken() {}
 
-		protected override string OptionSpecifier {
-			get {
-				return "TIES";
-			}
-		}
+		protected override string OptionSpecifier => "TIES";
 	}
 }

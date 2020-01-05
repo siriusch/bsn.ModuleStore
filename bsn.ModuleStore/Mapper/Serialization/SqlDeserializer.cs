@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -53,7 +53,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	/// <typeparam name="T">The type of the object to be deserialized to.</typeparam>
 	public class SqlDeserializer<T>: SqlDeserializer {
 		public static T Mock(object columnData, IMetadataProvider metadataProvider = null, bool callConstructor = false) {
-			Dictionary<string, object> dataDictionary = new Dictionary<string, object>(StringComparer.Ordinal);
+			var dataDictionary = new Dictionary<string, object>(StringComparer.Ordinal);
 			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(columnData)) {
 				dataDictionary.Add(property.Name, property.GetValue(columnData));
 			}
@@ -144,8 +144,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 
 			internal object[] GetBuffer(SqlDeserializer deserializer) {
-				object[] result;
-				if (!buffers.TryGetValue(deserializer, out result)) {
+				if (!buffers.TryGetValue(deserializer, out var result)) {
 					result = new object[deserializer.TypeInfo.Mapping.MemberCount];
 					buffers.Add(deserializer, result);
 				}
@@ -171,8 +170,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 
 			public object GetInstance(Type instanceType, object identity, out InstanceOrigin instanceOrigin) {
-				object result;
-				if (!context.TryGetInstance(instanceType, identity, out result, out instanceOrigin)) {
+				if (!context.TryGetInstance(instanceType, identity, out var result, out instanceOrigin)) {
 					instanceOrigin = InstanceOrigin.New;
 					result = CreateInstance(instanceType, callConstructor);
 				}
@@ -203,7 +201,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			private XmlDocument xmlDocument;
 
 			public MockContext(IDictionary<string, object> dictionary, ISerializationTypeMapping mapping) {
-				List<IMemberConverter> memberConverters = mapping.Converters.Where(m => !string.IsNullOrEmpty(m.ColumnName)).ToList();
+				var memberConverters = mapping.Converters.Where(m => !string.IsNullOrEmpty(m.ColumnName)).ToList();
 				columnIndex = memberConverters.ToDictionary(m => m.ColumnName, m => m.MemberIndex, StringComparer.Ordinal);
 				columnData = memberConverters.ToDictionary(m => m.MemberIndex, m => dictionary[m.ColumnName]);
 			}
@@ -213,7 +211,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 
 			public SqlXml GetSqlXml(int column) {
-				object value = GetValue(column);
+				var value = GetValue(column);
 				return (SqlXml)value;
 			}
 
@@ -251,8 +249,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private static bool AreAllBufferElementsNull(object[] buffer) {
-			bool allBufferElementsNull = true;
-			for (int i = 0; (i < buffer.Length) && (allBufferElementsNull); i++) {
+			var allBufferElementsNull = true;
+			for (var i = 0; (i < buffer.Length) && (allBufferElementsNull); i++) {
 				allBufferElementsNull &= (buffer[i] == null);
 			}
 			return allBufferElementsNull;
@@ -263,17 +261,16 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		protected static object Mock(Type type, IDictionary<string, object> columnData, IMetadataProvider metadataProvider = null, bool callConstructor = false) {
-			ISerializationTypeMapping mapping = ((metadataProvider != null) ? metadataProvider.SerializationTypeInfoProvider : ModuleDatabase.SerializationTypeInfoProvider).TypeMappingProvider.GetMapping(type);
-			MockContext context = new MockContext(columnData, mapping);
-			object[] buffer = new object[mapping.MemberCount];
-			foreach (IMemberConverter converter in mapping.Converters) {
-				NestedMemberConverter nestedConverter = converter as NestedMemberConverter;
+			var mapping = ((metadataProvider != null) ? metadataProvider.SerializationTypeInfoProvider : ModuleDatabase.SerializationTypeInfoProvider).TypeMappingProvider.GetMapping(type);
+			var context = new MockContext(columnData, mapping);
+			var buffer = new object[mapping.MemberCount];
+			foreach (var converter in mapping.Converters) {
+				var nestedConverter = converter as NestedMemberConverter;
 				buffer[converter.MemberIndex] = nestedConverter == null ? converter.ProcessFromDb(context, context.GetOrdinal(converter.ColumnName)) : Mock(nestedConverter.Type, columnData, metadataProvider, callConstructor);
 			}
-			object result = CreateInstance(type, callConstructor);
+			var result = CreateInstance(type, callConstructor);
 			mapping.PopulateInstanceMembers(result, buffer);
-			ISqlDeserializationHook callback = result as ISqlDeserializationHook;
-			if (callback != null) {
+			if (result is ISqlDeserializationHook callback) {
 				callback.AfterDeserialization();
 			}
 			return result;
@@ -289,10 +286,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		internal SqlDeserializer(SqlDeserializationContext context, SqlDataReader reader, Type type, bool deserializeScalar, bool disposeReader, bool returnNullOnEmptyBuffer) {
 			if (context == null) {
-				throw new ArgumentNullException("context");
+				throw new ArgumentNullException(nameof(context));
 			}
 			if (reader == null) {
-				throw new ArgumentNullException("reader");
+				throw new ArgumentNullException(nameof(reader));
 			}
 			if (type.IsAbstract || type.IsInterface || type.IsPrimitive || type.IsPointer || typeof(ResultSet).IsAssignableFrom(type)) {
 				throw new NotSupportedException("Deserialization only supports normal classes and structs.");
@@ -303,14 +300,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			this.disposeReader = disposeReader;
 			typeInfo = context.GetSerializationTypeInfo(type, deserializeScalar);
 			foreach (MemberConverter converter in typeInfo.Mapping.Converters) {
-				NestedMemberConverter nestedConverter = converter as NestedMemberConverter;
-				if (nestedConverter != null) {
+				if (converter is NestedMemberConverter nestedConverter) {
 					if (nestedDeserializers == null) {
 						nestedDeserializers = new Dictionary<NestedMemberConverter, SqlDeserializer>();
 					}
 #warning Cyclic nested members would cause a stack overflow here
-					SqlDeserializer nestedDeserializer = new SqlDeserializer(context, reader, nestedConverter.Type, false, false, true);
-					NestedListMemberConverter nestedListConverter = nestedConverter as NestedListMemberConverter;
+					var nestedDeserializer = new SqlDeserializer(context, reader, nestedConverter.Type, false, false, true);
+					var nestedListConverter = nestedConverter as NestedListMemberConverter;
 					nestedDeserializers.Add(nestedListConverter ?? nestedConverter, nestedDeserializer);
 				} else {
 					if (columnConverters == null) {
@@ -322,41 +318,29 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public bool DisposeReader {
-			get {
-				return disposeReader;
-			}
-			set {
-				disposeReader = value;
-			}
+			get => disposeReader;
+			set => disposeReader = value;
 		}
 
 		/// <summary>
 		/// The <see cref="SqlDataReader"/> which was passed into the constructor.
 		/// </summary>
 		/// <remarks>As long as the DbDeserializer is in use, do not alter the state of the Reader. Especially, do not call <see cref="SqlDataReader.NextResult"/>.</remarks>
-		public SqlDataReader Reader {
-			get {
-				return reader;
-			}
-		}
+		public SqlDataReader Reader => reader;
 
 		/// <summary>
 		/// Gets the type information used for deserialization.
 		/// </summary>
 		/// <value>The type info.</value>
-		public ISerializationTypeInfo TypeInfo {
-			get {
-				return typeInfo;
-			}
-		}
+		public ISerializationTypeInfo TypeInfo => typeInfo;
 
 		protected object CreateInstance(DeserializerContext context, out InstanceOrigin instanceOrigin) {
 			Debug.Assert(context != null);
 			object identity = null;
-			object[] buffer = context.GetBuffer(this);
+			var buffer = context.GetBuffer(this);
 			if (columnConverters != null) {
-				foreach (KeyValuePair<int, MemberConverter> converter in columnConverters) {
-					object value = converter.Value.ProcessFromDb(context, converter.Key);
+				foreach (var converter in columnConverters) {
+					var value = converter.Value.ProcessFromDb(context, converter.Key);
 					if (converter.Value.IsIdentity) {
 						identity = value;
 					}
@@ -364,11 +348,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				}
 			}
 			if (nestedDeserializers != null) {
-				foreach (KeyValuePair<NestedMemberConverter, SqlDeserializer> nested in nestedDeserializers) {
-					InstanceOrigin nestedOrigin;
-					buffer[nested.Key.MemberIndex] = nested.Value.CreateInstance(context, out nestedOrigin);
+				foreach (var nested in nestedDeserializers) {
+					buffer[nested.Key.MemberIndex] = nested.Value.CreateInstance(context, out var nestedOrigin);
 					if (nested.Key is NestedListMemberConverter) {
-						IList list = nested.Value.TypeInfo.CreateList();
+						var list = nested.Value.TypeInfo.CreateList();
 						if (buffer[nested.Key.MemberIndex] != null) {
 							list.Add(buffer[nested.Key.MemberIndex]);
 						}
@@ -382,7 +365,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					return null;
 				}
 			}
-			object result = context.GetInstance(typeInfo.InstanceType, identity, out instanceOrigin);
+			var result = context.GetInstance(typeInfo.InstanceType, identity, out instanceOrigin);
 			if (result != null) {
 				if (!context.IsDeserialized(result)) {
 					if (instanceOrigin == InstanceOrigin.ResultSet) {
@@ -397,12 +380,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				} else if (instanceOrigin == InstanceOrigin.ResultSet) {
 					// add the instances to the nested lists
 					if (nestedDeserializers != null) {
-						foreach (KeyValuePair<NestedMemberConverter, SqlDeserializer> nested in nestedDeserializers) {
+						foreach (var nested in nestedDeserializers) {
 							if (nested.Key is NestedListMemberConverter) {
-								IList list = buffer[nested.Key.MemberIndex] as IList;
-								IList resultList = typeInfo.Mapping.GetMember(result, nested.Key.MemberIndex) as IList;
+								var list = buffer[nested.Key.MemberIndex] as IList;
+								var resultList = typeInfo.Mapping.GetMember(result, nested.Key.MemberIndex) as IList;
 								if ((list != null) && (resultList != null)) {
-									foreach (object entry in list) {
+									foreach (var entry in list) {
 										resultList.Add(entry);
 									}
 								}
@@ -416,7 +399,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		internal IEnumerable<T> DeserializeInstancesInternal<T>(int maxRows, bool callConstructor, XmlNameTable nameTable) {
 			Debug.Assert(typeof(T).IsAssignableFrom(TypeInfo.InstanceType));
-			DeserializerContext deserializerContext = new DeserializerContext(context, reader, callConstructor, nameTable);
+			var deserializerContext = new DeserializerContext(context, reader, callConstructor, nameTable);
 			while (maxRows > 0) {
 				if (!reader.Read()) {
 					break;
@@ -424,8 +407,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				if (typeInfo.SimpleConverter != null) {
 					yield return (T)typeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0);
 				} else {
-					InstanceOrigin instanceOrigin;
-					T instance = (T)CreateInstance(deserializerContext, out instanceOrigin);
+					var instance = (T)CreateInstance(deserializerContext, out var instanceOrigin);
 					if (instanceOrigin != InstanceOrigin.ResultSet) {
 						yield return instance;
 					}
@@ -436,11 +418,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		internal object DeserializeInternal(int maxRows, bool callConstructor, XmlNameTable nameTable) {
 			if (maxRows < 0) {
-				throw new ArgumentOutOfRangeException("maxRows");
+				throw new ArgumentOutOfRangeException(nameof(maxRows));
 			}
 			if (typeInfo.IsCollection) {
-				IList list = typeInfo.CreateList();
-				foreach (object instance in DeserializeInstancesInternal<object>(maxRows, callConstructor, nameTable)) {
+				var list = typeInfo.CreateList();
+				foreach (var instance in DeserializeInstancesInternal<object>(maxRows, callConstructor, nameTable)) {
 					list.Add(instance);
 				}
 				return typeInfo.FinalizeList(list);
@@ -448,12 +430,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if (!reader.Read()) {
 				throw new InvalidOperationException("No more rows");
 			}
-			DeserializerContext deserializerContext = new DeserializerContext(context, reader, callConstructor, nameTable);
+			var deserializerContext = new DeserializerContext(context, reader, callConstructor, nameTable);
 			if (typeInfo.SimpleConverter != null) {
 				return typeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0);
 			}
-			InstanceOrigin instanceOrigin;
-			return CreateInstance(deserializerContext, out instanceOrigin);
+			return CreateInstance(deserializerContext, out var instanceOrigin);
 		}
 
 		/// <summary>

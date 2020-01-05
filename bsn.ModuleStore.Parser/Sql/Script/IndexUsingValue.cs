@@ -36,16 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexUsing> ::= ~USING ~XML ~INDEX <IndexName> ~FOR ~VALUE")]
 		public IndexUsingValue(IndexName indexName): base(indexName) {}
 
-		public override IndexFor IndexFor {
-			get {
-				return IndexFor.Value;
-			}
-		}
+		public override IndexFor IndexFor => IndexFor.Value;
 
-		protected override string IndexForSpecifier {
-			get {
-				return "VALUE";
-			}
-		}
+		protected override string IndexForSpecifier => "VALUE";
 	}
 }

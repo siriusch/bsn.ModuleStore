@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 	internal class SqlCallParameterInfo: SqlCallParameterBase {
 		private static ParameterDirection GetParameterDirection(ParameterInfo param) {
 			if (param == null) {
-				throw new ArgumentNullException("param");
+				throw new ArgumentNullException(nameof(param));
 			}
 			if (param.ParameterType.IsByRef) {
 				if (param.IsOut) {
@@ -60,12 +60,11 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		}
 
 		private static bool GetParameterEnumerable(ParameterInfo param) {
-			Type structuredType;
-			return param.ParameterType.TryGetIEnumerableElementType(out structuredType);
+			return param.ParameterType.TryGetIEnumerableElementType(out var structuredType);
 		}
 
 		private static bool GetParameterNullable(ParameterInfo param) {
-			Type parameterType = param.ParameterType;
+			var parameterType = param.ParameterType;
 			if (parameterType.IsByRef) {
 				parameterType = parameterType.GetElementType();
 				Debug.Assert(parameterType != null);
@@ -81,23 +80,21 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 				: base(procedureName, script, GetParameterDirection(param), GetParameterNullable(param), GetParameterEnumerable(param)) {
 			parameterInfo = param;
 			if (SqlType == SqlDbType.Structured) {
-				Type structuredType;
-				if (!param.ParameterType.TryGetIEnumerableElementType(out structuredType)) {
+				if (!param.ParameterType.TryGetIEnumerableElementType(out var structuredType)) {
 					throw new ArgumentException("The given parameter must implement IEnumerable<> in order to be used as SQL structured parameter");
 				}
-				CreateTypeAsTableStatement createTableTypeScript;
-				if (!AssemblyInventory.Get(param.Member.DeclaringType.Assembly).TryFind(script.ParameterTypeName.Name.Value, out createTableTypeScript)) {
-					throw new ArgumentException(string.Format("The given structured parameter table type {0} cannot be found in the inventory", script.ParameterTypeName));
+				if (!AssemblyInventory.Get(param.Member.DeclaringType.Assembly).TryFind(script.ParameterTypeName.Name.Value, out CreateTypeAsTableStatement createTableTypeScript)) {
+					throw new ArgumentException($"The given structured parameter table type {script.ParameterTypeName} cannot be found in the inventory");
 				}
 				IDictionary<string, SqlColumnInfo> columnInfos;
-				ISerializationTypeInfo info = serializationTypeInfoProvider.GetSerializationTypeInfo(structuredType, false);
+				var info = serializationTypeInfoProvider.GetSerializationTypeInfo(structuredType, false);
 				if (info.SimpleConverter != null) {
-					string columnName = createTableTypeScript.TableDefinitions.OfType<TableColumnDefinition>().First(d => d.ColumnDefinition is TypedColumnDefinition).ColumnName.Value;
+					var columnName = createTableTypeScript.TableDefinitions.OfType<TableColumnDefinition>().First(d => d.ColumnDefinition is TypedColumnDefinition).ColumnName.Value;
 					columnInfos = new Dictionary<string, SqlColumnInfo>(1);
 					columnInfos.Add(columnName, new SqlColumnInfo(typeMappingProvider.GetMapping(structuredType), columnName, info.SimpleConverter));
 				} else {
 					columnInfos = typeMappingProvider.GetMapping(structuredType).Columns;
-					Attribute[] mappingAttributes = Attribute.GetCustomAttributes(param, typeof(SqlMappingAttribute), true);
+					var mappingAttributes = Attribute.GetCustomAttributes(param, typeof(SqlMappingAttribute), true);
 					if ((mappingAttributes != null) && (mappingAttributes.Length > 0)) {
 						IDictionary<string, SqlColumnInfo> mappedColumnInfos = new Dictionary<string, SqlColumnInfo>(columnInfos);
 						foreach (SqlMappingAttribute mappingAttribute in mappingAttributes) {
@@ -114,36 +111,30 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			//			}
 		}
 
-		public string ParameterName {
-			get {
-				return parameterInfo.Name;
-			}
-		}
+		public string ParameterName => parameterInfo.Name;
 
 		protected override int GetOutArgIndex() {
 			return parameterInfo.Position;
 		}
 
 		protected override object SetParameterValue(IMethodCallMessage mcm, IList<IDisposable> disposeList) {
-			object value = mcm.GetArg(parameterInfo.Position);
+			var value = mcm.GetArg(parameterInfo.Position);
 			if (value != null) {
 				switch (SqlType) {
 				case SqlDbType.Xml:
-					XmlReader reader = value as XmlReader;
-					if (reader == null) {
-						XPathNavigator navigator = value as XPathNavigator;
+					if (!(value is XmlReader reader)) {
+						var navigator = value as XPathNavigator;
 						if (navigator == null) {
-							IXPathNavigable navigable = value as IXPathNavigable;
-							if (navigable != null) {
+							switch (value) {
+							case IXPathNavigable navigable:
 								navigator = navigable.CreateNavigator();
-							} else {
-								XNode node = value as XNode;
-								if (node != null) {
-									navigator = node.CreateNavigator();
-								}
+								break;
+							case XNode node:
+								navigator = node.CreateNavigator();
+								break;
 							}
 							if (navigator == null) {
-								throw new NotSupportedException(String.Format("XML could not be retrieved from value of type {0}.", value.GetType()));
+								throw new NotSupportedException($"XML could not be retrieved from value of type {value.GetType()}.");
 							}
 						}
 						reader = navigator.ReadSubtree();
@@ -152,26 +143,22 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 					value = new SqlXml(reader);
 					break;
 				case SqlDbType.SmallInt:
-					IIdentifiable<short> identifiableShort = value as IIdentifiable<short>;
-					if (identifiableShort != null) {
+					if (value is IIdentifiable<short> identifiableShort) {
 						value = identifiableShort.Id;
 					}
 					break;
 				case SqlDbType.Int:
-					IIdentifiable<int> identifiableInt = value as IIdentifiable<int>;
-					if (identifiableInt != null) {
+					if (value is IIdentifiable<int> identifiableInt) {
 						value = identifiableInt.Id;
 					}
 					break;
 				case SqlDbType.BigInt:
-					IIdentifiable<long> identifiableLong = value as IIdentifiable<long>;
-					if (identifiableLong != null) {
+					if (value is IIdentifiable<long> identifiableLong) {
 						value = identifiableLong.Id;
 					}
 					break;
 				case SqlDbType.UniqueIdentifier:
-					IIdentifiable<Guid> identifiableGuid = value as IIdentifiable<Guid>;
-					if (identifiableGuid != null) {
+					if (value is IIdentifiable<Guid> identifiableGuid) {
 						value = identifiableGuid.Id;
 					}
 					break;

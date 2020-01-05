@@ -47,7 +47,7 @@ namespace bsn.ModuleStore {
 		private static readonly MemberInfo method = typeof(IModules).GetMethods().First(m => m.IsDefined(typeof(SqlProcedureAttribute), true));
 
 		private static SqlExceptionMappingAttribute Create<T>(Level level, int? number, byte? severity, byte? state) where T: Exception {
-			SqlExceptionMappingAttribute result = new SqlExceptionMappingAttribute(typeof(T));
+			var result = new SqlExceptionMappingAttribute(typeof(T));
 			if (number.HasValue) {
 				result.Number = number.Value;
 			}
@@ -69,7 +69,7 @@ namespace bsn.ModuleStore {
 				appliedOn = null;
 				break;
 			default:
-				throw new ArgumentOutOfRangeException("level");
+				throw new ArgumentOutOfRangeException(nameof(level));
 			}
 			((IHasDeclaringMember)result).SetDeclaringMember(appliedOn);
 			return result;
@@ -89,8 +89,8 @@ namespace bsn.ModuleStore {
 		[InlineData(Level.Assembly, 51000, (byte)16, (byte)255, Level.Assembly, 50000, (byte)25, (byte)255)]
 		[InlineData(Level.Assembly, 51000, (byte)16, (byte)255, Level.Assembly, 50000, (byte)17, (byte)0)]
 		public void SpecificityCompare(Level xLevel, int? xMessageId, byte? xSeverity, byte? xState, Level yLevel, int? yMessageId, byte? ySeverity, byte? yState) {
-			SqlExceptionMappingAttribute x = Create<Exception>(xLevel, xMessageId, xSeverity, xState);
-			SqlExceptionMappingAttribute y = Create<Exception>(yLevel, yMessageId, ySeverity, yState);
+			var x = Create<Exception>(xLevel, xMessageId, xSeverity, xState);
+			var y = Create<Exception>(yLevel, yMessageId, ySeverity, yState);
 			Assert.True(x.ComputeSpecificity() < y.ComputeSpecificity());
 			Assert.True(((IComparable<SqlExceptionMappingAttribute>)x).CompareTo(y) < 0);
 			Assert.True(((IComparable<SqlExceptionMappingAttribute>)y).CompareTo(x) > 0);

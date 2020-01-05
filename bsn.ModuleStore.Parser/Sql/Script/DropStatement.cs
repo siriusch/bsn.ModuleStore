@@ -35,10 +35,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			get;
 		}
 
-		bool IInstallStatement.IsPartOfSchemaDefinition {
-			get {
-				return false;
-			}
-		}
+		bool IInstallStatement.IsPartOfSchemaDefinition => false;
 	}
 }

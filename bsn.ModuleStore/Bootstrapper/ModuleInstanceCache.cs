@@ -45,10 +45,10 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public ModuleInstanceCache(ModuleDatabase owner, Assembly assembly) {
 			if (owner == null) {
-				throw new ArgumentNullException("owner");
+				throw new ArgumentNullException(nameof(owner));
 			}
 			if (assembly == null) {
-				throw new ArgumentNullException("assembly");
+				throw new ArgumentNullException(nameof(assembly));
 			}
 			this.owner = owner;
 			assemblyInfo = ModuleAssemblyInfo.Get(assembly);
@@ -56,23 +56,11 @@ namespace bsn.ModuleStore.Bootstrapper {
 			assemblyInfo.Inventory.AssertEngineVersion(owner.ManagementConnectionProvider.EngineVersion.Major);
 		}
 
-		public ModuleAssemblyInfo AssemblyInfo {
-			get {
-				return assemblyInfo;
-			}
-		}
+		public ModuleAssemblyInfo AssemblyInfo => assemblyInfo;
 
-		public bool Dirty {
-			get {
-				return dirty;
-			}
-		}
+		public bool Dirty => dirty;
 
-		public ModuleDatabase Owner {
-			get {
-				return owner;
-			}
-		}
+		public ModuleDatabase Owner => owner;
 
 		public string CreateInstance() {
 			return CreateInstanceInternal().Module.Schema;
@@ -106,11 +94,11 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public void UpdateDatabase(bool force) {
 			lock (instances) {
-				bool commit = false;
+				var commit = false;
 				owner.ManagementConnectionProvider.BeginTransaction();
 				try {
 					LoadModules(false);
-					foreach (ModuleInstance instance in instances.Values) {
+					foreach (var instance in instances.Values) {
 						if (force || (assemblyInfo.Inventory.UpdateVersion > instance.Module.UpdateVersion) || (!HashWriter.HashEqual(instance.Module.SetupHash, assemblyInfo.Inventory.GetInventoryHash(owner.ManagementConnectionProvider.Engine)))) {
 							owner.UpdateInstanceDatabaseSchema(assemblyInfo.Inventory, instance.Module);
 						}
@@ -125,15 +113,15 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		private ModuleInstance CreateInstanceInternal() {
 			lock (instances) {
-				bool commit = false;
+				var commit = false;
 				owner.ManagementConnectionProvider.BeginTransaction();
 				try {
-					Module module = owner.ModuleStore.Add(null, assemblyInfo.AssemblyGuid, rxPrefixExtractor.Match(assemblyInfo.Assembly.GetName().Name).Value, assemblyInfo.Assembly.FullName);
+					var module = owner.ModuleStore.Add(null, assemblyInfo.AssemblyGuid, rxPrefixExtractor.Match(assemblyInfo.Assembly.GetName().Name).Value, assemblyInfo.Assembly.FullName);
 					Debug.Assert(!module.SchemaExists);
-					string moduleSchema = module.Schema;
+					var moduleSchema = module.Schema;
 					owner.CreateInstanceDatabaseSchema(assemblyInfo.Inventory, moduleSchema);
 					owner.ModuleStore.Update(module.Id, assemblyInfo.Assembly.FullName, assemblyInfo.Inventory.GetInventoryHash(owner.ManagementConnectionProvider.Engine), assemblyInfo.Inventory.UpdateVersion);
-					ModuleInstance instance = new ModuleInstance(this, module);
+					var instance = new ModuleInstance(this, module);
 					instances.Add(moduleSchema, instance);
 					LoadModules(true);
 					commit = true;
@@ -148,9 +136,9 @@ namespace bsn.ModuleStore.Bootstrapper {
 			lock (instances) {
 				LoadModules(false);
 				if (string.IsNullOrEmpty(instance)) {
-					using (IEnumerator<ModuleInstance> enumerator = instances.Values.GetEnumerator()) {
+					using (var enumerator = instances.Values.GetEnumerator()) {
 						if (enumerator.MoveNext()) {
-							ModuleInstance firstMatch = enumerator.Current;
+							var firstMatch = enumerator.Current;
 							if (!enumerator.MoveNext()) {
 								return firstMatch;
 							}
@@ -158,10 +146,9 @@ namespace bsn.ModuleStore.Bootstrapper {
 							return CreateInstanceInternal();
 						}
 					}
-					throw new InvalidOperationException(string.Format("There is no single (default) instance available ({0} instances)", instances.Count));
+					throw new InvalidOperationException($"There is no single (default) instance available ({instances.Count} instances)");
 				}
-				ModuleInstance result;
-				if (instances.TryGetValue(instance, out result)) {
+				if (instances.TryGetValue(instance, out var result)) {
 					return result;
 				}
 				throw new KeyNotFoundException(instance);
@@ -173,20 +160,19 @@ namespace bsn.ModuleStore.Bootstrapper {
 				lock (instances) {
 					dirty = false;
 					try {
-						HashSet<string> toRemove = new HashSet<string>(instances.Keys);
+						var toRemove = new HashSet<string>(instances.Keys);
 						lock (owner.ModuleStore) {
-							foreach (Module module in owner.ModuleStore.List(assemblyInfo.AssemblyGuid)) {
+							foreach (var module in owner.ModuleStore.List(assemblyInfo.AssemblyGuid)) {
 								module.SetOwner(this);
 								toRemove.Remove(module.Schema);
-								ModuleInstance instance;
-								if (instances.TryGetValue(module.Schema, out instance)) {
+								if (instances.TryGetValue(module.Schema, out var instance)) {
 									instance.Module = module;
 								} else {
 									instances.Add(module.Schema, new ModuleInstance(this, module));
 								}
 							}
 						}
-						foreach (string schemaName in toRemove) {
+						foreach (var schemaName in toRemove) {
 							instances.Remove(schemaName);
 						}
 					} catch {

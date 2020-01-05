@@ -40,7 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<InsertStatement> ::= <QueryOptions> ~INSERT <OptionalTop> ~<OptionalInto> <DestinationRowset> <ColumnNameGroup> <OutputClause> ~VALUES <ValuesList> <QueryHint>")]
 		public InsertExpressionValuesStatement(QueryOptions queryOptions, TopExpression topExpression, DestinationRowset destinationRowset, Optional<Sequence<ColumnName>> columnNames, OutputClause output, Sequence<Sequence<Expression>> valuesList, QueryHint queryHint)
 				: base(queryOptions, topExpression, destinationRowset, columnNames, output, queryHint) {
-			foreach (Sequence<Expression> expressions in valuesList) {
+			foreach (var expressions in valuesList) {
 				this.valuesList.Add(expressions.ToArray());
 			}
 		}
@@ -57,8 +57,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteLine();
 			writer.WriteKeyword("VALUES");
 			using (writer.Indent()) {
-				string separator = "";
-				foreach (IEnumerable<Expression> expressions in valuesList) {
+				var separator = "";
+				foreach (var expressions in valuesList) {
 					if (valuesList.Count > 1) {
 						writer.WriteLine(separator);
 					} else {

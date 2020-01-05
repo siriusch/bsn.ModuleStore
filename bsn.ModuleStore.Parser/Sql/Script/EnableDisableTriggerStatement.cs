@@ -42,23 +42,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.triggerNames = triggerNames.ToList();
 		}
 
-		public bool All {
-			get {
-				return triggerNames.Count == 0;
-			}
-		}
+		public bool All => triggerNames.Count == 0;
 
-		public TriggerTarget Target {
-			get {
-				return target;
-			}
-		}
+		public TriggerTarget Target => target;
 
-		public IEnumerable<Qualified<SchemaName, TriggerName>> TriggerNames {
-			get {
-				return triggerNames;
-			}
-		}
+		public IEnumerable<Qualified<SchemaName, TriggerName>> TriggerNames => triggerNames;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword(" TRIGGER ");

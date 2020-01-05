@@ -41,17 +41,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.clustered = clustered.Clustered;
 		}
 
-		public Clustered Clustered {
-			get {
-				return clustered;
-			}
-		}
+		public Clustered Clustered => clustered;
 
-		public IndexOptionGroup IndexOptionGroup {
-			get {
-				return indexOptionGroup;
-			}
-		}
+		public IndexOptionGroup IndexOptionGroup => indexOptionGroup;
 
 		protected abstract string UniqueKindName {
 			get;

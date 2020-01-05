@@ -42,17 +42,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.constraintName = constraintName;
 		}
 
-		public ConstraintName ConstraintName {
-			get {
-				return constraintName;
-			}
-		}
+		public ConstraintName ConstraintName => constraintName;
 
-		public TableCheck TableCheck {
-			get {
-				return tableCheck;
-			}
-		}
+		public TableCheck TableCheck => tableCheck;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

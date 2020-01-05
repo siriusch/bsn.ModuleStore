@@ -36,16 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Join> ::= ~CROSS ~APPLY <Source>")]
 		public CrossApply(Source joinSource): base(joinSource) {}
 
-		public override JoinKind Kind {
-			get {
-				return JoinKind.CrossApply;
-			}
-		}
+		public override JoinKind Kind => JoinKind.CrossApply;
 
-		protected override string JoinSpecifier {
-			get {
-				return "CROSS APPLY";
-			}
-		}
+		protected override string JoinSpecifier => "CROSS APPLY";
 	}
 }

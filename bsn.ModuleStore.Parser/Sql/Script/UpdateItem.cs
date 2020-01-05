@@ -46,17 +46,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.variableName = variableName;
 		}
 
-		public Qualified<SqlName, ColumnName> ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public Qualified<SqlName, ColumnName> ColumnName => columnName;
 
-		public VariableName VariableName {
-			get {
-				return variableName;
-			}
-		}
+		public VariableName VariableName => variableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(variableName, WhitespacePadding.None, null, w => w.Write('='));

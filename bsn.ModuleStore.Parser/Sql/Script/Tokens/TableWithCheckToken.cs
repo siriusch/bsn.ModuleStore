@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<TableCheck> ::= ~WITH ~CHECK")]
 		public TableWithCheckToken() {}
 
-		public override TableCheck TableCheck {
-			get {
-				return TableCheck.Check;
-			}
-		}
+		public override TableCheck TableCheck => TableCheck.Check;
 	}
 }

@@ -67,8 +67,8 @@ namespace bsn.ModuleStore.Mapper {
 		protected virtual bool TryGetInstance(IDictionary<string, object> state, Type instanceType, object identity, out object instance, out InstanceOrigin instanceOrigin) {
 			Debug.Assert(instanceType != null);
 			if ((!instanceType.IsValueType) && (identity is TKey)) {
-				TTypeKey key = CreateTypeKey(instanceType, (TKey)identity);
-				Dictionary<TTypeKey, object> deserializedInstances = (state != null) ? GetDeserializedInstances(state) : null;
+				var key = CreateTypeKey(instanceType, (TKey)identity);
+				var deserializedInstances = (state != null) ? GetDeserializedInstances(state) : null;
 				if ((deserializedInstances != null) && deserializedInstances.TryGetValue(key, out instance)) {
 					instanceOrigin = InstanceOrigin.ResultSet;
 				} else {

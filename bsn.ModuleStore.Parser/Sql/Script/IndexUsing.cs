@@ -42,23 +42,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.indexName = indexName;
 		}
 
-		public virtual IndexFor IndexFor {
-			get {
-				return IndexFor.None;
-			}
-		}
+		public virtual IndexFor IndexFor => IndexFor.None;
 
-		public IndexName IndexName {
-			get {
-				return indexName;
-			}
-		}
+		public IndexName IndexName => indexName;
 
-		protected virtual string IndexForSpecifier {
-			get {
-				return string.Empty;
-			}
-		}
+		protected virtual string IndexForSpecifier => string.Empty;
 
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
@@ -70,10 +58,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool HasValue {
-			get {
-				return IndexFor != IndexFor.None;
-			}
-		}
+		public bool HasValue => IndexFor != IndexFor.None;
 	}
 }

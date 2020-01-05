@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableName = tableName;
 		}
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableName => tableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(tableName, WhitespacePadding.None);

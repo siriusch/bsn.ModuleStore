@@ -42,23 +42,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.viewName = viewName;
 		}
 
-		public override string ObjectName {
-			get {
-				return viewName.Name.Value;
-			}
-		}
+		public override string ObjectName => viewName.Name.Value;
 
-		public Qualified<SchemaName, ViewName> ViewName {
-			get {
-				return viewName;
-			}
-		}
+		public Qualified<SchemaName, ViewName> ViewName => viewName;
 
-		protected override SchemaName SchemaName {
-			get {
-				return viewName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => viewName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

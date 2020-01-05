@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.labelName = labelName;
 		}
 
-		public LabelName LabelName {
-			get {
-				return labelName;
-			}
-		}
+		public LabelName LabelName => labelName;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

@@ -36,11 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CursorUpdate> ::= ~READ ~ONLY")]
 		public UpdateModeReadOnly() {}
 
-		public override UpdateModeKind Kind {
-			get {
-				return UpdateModeKind.ReadOnly;
-			}
-		}
+		public override UpdateModeKind Kind => UpdateModeKind.ReadOnly;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("READ ONLY");

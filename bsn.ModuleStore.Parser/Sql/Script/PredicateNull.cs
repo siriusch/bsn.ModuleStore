@@ -44,11 +44,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.valueExpression = valueExpression;
 		}
 
-		public Expression ValueExpression {
-			get {
-				return valueExpression;
-			}
-		}
+		public Expression ValueExpression => valueExpression;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

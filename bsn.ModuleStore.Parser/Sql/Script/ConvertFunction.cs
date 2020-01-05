@@ -50,23 +50,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.style = style;
 		}
 
-		public IntegerLiteral Style {
-			get {
-				return style;
-			}
-		}
+		public IntegerLiteral Style => style;
 
-		public TypeName TypeName {
-			get {
-				return typeName;
-			}
-		}
+		public TypeName TypeName => typeName;
 
-		public Expression ValueExpression {
-			get {
-				return valueExpression;
-			}
-		}
+		public Expression ValueExpression => valueExpression;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteIdentifier("CONVERT");

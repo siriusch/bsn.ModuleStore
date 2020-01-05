@@ -39,17 +39,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			original = id;
 		}
 
-		public virtual string Value {
-			get {
-				return original;
-			}
-		}
+		public virtual string Value => original;
 
-		protected string Original {
-			get {
-				return original;
-			}
-		}
+		protected string Original => original;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteIdentifier(original);

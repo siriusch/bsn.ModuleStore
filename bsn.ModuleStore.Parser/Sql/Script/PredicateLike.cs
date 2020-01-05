@@ -52,23 +52,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.escape = escape;
 		}
 
-		public StringLiteral Escape {
-			get {
-				return escape;
-			}
-		}
+		public StringLiteral Escape => escape;
 
-		public Expression Pattern {
-			get {
-				return pattern;
-			}
-		}
+		public Expression Pattern => pattern;
 
-		public Expression ValueExpression {
-			get {
-				return valueExpression;
-			}
-		}
+		public Expression ValueExpression => valueExpression;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

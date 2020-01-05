@@ -56,29 +56,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.schema = schema;
 		}
 
-		public int Flags {
-			get {
-				return flags;
-			}
-		}
+		public int Flags => flags;
 
-		public OpenxmlSchema Schema {
-			get {
-				return schema;
-			}
-		}
+		public OpenxmlSchema Schema => schema;
 
-		public SqlScriptableToken StringValue {
-			get {
-				return stringValue;
-			}
-		}
+		public SqlScriptableToken StringValue => stringValue;
 
-		public VariableName VariableName {
-			get {
-				return variableName;
-			}
-		}
+		public VariableName VariableName => variableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteFunction("OPENXML");

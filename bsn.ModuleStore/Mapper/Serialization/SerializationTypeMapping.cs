@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -60,8 +60,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private static bool CheckNativeType(Type type) {
 			lock (dbTypeMapping) {
-				KeyValuePair<SqlDbType, bool> dbType;
-				return dbTypeMapping.TryGetValue(type, out dbType) && dbType.Value;
+				return dbTypeMapping.TryGetValue(type, out var dbType) && dbType.Value;
 			}
 		}
 
@@ -76,9 +75,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				if (type.IsEnum) {
 					type = Enum.GetUnderlyingType(type);
 				}
-				KeyValuePair<SqlDbType, bool> mapping;
 				lock (dbTypeMapping) {
-					if (dbTypeMapping.TryGetValue(type, out mapping)) {
+					if (dbTypeMapping.TryGetValue(type, out var mapping)) {
 						return mapping.Key;
 					}
 					SqlDbType result;
@@ -88,8 +86,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 						if (type.IsXmlType()) {
 							result = SqlDbType.Xml;
 						} else {
-							Type dummyType;
-							if (type.TryGetIEnumerableElementType(out dummyType)) {
+							if (type.TryGetIEnumerableElementType(out var dummyType)) {
 								result = SqlDbType.Structured;
 							} else {
 								result = SqlDbType.Variant;
@@ -113,22 +110,22 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public SerializationTypeMapping(Type type, ISerializationTypeMappingProvider typeMappingProvider) {
 			if (type == null) {
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 			// required to enable recursive resolution of mappings
 			typeMappingProvider.RegisterMapping(type, this);
-			List<IMemberConverter> memberConverters = new List<IMemberConverter>();
-			List<MemberInfo> memberInfos = new List<MemberInfo>();
+			var memberConverters = new List<IMemberConverter>();
+			var memberInfos = new List<MemberInfo>();
 			isNativeType = CheckNativeType(type);
 			dbType = GetTypeMapping(type);
 			if (!(type.IsPrimitive || type.IsInterface || (typeof(string) == type))) {
-				bool hasIdentity = false;
-				foreach (MemberInfo member in type.GetAllFieldsAndProperties()) {
-					SqlColumnAttribute columnAttribute = SqlColumnAttributeBase.Get<SqlColumnAttribute>(member, false);
-					Type memberType = member.GetMemberType();
+				var hasIdentity = false;
+				foreach (var member in type.GetAllFieldsAndProperties()) {
+					var columnAttribute = SqlColumnAttributeBase.Get<SqlColumnAttribute>(member, false);
+					var memberType = member.GetMemberType();
 					if (columnAttribute != null) {
 						AssertValidMember(member);
-						bool isIdentity = (!hasIdentity) && (hasIdentity |= columnAttribute.Identity);
+						var isIdentity = (!hasIdentity) && (hasIdentity |= columnAttribute.Identity);
 						IMemberConverter memberConverter;
 						if (columnAttribute.GetCachedByIdentity) {
 							memberConverter = new CachedMemberConverter(memberType, isIdentity, columnAttribute.Name, memberInfos.Count, columnAttribute.DateTimeKind);
@@ -159,69 +156,40 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private void AssertValidMember(MemberInfo memberInfo) {
-			Type declaringType = memberInfo.DeclaringType;
+			var declaringType = memberInfo.DeclaringType;
 			Debug.Assert(declaringType != null);
-			FieldInfo fieldInfo = memberInfo as FieldInfo;
-			if (fieldInfo != null) {
+			switch (memberInfo) {
+			case FieldInfo fieldInfo:
 				if (fieldInfo.IsInitOnly) {
-					throw new InvalidOperationException(String.Format("The field {0}.{1} cannot be used as SQL column because it is readonly", declaringType.FullName, fieldInfo.Name));
+					throw new InvalidOperationException($"The field {declaringType.FullName}.{fieldInfo.Name} cannot be used as SQL column because it is readonly");
 				}
-			} else {
-				PropertyInfo propertyInfo = memberInfo as PropertyInfo;
-				if (propertyInfo != null) {
-					if (!declaringType.IsClass) {
-						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it is on a struct; use an explicit backing field as SQL column instead", declaringType.FullName, propertyInfo.Name));
-					}
-					if (propertyInfo.GetIndexParameters().Length > 0) {
-						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it is indexed", declaringType.FullName, propertyInfo.Name));
-					}
-					if (propertyInfo.GetGetMethod(true) == null) {
-						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it has no getter", declaringType.FullName, propertyInfo.Name));
-					}
-					if (propertyInfo.GetSetMethod(true) == null) {
-						throw new InvalidOperationException(String.Format("The property {0}.{1} cannot be used as SQL column because it has no setter", declaringType.FullName, propertyInfo.Name));
-					}
-				} else {
-					throw new ArgumentException("Only fields and properties are supported", "memberInfo");
-				}
+				break;
+			case PropertyInfo propertyInfo when !declaringType.IsClass:
+				throw new InvalidOperationException($"The property {declaringType.FullName}.{propertyInfo.Name} cannot be used as SQL column because it is on a struct; use an explicit backing field as SQL column instead");
+			case PropertyInfo propertyInfo when propertyInfo.GetIndexParameters().Length > 0:
+				throw new InvalidOperationException($"The property {declaringType.FullName}.{propertyInfo.Name} cannot be used as SQL column because it is indexed");
+			case PropertyInfo propertyInfo when propertyInfo.GetGetMethod(true) == null:
+				throw new InvalidOperationException($"The property {declaringType.FullName}.{propertyInfo.Name} cannot be used as SQL column because it has no getter");
+			case PropertyInfo propertyInfo when propertyInfo.GetSetMethod(true) == null:
+				throw new InvalidOperationException($"The property {declaringType.FullName}.{propertyInfo.Name} cannot be used as SQL column because it has no setter");
+			case PropertyInfo _:
+				break;
+			default:
+				throw new ArgumentException("Only fields and properties are supported", nameof(memberInfo));
 			}
 		}
 
-		public SqlDbType DbType {
-			get {
-				return dbType;
-			}
-		}
+		public SqlDbType DbType => dbType;
 
-		public bool IsNativeType {
-			get {
-				return isNativeType;
-			}
-		}
+		public bool IsNativeType => isNativeType;
 
-		public IDictionary<string, SqlColumnInfo> Columns {
-			get {
-				return columns;
-			}
-		}
+		public IDictionary<string, SqlColumnInfo> Columns => columns;
 
-		public ReadOnlyCollection<IMemberConverter> Converters {
-			get {
-				return converters;
-			}
-		}
+		public ReadOnlyCollection<IMemberConverter> Converters => converters;
 
-		public bool HasNestedSerializers {
-			get {
-				return hasNestedSerializers;
-			}
-		}
+		public bool HasNestedSerializers => hasNestedSerializers;
 
-		public int MemberCount {
-			get {
-				return members.Length;
-			}
-		}
+		public int MemberCount => members.Length;
 
 		public object GetMember(object instance, int index) {
 			Debug.Assert((instance != null) && (index >= 0) && (methods.GetMember != null));

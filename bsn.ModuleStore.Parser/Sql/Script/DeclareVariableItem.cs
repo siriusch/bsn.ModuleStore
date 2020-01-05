@@ -47,17 +47,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.initialization = initialization;
 		}
 
-		public Expression Initialization {
-			get {
-				return initialization;
-			}
-		}
+		public Expression Initialization => initialization;
 
-		public Qualified<SchemaName, TypeName> TypeName {
-			get {
-				return typeName;
-			}
-		}
+		public Qualified<SchemaName, TypeName> TypeName => typeName;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

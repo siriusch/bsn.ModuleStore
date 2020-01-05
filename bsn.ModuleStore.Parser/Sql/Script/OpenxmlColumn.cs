@@ -50,23 +50,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnPattern = columnPattern;
 		}
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
-		public StringLiteral ColumnPattern {
-			get {
-				return columnPattern;
-			}
-		}
+		public StringLiteral ColumnPattern => columnPattern;
 
-		public TypeName ColumnType {
-			get {
-				return columnType;
-			}
-		}
+		public TypeName ColumnType => columnType;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName, WhitespacePadding.None);

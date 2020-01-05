@@ -38,16 +38,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForeignKeyAction> ::= ~ON UPDATE ~SET ~NULL")]
 		public ForeignKeySetNullAction(DmlOperationToken operation): base(operation) {}
 
-		public override ForeignKeyActionKind Kind {
-			get {
-				return ForeignKeyActionKind.SetNull;
-			}
-		}
+		public override ForeignKeyActionKind Kind => ForeignKeyActionKind.SetNull;
 
-		protected override string ActionString {
-			get {
-				return "SET NULL";
-			}
-		}
+		protected override string ActionString => "SET NULL";
 	}
 }

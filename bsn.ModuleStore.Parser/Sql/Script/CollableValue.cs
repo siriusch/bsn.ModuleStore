@@ -45,17 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.collation = collation;
 		}
 
-		public CollationName Collation {
-			get {
-				return collation;
-			}
-		}
+		public CollationName Collation => collation;
 
-		public Expression ValueExpression {
-			get {
-				return valueExpression;
-			}
-		}
+		public Expression ValueExpression => valueExpression;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(valueExpression, WhitespacePadding.None);

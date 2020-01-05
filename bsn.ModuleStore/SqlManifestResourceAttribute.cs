@@ -40,16 +40,8 @@ namespace bsn.ModuleStore {
 			manifestResourceName = embeddedResourceName;
 		}
 
-		public string ManifestResourceName {
-			get {
-				return manifestResourceName;
-			}
-		}
+		public string ManifestResourceName => manifestResourceName;
 
-		public Type ManifestResourceType {
-			get {
-				return type;
-			}
-		}
+		public Type ManifestResourceType => type;
 	}
 }

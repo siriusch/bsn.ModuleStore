@@ -41,10 +41,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<RollbackTransactionStatement> ::= ~ROLLBACK ~TRANSACTION <TransactionIdentifier>")]
 		public RollbackTransactionStatement(SqlName transactionIdentifier): base(transactionIdentifier) {}
 
-		protected override string OperationSpecifier {
-			get {
-				return "ROLLBACK";
-			}
-		}
+		protected override string OperationSpecifier => "ROLLBACK";
 	}
 }

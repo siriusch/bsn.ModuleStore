@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			Debug.Assert(columnName != null);
 		}
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

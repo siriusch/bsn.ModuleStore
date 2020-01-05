@@ -40,10 +40,6 @@ namespace bsn.ModuleStore.Mapper {
 			version++;
 		}
 
-		int IVersioned.Version {
-			get {
-				return version;
-			}
-		}
-	                                                                                                                     }
+		int IVersioned.Version => version;
+	}
 }

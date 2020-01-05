@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CreateIndexStatement> ::= ~CREATE ~PRIMARY ~XML ~INDEX <IndexName> ~ON <TableNameQualified> ~'(' <ColumnName> ~')' <IndexUsing> <IndexOptionGroup>")]
 		public CreatePrimaryXmlIndexStatement(IndexName indexName, Qualified<SchemaName, TableName> tableName, ColumnName columnName, IndexUsing indexUsing, IndexOptionGroup indexOptions) : base(indexName, tableName, columnName, indexUsing, indexOptions) { }
 
-		public override bool Primary {
-			get {
-				return true;
-			}
-		}
+		public override bool Primary => true;
 	}
 }

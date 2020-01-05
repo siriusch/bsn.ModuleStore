@@ -42,17 +42,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.rankingArguments = rankingArguments;
 		}
 
-		public FunctionCall FunctionCall {
-			get {
-				return functionCall;
-			}
-		}
+		public FunctionCall FunctionCall => functionCall;
 
-		public RankingArguments RankingArguments {
-			get {
-				return rankingArguments;
-			}
-		}
+		public RankingArguments RankingArguments => rankingArguments;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

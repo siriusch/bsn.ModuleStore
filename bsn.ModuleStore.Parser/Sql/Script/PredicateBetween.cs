@@ -46,23 +46,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.upperBound = upperBound;
 		}
 
-		public Expression LowerBound {
-			get {
-				return lowerBound;
-			}
-		}
+		public Expression LowerBound => lowerBound;
 
-		public Expression UpperBound {
-			get {
-				return upperBound;
-			}
-		}
+		public Expression UpperBound => upperBound;
 
-		public Expression ValueExpression {
-			get {
-				return valueExpression;
-			}
-		}
+		public Expression ValueExpression => valueExpression;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

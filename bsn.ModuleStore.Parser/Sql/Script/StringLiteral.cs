@@ -41,17 +41,17 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		internal static string ParseValue(string value) {
-			StringBuilder result = new StringBuilder(value.Length-2);
-			int i = 0;
+			var result = new StringBuilder(value.Length-2);
+			var i = 0;
 			if (value[i] != '\'') {
 				i++;
 			}
 			Debug.Assert(value[i] == '\'');
 			i++;
-			bool keepQuote = false;
+			var keepQuote = false;
 			while (i < value.Length) {
-				char c = value[i++];
-				bool isNotQuote = c != '\'';
+				var c = value[i++];
+				var isNotQuote = c != '\'';
 				if (isNotQuote || keepQuote) {
 					result.Append(c);
 					keepQuote = false;
@@ -75,17 +75,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.collation = collation;
 		}
 
-		public CollationName Collation {
-			get {
-				return collation;
-			}
-		}
+		public CollationName Collation => collation;
 
-		public bool IsUnicode {
-			get {
-				return isUnicode;
-			}
-		}
+		public bool IsUnicode => isUnicode;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

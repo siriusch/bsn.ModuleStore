@@ -36,16 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForClause> ::= ~FOR ~XML ~AUTO <XmlDirectiveList>")]
 		public ForXmlAutoClause(Sequence<XmlDirective> directives): base(null, directives) {}
 
-		public override ForXmlKind Kind {
-			get {
-				return ForXmlKind.Auto;
-			}
-		}
+		public override ForXmlKind Kind => ForXmlKind.Auto;
 
-		protected override string KindSpecifier {
-			get {
-				return "AUTO";
-			}
-		}
+		protected override string KindSpecifier => "AUTO";
 	}
 }

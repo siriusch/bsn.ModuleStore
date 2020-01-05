@@ -53,56 +53,24 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.withCheckOption = withCheckOption.HasValue();
 		}
 
-		public IEnumerable<ColumnName> ColumnNames {
-			get {
-				return columnNames;
-			}
-		}
+		public IEnumerable<ColumnName> ColumnNames => columnNames;
 
-		public override ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.View;
-			}
-		}
+		public override ObjectCategory ObjectCategory => ObjectCategory.View;
 
 		public override string ObjectName {
-			get {
-				return viewName.Name.Value;
-			}
-			set {
-				viewName.Name = new ViewName(value);
-			}
+			get => viewName.Name.Value;
+			set => viewName.Name = new ViewName(value);
 		}
 
-		public SelectStatement SelectStatement {
-			get {
-				return selectStatement;
-			}
-		}
+		public SelectStatement SelectStatement => selectStatement;
 
-		public Qualified<SchemaName, ViewName> ViewName {
-			get {
-				return viewName;
-			}
-		}
+		public Qualified<SchemaName, ViewName> ViewName => viewName;
 
-		public OptionToken ViewOption {
-			get {
-				return viewOption;
-			}
-		}
+		public OptionToken ViewOption => viewOption;
 
-		public bool WithCheckOption {
-			get {
-				return withCheckOption;
-			}
-		}
+		public bool WithCheckOption => withCheckOption;
 
-		protected override SchemaName SchemaName {
-			get {
-				return viewName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => viewName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteToInternal(writer, "CREATE");
@@ -139,7 +107,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
 			if (string.IsNullOrEmpty(command)) {
-				throw new ArgumentNullException("command");
+				throw new ArgumentNullException(nameof(command));
 			}
 			WriteToInternal(writer, command);
 		}

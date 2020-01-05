@@ -52,11 +52,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.quote = quote;
 		}
 
-		public bool Global {
-			get {
-				return global;
-			}
-		}
+		public bool Global => global;
 
 		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
 			Debug.Assert(!isPartOfQualifiedName);

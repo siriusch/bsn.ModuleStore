@@ -41,11 +41,11 @@ namespace bsn.ModuleStore.Console.Commands {
 		public UpdateCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
-			AssemblyInventory assemblyInventory = (AssemblyInventory)executionContext.GetInventory(Source.Assembly, false);
+			var assemblyInventory = (AssemblyInventory)executionContext.GetInventory(Source.Assembly, false);
 			if (assemblyInventory == null) {
 				throw new NotSupportedException("The assembly inventory could not be created");
 			}
-			DatabaseInventory databaseInventory = (DatabaseInventory)executionContext.GetInventory(Source.Database, false);
+			var databaseInventory = (DatabaseInventory)executionContext.GetInventory(Source.Database, false);
 			if (databaseInventory == null) {
 				throw new NotSupportedException("The database inventory could not be created");
 			}

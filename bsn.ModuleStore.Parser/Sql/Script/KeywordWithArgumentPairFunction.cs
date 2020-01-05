@@ -47,17 +47,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.secondExpression = secondExpression;
 		}
 
-		public Expression FirstExpression {
-			get {
-				return firstExpression;
-			}
-		}
+		public Expression FirstExpression => firstExpression;
 
-		public Expression SecondExpression {
-			get {
-				return secondExpression;
-			}
-		}
+		public Expression SecondExpression => secondExpression;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

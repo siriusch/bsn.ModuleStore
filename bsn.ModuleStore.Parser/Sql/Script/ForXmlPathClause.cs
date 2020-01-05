@@ -36,16 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForClause> ::= ~FOR ~XML ~PATH <OptionalElementName> <XmlDirectiveList>")]
 		public ForXmlPathClause(Optional<StringLiteral> elementName, Sequence<XmlDirective> directives): base(elementName, directives) {}
 
-		public override ForXmlKind Kind {
-			get {
-				return ForXmlKind.Path;
-			}
-		}
+		public override ForXmlKind Kind => ForXmlKind.Path;
 
-		protected override string KindSpecifier {
-			get {
-				return "PATH";
-			}
-		}
+		protected override string KindSpecifier => "PATH";
 	}
 }

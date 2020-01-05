@@ -46,9 +46,7 @@ namespace bsn.ModuleStore {
 		}
 
 		public bool HasNumber {
-			get {
-				return number.HasValue;
-			}
+			get => number.HasValue;
 			set {
 				AssertNotReadonly();
 				if (value) {
@@ -59,9 +57,7 @@ namespace bsn.ModuleStore {
 		}
 
 		public bool HasSeverity {
-			get {
-				return severity.HasValue;
-			}
+			get => severity.HasValue;
 			set {
 				AssertNotReadonly();
 				if (value) {
@@ -72,9 +68,7 @@ namespace bsn.ModuleStore {
 		}
 
 		public bool HasState {
-			get {
-				return state.HasValue;
-			}
+			get => state.HasValue;
 			set {
 				AssertNotReadonly();
 				if (value) {
@@ -85,9 +79,7 @@ namespace bsn.ModuleStore {
 		}
 
 		public string Message {
-			get {
-				return message;
-			}
+			get => message;
 			set {
 				AssertNotReadonly();
 				message = value;
@@ -95,9 +87,7 @@ namespace bsn.ModuleStore {
 		}
 
 		public int Number {
-			get {
-				return number.GetValueOrDefault();
-			}
+			get => number.GetValueOrDefault();
 			set {
 				AssertNotReadonly();
 				number = value;
@@ -105,9 +95,7 @@ namespace bsn.ModuleStore {
 		}
 
 		public byte Severity {
-			get {
-				return severity.GetValueOrDefault();
-			}
+			get => severity.GetValueOrDefault();
 			set {
 				AssertNotReadonly();
 				severity = value;
@@ -115,23 +103,17 @@ namespace bsn.ModuleStore {
 		}
 
 		public byte State {
-			get {
-				return state.GetValueOrDefault();
-			}
+			get => state.GetValueOrDefault();
 			set {
 				AssertNotReadonly();
 				state = value;
 			}
 		}
 
-		public Type TargetException {
-			get {
-				return targetException;
-			}
-		}
+		public Type TargetException => targetException;
 
 		internal int ComputeSpecificity() {
-			int result = 0;
+			var result = 0;
 			if (declaredOn is Type) {
 				result += 0x8000;
 			} else if (declaredOn is MethodInfo) {
@@ -175,11 +157,7 @@ namespace bsn.ModuleStore {
 			return ComputeSpecificity()-other.ComputeSpecificity();
 		}
 
-		public MemberInfo DeclaredOn {
-			get {
-				return declaredOn;
-			}
-		}
+		public MemberInfo DeclaredOn => declaredOn;
 
 		void IHasDeclaringMember.SetDeclaringMember(MemberInfo member) {
 			AssertNotReadonly();

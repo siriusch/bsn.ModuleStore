@@ -50,14 +50,14 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public IList<string> GetComments(int index) {
-			int startIndex = comments.Count;
+			var startIndex = comments.Count;
 			while ((startIndex > 0) && (comments[startIndex-1].Key >= index)) {
 				startIndex--;
 			}
-			int len = comments.Count-startIndex;
+			var len = comments.Count-startIndex;
 			if (len > 0) {
-				List<string> result = new List<string>(len);
-				for (int i = 0; i < len; i++) {
+				var result = new List<string>(len);
+				for (var i = 0; i < len; i++) {
 					result.Add(comments[startIndex+i].Value);
 				}
 				comments.RemoveRange(startIndex, len);
@@ -78,11 +78,10 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		protected override SqlToken CreateToken(Symbol tokenSymbol, LineInfo tokenPosition, string text) {
-			SemanticTerminalFactory<SqlToken> factory;
-			if (!actions.TryGetTerminalFactory(tokenSymbol, out factory)) {
+			if (!actions.TryGetTerminalFactory(tokenSymbol, out var factory)) {
 				throw new InvalidOperationException("No terminal factory for symbol "+tokenSymbol.Name);
 			}
-			SqlToken token = factory.CreateAndInitialize(tokenSymbol, tokenPosition, text);
+			var token = factory.CreateAndInitialize(tokenSymbol, tokenPosition, text);
 			if (token is CommentToken) {
 				pendingComments.Add(text);
 			} else {
@@ -99,7 +98,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private void TransferPendingComments(int index) {
-			foreach (string comment in pendingComments) {
+			foreach (var comment in pendingComments) {
 				comments.Add(new KeyValuePair<int, string>(index, comment));
 			}
 			pendingComments.Clear();

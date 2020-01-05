@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		protected override object GetXmlObject(IDeserializerContext context, XmlReader reader) {
 			if (HasContent(reader)) {
 				context.XmlDocument.Load(reader);
-				XmlElement result = context.XmlDocument.DocumentElement;
+				var result = context.XmlDocument.DocumentElement;
 				context.XmlDocument.RemoveAll();
 				return result;
 			}

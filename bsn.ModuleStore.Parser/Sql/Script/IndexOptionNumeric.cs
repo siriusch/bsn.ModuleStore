@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.value = value;
 		}
 
-		public IntegerLiteral Value {
-			get {
-				return value;
-			}
-		}
+		public IntegerLiteral Value => value;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

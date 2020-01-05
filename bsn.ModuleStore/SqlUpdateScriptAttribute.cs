@@ -41,10 +41,6 @@ namespace bsn.ModuleStore {
 
 		public SqlUpdateScriptAttribute(int version, [Localizable(false)] string embeddedResourceName): this(version, null, embeddedResourceName) {}
 
-		public int Version {
-			get {
-				return version;
-			}
-		}
+		public int Version => version;
 	}
 }

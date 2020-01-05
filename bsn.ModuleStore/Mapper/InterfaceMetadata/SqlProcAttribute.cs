@@ -68,11 +68,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		/// Gets the name of the procedure.
 		/// </summary>
 		/// <value>The name of the procedure.</value>
-		public string ProcedureName {
-			get {
-				return string.IsNullOrEmpty(SchemaName) ? '['+Name+']' : '['+SchemaName+"].["+Name+']';
-			}
-		}
+		public string ProcedureName => string.IsNullOrEmpty(SchemaName) ? '['+Name+']' : '['+SchemaName+"].["+Name+']';
 
 		/// <summary>
 		/// The name for the database binding.
@@ -100,7 +96,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 		}
 
 		internal SqlProcAttribute CloneWithName(string newName) {
-			SqlProcAttribute result = (SqlProcAttribute)MemberwiseClone();
+			var result = (SqlProcAttribute)MemberwiseClone();
 			result.Name = newName;
 			return result;
 		}

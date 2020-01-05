@@ -21,23 +21,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnName = columnName;
 		}
 
-		public TableCheck Check {
-			get {
-				return check;
-			}
-		}
+		public TableCheck Check => check;
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
-		public ColumnConstraint Constraint {
-			get {
-				return constraint;
-			}
-		}
+		public ColumnConstraint Constraint => constraint;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);
@@ -48,16 +36,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(columnName, WhitespacePadding.None);
 		}
 
-		IQualifiedName<SchemaName> IApplicableTo<CreateTableStatement>.QualifiedName {
-			get {
-				return TableName;
-			}
-		}
+		IQualifiedName<SchemaName> IApplicableTo<CreateTableStatement>.QualifiedName => TableName;
 
 		public void ApplyTo(CreateTableStatement instance) {
-			TypedColumnDefinition typedColumnDefinition = instance.Definitions.OfType<TableColumnDefinition>().Where(c => string.Equals(c.ColumnName.Value, columnName.Value, StringComparison.OrdinalIgnoreCase)).Select(c => c.ColumnDefinition).OfType<TypedColumnDefinition>().FirstOrDefault();
+			var typedColumnDefinition = instance.Definitions.OfType<TableColumnDefinition>().Where(c => string.Equals(c.ColumnName.Value, columnName.Value, StringComparison.OrdinalIgnoreCase)).Select(c => c.ColumnDefinition).OfType<TypedColumnDefinition>().FirstOrDefault();
 			if (typedColumnDefinition == null) {
-				throw new InvalidOperationException(string.Format("The column {0} was not found on table {1}", columnName, TableName));
+				throw new InvalidOperationException($"The column {columnName} was not found on table {TableName}");
 			}
 			typedColumnDefinition.Constraints.Add(constraint);
 		}

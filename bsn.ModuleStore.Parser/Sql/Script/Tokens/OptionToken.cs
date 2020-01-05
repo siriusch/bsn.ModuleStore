@@ -39,11 +39,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<OptionalFunctionOption> ::=")]
 		public OptionToken() {}
 
-		protected virtual string OptionSpecifier {
-			get {
-				return string.Empty;
-			}
-		}
+		protected virtual string OptionSpecifier => string.Empty;
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			if (HasValue) {
@@ -52,10 +48,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 			}
 		}
 
-		public bool HasValue {
-			get {
-				return GetType() != typeof(OptionToken);
-			}
-		}
+		public bool HasValue => GetType() != typeof(OptionToken);
 	}
 }

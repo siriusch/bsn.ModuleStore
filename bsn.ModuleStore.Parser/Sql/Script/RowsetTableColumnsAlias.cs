@@ -43,11 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnNames = columnNames.ToList();
 		}
 
-		public IEnumerable<ColumnName> ColumnNames {
-			get {
-				return columnNames;
-			}
-		}
+		public IEnumerable<ColumnName> ColumnNames => columnNames;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

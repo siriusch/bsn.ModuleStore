@@ -48,38 +48,18 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expression = expression;
 		}
 
-		public Expression Expression {
-			get {
-				return expression;
-			}
-		}
+		public Expression Expression => expression;
 
-		public override ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.XmlSchema;
-			}
-		}
+		public override ObjectCategory ObjectCategory => ObjectCategory.XmlSchema;
 
 		public override string ObjectName {
-			get {
-				return xmlSchemaCollectionName.Name.Value;
-			}
-			set {
-				xmlSchemaCollectionName.Name = new XmlSchemaCollectionName(value);
-			}
+			get => xmlSchemaCollectionName.Name.Value;
+			set => xmlSchemaCollectionName.Name = new XmlSchemaCollectionName(value);
 		}
 
-		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName {
-			get {
-				return xmlSchemaCollectionName;
-			}
-		}
+		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName => xmlSchemaCollectionName;
 
-		protected override SchemaName SchemaName {
-			get {
-				return xmlSchemaCollectionName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => xmlSchemaCollectionName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

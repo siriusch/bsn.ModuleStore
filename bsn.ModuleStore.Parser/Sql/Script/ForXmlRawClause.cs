@@ -36,16 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForClause> ::= ~FOR ~XML ~RAW <OptionalElementName> <XmlDirectiveList>")]
 		public ForXmlRawClause(Optional<StringLiteral> elementName, Sequence<XmlDirective> directives): base(elementName, directives) {}
 
-		public override ForXmlKind Kind {
-			get {
-				return ForXmlKind.Raw;
-			}
-		}
+		public override ForXmlKind Kind => ForXmlKind.Raw;
 
-		protected override string KindSpecifier {
-			get {
-				return "RAW";
-			}
-		}
+		protected override string KindSpecifier => "RAW";
 	}
 }

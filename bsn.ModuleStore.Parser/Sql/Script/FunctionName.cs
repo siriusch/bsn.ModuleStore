@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	[Terminal("CONVERT")]
 	public sealed class FunctionName: SqlQuotedName {
 		private static KeyValuePair<string, bool> FormatName(string name) {
-			bool isBuiltIn = ScriptParser.TryGetBuiltinFunctionName(ref name);
+			var isBuiltIn = ScriptParser.TryGetBuiltinFunctionName(ref name);
 			return new KeyValuePair<string, bool>(name, isBuiltIn);
 		}
 
@@ -56,11 +56,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			builtinFunction = functionName.Value;
 		}
 
-		public bool IsBuiltinFunction {
-			get {
-				return builtinFunction;
-			}
-		}
+		public bool IsBuiltinFunction => builtinFunction;
 
 		protected internal override void WriteToInternal(SqlWriter writer, bool isPartOfQualifiedName) {
 			if (IsBuiltinFunction) {

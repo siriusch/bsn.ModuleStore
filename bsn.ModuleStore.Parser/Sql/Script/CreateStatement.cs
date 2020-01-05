@@ -34,11 +34,7 @@ namespace bsn.ModuleStore.Sql.Script {
 	public abstract class CreateStatement: DdlStatement {
 		private readonly List<IQualifiedName<SchemaName>> schemaQualifiedNames = new List<IQualifiedName<SchemaName>>();
 
-		public virtual bool IsPartOfSchemaDefinition {
-			get {
-				return false;
-			}
-		}
+		public virtual bool IsPartOfSchemaDefinition => false;
 
 		public abstract ObjectCategory ObjectCategory {
 			get;

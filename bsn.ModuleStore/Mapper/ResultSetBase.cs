@@ -35,55 +35,33 @@ namespace bsn.ModuleStore.Mapper {
 	public abstract class ResultSetBase<T>: ResultSet, IList<T> {
 		private IList<T> items = new T[0];
 
-		public T this[int index] {
-			get {
-				return items[index];
-			}
-		}
+		public T this[int index] => items[index];
 
-		public override sealed Type DataType {
-			get {
-				return typeof(T);
-			}
-		}
+		public override sealed Type DataType => typeof(T);
 
 		protected IList<T> Items {
-			get {
-				return items;
-			}
+			get => items;
 			set {
 				if (value == null) {
-					throw new ArgumentNullException("value");
+					throw new ArgumentNullException(nameof(value));
 				}
 				items = value;
 			}
 		}
 
 		public T[] ToArray() {
-			T[] result = new T[items.Count];
+			var result = new T[items.Count];
 			items.CopyTo(result, 0);
 			return result;
 		}
 
-		public override sealed int Count {
-			get {
-				return items.Count;
-			}
-		}
+		public override sealed int Count => items.Count;
 
-		bool ICollection<T>.IsReadOnly {
-			get {
-				return true;
-			}
-		}
+		bool ICollection<T>.IsReadOnly => true;
 
 		T IList<T>.this[int index] {
-			get {
-				return this[index];
-			}
-			set {
-				throw new NotSupportedException();
-			}
+			get => this[index];
+			set => throw new NotSupportedException();
 		}
 
 		public IEnumerator<T> GetEnumerator() {

@@ -46,17 +46,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.stringValue = stringValue;
 		}
 
-		public Identifier Identifier {
-			get {
-				return identifier;
-			}
-		}
+		public Identifier Identifier => identifier;
 
-		public SqlScriptableToken StringValue {
-			get {
-				return stringValue;
-			}
-		}
+		public SqlScriptableToken StringValue => stringValue;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

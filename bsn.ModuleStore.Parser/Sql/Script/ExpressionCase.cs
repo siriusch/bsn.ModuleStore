@@ -42,17 +42,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.elseExpression = elseExpression;
 		}
 
-		public Expression ElseExpression {
-			get {
-				return elseExpression;
-			}
-		}
+		public Expression ElseExpression => elseExpression;
 
-		public IEnumerable<CaseWhen<T>> WhenItems {
-			get {
-				return whenItems;
-			}
-		}
+		public IEnumerable<CaseWhen<T>> WhenItems => whenItems;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnType = columnType;
 		}
 
-		public Qualified<SchemaName, TypeName> ColumnType {
-			get {
-				return columnType;
-			}
-		}
+		public Qualified<SchemaName, TypeName> ColumnType => columnType;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnType, WhitespacePadding.None);

@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		public static TypedDataReaderInfo Get(Type type) {
 			if (type == null) {
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 			TypedDataReaderInfo result;
 			lock (infos) {
@@ -55,9 +55,9 @@ namespace bsn.ModuleStore.Mapper {
 			if (!typeof(ITypedDataReader).IsAssignableFrom(type)) {
 				throw new ArgumentException("The interface must inherit from ITypedDataReader");
 			}
-			PropertyInfo[] propertyInfos = type.GetProperties();
+			var propertyInfos = type.GetProperties();
 			properties = new Dictionary<string, KeyValuePair<string, Type>>(propertyInfos.Length);
-			foreach (PropertyInfo property in propertyInfos) {
+			foreach (var property in propertyInfos) {
 				if ((!property.CanRead) || (property.CanWrite)) {
 					throw new NotSupportedException("Properties for the typed data reader must be read-only.");
 				}
@@ -65,11 +65,7 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public int ColumnCount {
-			get {
-				return properties.Count;
-			}
-		}
+		public int ColumnCount => properties.Count;
 
 		public bool TryGetColumnInfo(string propertyGetterName, out KeyValuePair<string, Type> columnAttribute) {
 			return properties.TryGetValue(propertyGetterName, out columnAttribute);

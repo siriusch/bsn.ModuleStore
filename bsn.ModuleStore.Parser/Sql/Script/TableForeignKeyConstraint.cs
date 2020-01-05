@@ -52,35 +52,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.keyActions = keyActions.ToList();
 		}
 
-		public IEnumerable<ColumnName> ColumnNames {
-			get {
-				return columnNames;
-			}
-		}
+		public IEnumerable<ColumnName> ColumnNames => columnNames;
 
-		public IEnumerable<ForeignKeyAction> KeyActions {
-			get {
-				return keyActions;
-			}
-		}
+		public IEnumerable<ForeignKeyAction> KeyActions => keyActions;
 
-		public IEnumerable<ColumnName> RefColumnNames {
-			get {
-				return refColumnNames;
-			}
-		}
+		public IEnumerable<ColumnName> RefColumnNames => refColumnNames;
 
-		public Qualified<SchemaName, TableName> RefTableName {
-			get {
-				return refTableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> RefTableName => refTableName;
 
-		internal override bool IsPartOfSchemaDefinition {
-			get {
-				return true;
-			}
-		}
+		internal override bool IsPartOfSchemaDefinition => true;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

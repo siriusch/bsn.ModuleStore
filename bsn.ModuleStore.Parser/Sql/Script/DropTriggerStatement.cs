@@ -46,29 +46,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.ownerTable = ownerTable;
 		}
 
-		public override string ObjectName {
-			get {
-				return triggerName.Name.Value;
-			}
-		}
+		public override string ObjectName => triggerName.Name.Value;
 
-		public Qualified<SchemaName, TableName> OwnerTable {
-			get {
-				return ownerTable;
-			}
-		}
+		public Qualified<SchemaName, TableName> OwnerTable => ownerTable;
 
-		public Qualified<SchemaName, TriggerName> TriggerName {
-			get {
-				return triggerName;
-			}
-		}
+		public Qualified<SchemaName, TriggerName> TriggerName => triggerName;
 
-		protected override SchemaName SchemaName {
-			get {
-				return triggerName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => triggerName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
@@ -76,10 +60,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(triggerName, WhitespacePadding.None);
 		}
 
-		Qualified<SchemaName, TableName> ITableBound.TableName {
-			get {
-				return ownerTable;
-			}
-		}
+		Qualified<SchemaName, TableName> ITableBound.TableName => ownerTable;
 	}
 }

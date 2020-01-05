@@ -48,17 +48,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.orders = orders.ToList();
 		}
 
-		public IEnumerable<OrderExpression> Orders {
-			get {
-				return orders;
-			}
-		}
+		public IEnumerable<OrderExpression> Orders => orders;
 
-		public IEnumerable<Expression> Partitions {
-			get {
-				return partitions;
-			}
-		}
+		public IEnumerable<Expression> Partitions => partitions;
 
 		public override void WriteTo(SqlWriter writer) {
 			if (partitions.Count > 0) {

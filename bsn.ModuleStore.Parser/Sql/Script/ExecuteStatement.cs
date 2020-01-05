@@ -56,10 +56,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.option = option;
 			if (!procedureName.IsQualified && procedureName.Name.Value.StartsWith("sp_", StringComparison.OrdinalIgnoreCase)) {
 				procedureName.LockOverride();
-				int[] parameterPositions;
-				if (objectNameParameters.TryGetValue(procedureName.Name.Value, out parameterPositions)) {
-					foreach (int parameterPosition in parameterPositions.Where(p => this.parameters.Count > p)) {
-						ExecuteParameter<Literal> objectNameParameter = (ExecuteParameter<Literal>)this.parameters[parameterPosition];
+				if (objectNameParameters.TryGetValue(procedureName.Name.Value, out var parameterPositions)) {
+					foreach (var parameterPosition in parameterPositions.Where(p => this.parameters.Count > p)) {
+						var objectNameParameter = (ExecuteParameter<Literal>)this.parameters[parameterPosition];
 						if ((objectNameParameter != null) && (objectNameParameter.Value is StringLiteral)) {
 							this.parameters[parameterPosition] = new ExecuteParameterObjectName(objectNameParameter.ParameterName, ((StringLiteral)objectNameParameter.Value), objectNameParameter.Output);
 						}
@@ -71,29 +70,13 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExecuteStatement> ::= ~EXECUTE <ProcedureNameQualified> <ExecuteParameterGroup> <ProcedureOptionGroup>")]
 		public ExecuteStatement(Qualified<SchemaName, ProcedureName> procedureName, Optional<Sequence<ExecuteParameter>> parameters, OptionToken option): this(null, procedureName, parameters, option) {}
 
-		public OptionToken Option {
-			get {
-				return option;
-			}
-		}
+		public OptionToken Option => option;
 
-		public IEnumerable<ExecuteParameter> Parameters {
-			get {
-				return parameters;
-			}
-		}
+		public IEnumerable<ExecuteParameter> Parameters => parameters;
 
-		public Qualified<SchemaName, ProcedureName> ProcedureName {
-			get {
-				return procedureName;
-			}
-		}
+		public Qualified<SchemaName, ProcedureName> ProcedureName => procedureName;
 
-		public VariableName ResultVariableName {
-			get {
-				return resultVariableName;
-			}
-		}
+		public VariableName ResultVariableName => resultVariableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

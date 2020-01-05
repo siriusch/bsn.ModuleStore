@@ -37,23 +37,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.definitions = new HashSet<TableDefinition>(definitions);
 		}
 
-		public override bool AlterUsingUpdateScript {
-			get {
-				return true;
-			}
-		}
+		public override bool AlterUsingUpdateScript => true;
 
-		public IEnumerable<TableDefinition> Definitions {
-			get {
-				return definitions;
-			}
-		}
+		public IEnumerable<TableDefinition> Definitions => definitions;
 
-		public override bool IsPartOfSchemaDefinition {
-			get {
-				return true;
-			}
-		}
+		public override bool IsPartOfSchemaDefinition => true;
 
 		public override IInstallStatement CreateDropStatement() {
 			return new DropTableStatement(Owner.TableName);

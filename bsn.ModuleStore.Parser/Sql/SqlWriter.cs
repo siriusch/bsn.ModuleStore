@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -52,7 +52,7 @@ namespace bsn.ModuleStore.Sql {
 
 		public SqlWriter(TextWriter writer, DatabaseEngine engine, SqlWriterMode mode) {
 			if (writer == null) {
-				throw new ArgumentNullException("writer");
+				throw new ArgumentNullException(nameof(writer));
 			}
 			this.writer = writer as RichTextWriter ?? RichTextWriter.Wrap(writer);
 			this.engine = engine;
@@ -60,26 +60,14 @@ namespace bsn.ModuleStore.Sql {
 			Indentation = "    ";
 		}
 
-		public DatabaseEngine Engine {
-			get {
-				return engine;
-			}
-		}
+		public DatabaseEngine Engine => engine;
 
 		public string Indentation {
-			get {
-				return writer.IndentChars;
-			}
-			set {
-				writer.IndentChars = value ?? string.Empty;
-			}
+			get => writer.IndentChars;
+			set => writer.IndentChars = value ?? string.Empty;
 		}
 
-		public SqlWriterMode Mode {
-			get {
-				return mode;
-			}
-		}
+		public SqlWriterMode Mode => mode;
 
 		public IDisposable Indent() {
 			return writer.Indent();
@@ -238,26 +226,22 @@ namespace bsn.ModuleStore.Sql {
 
 		public void WriteScript<T>(T value, WhitespacePadding padding, Action<SqlWriter> prefix, Action<SqlWriter> suffix) where T: SqlScriptableToken {
 			if (value != null) {
-				IOptional optional = value as IOptional;
-				if ((optional == null) || (optional.HasValue)) {
+				if (!(value is IOptional optional) || optional.HasValue) {
 					PaddingBefore(padding);
 					Write(prefix);
 					value.WriteTo(this);
 					Write(suffix);
 					PaddingAfter(padding);
-				} else {
-					CommentContainerToken comments = value as CommentContainerToken;
-					if ((comments != null) && (comments.Comments.Count > 0)) {
-						PaddingBefore(padding);
-						comments.WriteCommentsTo(this);
-					}
+				} else if ((value is CommentContainerToken comments) && (comments.Comments.Count > 0)) {
+					PaddingBefore(padding);
+					comments.WriteCommentsTo(this);
 				}
 			}
 		}
 
 		public void WriteScriptSequence<T>(IEnumerable<T> sequence, WhitespacePadding itemPadding, Action<SqlWriter> separator) where T: SqlScriptableToken {
 			if (sequence != null) {
-				IEnumerator<T> enumerator = sequence.Where(x => x != null).GetEnumerator();
+				var enumerator = sequence.Where(x => x != null).GetEnumerator();
 				if (enumerator.MoveNext()) {
 					PaddingBefore(itemPadding);
 					WriteScript(enumerator.Current, WhitespacePadding.None);

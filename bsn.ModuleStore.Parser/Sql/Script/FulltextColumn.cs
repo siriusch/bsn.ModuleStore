@@ -46,23 +46,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.language = language;
 		}
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
-		public Literal Language {
-			get {
-				return language;
-			}
-		}
+		public Literal Language => language;
 
-		public Qualified<SchemaName, TypeName> TypeColumn {
-			get {
-				return typeColumn;
-			}
-		}
+		public Qualified<SchemaName, TypeName> TypeColumn => typeColumn;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnName, WhitespacePadding.None);

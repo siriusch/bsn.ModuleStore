@@ -42,8 +42,8 @@ namespace bsn.ModuleStore.Console.Commands {
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
 			try {
-				Source inventorySource = (Source)tags["source"];
-				Inventory inventory = executionContext.GetInventory(inventorySource, (bool)tags["directories"]);
+				var inventorySource = (Source)tags["source"];
+				var inventory = executionContext.GetInventory(inventorySource, (bool)tags["directories"]);
 				inventory.Dump(null, executionContext.Output);
 			} catch (Exception ex) {
 				executionContext.Output.WriteLine("Error: "+ex.Message);

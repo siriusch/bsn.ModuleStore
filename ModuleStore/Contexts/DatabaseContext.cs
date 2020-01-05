@@ -40,16 +40,8 @@ namespace bsn.ModuleStore.Console.Contexts {
 	internal class DatabaseContext: ContextBase<ExecutionContext> {
 		public DatabaseContext(ContextBase<ExecutionContext> parentContext): base(parentContext) {}
 
-		public override IEnumerable<CommandBase<ExecutionContext>> Commands {
-			get {
-				return Merge(base.Commands, new ConnectCommand(this), new DisconnectCommand(this), new ScriptCommand(this), new UninstallCommand(this), new UpdateCommand(this));
-			}
-		}
+		public override IEnumerable<CommandBase<ExecutionContext>> Commands => Merge(base.Commands, new ConnectCommand(this), new DisconnectCommand(this), new ScriptCommand(this), new UninstallCommand(this), new UpdateCommand(this));
 
-		public override IEnumerable<ConfigurationBase<ExecutionContext>> Configurations {
-			get {
-				return Merge(base.Configurations, new ServerConfiguration(), new SchemaConfiguration());
-			}
-		}
+		public override IEnumerable<ConfigurationBase<ExecutionContext>> Configurations => Merge(base.Configurations, new ServerConfiguration(), new SchemaConfiguration());
 	}
 }

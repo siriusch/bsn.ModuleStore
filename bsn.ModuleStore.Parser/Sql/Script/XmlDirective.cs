@@ -53,23 +53,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.key = key;
 		}
 
-		public StringLiteral ElementName {
-			get {
-				return elementName;
-			}
-		}
+		public StringLiteral ElementName => elementName;
 
-		public Identifier Key {
-			get {
-				return key;
-			}
-		}
+		public Identifier Key => key;
 
-		public Identifier Value {
-			get {
-				return value;
-			}
-		}
+		public Identifier Value => value;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(key, WhitespacePadding.None);

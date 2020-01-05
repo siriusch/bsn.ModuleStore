@@ -40,16 +40,8 @@ namespace bsn.ModuleStore.Console.Contexts {
 	internal class AssemblyContext: ContextBase<ExecutionContext> {
 		public AssemblyContext(ContextBase<ExecutionContext> parentContext): base(parentContext) {}
 
-		public override IEnumerable<CommandBase<ExecutionContext>> Commands {
-			get {
-				return Merge(base.Commands, new LoadCommand(this), new UnloadCommand(this));
-			}
-		}
+		public override IEnumerable<CommandBase<ExecutionContext>> Commands => Merge(base.Commands, new LoadCommand(this), new UnloadCommand(this));
 
-		public override IEnumerable<ConfigurationBase<ExecutionContext>> Configurations {
-			get {
-				return Merge(base.Configurations, new AssemblyConfiguration());
-			}
-		}
+		public override IEnumerable<ConfigurationBase<ExecutionContext>> Configurations => Merge(base.Configurations, new AssemblyConfiguration());
 	}
 }

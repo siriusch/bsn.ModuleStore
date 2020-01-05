@@ -44,10 +44,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<SetOptionStatement> ::= ~SET OFFSETS <SetValueList>")]
 		[Rule("<SetOptionStatement> ::= ~SET STATISTICS <SetValueList>")]
 		public SetOptionStatement(SqlScriptableToken identifier, Sequence<SqlScriptableToken> valueList) {
-			using (StringWriter stringWriter = new StringWriter()) {
-				SqlWriter writer = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
+			using (var stringWriter = new StringWriter()) {
+				var writer = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
 				writer.WriteScript(identifier, WhitespacePadding.None);
-				foreach (SqlScriptableToken token in valueList) {
+				foreach (var token in valueList) {
 					writer.Write(' ');
 					token.WriteTo(writer);
 				}
@@ -55,11 +55,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public string Option {
-			get {
-				return option;
-			}
-		}
+		public string Option => option;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

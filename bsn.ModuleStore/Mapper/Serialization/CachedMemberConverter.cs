@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -40,15 +40,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				// ReSharper restore UnusedMember.Local
 				// ReSharper restore StaticFieldInGenericType
 
-				public override Type Type {
-					get {
-						return typeof(T);
-					}
-				}
+				public override Type Type => typeof(T);
 
 				public override object GetIdentity(object instance) {
-					IIdentifiable<T> identifiable = instance as IIdentifiable<T>;
-					if (identifiable != null) {
+					if (instance is IIdentifiable<T> identifiable) {
 						return identifiable.Id;
 					}
 					return instance;
@@ -66,17 +61,17 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		private readonly IMemberConverter identityMember;
 
 		public CachedMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind): base(type, isIdentity, columnName, memberIndex) {
-			foreach (MemberInfo member in type.GetAllFieldsAndProperties()) {
-				SqlColumnAttribute columnAttribute = SqlColumnAttributeBase.Get<SqlColumnAttribute>(member, false);
+			foreach (var member in type.GetAllFieldsAndProperties()) {
+				var columnAttribute = SqlColumnAttributeBase.Get<SqlColumnAttribute>(member, false);
 				if ((columnAttribute != null) && columnAttribute.Identity) {
 					identityMember = Get(member.GetMemberType(), false, columnName, memberIndex, dateTimeKind);
 					break;
 				}
 			}
 			if (identityMember == null) {
-				throw new InvalidOperationException(String.Format("The type {0} cannot be retrieved from the cache because it lacks an identity column", type.FullName));
+				throw new InvalidOperationException($"The type {type.FullName} cannot be retrieved from the cache because it lacks an identity column");
 			}
-			foreach (Type @interface in type.GetInterfaces()) {
+			foreach (var @interface in type.GetInterfaces()) {
 				if (@interface.IsGenericType && typeof(IIdentifiable<>).Equals(@interface.GetGenericTypeDefinition())) {
 					// ReSharper disable AssignNullToNotNullAttribute
 					getter = (IdentifiableGetter)typeof(IdentifiableGetter.Generic<>).MakeGenericType(@interface.GetGenericArguments()).GetField("Default").GetValue(null);
@@ -96,10 +91,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override object ProcessFromDb(IDeserializerContext context, int column) {
-			object identity = identityMember.ProcessFromDb(context, column);
+			var identity = identityMember.ProcessFromDb(context, column);
 			if (identity != null) {
-				InstanceOrigin instanceOrigin;
-				object result = context.GetInstance(Type, identity, out instanceOrigin);
+				var result = context.GetInstance(Type, identity, out var instanceOrigin);
 				if (instanceOrigin == InstanceOrigin.New) {
 					context.RequireDeserialization(result);
 				}

@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		public ConvertibleMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		public override object ProcessFromDb(IDeserializerContext context, int column) {
-			object result = base.ProcessFromDb(context, column);
+			var result = base.ProcessFromDb(context, column);
 			if ((result != null) && (!Type.IsAssignableFrom(result.GetType()))) {
 				result = Convert.ChangeType(result, Type);
 			}

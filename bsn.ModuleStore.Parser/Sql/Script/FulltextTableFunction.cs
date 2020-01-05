@@ -49,35 +49,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.top = top;
 		}
 
-		public ReservedKeyword Keyword {
-			get {
-				return keyword;
-			}
-		}
+		public ReservedKeyword Keyword => keyword;
 
-		public Literal Language {
-			get {
-				return language;
-			}
-		}
+		public Literal Language => language;
 
-		public Expression Query {
-			get {
-				return query;
-			}
-		}
+		public Expression Query => query;
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableName => tableName;
 
-		public IntegerLiteral Top {
-			get {
-				return top;
-			}
-		}
+		public IntegerLiteral Top => top;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(keyword, WhitespacePadding.None);

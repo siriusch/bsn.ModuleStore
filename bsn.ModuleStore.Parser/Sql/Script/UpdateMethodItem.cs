@@ -48,11 +48,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.methods = methods.ToList();
 		}
 
-		public IEnumerable<NamedFunction> Methods {
-			get {
-				return methods;
-			}
-		}
+		public IEnumerable<NamedFunction> Methods => methods;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(VariableName, WhitespacePadding.None, null, w => w.Write('.'));

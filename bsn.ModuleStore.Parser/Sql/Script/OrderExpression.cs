@@ -46,17 +46,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.oderType = oderType.Order;
 		}
 
-		public Expression Expression {
-			get {
-				return expression;
-			}
-		}
+		public Expression Expression => expression;
 
-		public SortOrder OderType {
-			get {
-				return oderType;
-			}
-		}
+		public SortOrder OderType => oderType;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(expression, WhitespacePadding.None);

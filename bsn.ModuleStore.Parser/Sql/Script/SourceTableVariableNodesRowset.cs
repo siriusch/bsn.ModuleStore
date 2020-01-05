@@ -45,17 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnName = columnName;
 		}
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
-		public VariableName TableName {
-			get {
-				return tableName;
-			}
-		}
+		public VariableName TableName => tableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(tableName, WhitespacePadding.None);

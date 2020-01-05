@@ -44,11 +44,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.options = options.ToList();
 		}
 
-		public IEnumerable<QueryHintOption> Options {
-			get {
-				return options;
-			}
-		}
+		public IEnumerable<QueryHintOption> Options => options;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
@@ -58,10 +54,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.Write(')');
 		}
 
-		public bool HasValue {
-			get {
-				return options.Count > 0;
-			}
-		}
+		public bool HasValue => options.Count > 0;
 	}
 }

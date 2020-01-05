@@ -54,56 +54,24 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.body = body;
 		}
 
-		public StatementBlock Body {
-			get {
-				return body;
-			}
-		}
+		public StatementBlock Body => body;
 
-		public override ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.Procedure;
-			}
-		}
+		public override ObjectCategory ObjectCategory => ObjectCategory.Procedure;
 
 		public override string ObjectName {
-			get {
-				return procedureName.Name.Value;
-			}
-			set {
-				procedureName.Name = new ProcedureName(value);
-			}
+			get => procedureName.Name.Value;
+			set => procedureName.Name = new ProcedureName(value);
 		}
 
-		public OptionToken Option {
-			get {
-				return option;
-			}
-		}
+		public OptionToken Option => option;
 
-		public ReadOnlyCollection<ProcedureParameter> Parameters {
-			get {
-				return parameters.AsReadOnly();
-			}
-		}
+		public ReadOnlyCollection<ProcedureParameter> Parameters => parameters.AsReadOnly();
 
-		public Qualified<SchemaName, ProcedureName> ProcedureName {
-			get {
-				return procedureName;
-			}
-		}
+		public Qualified<SchemaName, ProcedureName> ProcedureName => procedureName;
 
-		public ReplicationToken Replication {
-			get {
-				return replication;
-			}
-		}
+		public ReplicationToken Replication => replication;
 
-		protected override SchemaName SchemaName {
-			get {
-				return procedureName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => procedureName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteToInternal(writer, "CREATE");
@@ -136,7 +104,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
 			if (string.IsNullOrEmpty(command)) {
-				throw new ArgumentNullException("command");
+				throw new ArgumentNullException(nameof(command));
 			}
 			WriteToInternal(writer, command);
 		}

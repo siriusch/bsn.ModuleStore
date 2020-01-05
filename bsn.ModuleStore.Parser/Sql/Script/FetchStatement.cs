@@ -52,23 +52,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.destinationVariables = destinationVariables.ToList();
 		}
 
-		public CursorName CursorName {
-			get {
-				return cursorName;
-			}
-		}
+		public CursorName CursorName => cursorName;
 
-		public CursorPositionToken CursorPosition {
-			get {
-				return cursorPosition;
-			}
-		}
+		public CursorPositionToken CursorPosition => cursorPosition;
 
-		public IEnumerable<VariableName> DestinationVariables {
-			get {
-				return destinationVariables;
-			}
-		}
+		public IEnumerable<VariableName> DestinationVariables => destinationVariables;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("FETCH ");

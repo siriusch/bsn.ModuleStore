@@ -40,16 +40,8 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			this.value = value;
 		}
 
-		public string ParameterName {
-			get {
-				return parameterName;
-			}
-		}
+		public string ParameterName => parameterName;
 
-		public object Value {
-			get {
-				return value;
-			}
-		}
+		public object Value => value;
 	}
 }

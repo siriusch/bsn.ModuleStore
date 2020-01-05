@@ -45,17 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expressions = expressions.ToList();
 		}
 
-		public IEnumerable<ColumnName> ColumnNames {
-			get {
-				return columnNames;
-			}
-		}
+		public IEnumerable<ColumnName> ColumnNames => columnNames;
 
-		public IEnumerable<Expression> Expressions {
-			get {
-				return expressions;
-			}
-		}
+		public IEnumerable<Expression> Expressions => expressions;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

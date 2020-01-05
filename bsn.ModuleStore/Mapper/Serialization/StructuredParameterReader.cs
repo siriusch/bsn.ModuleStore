@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -47,63 +47,32 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public StructuredParameterReader(StructuredParameterSchemaBase schema, IEnumerable values) {
 			if (schema == null) {
-				throw new ArgumentNullException("schema");
+				throw new ArgumentNullException(nameof(schema));
 			}
 			this.schema = schema;
 			data = new object[schema.MappedColumns.Count];
 			if (values != null) {
 				enumerator = values.GetEnumerator();
 				if (!enumerator.MoveNext()) {
-					IDisposable disposable = enumerator as IDisposable;
-					if (disposable != null) {
-						disposable.Dispose();
-					}
+					(enumerator as IDisposable)?.Dispose();
 					enumerator = null;
 				}
 			}
 		}
 
-		public override object this[int ordinal] {
-			get {
-				return GetValue(ordinal);
-			}
-		}
+		public override object this[int ordinal] => GetValue(ordinal);
 
-		public override object this[string name] {
-			get {
-				return this[GetOrdinal(name)];
-			}
-		}
+		public override object this[string name] => this[GetOrdinal(name)];
 
-		public override int Depth {
-			get {
-				return 0;
-			}
-		}
+		public override int Depth => 0;
 
-		public override int FieldCount {
-			get {
-				return schema.ColumnCount;
-			}
-		}
+		public override int FieldCount => schema.ColumnCount;
 
-		public override bool HasRows {
-			get {
-				return (enumerator != null);
-			}
-		}
+		public override bool HasRows => (enumerator != null);
 
-		public override bool IsClosed {
-			get {
-				return isClosed;
-			}
-		}
+		public override bool IsClosed => isClosed;
 
-		public override int RecordsAffected {
-			get {
-				return rowCount;
-			}
-		}
+		public override int RecordsAffected => rowCount;
 
 		public override void Close() {
 			if (!isClosed) {
@@ -121,27 +90,25 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length) {
 			if (length > 0) {
-				object value = GetValueInternal(i);
-				XmlReader reader = value as XmlReader;
-				if (reader != null) {
-					CopyXmlReaderContent(reader, XmlWriter.Create((Stream)(value = new MemoryStream()), CreateXmlWriterSettings()));
+				var value = GetValueInternal(i);
+				if (value is XmlReader reader) {
+					value = new MemoryStream();
+					CopyXmlReaderContent(reader, XmlWriter.Create((Stream)value, CreateXmlWriterSettings()));
 					SetValueInternal(i, value);
 				}
-				byte[] bytes = value as byte[];
-				if (bytes != null) {
-					if (fieldOffset >= bytes.LongLength) {
-						return 0;
-					}
+				switch (value) {
+				case byte[] bytes when fieldOffset >= bytes.LongLength:
+					return 0;
+				case byte[] bytes:
 					length = Math.Min((int)Math.Min(bytes.LongLength-fieldOffset, int.MaxValue), length);
 					Array.Copy(bytes, fieldOffset, buffer, bufferOffset, length);
 					return length;
-				}
-				Stream stream = value as Stream;
-				if (stream != null) {
+				case Stream stream: {
 					if (stream.Position != fieldOffset) {
 						stream.Seek(fieldOffset, SeekOrigin.Begin);
 					}
 					return stream.Read(buffer, bufferOffset, length);
+				}
 				}
 			}
 			return 0;
@@ -153,38 +120,32 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public override long GetChars(int i, long fieldOffset, char[] buffer, int bufferOffset, int length) {
 			if (length > 0) {
-				object value = GetValueInternal(i);
-				if (value is char) {
-					if (fieldOffset > 0) {
-						return 0;
-					}
-					buffer[bufferOffset] = (char)value;
-					return 1;
-				}
-				XmlReader reader = value as XmlReader;
-				if (reader != null) {
-					using (StringWriter output = new StringWriter()) {
+				var value = GetValueInternal(i);
+				if (value is XmlReader reader) {
+					using (var output = new StringWriter()) {
 						CopyXmlReaderContent(reader, XmlWriter.Create(output, CreateXmlWriterSettings()));
 						value = output.ToString();
 						SetValueInternal(i, value);
 					}
 				}
-				string str = value as string;
-				if (str != null) {
-					if (fieldOffset >= str.Length) {
-						return 0;
-					}
+				switch (value) {
+				case char _ when fieldOffset > 0:
+					return 0;
+				case char ch:
+					buffer[bufferOffset] = ch;
+					return 1;
+				case string str when fieldOffset >= str.Length:
+					return 0;
+				case string str: {
 					length = Math.Min(str.Length-(int)fieldOffset, length);
 					for (i = 0; i < length; i++) {
 						buffer[bufferOffset+i] = str[(int)fieldOffset+i];
 					}
 					return length;
 				}
-				char[] chars = value as char[];
-				if (chars != null) {
-					if (fieldOffset >= chars.LongLength) {
-						return 0;
-					}
+				case char[] chars when fieldOffset >= chars.LongLength:
+					return 0;
+				case char[] chars:
 					length = Math.Min((int)Math.Min(chars.LongLength-fieldOffset, int.MaxValue), length);
 					Array.Copy(chars, fieldOffset, buffer, bufferOffset, length);
 					return length;
@@ -242,12 +203,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override int GetOrdinal(string name) {
-			for (int i = 0; i < schema.ColumnCount; i++) {
+			for (var i = 0; i < schema.ColumnCount; i++) {
 				if (string.Equals(schema.GetColumnName(i), name, StringComparison.OrdinalIgnoreCase)) {
 					return i;
 				}
 			}
-			throw new IndexOutOfRangeException(string.Format("Could not find the column '{0}'", name));
+			throw new IndexOutOfRangeException($"Could not find the column '{name}'");
 		}
 
 		public override DataTable GetSchemaTable() {
@@ -255,35 +216,35 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override string GetString(int i) {
-			object value = GetValueInternal(i);
+			var value = GetValueInternal(i);
 			return (value is string) ? (string)value : value.ToString();
 		}
 
 		public override object GetValue(int ordinal) {
-			object value = GetValueInternal(ordinal);
-			XmlReader reader = value as XmlReader;
-			if (reader != null) {
+			var value = GetValueInternal(ordinal);
+			switch (value) {
+			case XmlReader reader:
 				using (reader) {
 					value = new SqlXml(reader);
 				}
 				SetValueInternal(ordinal, value);
+				break;
 			}
 			return value;
 		}
 
 		public override int GetValues(object[] values) {
 			if (values == null) {
-				throw new ArgumentNullException("values");
+				throw new ArgumentNullException(nameof(values));
 			}
-			for (int i = 0; i < schema.ColumnCount; i++) {
+			for (var i = 0; i < schema.ColumnCount; i++) {
 				values[i] = GetValue(i);
 			}
 			return schema.ColumnCount;
 		}
 
 		public override bool IsDBNull(int i) {
-			int fieldIndex;
-			if (schema.TryGetFieldIndexOfColumn(i, out fieldIndex)) {
+			if (schema.TryGetFieldIndexOfColumn(i, out var fieldIndex)) {
 				return data[fieldIndex] == DBNull.Value;
 			}
 			return true;
@@ -309,10 +270,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		protected override void Dispose(bool disposing) {
 			if (disposing && (!isClosed)) {
 				isClosed = true;
-				IDisposable disposableEnumerator = enumerator as IDisposable;
-				if (disposableEnumerator != null) {
-					disposableEnumerator.Dispose();
-				}
+				(enumerator as IDisposable)?.Dispose();
 			}
 			base.Dispose(disposing);
 		}
@@ -329,7 +287,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private XmlWriterSettings CreateXmlWriterSettings() {
-			XmlWriterSettings result = new XmlWriterSettings();
+			var result = new XmlWriterSettings();
 			result.CloseOutput = false;
 			result.ConformanceLevel = ConformanceLevel.Fragment;
 			result.Encoding = Encoding.Unicode;
@@ -339,8 +297,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private object GetValueInternal(int ordinal) {
-			int fieldIndex;
-			if (schema.TryGetFieldIndexOfColumn(ordinal, out fieldIndex)) {
+			if (schema.TryGetFieldIndexOfColumn(ordinal, out var fieldIndex)) {
 				return data[fieldIndex];
 			}
 			return DBNull.Value;
@@ -348,13 +305,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private void LoadData(object instance) {
 			if (instance == null) {
-				for (int i = 0; i < data.Length; i++) {
+				for (var i = 0; i < data.Length; i++) {
 					data[i] = DBNull.Value;
 				}
 			} else if (schema.ExtractMembers != null) {
 				schema.ExtractMembers(instance, data);
-				for (int i = 0; i < data.Length; i++) {
-					IMemberConverter converter = schema.MappedColumns[i].Converter;
+				for (var i = 0; i < data.Length; i++) {
+					var converter = schema.MappedColumns[i].Converter;
 					data[i] = ((converter != null) ? converter.ProcessToDb(data[i]) : data[i]) ?? DBNull.Value;
 				}
 			} else {
@@ -363,9 +320,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		private void SetValueInternal(int ordinal, object value) {
-			int fieldIndex;
-			if (!schema.TryGetFieldIndexOfColumn(ordinal, out fieldIndex)) {
-				throw new ArgumentOutOfRangeException("ordinal");
+			if (!schema.TryGetFieldIndexOfColumn(ordinal, out var fieldIndex)) {
+				throw new ArgumentOutOfRangeException(nameof(ordinal));
 			}
 			data[fieldIndex] = value ?? DBNull.Value;
 		}

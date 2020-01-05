@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -33,18 +33,16 @@ using System.Reflection;
 namespace bsn.ModuleStore.Mapper {
 	internal static class MemberInfoExtensionMethods {
 		public static Type GetMemberType(this MemberInfo that) {
-			if (that == null) {
-				throw new ArgumentNullException("that");
-			}
-			FieldInfo fieldInfo = that as FieldInfo;
-			if (fieldInfo != null) {
+			switch (that) {
+			case null:
+				throw new ArgumentNullException(nameof(that));
+			case FieldInfo fieldInfo:
 				return fieldInfo.FieldType;
-			}
-			PropertyInfo propertyInfo = that as PropertyInfo;
-			if (propertyInfo != null) {
+			case PropertyInfo propertyInfo:
 				return propertyInfo.PropertyType;
+			default:
+				throw new ArgumentException("Only fields and properties are supported", nameof(that));
 			}
-			throw new ArgumentException("Only fields and properties are supported", "that");
 		}
 	}
 }

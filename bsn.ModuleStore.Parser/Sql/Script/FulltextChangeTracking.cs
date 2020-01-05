@@ -37,17 +37,9 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<FulltextChangeTracking> ::=")]
 		public FulltextChangeTracking() {}
 
-		public virtual FulltextChangeTrackingKind ChangeTracking {
-			get {
-				return FulltextChangeTrackingKind.Unspecified;
-			}
-		}
+		public virtual FulltextChangeTrackingKind ChangeTracking => FulltextChangeTrackingKind.Unspecified;
 
-		protected virtual string ChangeTrackingSpecifier {
-			get {
-				return string.Empty;
-			}
-		}
+		protected virtual string ChangeTrackingSpecifier => string.Empty;
 
 		public override void WriteTo(SqlWriter writer) {
 			Debug.Assert(HasValue);
@@ -55,10 +47,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteKeyword(ChangeTrackingSpecifier);
 		}
 
-		public bool HasValue {
-			get {
-				return ChangeTracking != FulltextChangeTrackingKind.Unspecified;
-			}
-		}
+		public bool HasValue => ChangeTracking != FulltextChangeTrackingKind.Unspecified;
 	}
 }

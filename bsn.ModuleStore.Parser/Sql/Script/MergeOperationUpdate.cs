@@ -43,11 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.updateItems = updateItems.ToList();
 		}
 
-		public IEnumerable<UpdateItem> UpdateItems {
-			get {
-				return updateItems;
-			}
-		}
+		public IEnumerable<UpdateItem> UpdateItems => updateItems;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

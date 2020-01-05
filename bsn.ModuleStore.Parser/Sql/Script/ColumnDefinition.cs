@@ -41,11 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.constraints = constraints.ToList();
 		}
 
-		public List<ColumnConstraint> Constraints {
-			get {
-				return constraints;
-			}
-		}
+		public List<ColumnConstraint> Constraints => constraints;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScriptSequence(constraints.Where(c => !((writer.Engine == DatabaseEngine.SqlAzure) && (c is ColumnRowguidcolConstraint))), WhitespacePadding.SpaceBefore, null);

@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<OptionalFunctionOption> ::= ~WITH ~EXECUTE ~AS ~CALLER")]
 		public FunctionOptionExecuteAsCallerToken() {}
 
-		protected override string OptionSpecifier {
-			get {
-				return "EXECUTE AS CALLER";
-			}
-		}
+		protected override string OptionSpecifier => "EXECUTE AS CALLER";
 	}
 }

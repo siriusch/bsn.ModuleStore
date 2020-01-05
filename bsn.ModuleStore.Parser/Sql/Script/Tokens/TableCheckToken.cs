@@ -36,10 +36,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<TableCheck> ::=")]
 		public TableCheckToken() {}
 
-		public virtual TableCheck TableCheck {
-			get {
-				return TableCheck.Unspecified;
-			}
-		}
+		public virtual TableCheck TableCheck => TableCheck.Unspecified;
 	}
 }

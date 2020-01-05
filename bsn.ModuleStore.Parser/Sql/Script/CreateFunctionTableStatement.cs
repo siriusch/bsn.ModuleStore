@@ -49,17 +49,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableDefinitions = tableDefinitions.ToList();
 		}
 
-		public VariableName ResultVariableName {
-			get {
-				return resultVariableName;
-			}
-		}
+		public VariableName ResultVariableName => resultVariableName;
 
-		public IEnumerable<TableDefinition> TableDefinitions {
-			get {
-				return tableDefinitions;
-			}
-		}
+		public IEnumerable<TableDefinition> TableDefinitions => tableDefinitions;
 
 		protected override void WriteToInternal(SqlWriter writer, string command) {
 			base.WriteToInternal(writer, command);

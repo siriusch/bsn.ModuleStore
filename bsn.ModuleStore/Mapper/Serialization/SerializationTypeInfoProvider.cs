@@ -66,14 +66,14 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public SerializationTypeInfoProvider(ISerializationTypeMappingProvider mappingProvider) {
 			if (mappingProvider == null) {
-				throw new ArgumentNullException("mappingProvider");
+				throw new ArgumentNullException(nameof(mappingProvider));
 			}
 			this.mappingProvider = mappingProvider;
 		}
 
 		public ISerializationTypeInfo GetSerializationTypeInfo(Type type, bool scalar) {
 			SerializationTypeInfo result;
-			TypeKey key = new TypeKey(type, scalar);
+			var key = new TypeKey(type, scalar);
 			lock (infos) {
 				if (!infos.TryGetValue(key, out result)) {
 					result = new SerializationTypeInfo(type, scalar, mappingProvider);
@@ -83,10 +83,6 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			return result;
 		}
 
-		public ISerializationTypeMappingProvider TypeMappingProvider {
-			get {
-				return mappingProvider;
-			}
-		}
+		public ISerializationTypeMappingProvider TypeMappingProvider => mappingProvider;
 	}
 }

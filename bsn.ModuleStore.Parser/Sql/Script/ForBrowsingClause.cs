@@ -36,11 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForClause> ::= ~FOR ~BROWSE")]
 		public ForBrowsingClause() {}
 
-		public override SelectFor SelectFor {
-			get {
-				return SelectFor.Browse;
-			}
-		}
+		public override SelectFor SelectFor => SelectFor.Browse;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("FOR BROWSE");

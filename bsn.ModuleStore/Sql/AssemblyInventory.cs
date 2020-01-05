@@ -39,20 +39,19 @@ using System.Text;
 using bsn.ModuleStore.Sql.Script;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
-using Common.Logging;
+using NLog;
 
 namespace bsn.ModuleStore.Sql {
 	public class AssemblyInventory: InstallableInventory {
 		private static readonly Dictionary<Assembly, AssemblyInventory> cachedInventories = new Dictionary<Assembly, AssemblyInventory>();
-		private static readonly ILog log = LogManager.GetLogger<AssemblyInventory>();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		public static AssemblyInventory Get(Assembly assembly) {
 			if (assembly == null) {
-				throw new ArgumentNullException("assembly");
+				throw new ArgumentNullException(nameof(assembly));
 			}
 			lock (cachedInventories) {
-				AssemblyInventory result;
-				if (!cachedInventories.TryGetValue(assembly, out result)) {
+				if (!cachedInventories.TryGetValue(assembly, out var result)) {
 					result = new AssemblyInventory(new AssemblyHandle(assembly));
 					cachedInventories.Add(assembly, result);
 				}
@@ -71,17 +70,14 @@ namespace bsn.ModuleStore.Sql {
 		public AssemblyInventory(IAssemblyHandle assembly) {
 			this.assembly = assembly;
 			attributes = assembly.GetCustomAttributes<SqlAssemblyAttribute>().ToList().AsReadOnly();
-			foreach (KeyValuePair<SqlAssemblyAttribute, string> attribute in attributes) {
-				SqlRequiredVersionAttribute requiredVersionAttribute = attribute.Key as SqlRequiredVersionAttribute;
-				if (requiredVersionAttribute != null) {
+			foreach (var attribute in attributes) {
+				if (attribute.Key is SqlRequiredVersionAttribute requiredVersionAttribute) {
 					if (requiredVersionAttribute.RequiredEngineVersion > requiredEngineVersion) {
 						requiredEngineVersion = requiredVersionAttribute.RequiredEngineVersion;
 					}
 				} else {
-					SqlSetupScriptAttributeBase setupScriptAttribute = attribute.Key as SqlSetupScriptAttributeBase;
-					if (setupScriptAttribute != null) {
-						string manifestStreamKey;
-						using (TextReader reader = OpenText(setupScriptAttribute, attribute.Value, out manifestStreamKey)) {
+					if (attribute.Key is SqlSetupScriptAttributeBase setupScriptAttribute) {
+						using (var reader = OpenText(setupScriptAttribute, attribute.Value, out var manifestStreamKey)) {
 							if (processedManifestStreamKeys.Add(manifestStreamKey)) {
 								try {
 									ProcessSingleScript(reader, AddAdditionalSetupStatement);
@@ -92,30 +88,28 @@ namespace bsn.ModuleStore.Sql {
 							}
 						}
 					} else {
-						SqlUpdateScriptAttribute updateScriptAttribute = attribute.Key as SqlUpdateScriptAttribute;
-						if (updateScriptAttribute != null) {
+						if (attribute.Key is SqlUpdateScriptAttribute updateScriptAttribute) {
 							if (updateScriptAttribute.Version < 1) {
-								string message = string.Format("Update script versions must be at least 1, but {0} was specified (script: {1})", updateScriptAttribute.Version, updateScriptAttribute.ManifestResourceName);
+								var message = $"Update script versions must be at least 1, but {updateScriptAttribute.Version} was specified (script: {updateScriptAttribute.ManifestResourceName})";
 								log.Error(message);
 								throw new InvalidOperationException(message);
 							}
-							using (TextReader reader = OpenText(updateScriptAttribute, attribute.Value)) {
-								updateStatements.Add(updateScriptAttribute.Version, ScriptParser.Parse(reader).ToArray());
+							using (var reader = OpenText(updateScriptAttribute, attribute.Value)) {
+								updateStatements.Add(updateScriptAttribute.Version, ScriptParser.Parse(reader).Cast<IScriptableStatement>().ToArray());
 								updateVersion = Math.Max(updateVersion, updateScriptAttribute.Version);
 							}
 						} else {
-							SqlExceptionMappingAttribute exceptionMappingAttribute = attribute.Key as SqlExceptionMappingAttribute;
-							if (exceptionMappingAttribute != null) {
+							if (attribute.Key is SqlExceptionMappingAttribute exceptionMappingAttribute) {
 								exceptionMappings.Add(exceptionMappingAttribute);
 							} else {
-								log.WarnFormat("Unrecognized assembly SQL attribute {0}", attribute.Key.GetType());
+								log.Warn("Unrecognized assembly SQL attribute {typeName}", attribute.Key.GetType().FullName);
 							}
 						}
 					}
 				}
 			}
-			int expectedVersion = 1;
-			foreach (KeyValuePair<int, IScriptableStatement[]> update in updateStatements) {
+			var expectedVersion = 1;
+			foreach (var update in updateStatements) {
 				Debug.Assert(update.Key == expectedVersion);
 				StatementSetSchemaOverride(update.Value);
 				expectedVersion = update.Key+1;
@@ -124,57 +118,33 @@ namespace bsn.ModuleStore.Sql {
 			exceptionMappings.Sort((x, y) => x.ComputeSpecificity()-y.ComputeSpecificity());
 		}
 
-		public AssemblyName AssemblyName {
-			get {
-				return assembly.AssemblyName;
-			}
-		}
+		public AssemblyName AssemblyName => assembly.AssemblyName;
 
-		public ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> Attributes {
-			get {
-				return attributes;
-			}
-		}
+		public ReadOnlyCollection<KeyValuePair<SqlAssemblyAttribute, string>> Attributes => attributes;
 
-		public List<SqlExceptionMappingAttribute> ExceptionMappings {
-			get {
-				return exceptionMappings;
-			}
-		}
+		public List<SqlExceptionMappingAttribute> ExceptionMappings => exceptionMappings;
 
-		public int RequiredEngineVersion {
-			get {
-				return requiredEngineVersion;
-			}
-		}
+		public int RequiredEngineVersion => requiredEngineVersion;
 
-		public SortedList<int, IScriptableStatement[]> UpdateStatements {
-			get {
-				return updateStatements;
-			}
-		}
+		public SortedList<int, IScriptableStatement[]> UpdateStatements => updateStatements;
 
-		public int UpdateVersion {
-			get {
-				return updateVersion;
-			}
-		}
+		public int UpdateVersion => updateVersion;
 
 		public IEnumerable<string> GenerateUpdateSql(DatabaseInventory inventory, int currentVersion) {
 			if (inventory == null) {
-				throw new ArgumentNullException("inventory");
+				throw new ArgumentNullException(nameof(inventory));
 			}
 			SetQualification(inventory.SchemaName);
 			inventory.SetQualification(inventory.SchemaName);
 			try {
-				DependencyResolver resolver = new DependencyResolver();
-				List<IInstallStatement> alterUsingUpdateScript = new List<IInstallStatement>();
-				Dictionary<string, IScriptableStatement> dropStatements = new Dictionary<string, IScriptableStatement>(StringComparer.OrdinalIgnoreCase);
-				HashSet<string> newObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-				HashSet<string> refreshObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				var resolver = new DependencyResolver();
+				var alterUsingUpdateScript = new List<IInstallStatement>();
+				var dropStatements = new Dictionary<string, IScriptableStatement>(StringComparer.OrdinalIgnoreCase);
+				var newObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				var refreshObjectNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				refreshObjectNames.UnionWith(inventory.Objects.OfType<CreateViewStatement>().Where(v => !(v.ViewOption is OptionSchemabindingToken)).Select(v => v.ObjectName));
 				// refreshObjectNames.UnionWith(inventory.Objects.OfType<CreateFunctionStatement>().Where(f => !(f.Option is OptionSchemabindingToken)).Select(f => f.ObjectName));
-				foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> pair in Compare(inventory, this, inventory.TargetEngine)) {
+				foreach (var pair in Compare(inventory, this, inventory.TargetEngine)) {
 					switch (pair.Value) {
 					case InventoryObjectDifference.None:
 						resolver.AddExistingObject(pair.Key.ObjectName);
@@ -183,8 +153,7 @@ namespace bsn.ModuleStore.Sql {
 						if (pair.Key.AlterUsingUpdateScript) {
 							alterUsingUpdateScript.Add(pair.Key);
 						} else {
-							AlterTableAddConstraintFragment alterConstraint = pair.Key as AlterTableAddConstraintFragment;
-							if (alterConstraint != null) {
+							if (pair.Key is AlterTableAddConstraintFragment alterConstraint) {
 								dropStatements.Add(pair.Key.ObjectName, pair.Key.CreateDropStatement());
 								resolver.Add(pair.Key);
 							} else {
@@ -210,72 +179,67 @@ namespace bsn.ModuleStore.Sql {
 						break;
 					}
 				}
-				StringBuilder builder = new StringBuilder(4096);
+				var builder = new StringBuilder(4096);
 				// first drop table constraints and indices (if any)
-				foreach (AlterTableDropConstraintStatement dropStatement in dropStatements.Values.OfType<AlterTableDropConstraintStatement>()) {
+				foreach (var dropStatement in dropStatements.Values.OfType<AlterTableDropConstraintStatement>()) {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
-				foreach (DropIndexStatement dropStatement in dropStatements.Values.OfType<DropIndexStatement>()) {
+				foreach (var dropStatement in dropStatements.Values.OfType<DropIndexStatement>()) {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
 				// now perform all possible actions which do not rely on tables which are altered
-				HashSet<string> createdTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-				foreach (IInstallStatement statement in resolver.GetInOrder(false)) {
-					CreateTableFragment createTable = statement as CreateTableFragment;
-					if (createTable != null) {
+				var createdTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				foreach (var statement in resolver.GetInOrder(false)) {
+					if (statement is CreateTableFragment createTable) {
 						yield return WriteStatement(createTable.Owner.CreateStatementFragments(CreateFragmentMode.CreateOnExistingSchema).OfType<CreateTableFragment>().Single(), builder, inventory.TargetEngine);
 						createdTables.Add(createTable.ObjectName);
 					} else if (!statement.IsTableUniqueConstraintOfTables(createdTables)) {
-						foreach (IInstallStatement innerStatement in HandleDependendObjects(statement, inventory, dropStatements.Keys)) {
+						foreach (var innerStatement in HandleDependendObjects(statement, inventory, dropStatements.Keys)) {
 							yield return WriteStatement(innerStatement, builder, inventory.TargetEngine);
 						}
 					}
 				}
 				// then perform updates (if any)
-				HashSet<string> droppedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-				foreach (KeyValuePair<int, IScriptableStatement[]> update in updateStatements.Where(u => u.Key > currentVersion)) {
-					foreach (IScriptableStatement statement in update.Value) {
-						DropTableStatement dropTable = statement as DropTableStatement;
-						if (dropTable != null) {
+				var droppedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				foreach (var update in updateStatements.Where(u => u.Key > currentVersion)) {
+					foreach (var statement in update.Value) {
+						if (statement is DropTableStatement dropTable) {
 							droppedTables.Add(dropTable.ObjectName);
 						}
 						yield return WriteStatement(statement, builder, inventory.TargetEngine);
 					}
 				}
 				// now that the update scripts have updated the tables, mark the tables in the dependency resolver
-				foreach (IInstallStatement createTableStatement in alterUsingUpdateScript) {
+				foreach (var createTableStatement in alterUsingUpdateScript) {
 					resolver.AddExistingObject(createTableStatement.ObjectName);
 				}
 				// refresh the views and functions
-				foreach (string objectName in refreshObjectNames) {
-					yield return string.Format("EXEC [sp_refreshsqlmodule] '[{0}].[{1}]'", inventory.SchemaName, objectName);
+				foreach (var objectName in refreshObjectNames) {
+					yield return $"EXEC [sp_refreshsqlmodule] '[{inventory.SchemaName}].[{objectName}]'";
 				}
 				// try to perform the remaining actions
-				foreach (IInstallStatement statement in resolver.GetInOrder(true).Where(statement => !(statement.IsTableUniqueConstraintOfTables(createdTables) || statement.DependsOnTables(droppedTables)))) {
-					foreach (IInstallStatement innerStatement in HandleDependendObjects(statement, inventory, dropStatements.Keys)) {
+				foreach (var statement in resolver.GetInOrder(true).Where(statement => !(statement.IsTableUniqueConstraintOfTables(createdTables) || statement.DependsOnTables(droppedTables)))) {
+					foreach (var innerStatement in HandleDependendObjects(statement, inventory, dropStatements.Keys)) {
 						yield return WriteStatement(innerStatement, builder, inventory.TargetEngine);
 					}
 				}
 				// execute insert statements for table setup data
 				if (AdditionalSetupStatements.Any()) {
-					bool disabledChecks = false;
-					foreach (IScriptableStatement statement in AdditionalSetupStatements) {
+					var disabledChecks = false;
+					foreach (var statement in AdditionalSetupStatements) {
 						Qualified<SchemaName, TableName> name = null;
-						InsertStatement insertStatement = statement as InsertStatement;
-						if (insertStatement != null) {
-							DestinationRowset<Qualified<SchemaName, TableName>> targetTable = insertStatement.DestinationRowset as DestinationRowset<Qualified<SchemaName, TableName>>;
-							if (targetTable != null) {
+						if (statement is InsertStatement insertStatement) {
+							if (insertStatement.DestinationRowset is DestinationRowset<Qualified<SchemaName, TableName>> targetTable) {
 								name = targetTable.Name;
 							}
 						} else {
-							SetIdentityInsertStatement setIdentityInsertStatement = statement as SetIdentityInsertStatement;
-							if (setIdentityInsertStatement != null) {
+							if (statement is SetIdentityInsertStatement setIdentityInsertStatement) {
 								name = setIdentityInsertStatement.TableName;
 							}
 						}
 						if ((name != null) && name.IsQualified && string.Equals(name.Qualification.Value, inventory.SchemaName, StringComparison.OrdinalIgnoreCase) && newObjectNames.Contains(name.Name.Value)) {
 							if (!disabledChecks) {
-								foreach (CreateTableStatement table in Objects.OfType<CreateTableStatement>()) {
+								foreach (var table in Objects.OfType<CreateTableStatement>()) {
 									yield return WriteStatement(new AlterTableNocheckConstraintStatement(table.TableName, new TableCheckToken()), builder, inventory.TargetEngine);
 								}
 								disabledChecks = true;
@@ -284,18 +248,18 @@ namespace bsn.ModuleStore.Sql {
 						}
 					}
 					if (disabledChecks) {
-						foreach (CreateTableStatement table in Objects.OfType<CreateTableStatement>()) {
+						foreach (var table in Objects.OfType<CreateTableStatement>()) {
 							yield return WriteStatement(new AlterTableCheckConstraintStatement(table.TableName, new TableWithCheckToken()), builder, inventory.TargetEngine);
 						}
 					}
 				}
 				// finally drop objects which are no longer used
-				foreach (IScriptableStatement dropStatement in dropStatements.Values.Where(s => !(s is AlterTableDropConstraintStatement || s is DropTableStatement || s is DropIndexStatement || s.DependsOnTables(droppedTables)))) {
+				foreach (var dropStatement in dropStatements.Values.Where(s => !(s is AlterTableDropConstraintStatement || s is DropTableStatement || s is DropIndexStatement || s.DependsOnTables(droppedTables)))) {
 					yield return WriteStatement(dropStatement, builder, inventory.TargetEngine);
 				}
 				// refresh the SPs
-				foreach (string objectName in Objects.OfType<CreateProcedureStatement>().Where(sp => !(sp.Option is OptionSchemabindingToken)).Select(sp => sp.ObjectName)) {
-					yield return string.Format("EXEC [sp_refreshsqlmodule] '[{0}].[{1}]'", inventory.SchemaName, objectName);
+				foreach (var objectName in Objects.OfType<CreateProcedureStatement>().Where(sp => !(sp.Option is OptionSchemabindingToken)).Select(sp => sp.ObjectName)) {
+					yield return $"EXEC [sp_refreshsqlmodule] '[{inventory.SchemaName}].[{objectName}]'";
 				}
 			} finally {
 				UnsetQualification();
@@ -305,21 +269,19 @@ namespace bsn.ModuleStore.Sql {
 
 		internal void AssertEngineVersion(int engineVersion) {
 			if (engineVersion < RequiredEngineVersion) {
-				string message = string.Format("The assembly {0} requires a database engine version {1}, but the database engine version is {2}", assembly.AssemblyName.FullName, requiredEngineVersion, engineVersion);
-				log.ErrorFormat(message);
-				throw new InvalidOperationException(message);
+				log.Error("The assembly {assemblyName} requires a database engine version {requiredEngineVersion}, but the database engine version is {effectiveEngineVersion}", assembly.AssemblyName.FullName, requiredEngineVersion, engineVersion);
+				throw new InvalidOperationException($"The assembly {assembly.AssemblyName.FullName} requires a database engine version {requiredEngineVersion}, but the database engine version is {engineVersion}");
 			}
 		}
 
 		private IEnumerable<IInstallStatement> HandleDependendObjects(IInstallStatement statement, DatabaseInventory inventory, ICollection<string> droppedObjects) {
-			DependencyDisablingAlterStatement dependencyAltering = statement as DependencyDisablingAlterStatement;
-			if (dependencyAltering != null) {
-				ICollection<IAlterableCreateStatement> dependencyObjects = dependencyAltering.GetDependencyObjects(inventory, droppedObjects);
-				foreach (IAlterableCreateStatement dependencyObject in dependencyObjects) {
+			if (statement is DependencyDisablingAlterStatement dependencyAltering) {
+				var dependencyObjects = dependencyAltering.GetDependencyObjects(inventory, droppedObjects);
+				foreach (var dependencyObject in dependencyObjects) {
 					yield return dependencyObject.CreateDropStatement();
 				}
 				yield return statement;
-				foreach (IAlterableCreateStatement dependencyObject in dependencyObjects) {
+				foreach (var dependencyObject in dependencyObjects) {
 					// Take the new version of the object in order to avoid errors
 					var newDependentObject = (IAlterableCreateStatement)Objects.SingleOrDefault(o => string.Equals(o.ObjectName, dependencyObject.ObjectName, StringComparison.OrdinalIgnoreCase));
 					yield return newDependentObject ?? dependencyObject;
@@ -335,13 +297,13 @@ namespace bsn.ModuleStore.Sql {
 			} else {
 				manifestStreamKey = attribute.ManifestResourceType.Namespace+Type.Delimiter+attribute.ManifestResourceName;
 			}
-			Stream result = assembly.GetManifestResourceStream(null, manifestStreamKey);
+			var result = assembly.GetManifestResourceStream(null, manifestStreamKey);
 			if ((result == null) && (attribute.ManifestResourceType == null) && (!string.IsNullOrEmpty(optionalPrefix))) {
 				manifestStreamKey = optionalPrefix+Type.Delimiter+attribute.ManifestResourceName;
 				result = assembly.GetManifestResourceStream(null, manifestStreamKey);
 			}
 			if (result == null) {
-				log.ErrorFormat("The embedded SQL file {0} was not found", attribute.ManifestResourceName);
+				log.Error("The embedded SQL file {fileName} was not found", attribute.ManifestResourceName);
 				throw new FileNotFoundException("The embedded SQL file was not found", attribute.ManifestResourceName);
 			}
 			return result;
@@ -352,8 +314,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		private TextReader OpenText(SqlManifestResourceAttribute attribute, string optionalPrefix) {
-			string key;
-			return OpenText(attribute, optionalPrefix, out key);
+			return OpenText(attribute, optionalPrefix, out var key);
 		}
 	}
 }

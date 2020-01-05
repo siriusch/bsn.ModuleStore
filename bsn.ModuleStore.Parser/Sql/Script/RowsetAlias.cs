@@ -38,10 +38,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		public override void WriteTo(SqlWriter writer) {}
 
-		public virtual bool HasValue {
-			get {
-				return false;
-			}
-		}
+		public virtual bool HasValue => false;
 	}
 }

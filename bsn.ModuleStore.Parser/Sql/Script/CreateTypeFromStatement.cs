@@ -40,23 +40,15 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<CreateTypeStatement> ::= ~CREATE ~TYPE <SimpleTypeNameQualified> ~FROM <TypeName> <TypeConstraint>")]
 		public CreateTypeFromStatement(Qualified<SchemaName, TypeName> typeName, TypeName systemTypeName, TypeConstraintToken constraint): base(typeName) {
 			if (!systemTypeName.IsBuiltinType) {
-				throw new ArgumentException("Derived types can only be created from system types", "systemTypeName");
+				throw new ArgumentException("Derived types can only be created from system types", nameof(systemTypeName));
 			}
 			this.systemTypeName = systemTypeName;
 			this.constraint = constraint;
 		}
 
-		public TypeConstraintToken Constraint {
-			get {
-				return constraint;
-			}
-		}
+		public TypeConstraintToken Constraint => constraint;
 
-		public TypeName SystemTypeName {
-			get {
-				return systemTypeName;
-			}
-		}
+		public TypeName SystemTypeName => systemTypeName;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

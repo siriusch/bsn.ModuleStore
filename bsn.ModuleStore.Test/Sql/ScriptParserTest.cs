@@ -46,11 +46,7 @@ namespace bsn.ModuleStore.Sql {
 				this.schema = new SchemaName(schema);
 			}
 
-			public SchemaName Qualification {
-				get {
-					return schema;
-				}
-			}
+			public SchemaName Qualification => schema;
 		}
 
 		public ScriptParserTest() {
@@ -625,30 +621,30 @@ PRINT 'Cool'", 3, null);
 
 		public List<Statement> ParseWithRoundtrip(string sql, int expectedStatementCount, string schema) {
 			GenerateSql(ScriptParser.Parse(sql)); // warm-up
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Start();
-			IEnumerable<Statement> parsedStatements = ScriptParser.Parse(sql);
+			var parsedStatements = ScriptParser.Parse(sql);
 			sw.Stop();
-			long parseTime = sw.ElapsedMilliseconds;
-			List<Statement> statements = parsedStatements.ToList();
+			var parseTime = sw.ElapsedMilliseconds;
+			var statements = parsedStatements.ToList();
 			Assert.Equal(expectedStatementCount, statements.Count);
 			if (schema != null) {
 				IQualified<SchemaName> qualified = new SchemaQualified(schema);
-				foreach (IQualifiedName<SchemaName> qualifiedName in statements.SelectMany(s => s.GetObjectSchemaQualifiedNames(schema))) {
+				foreach (var qualifiedName in statements.SelectMany(s => s.GetObjectSchemaQualifiedNames(schema))) {
 					qualifiedName.SetOverride(qualified);
 				}
 			}
 			sw.Reset();
 			sw.Start();
-			string sqlGen = GenerateSql(statements);
+			var sqlGen = GenerateSql(statements);
 			sw.Stop();
-			Trace.Write(Environment.NewLine+sqlGen, string.Format("Generated SQL (parse: {0}ms | gen: {1}ms)", parseTime, sw.ElapsedMilliseconds));
+			Trace.Write(Environment.NewLine+sqlGen, $"Generated SQL (parse: {parseTime}ms | gen: {sw.ElapsedMilliseconds}ms)");
 			sw.Reset();
 			sw.Start();
-			IEnumerable<Statement> parsedStatementsRoundtrip = ScriptParser.Parse(sqlGen);
-			string sqlGenRoundtrip = GenerateSql(parsedStatementsRoundtrip);
+			var parsedStatementsRoundtrip = ScriptParser.Parse(sqlGen);
+			var sqlGenRoundtrip = GenerateSql(parsedStatementsRoundtrip);
 			sw.Stop();
-			Trace.Write(string.Format("{0}ms", sw.ElapsedMilliseconds), "Roundtrip");
+			Trace.Write($"{sw.ElapsedMilliseconds}ms", "Roundtrip");
 			Assert.Equal(sqlGenRoundtrip, sqlGen);
 			return statements;
 		}
@@ -851,7 +847,7 @@ SELECT id.[query]('data(*/@x)').query('*') FROM @tbl;", 3, null);
 
 		[Fact]
 		public void SyntaxError() {
-			ParseException exception = Assert.Throws<ParseException>(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1, null));
+			var exception = Assert.Throws<ParseException>(() => ParseWithRoundtrip(@"SELECT * FROM TableA 'Error'", 1, null));
 			Assert.Contains("SyntaxError", exception.Message);
 		}
 
@@ -922,9 +918,9 @@ WHERE ProductNumber LIKE 'BK-%';", 1, null);
 		}
 
 		private string GenerateSql(IEnumerable<Statement> statements) {
-			using (StringWriter stringWriter = new StringWriter()) {
-				SqlWriter sqlGen = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
-				foreach (Statement statement in statements) {
+			using (var stringWriter = new StringWriter()) {
+				var sqlGen = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
+				foreach (var statement in statements) {
 					statement.WriteTo(sqlGen);
 					sqlGen.WriteLine(";");
 				}

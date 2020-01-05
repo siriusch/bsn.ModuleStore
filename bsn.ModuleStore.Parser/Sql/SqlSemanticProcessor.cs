@@ -57,9 +57,8 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		protected override SqlToken CreateReduction(Rule rule, IList<SqlToken> children) {
-			SqlToken result = base.CreateReduction(rule, children);
-			CommentContainerToken commentToken = result as CommentContainerToken;
-			if (commentToken != null) {
+			var result = base.CreateReduction(rule, children);
+			if (result is CommentContainerToken commentToken) {
 				foreach (IToken token in children) {
 					if ((token != null) && (token.Position.Line > 0)) {
 						commentToken.AddComments(tokenizer.GetComments((int)token.Position.Index));

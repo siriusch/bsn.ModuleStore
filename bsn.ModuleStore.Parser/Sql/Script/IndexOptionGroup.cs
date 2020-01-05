@@ -36,11 +36,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<IndexOptionGroup> ::=")]
 		public IndexOptionGroup() { }
 
-		public virtual bool HasValue {
-			get {
-				return false;
-			}
-		}
+		public virtual bool HasValue => false;
 
 		public override void WriteTo(SqlWriter writer) {}
 	}

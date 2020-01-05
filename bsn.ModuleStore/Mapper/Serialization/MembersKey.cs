@@ -36,12 +36,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	internal struct MembersKey: IEquatable<MembersKey> {
 		public static Type GetCommonType(MemberInfo[] members) {
 			if (members == null) {
-				throw new ArgumentNullException("members");
+				throw new ArgumentNullException(nameof(members));
 			}
 			if (members.Length > 0) {
-				Type result = members[0].DeclaringType;
-				for (int i = 1; i < members.Length; i++) {
-					Type declaringType = members[i].DeclaringType;
+				var result = members[0].DeclaringType;
+				for (var i = 1; i < members.Length; i++) {
+					var declaringType = members[i].DeclaringType;
 					if (!declaringType.IsAssignableFrom(result)) {
 						Debug.Assert(result.IsAssignableFrom(declaringType));
 						result = declaringType;
@@ -56,7 +56,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public MembersKey(MemberInfo[] members) {
 			if (members == null) {
-				throw new ArgumentNullException("members");
+				throw new ArgumentNullException(nameof(members));
 			}
 			this.members = (MemberInfo[])members.Clone();
 		}
@@ -69,7 +69,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		}
 
 		public override int GetHashCode() {
-			int result = typeof(MembersKey).GetHashCode();
+			var result = typeof(MembersKey).GetHashCode();
 			if (members != null) {
 				unchecked {
 					result = members.Aggregate(result, (current, t) => current^current*13+t.GetHashCode());
@@ -85,7 +85,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			if ((other.members == null) || (members == null) || (other.members.Length != members.Length)) {
 				return false;
 			}
-			for (int i = 0; i < members.Length; i++) {
+			for (var i = 0; i < members.Length; i++) {
 				if (other.members[i] != members[i]) {
 					return false;
 				}

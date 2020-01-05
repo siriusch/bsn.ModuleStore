@@ -35,11 +35,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.keyword = keyword;
 		}
 
-		public string Keyword {
-			get {
-				return keyword.ToUpperInvariant();
-			}
-		}
+		public string Keyword => keyword.ToUpperInvariant();
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword(Keyword);

@@ -36,18 +36,10 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<TypeConstraint> ::=")]
 		public TypeConstraintToken() {}
 
-		public virtual TypeConstraint Constraint {
-			get {
-				return TypeConstraint.Null;
-			}
-		}
+		public virtual TypeConstraint Constraint => TypeConstraint.Null;
 
 		public override void WriteTo(SqlWriter writer) {}
 
-		public bool HasValue {
-			get {
-				return Constraint != TypeConstraint.None;
-			}
-		}
+		public bool HasValue => Constraint != TypeConstraint.None;
 	}
 }

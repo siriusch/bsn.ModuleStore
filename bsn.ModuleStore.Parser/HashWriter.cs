@@ -37,18 +37,18 @@ namespace bsn.ModuleStore {
 	public sealed class HashWriter: TextWriter {
 		public static bool HashEqual(byte[] x, byte[] y) {
 			if ((x != null) && (y != null)) {
-				int commonLength = Math.Min(x.Length, y.Length);
-				for (int i = 0; i < commonLength; i++) {
+				var commonLength = Math.Min(x.Length, y.Length);
+				for (var i = 0; i < commonLength; i++) {
 					if (x[i] != y[i]) {
 						return false;
 					}
 				}
-				for (int i = commonLength; i < x.Length; i++) {
+				for (var i = commonLength; i < x.Length; i++) {
 					if (x[i] != 0) {
 						return false;
 					}
 				}
-				for (int i = commonLength; i < y.Length; i++) {
+				for (var i = commonLength; i < y.Length; i++) {
 					if (y[i] != 0) {
 						return false;
 					}
@@ -60,10 +60,10 @@ namespace bsn.ModuleStore {
 
 		public static int ToHashCode(byte[] hash) {
 			if (hash == null) {
-				throw new ArgumentNullException("hash");
+				throw new ArgumentNullException(nameof(hash));
 			}
-			int result = 0;
-			for (int position = 0; position < hash.Length; position += 4) {
+			var result = 0;
+			for (var position = 0; position < hash.Length; position += 4) {
 				result ^= BitConverter.ToInt32(hash, position);
 			}
 			return result;
@@ -77,11 +77,7 @@ namespace bsn.ModuleStore {
 			hash.Initialize();
 		}
 
-		public override Encoding Encoding {
-			get {
-				return Encoding.Unicode;
-			}
-		}
+		public override Encoding Encoding => Encoding.Unicode;
 
 		public byte[] ToArray() {
 			if (result == null) {
@@ -93,17 +89,17 @@ namespace bsn.ModuleStore {
 
 		public override void Write(char value) {
 			AssertNoResult();
-			byte[] data = Encoding.GetBytes(new[] {value});
+			var data = Encoding.GetBytes(new[] {value});
 			hash.TransformBlock(data, 0, data.Length, null, 0);
 		}
 
 		public override void Write(char[] buffer, int index, int count) {
-			byte[] data = Encoding.GetBytes(buffer, index, count);
+			var data = Encoding.GetBytes(buffer, index, count);
 			hash.TransformBlock(data, 0, data.Length, null, 0);
 		}
 
 		public override void Write(string value) {
-			byte[] data = Encoding.GetBytes(value);
+			var data = Encoding.GetBytes(value);
 			hash.TransformBlock(data, 0, data.Length, null, 0);
 		}
 

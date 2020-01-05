@@ -38,7 +38,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<SourceRowset> ::= ~'(' ~VALUES <ValuesList> ~')' <RowsetAlias>")]
 		public SourceValuesRowset(Sequence<Sequence<Expression>> valuesList, RowsetAlias rowsetAlias): base(rowsetAlias) {
-			foreach (Sequence<Expression> expressions in valuesList) {
+			foreach (var expressions in valuesList) {
 				this.valuesList.Add(expressions.ToArray());
 			}
 			Debug.Assert(this.valuesList.Count > 0);
@@ -48,8 +48,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			using (writer.Indent()) {
 				writer.Write('(');
 				writer.WriteKeyword("VALUES");
-				string separator = "";
-				foreach (IEnumerable<Expression> expressions in valuesList) {
+				var separator = "";
+				foreach (var expressions in valuesList) {
 					writer.WriteLine(separator);
 					separator = ",";
 					writer.Write("(");

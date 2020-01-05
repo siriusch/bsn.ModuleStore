@@ -40,11 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.identifier = identifier.Value;
 		}
 
-		public string Identifier {
-			get {
-				return identifier;
-			}
-		}
+		public string Identifier => identifier;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteIdentifier(identifier);

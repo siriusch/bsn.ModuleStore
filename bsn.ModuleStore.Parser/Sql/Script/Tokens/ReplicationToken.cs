@@ -37,18 +37,10 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<ProcedureFor> ::=")]
 		public ReplicationToken() {}
 
-		public virtual bool? ForReplication {
-			get {
-				return null;
-			}
-		}
+		public virtual bool? ForReplication => null;
 
 		public override void WriteTo(SqlWriter writer) {}
 
-		public bool HasValue {
-			get {
-				return ForReplication.HasValue;
-			}
-		}
+		public bool HasValue => ForReplication.HasValue;
 	}
 }

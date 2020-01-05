@@ -35,7 +35,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		public XmlDocumentMemberConverter(Type type, bool isIdentity, string columnName, int memberIndex): base(type, isIdentity, columnName, memberIndex) {}
 
 		protected override object GetXmlObject(IDeserializerContext context, XmlReader reader) {
-			XmlDocument doc = new XmlDocument(context.NameTable);
+			var doc = new XmlDocument(context.NameTable);
 			doc.Load(reader);
 			return doc;
 		}

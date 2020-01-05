@@ -38,16 +38,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForeignKeyAction> ::= ~ON UPDATE ~SET ~DEFAULT")]
 		public ForeignKeySetDefaultAction(DmlOperationToken operation): base(operation) {}
 
-		public override ForeignKeyActionKind Kind {
-			get {
-				return ForeignKeyActionKind.SetDefault;
-			}
-		}
+		public override ForeignKeyActionKind Kind => ForeignKeyActionKind.SetDefault;
 
-		protected override string ActionString {
-			get {
-				return "SET DEFAULT";
-			}
-		}
+		protected override string ActionString => "SET DEFAULT";
 	}
 }

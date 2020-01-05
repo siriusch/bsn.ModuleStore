@@ -44,29 +44,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.queryHint = queryHint;
 		}
 
-		public DestinationRowset DestinationRowset {
-			get {
-				return destinationRowset;
-			}
-		}
+		public DestinationRowset DestinationRowset => destinationRowset;
 
-		public QueryHint QueryHint {
-			get {
-				return queryHint;
-			}
-		}
+		public QueryHint QueryHint => queryHint;
 
-		public QueryOptions QueryOptions {
-			get {
-				return queryOptions;
-			}
-		}
+		public QueryOptions QueryOptions => queryOptions;
 
-		public TopExpression TopExpression {
-			get {
-				return topExpression;
-			}
-		}
+		public TopExpression TopExpression => topExpression;
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

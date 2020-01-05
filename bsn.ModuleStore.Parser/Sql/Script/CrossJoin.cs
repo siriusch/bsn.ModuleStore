@@ -36,16 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Join> ::= ~CROSS ~JOIN <Source>")]
 		public CrossJoin(Source joinSource): base(joinSource) {}
 
-		public override JoinKind Kind {
-			get {
-				return JoinKind.Cross;
-			}
-		}
+		public override JoinKind Kind => JoinKind.Cross;
 
-		protected override string JoinSpecifier {
-			get {
-				return "CROSS JOIN";
-			}
-		}
+		protected override string JoinSpecifier => "CROSS JOIN";
 	}
 }

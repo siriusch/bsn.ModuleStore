@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -41,18 +41,17 @@ namespace bsn.ModuleStore.Console.Commands {
 		public InstallCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
-			Source inventorySource = (Source)tags["source"];
-			InstallableInventory inventory = executionContext.GetInventory(inventorySource, (bool)tags["directories"]) as InstallableInventory;
-			if (inventory == null) {
+			var inventorySource = (Source)tags["source"];
+			if (!(executionContext.GetInventory(inventorySource, (bool)tags["directories"]) is InstallableInventory inventory)) {
 				throw new NotSupportedException("The selected inventory type cannot be used as installation source");
 			}
-			IEnumerable<string> sqlStatements = inventory.GenerateInstallSql(DatabaseEngine.Unknown, executionContext.Schema, "dbo");
+			var sqlStatements = inventory.GenerateInstallSql(DatabaseEngine.Unknown, executionContext.Schema, "dbo");
 			ExecuteInternal(executionContext, tags, sqlStatements);
 		}
 
 		public override IEnumerable<ITagItem<ExecutionContext>> GetCommandTags() {
-			Tag<ExecutionContext, Source> sourceTag = new Tag<ExecutionContext, Source>("source", "Source scripts to use for the installation").SetDefault(context => context.Assembly != null ? Source.Assembly : Source.Files);
-			Tag<ExecutionContext, bool> directoriesTag = new Tag<ExecutionContext, bool>("directories", "If true, traverse directories when looking for SQL files.").SetDefault(context => false);
+			var sourceTag = new Tag<ExecutionContext, Source>("source", "Source scripts to use for the installation").SetDefault(context => context.Assembly != null ? Source.Assembly : Source.Files);
+			var directoriesTag = new Tag<ExecutionContext, bool>("directories", "If true, traverse directories when looking for SQL files.").SetDefault(context => false);
 			return Merge(base.GetCommandTags(), sourceTag, directoriesTag);
 		}
 	}

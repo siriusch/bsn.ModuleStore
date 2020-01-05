@@ -37,11 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.rowsetAlias = rowsetAlias;
 		}
 
-		public RowsetAlias RowsetAlias {
-			get {
-				return rowsetAlias;
-			}
-		}
+		public RowsetAlias RowsetAlias => rowsetAlias;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(rowsetAlias, WhitespacePadding.SpaceBefore);

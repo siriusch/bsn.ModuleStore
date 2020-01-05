@@ -36,18 +36,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForClause> ::=")]
 		public ForClause() {}
 
-		public virtual SelectFor SelectFor {
-			get {
-				return SelectFor.None;
-			}
-		}
+		public virtual SelectFor SelectFor => SelectFor.None;
 
 		public override void WriteTo(SqlWriter writer) {}
 
-		public bool HasValue {
-			get {
-				return SelectFor != SelectFor.None;
-			}
-		}
+		public bool HasValue => SelectFor != SelectFor.None;
 	}
 }

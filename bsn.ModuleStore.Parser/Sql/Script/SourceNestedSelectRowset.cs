@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.@select = select;
 		}
 
-		public SelectQuery Select {
-			get {
-				return select;
-			}
-		}
+		public SelectQuery Select => select;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write('(');

@@ -44,17 +44,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.operation = operation.Operation;
 		}
 
-		public virtual ForeignKeyActionKind Kind {
-			get {
-				return ForeignKeyActionKind.None;
-			}
-		}
+		public virtual ForeignKeyActionKind Kind => ForeignKeyActionKind.None;
 
-		protected virtual string ActionString {
-			get {
-				return "NO ACTION";
-			}
-		}
+		protected virtual string ActionString => "NO ACTION";
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("ON ");

@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -44,11 +44,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		// ReSharper disable UnusedMember.Local
 		private static Exception BuildNullFieldException<T>(MemberTypes memberType, string memberName) {
 			// ReSharper restore UnusedMember.Local
-			return new NullReferenceException(string.Format("{0} {1}.{2} cannot store a null value", memberType, typeof(T).FullName, memberName));
+			return new NullReferenceException($"{memberType} {typeof(T).FullName}.{memberName} cannot store a null value");
 		}
 
 		public static MembersMethods Get(MemberInfo[] members) {
-			MembersKey key = new MembersKey(members);
+			var key = new MembersKey(members);
 			MembersMethods result;
 			lock (methods) {
 				if (!methods.TryGetValue(key, out result)) {
@@ -65,7 +65,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private static T NotNull<T>(T value) where T: class {
 			if (value == null) {
-				throw new ArgumentNullException("value");
+				throw new ArgumentNullException(nameof(value));
 			}
 			return value;
 		}
@@ -77,19 +77,19 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		private MembersMethods(MemberInfo[] members) {
 			if (members == null) {
-				throw new ArgumentNullException("members");
+				throw new ArgumentNullException(nameof(members));
 			}
 			if (members.Length > 0) {
 				commonType = MembersKey.GetCommonType(members);
-				Type arg0Type = commonType.IsValueType ? typeof(object) : commonType;
-				DynamicMethod populateMethod = new DynamicMethod(String.Format("{0}.PopulateMembers", commonType.FullName), null, new[] {arg0Type, typeof(object), typeof(object[])}, commonType, true);
-				DynamicMethod extractMethod = new DynamicMethod(String.Format("{0}.ExtractMembers", commonType.FullName), null, new[] {arg0Type, typeof(object), typeof(object[])}, commonType, true);
-				DynamicMethod getMemberMethod = new DynamicMethod(String.Format("{0}.GetMember", commonType.FullName), typeof(object), new[] {arg0Type, typeof(object), typeof(int)}, commonType, true);
-				ILGenerator populateIl = populateMethod.GetILGenerator();
-				ILGenerator extractIl = extractMethod.GetILGenerator();
-				ILGenerator getMemberIl = getMemberMethod.GetILGenerator();
-				Label[] memberLabels = new Label[members.Length];
-				for (int i = 0; i < memberLabels.Length; i++) {
+				var arg0Type = commonType.IsValueType ? typeof(object) : commonType;
+				var populateMethod = new DynamicMethod($"{commonType.FullName}.PopulateMembers", null, new[] {arg0Type, typeof(object), typeof(object[])}, commonType, true);
+				var extractMethod = new DynamicMethod($"{commonType.FullName}.ExtractMembers", null, new[] {arg0Type, typeof(object), typeof(object[])}, commonType, true);
+				var getMemberMethod = new DynamicMethod($"{commonType.FullName}.GetMember", typeof(object), new[] {arg0Type, typeof(object), typeof(int)}, commonType, true);
+				var populateIl = populateMethod.GetILGenerator();
+				var extractIl = extractMethod.GetILGenerator();
+				var getMemberIl = getMemberMethod.GetILGenerator();
+				var memberLabels = new Label[members.Length];
+				for (var i = 0; i < memberLabels.Length; i++) {
 					memberLabels[i] = getMemberIl.DefineLabel();
 				}
 				if (!commonType.IsValueType) {
@@ -109,8 +109,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				getMemberIl.Emit(OpCodes.Ldstr, "index");
 				getMemberIl.Emit(OpCodes.Newobj, typeof(ArgumentOutOfRangeException).GetConstructor(new[] {typeof(string)}));
 				getMemberIl.Emit(OpCodes.Throw);
-				for (int i = 0; i < members.Length; i++) {
-					MemberInfo member = members[i];
+				for (var i = 0; i < members.Length; i++) {
+					var member = members[i];
 					extractIl.Emit(OpCodes.Ldarg_2);
 					extractIl.Emit(OpCodes.Ldc_I4, i);
 					getMemberIl.MarkLabel(memberLabels[i]);
@@ -129,11 +129,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 					populateIl.Emit(OpCodes.Ldarg_2);
 					populateIl.Emit(OpCodes.Ldc_I4, i);
 					populateIl.Emit(OpCodes.Ldelem, typeof(object));
-					FieldInfo field = member as FieldInfo;
-					MethodInfo method_BuildNullFieldException = MembersMethods.method_BuildNullFieldException.MakeGenericMethod(new[] {commonType});
-					if (field != null) {
+					var method_BuildNullFieldException = MembersMethods.method_BuildNullFieldException.MakeGenericMethod(new[] {commonType});
+					switch (member) {
+					case FieldInfo field:
 						if (field.FieldType.IsValueType && (Nullable.GetUnderlyingType(field.FieldType) == null)) {
-							Label notNull = populateIl.DefineLabel();
+							var notNull = populateIl.DefineLabel();
 							populateIl.Emit(OpCodes.Dup);
 							populateIl.Emit(OpCodes.Brtrue, notNull);
 							populateIl.Emit(OpCodes.Pop);
@@ -152,37 +152,36 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 							extractIl.Emit(OpCodes.Box, field.FieldType);
 							getMemberIl.Emit(OpCodes.Box, field.FieldType);
 						}
-					} else {
-						PropertyInfo property = member as PropertyInfo;
-						if (property != null) {
-							if (property.PropertyType.IsValueType && (Nullable.GetUnderlyingType(property.PropertyType) == null)) {
-								Label notNull = populateIl.DefineLabel();
-								populateIl.Emit(OpCodes.Dup);
-								populateIl.Emit(OpCodes.Brtrue, notNull);
-								populateIl.Emit(OpCodes.Pop);
-								populateIl.Emit(OpCodes.Pop);
-								populateIl.Emit(OpCodes.Ldc_I4, (int)MemberTypes.Property);
-								populateIl.Emit(OpCodes.Ldstr, property.Name);
-								populateIl.Emit(OpCodes.Call, method_BuildNullFieldException);
-								populateIl.Emit(OpCodes.Throw);
-								populateIl.MarkLabel(notNull);
-							}
-							populateIl.Emit(OpCodes.Unbox_Any, property.PropertyType);
-							if (commonType.IsValueType) {
-								populateIl.Emit(OpCodes.Constrained, commonType);
-								extractIl.Emit(OpCodes.Constrained, commonType);
-								getMemberIl.Emit(OpCodes.Constrained, commonType);
-							}
-							populateIl.Emit(OpCodes.Callvirt, NotNull(property.GetSetMethod(true)));
-							extractIl.Emit(OpCodes.Callvirt, NotNull(property.GetGetMethod(true)));
-							getMemberIl.Emit(OpCodes.Callvirt, NotNull(property.GetGetMethod(true)));
-							if (property.PropertyType.IsValueType) {
-								extractIl.Emit(OpCodes.Box, property.PropertyType);
-								getMemberIl.Emit(OpCodes.Box, property.PropertyType);
-							}
-						} else {
-							throw new InvalidOperationException("Field or property expected");
+						break;
+					case PropertyInfo property:
+						if (property.PropertyType.IsValueType && (Nullable.GetUnderlyingType(property.PropertyType) == null)) {
+							var notNull = populateIl.DefineLabel();
+							populateIl.Emit(OpCodes.Dup);
+							populateIl.Emit(OpCodes.Brtrue, notNull);
+							populateIl.Emit(OpCodes.Pop);
+							populateIl.Emit(OpCodes.Pop);
+							populateIl.Emit(OpCodes.Ldc_I4, (int)MemberTypes.Property);
+							populateIl.Emit(OpCodes.Ldstr, property.Name);
+							populateIl.Emit(OpCodes.Call, method_BuildNullFieldException);
+							populateIl.Emit(OpCodes.Throw);
+							populateIl.MarkLabel(notNull);
 						}
+						populateIl.Emit(OpCodes.Unbox_Any, property.PropertyType);
+						if (commonType.IsValueType) {
+							populateIl.Emit(OpCodes.Constrained, commonType);
+							extractIl.Emit(OpCodes.Constrained, commonType);
+							getMemberIl.Emit(OpCodes.Constrained, commonType);
+						}
+						populateIl.Emit(OpCodes.Callvirt, NotNull(property.GetSetMethod(true)));
+						extractIl.Emit(OpCodes.Callvirt, NotNull(property.GetGetMethod(true)));
+						getMemberIl.Emit(OpCodes.Callvirt, NotNull(property.GetGetMethod(true)));
+						if (property.PropertyType.IsValueType) {
+							extractIl.Emit(OpCodes.Box, property.PropertyType);
+							getMemberIl.Emit(OpCodes.Box, property.PropertyType);
+						}
+						break;
+					default:
+						throw new InvalidOperationException("Field or property expected");
 					}
 					extractIl.Emit(OpCodes.Stelem, typeof(object));
 					getMemberIl.Emit(OpCodes.Ret);
@@ -200,28 +199,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public Type CommonType {
-			get {
-				return commonType;
-			}
-		}
+		public Type CommonType => commonType;
 
-		public Action<object, object[]> ExtractMembers {
-			get {
-				return extractMembers;
-			}
-		}
+		public Action<object, object[]> ExtractMembers => extractMembers;
 
-		public Func<object, int, object> GetMember {
-			get {
-				return getMember;
-			}
-		}
+		public Func<object, int, object> GetMember => getMember;
 
-		public Action<object, object[]> PopulateMembers {
-			get {
-				return populateMembers;
-			}
-		}
+		public Action<object, object[]> PopulateMembers => populateMembers;
 	}
 }

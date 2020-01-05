@@ -46,8 +46,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		public CursorDefinition(Sequence<Identifier> cursorOptions, SelectStatement selectStatement, UpdateMode cursorUpdate) {
 			this.selectStatement = selectStatement;
 			this.cursorUpdate = cursorUpdate;
-			foreach (Identifier cursorOption in cursorOptions) {
-				string option = cursorOption.Value.ToUpperInvariant();
+			foreach (var cursorOption in cursorOptions) {
+				var option = cursorOption.Value.ToUpperInvariant();
 				this.cursorOptions.Add(option);
 				if (option.Equals("GLOBAL", StringComparison.Ordinal)) {
 					global = true;
@@ -55,33 +55,17 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public IEnumerable<string> CursorOptions {
-			get {
-				return cursorOptions;
-			}
-		}
+		public IEnumerable<string> CursorOptions => cursorOptions;
 
-		public UpdateMode CursorUpdate {
-			get {
-				return cursorUpdate;
-			}
-		}
+		public UpdateMode CursorUpdate => cursorUpdate;
 
-		public bool Global {
-			get {
-				return global;
-			}
-		}
+		public bool Global => global;
 
-		public SelectStatement SelectStatement {
-			get {
-				return selectStatement;
-			}
-		}
+		public SelectStatement SelectStatement => selectStatement;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("CURSOR");
-			foreach (string cursorOption in cursorOptions) {
+			foreach (var cursorOption in cursorOptions) {
 				writer.Write(' ');
 				writer.Write(cursorOption);
 			}

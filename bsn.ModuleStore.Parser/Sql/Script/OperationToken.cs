@@ -65,11 +65,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			Initialize(symbol, position);
 		}
 
-		public string Operation {
-			get {
-				return operation;
-			}
-		}
+		public string Operation => operation;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteOperator(operation);

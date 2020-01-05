@@ -40,13 +40,13 @@ namespace bsn.ModuleStore.Mapper {
 
 		public static void Add(this XDocument that, XName elementName, string value) {
 			if (that == null) {
-				throw new ArgumentNullException("that");
+				throw new ArgumentNullException(nameof(that));
 			}
 			if (elementName == null) {
-				throw new ArgumentNullException("elementName");
+				throw new ArgumentNullException(nameof(elementName));
 			}
 			if (value == null) {
-				throw new ArgumentNullException("value");
+				throw new ArgumentNullException(nameof(value));
 			}
 			that.GetRoot().Add(new XElement(elementName, value));
 		}
@@ -71,7 +71,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static string Get(this XDocument that, XName elementName, CultureInfo culture, string @default) {
-			XElement element = that.GetElement(elementName, culture, true);
+			var element = that.GetElement(elementName, culture, true);
 			if (element != null) {
 				return element.Value;
 			}
@@ -83,7 +83,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static T? Get<T>(this XDocument that, XName elementName, CultureInfo culture) where T: struct, IComparable, IFormattable, IConvertible {
-			string value = that.Get(elementName, culture, null);
+			var value = that.Get(elementName, culture, null);
 			if (!string.IsNullOrEmpty(value)) {
 				if (typeof(T).IsEnum) {
 					return (T)Enum.Parse(typeof(T), value);
@@ -95,7 +95,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		public static IEnumerable<XElement> GetAll(this XDocument that) {
 			if (that != null) {
-				XElement root = that.Root;
+				var root = that.Root;
 				if (root != null) {
 					return root.Elements();
 				}
@@ -104,12 +104,11 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static bool? GetBoolean(this XDocument that, XName elementName, bool? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
-			bool resultValue;
-			if (bool.TryParse(result, out resultValue)) {
+			if (bool.TryParse(result, out var resultValue)) {
 				return resultValue;
 			}
 			return XmlConvert.ToBoolean(result);
@@ -120,7 +119,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static byte? GetByte(this XDocument that, XName elementName, byte? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -132,7 +131,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static char? GetChar(this XDocument that, XName elementName, char? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -144,7 +143,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static DateTime? GetDateTime(this XDocument that, XName elementName, XmlDateTimeSerializationMode mode, DateTime? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -156,7 +155,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static DateTimeOffset? GetDateTimeOffset(this XDocument that, XName elementName, DateTimeOffset? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -168,7 +167,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static Decimal? GetDecimal(this XDocument that, XName elementName, decimal? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -180,7 +179,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static double? GetDouble(this XDocument that, XName elementName, double? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -193,18 +192,18 @@ namespace bsn.ModuleStore.Mapper {
 
 		public static XElement GetElement(this XDocument that, XName elementName, CultureInfo culture, bool cultureFallback) {
 			if (elementName == null) {
-				throw new ArgumentNullException("elementName");
+				throw new ArgumentNullException(nameof(elementName));
 			}
 			if (that != null) {
-				XElement root = that.Root;
+				var root = that.Root;
 				if (root != null) {
 					if (culture == null) {
 						culture = CultureInfo.InvariantCulture;
 					}
 					do {
-						string cultureId = culture.ToString();
-						foreach (XElement element in root.Elements(elementName)) {
-							XAttribute lang = element.Attribute(XmlLang);
+						var cultureId = culture.ToString();
+						foreach (var element in root.Elements(elementName)) {
+							var lang = element.Attribute(XmlLang);
 							if ((lang == null) ? (cultureId.Length == 0) : (lang.Value == cultureId)) {
 								if (string.IsNullOrEmpty(element.Value) && cultureFallback) {
 									break;
@@ -224,7 +223,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static Guid? GetGuid(this XDocument that, XName elementName, Guid? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -236,7 +235,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static short? GetInt16(this XDocument that, XName elementName, short? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -248,7 +247,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static int? GetInt32(this XDocument that, XName elementName, int? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -260,7 +259,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static long? GetInt64(this XDocument that, XName elementName, long? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -273,9 +272,9 @@ namespace bsn.ModuleStore.Mapper {
 
 		public static XElement GetRoot(this XDocument that) {
 			if (that == null) {
-				throw new ArgumentNullException("that");
+				throw new ArgumentNullException(nameof(that));
 			}
-			XElement root = that.Root;
+			var root = that.Root;
 			if (root == null) {
 				root = new XElement("xml");
 				that.Add(root);
@@ -284,7 +283,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static sbyte? GetSByte(this XDocument that, XName elementName, sbyte? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -296,7 +295,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static float? GetSingle(this XDocument that, XName elementName, float? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -308,7 +307,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static TimeSpan? GetTimeSpan(this XDocument that, XName elementName, TimeSpan? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -320,7 +319,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static ushort? GetUInt16(this XDocument that, XName elementName, ushort? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -332,7 +331,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static uint? GetUInt32(this XDocument that, XName elementName, uint? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -344,7 +343,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public static ulong? GetUInt64(this XDocument that, XName elementName, ulong? @default) {
-			string result = Get(that, elementName, null, null);
+			var result = Get(that, elementName, null, null);
 			if (result == null) {
 				return @default;
 			}
@@ -361,12 +360,12 @@ namespace bsn.ModuleStore.Mapper {
 
 		public static XElement NextMedadataSibling(this XElement that) {
 			if (that == null) {
-				throw new ArgumentNullException("that");
+				throw new ArgumentNullException(nameof(that));
 			}
-			XAttribute lang = that.Attribute(XmlLang);
-			string cultureId = (lang != null) ? lang.Value : string.Empty;
-			XName elementName = that.Name;
-			for (XNode node = that.NextNode; node != null; node = node.NextNode) {
+			var lang = that.Attribute(XmlLang);
+			var cultureId = (lang != null) ? lang.Value : string.Empty;
+			var elementName = that.Name;
+			for (var node = that.NextNode; node != null; node = node.NextNode) {
 				that = node as XElement;
 				if ((that != null) && (that.Name == elementName)) {
 					lang = that.Attribute(XmlLang);
@@ -463,7 +462,7 @@ namespace bsn.ModuleStore.Mapper {
 				that.GetRoot().Add(element);
 				return element;
 			}
-			XElement result = element;
+			var result = element;
 			if (value != null) {
 				element.RemoveAll();
 				element.Value = value;

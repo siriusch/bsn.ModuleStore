@@ -45,17 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.joins = joins.ToList();
 		}
 
-		public Source Inner {
-			get {
-				return inner;
-			}
-		}
+		public Source Inner => inner;
 
-		public IEnumerable<Join> Joins {
-			get {
-				return joins;
-			}
-		}
+		public IEnumerable<Join> Joins => joins;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.Write('(');

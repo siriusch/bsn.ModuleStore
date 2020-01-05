@@ -49,22 +49,10 @@ namespace bsn.ModuleStore.Bootstrapper {
 			this.definition = definition;
 		}
 
-		public XDocument Definition {
-			get {
-				return definition;
-			}
-		}
+		public XDocument Definition => definition;
 
-		public string ObjectName {
-			get {
-				return objectName;
-			}
-		}
+		public string ObjectName => objectName;
 
-		public string SchemaName {
-			get {
-				return schemaName;
-			}
-		}
+		public string SchemaName => schemaName;
 	}
 }

@@ -40,10 +40,6 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal TableName(string name): base(name) {}
 
-		public bool IsTempTable {
-			get {
-				return Value.StartsWith("#");
-			}
-		}
+		public bool IsTempTable => Value.StartsWith("#");
 	}
 }

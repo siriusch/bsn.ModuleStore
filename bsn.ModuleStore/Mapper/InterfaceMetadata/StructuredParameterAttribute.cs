@@ -34,7 +34,7 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 	[AttributeUsage(AttributeTargets.Property|AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
 	public class StructuredParameterAttribute: Attribute {
 		public static StructuredParameterAttribute GetStructuredParameterAttribute(MemberInfo memberInfo) {
-			StructuredParameterAttribute[] attributes = (StructuredParameterAttribute[])memberInfo.GetCustomAttributes(typeof(StructuredParameterAttribute), true);
+			var attributes = (StructuredParameterAttribute[])memberInfo.GetCustomAttributes(typeof(StructuredParameterAttribute), true);
 			if (attributes.Length > 0) {
 				return attributes[0];
 			}

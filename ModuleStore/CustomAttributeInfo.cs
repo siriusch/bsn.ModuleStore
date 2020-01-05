@@ -37,7 +37,7 @@ namespace bsn.ModuleStore.Console {
 	internal struct CustomAttributeInfo {
 		private static object GetSimpleValue(object value) {
 			if (value != null) {
-				Type valueType = value.GetType();
+				var valueType = value.GetType();
 				if (valueType.IsEnum) {
 					return Convert.ChangeType(value, Enum.GetUnderlyingType(valueType));
 				}
@@ -62,22 +62,10 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public QualifiedTypeNameInfo AttributeType {
-			get {
-				return attributeType;
-			}
-		}
+		public QualifiedTypeNameInfo AttributeType => attributeType;
 
-		public KeyValuePair<QualifiedTypeNameInfo, object>[] ConstructorArguments {
-			get {
-				return constructorArguments;
-			}
-		}
+		public KeyValuePair<QualifiedTypeNameInfo, object>[] ConstructorArguments => constructorArguments;
 
-		public KeyValuePair<TypeMemberInfo, object>[] NamedArguments {
-			get {
-				return namedArguments;
-			}
-		}
+		public KeyValuePair<TypeMemberInfo, object>[] NamedArguments => namedArguments;
 	}
 }

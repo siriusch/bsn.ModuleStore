@@ -42,23 +42,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.procedureName = procedureName;
 		}
 
-		public override string ObjectName {
-			get {
-				return procedureName.Name.Value;
-			}
-		}
+		public override string ObjectName => procedureName.Name.Value;
 
-		public Qualified<SchemaName, ProcedureName> ProcedureName {
-			get {
-				return procedureName;
-			}
-		}
+		public Qualified<SchemaName, ProcedureName> ProcedureName => procedureName;
 
-		protected override SchemaName SchemaName {
-			get {
-				return procedureName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => procedureName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

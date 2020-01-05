@@ -85,41 +85,17 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.fetchClause = orderOffsetFetchClause.FetchExpression;
 		}
 
-		public FromClause FromClause {
-			get {
-				return fromClause;
-			}
-		}
+		public FromClause FromClause => fromClause;
 
-		public IEnumerable<Expression> GroupByClause {
-			get {
-				return groupByClause;
-			}
-		}
+		public IEnumerable<Expression> GroupByClause => groupByClause;
 
-		public Predicate HavingClause {
-			get {
-				return havingClause;
-			}
-		}
+		public Predicate HavingClause => havingClause;
 
-		public IEnumerable<OrderExpression> OrderList {
-			get {
-				return orderList;
-			}
-		}
+		public IEnumerable<OrderExpression> OrderList => orderList;
 
-		public Expression OffsetClause {
-			get {
-				return offsetClause;
-			}
-		}
+		public Expression OffsetClause => offsetClause;
 
-		public Expression FetchClause {
-			get {
-				return fetchClause;
-			}
-		}
+		public Expression FetchClause => fetchClause;
 
 		protected override void WriteToInternal(SqlWriter writer) {
 			writer.WriteScript(fromClause, WhitespacePadding.NewlineBefore);

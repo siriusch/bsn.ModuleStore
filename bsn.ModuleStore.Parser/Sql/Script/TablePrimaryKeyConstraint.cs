@@ -40,10 +40,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<TableConstraint> ::= ~CONSTRAINT <ConstraintName> ~PRIMARY ~KEY <ConstraintCluster> ~'(' <IndexColumnList> ~')' <IndexOptionGroup>")]
 		public TablePrimaryKeyConstraint(ConstraintName constraintName, ConstraintClusterToken clustered, Sequence<IndexColumn> indexColumns, IndexOptionGroup indexOptionGroup): base(constraintName, clustered, indexColumns, indexOptionGroup) {}
 
-		protected override string UniqueKindName {
-			get {
-				return "PRIMARY KEY";
-			}
-		}
+		protected override string UniqueKindName => "PRIMARY KEY";
 	}
 }

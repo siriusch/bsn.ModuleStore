@@ -45,17 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.namespaceUri = namespaceUri;
 		}
 
-		public StringLiteral NamespaceUri {
-			get {
-				return namespaceUri;
-			}
-		}
+		public StringLiteral NamespaceUri => namespaceUri;
 
-		public XmlNamespaceName XmlNamespaceName {
-			get {
-				return xmlNamespaceName;
-			}
-		}
+		public XmlNamespaceName XmlNamespaceName => xmlNamespaceName;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

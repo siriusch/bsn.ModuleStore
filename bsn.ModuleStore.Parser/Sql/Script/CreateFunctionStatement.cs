@@ -51,44 +51,20 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.option = option;
 		}
 
-		public Qualified<SchemaName, FunctionName> FunctionName {
-			get {
-				return functionName;
-			}
-		}
+		public Qualified<SchemaName, FunctionName> FunctionName => functionName;
 
-		public override sealed ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.Function;
-			}
-		}
+		public override sealed ObjectCategory ObjectCategory => ObjectCategory.Function;
 
 		public override string ObjectName {
-			get {
-				return functionName.Name.Value;
-			}
-			set {
-				functionName.Name = new FunctionName(value);
-			}
+			get => functionName.Name.Value;
+			set => functionName.Name = new FunctionName(value);
 		}
 
-		public OptionToken Option {
-			get {
-				return option;
-			}
-		}
+		public OptionToken Option => option;
 
-		public IEnumerable<Parameter> Parameters {
-			get {
-				return parameters;
-			}
-		}
+		public IEnumerable<Parameter> Parameters => parameters;
 
-		protected override SchemaName SchemaName {
-			get {
-				return functionName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => functionName.Qualification;
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteToInternal(writer, "CREATE");
@@ -114,7 +90,7 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
 			if (string.IsNullOrEmpty(command)) {
-				throw new ArgumentNullException("command");
+				throw new ArgumentNullException(nameof(command));
 			}
 			WriteToInternal(writer, command);
 		}
@@ -128,11 +104,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.body = body;
 		}
 
-		public TBody Body {
-			get {
-				return body;
-			}
-		}
+		public TBody Body => body;
 
 		protected override IInstallStatement CreateAlterStatement() {
 			return new AlterOfCreateStatement<CreateFunctionStatement<TBody>>(this);

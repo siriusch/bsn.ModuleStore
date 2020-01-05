@@ -43,11 +43,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.markName = markName;
 		}
 
-		public StringLiteral MarkName {
-			get {
-				return markName;
-			}
-		}
+		public StringLiteral MarkName => markName;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

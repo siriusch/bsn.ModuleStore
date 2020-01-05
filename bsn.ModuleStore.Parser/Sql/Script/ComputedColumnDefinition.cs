@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expression = expression;
 		}
 
-		public Expression Expression {
-			get {
-				return expression;
-			}
-		}
+		public Expression Expression => expression;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("AS ");

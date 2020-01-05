@@ -58,59 +58,23 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.queryHint = queryHint;
 		}
 
-		public RowsetAlias DestinationAlias {
-			get {
-				return destinationAlias;
-			}
-		}
+		public RowsetAlias DestinationAlias => destinationAlias;
 
-		public DestinationRowset DestinationRowset {
-			get {
-				return destinationRowset;
-			}
-		}
+		public DestinationRowset DestinationRowset => destinationRowset;
 
-		public OutputClause OutputClause {
-			get {
-				return outputClause;
-			}
-		}
+		public OutputClause OutputClause => outputClause;
 
-		public Predicate Predicate {
-			get {
-				return predicate;
-			}
-		}
+		public Predicate Predicate => predicate;
 
-		public QueryHint QueryHint {
-			get {
-				return queryHint;
-			}
-		}
+		public QueryHint QueryHint => queryHint;
 
-		public QueryOptions QueryOptions {
-			get {
-				return queryOptions;
-			}
-		}
+		public QueryOptions QueryOptions => queryOptions;
 
-		public SourceRowset SourceRowset {
-			get {
-				return sourceRowset;
-			}
-		}
+		public SourceRowset SourceRowset => sourceRowset;
 
-		public TopExpression TopExpression {
-			get {
-				return topExpression;
-			}
-		}
+		public TopExpression TopExpression => topExpression;
 
-		public IEnumerable<MergeWhenMatched> WhenMatchedCollection {
-			get {
-				return whenMatchedCollection;
-			}
-		}
+		public IEnumerable<MergeWhenMatched> WhenMatchedCollection => whenMatchedCollection;
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

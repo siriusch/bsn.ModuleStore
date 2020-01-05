@@ -72,32 +72,22 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.name = name;
 		}
 
-		public string FullName {
-			get {
-				return ToString();
-			}
-		}
+		public string FullName => ToString();
 
-		public bool IsQualified {
-			get {
-				return Qualification != null;
-			}
-		}
+		public bool IsQualified => Qualification != null;
 
 		public TN Name {
-			get {
-				return name;
-			}
+			get => name;
 			internal set {
 				if (value == null) {
-					throw new ArgumentNullException("value");
+					throw new ArgumentNullException(nameof(value));
 				}
 				name = value;
 			}
 		}
 
 		public override int GetHashCode() {
-			int hashCode = name.GetHashCode();
+			var hashCode = name.GetHashCode();
 			if ((qualificationOverride == null) && (qualification != null)) {
 				hashCode ^= qualification.GetHashCode();
 			}
@@ -105,8 +95,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			TQ currentQualification = Qualification;
-			bool isQualified = currentQualification != null;
+			var currentQualification = Qualification;
+			var isQualified = currentQualification != null;
 			if (isQualified) {
 				currentQualification.WriteToInternal(writer, true);
 				writer.Write('.');
@@ -118,30 +108,22 @@ namespace bsn.ModuleStore.Sql.Script {
 			Initialize(((IToken)name).Symbol, position);
 		}
 
-		public bool IsOverridden {
-			get {
-				return qualificationOverride != null;
-			}
-		}
+		public bool IsOverridden => qualificationOverride != null;
 
-		public bool LockedOverride {
-			get {
-				return lockedOverride;
-			}
-		}
+		public bool LockedOverride => lockedOverride;
 
 		public int CompareTo(IQualifiedName<TQ> other) {
 			if (other != null) {
 				if (other == this) {
 					return 0;
 				}
-				TQ currentQualification = Qualification;
+				var currentQualification = Qualification;
 				if (currentQualification == null) {
 					if (other.Qualification != null) {
 						return -1;
 					}
 				} else {
-					int diff = currentQualification.CompareTo(other.Qualification);
+					var diff = currentQualification.CompareTo(other.Qualification);
 					if (diff != 0) {
 						return diff;
 					}
@@ -156,7 +138,7 @@ namespace bsn.ModuleStore.Sql.Script {
 				if (other == this) {
 					return true;
 				}
-				TQ currentQualification = Qualification;
+				var currentQualification = Qualification;
 				if (currentQualification == null) {
 					if (other.Qualification != null) {
 						return false;
@@ -171,16 +153,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			return false;
 		}
 
-		SqlName IQualifiedName<TQ>.Name {
-			get {
-				return Name;
-			}
-		}
+		SqlName IQualifiedName<TQ>.Name => Name;
 
 		void IQualifiedName<TQ>.SetOverride(IQualified<TQ> qualificationProvider) {
 			if (!lockedOverride) {
 				if (qualificationProvider == this) {
-					throw new ArgumentException("Cannot assign itself as override", "qualificationProvider");
+					throw new ArgumentException("Cannot assign itself as override", nameof(qualificationProvider));
 				}
 				qualificationOverride = qualificationProvider;
 			}

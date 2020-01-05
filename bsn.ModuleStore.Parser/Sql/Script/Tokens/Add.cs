@@ -40,10 +40,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 			this.originalValue = originalValue;
 		}
 
-		public override DdlOperation Operation {
-			get {
-				return DdlOperation.Add;
-			}
-		}
+		public override DdlOperation Operation => DdlOperation.Add;
 	}
 }

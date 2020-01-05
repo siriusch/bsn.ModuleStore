@@ -53,24 +53,16 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		/// Sometimes specific statements (such as creating temporary tables) need to be executed before the SP is called. These statements can be put in a leading comment.
 		/// </summary>
 		public bool ExecuteFirstCommentBeforeInvocation {
-			get {
-				return executeFirstCommentBeforeInvocation;
-			}
-			set {
-				executeFirstCommentBeforeInvocation = value;
-			}
+			get => executeFirstCommentBeforeInvocation;
+			set => executeFirstCommentBeforeInvocation = value;
 		}
 
 		/// <summary>
 		/// Controls the <see cref="DbCommand.CommandTimeout"/> to set on the <see cref="DbCommand"/>.
 		/// </summary>
 		public int Timeout {
-			get {
-				return timeout;
-			}
-			set {
-				timeout = value;
-			}
+			get => timeout;
+			set => timeout = value;
 		}
 
 		/// <summary>
@@ -78,66 +70,42 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		/// </summary>
 		/// <seealso cref="SqlReturnValue"/>
 		public SqlReturnValue UseReturnValue {
-			get {
-				return useReturnValue;
-			}
-			set {
-				useReturnValue = value;
-			}
+			get => useReturnValue;
+			set => useReturnValue = value;
 		}
 
 		/// <summary>
 		/// If true, the default constructor will be called instead of creating empty instances. For best performance, leave this setting on false. This corresponds to the parameter passed to <see cref="SqlDeserializer{T}"/> constructor.
 		/// </summary>
 		public bool DeserializeCallConstructor {
-			get {
-				return deserializeCallConstructor;
-			}
-			set {
-				deserializeCallConstructor = value;
-			}
+			get => deserializeCallConstructor;
+			set => deserializeCallConstructor = value;
 		}
 
 		/// <summary>
 		/// By default, if a single object is to be automatically deserialized (not a list) but no row is found, an exception will be thrown. You can use this property to change this behavior for reference types.
 		/// </summary>
 		public bool DeserializeReturnNullOnEmptyReader {
-			get {
-				return deserializeReturnNullOnEmptyReader;
-			}
-			set {
-				deserializeReturnNullOnEmptyReader = value;
-			}
+			get => deserializeReturnNullOnEmptyReader;
+			set => deserializeReturnNullOnEmptyReader = value;
 		}
 
-		public bool DeserializeScalar {
-			get {
-				return useReturnValue == SqlReturnValue.Scalar;
-			}
-		}
+		public bool DeserializeScalar => useReturnValue == SqlReturnValue.Scalar;
 
 		/// <summary>
 		/// Controls the number of rows to deserialize when using the automatic Deserializer. This corresponds to the parameter passed to <see cref="SqlDeserializer{T}"/>.<see cref="SqlDeserializer{T}.Deserialize(int)"/>.
 		/// </summary>
 		public int DeserializeRowLimit {
-			get {
-				return deserializeRowLimit;
-			}
-			set {
-				deserializeRowLimit = value;
-			}
+			get => deserializeRowLimit;
+			set => deserializeRowLimit = value;
 		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether a transaction is required to execute this stored procedure. The transaction will not be created, but checked only.
 		/// </summary>
 		public bool RequireTransaction {
-			get {
-				return requireTransaction;
-			}
-			set {
-				requireTransaction = value;
-			}
+			get => requireTransaction;
+			set => requireTransaction = value;
 		}
 	}
 }

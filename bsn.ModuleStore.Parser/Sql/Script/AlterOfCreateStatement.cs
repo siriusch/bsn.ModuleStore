@@ -38,27 +38,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.owner = owner;
 		}
 
-		public T Owner {
-			get {
-				return owner;
-			}
-		}
+		public T Owner => owner;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
 			owner.WriteToInternal(writer, "ALTER");
 		}
 
-		string IObjectBoundStatement.ObjectName {
-			get {
-				return owner.ObjectName;
-			}
-		}
+		string IObjectBoundStatement.ObjectName => owner.ObjectName;
 
-		bool IInstallStatement.IsPartOfSchemaDefinition {
-			get {
-				return false;
-			}
-		}
+		bool IInstallStatement.IsPartOfSchemaDefinition => false;
 	}
 }

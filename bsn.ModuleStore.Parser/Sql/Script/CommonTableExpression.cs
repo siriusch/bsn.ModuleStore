@@ -48,23 +48,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.selectQuery = selectQuery;
 		}
 
-		public AliasName AliasName {
-			get {
-				return aliasName;
-			}
-		}
+		public AliasName AliasName => aliasName;
 
-		public IEnumerable<ColumnName> ColumnNames {
-			get {
-				return columnNames;
-			}
-		}
+		public IEnumerable<ColumnName> ColumnNames => columnNames;
 
-		public SelectQuery SelectQuery {
-			get {
-				return selectQuery;
-			}
-		}
+		public SelectQuery SelectQuery => selectQuery;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(aliasName, WhitespacePadding.None);

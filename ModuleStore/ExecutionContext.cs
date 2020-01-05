@@ -44,7 +44,7 @@ using bsn.ModuleStore.Sql;
 namespace bsn.ModuleStore.Console {
 	internal class ExecutionContext: CommandLineContext<ExecutionContext, ModuleStoreContext>, IDisposable {
 		public static string BuildConnectionString(string server, string database, string databaseUser, string databasePassword) {
-			StringBuilder connectionString = new StringBuilder();
+			var connectionString = new StringBuilder();
 			if (string.IsNullOrEmpty(databaseUser)) {
 				connectionString.AppendFormat("Data Source={0};", server);
 				if (!string.IsNullOrEmpty(database)) {
@@ -75,9 +75,7 @@ namespace bsn.ModuleStore.Console {
 		}
 
 		public AssemblyHandler Assembly {
-			get {
-				return assembly;
-			}
+			get => assembly;
 			set {
 				if (assembly != null) {
 					assembly.Dispose();
@@ -86,22 +84,12 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public bool Connected {
-			get {
-				return (connection.State == ConnectionState.Open);
-			}
-		}
+		public bool Connected => (connection.State == ConnectionState.Open);
 
-		public SqlConnection Connection {
-			get {
-				return connection;
-			}
-		}
+		public SqlConnection Connection => connection;
 
 		public string Database {
-			get {
-				return connection.Database;
-			}
+			get => connection.Database;
 			set {
 				if (string.IsNullOrEmpty(value)) {
 					throw new ArgumentNullException();
@@ -110,23 +98,15 @@ namespace bsn.ModuleStore.Console {
 			}
 		}
 
-		public string DatabasePassword {
-			get {
-				return databasePassword;
-			}
-		}
+		public string DatabasePassword => databasePassword;
 
-		public string DatabaseUser {
-			get {
-				return databaseUser;
-			}
-		}
+		public string DatabaseUser => databaseUser;
 
 		public string Schema {
 			get {
 				if (string.IsNullOrEmpty(schemaName)) {
 					if (Connected) {
-						using (SqlCommand command = connection.CreateCommand()) {
+						using (var command = connection.CreateCommand()) {
 							command.CommandType = CommandType.Text;
 							command.CommandText = "SELECT COALESCE(default_schema_name, (SELECT TOP (1) [name] FROM [sys].[schemas] ORDER BY schema_id)) sSchema FROM sys.database_principals WHERE [name] = USER_NAME()";
 							return (string)command.ExecuteScalar();
@@ -145,9 +125,7 @@ namespace bsn.ModuleStore.Console {
 		}
 
 		public string ScriptPath {
-			get {
-				return Directory.GetCurrentDirectory();
-			}
+			get => Directory.GetCurrentDirectory();
 			set {
 				if (!string.IsNullOrEmpty(value)) {
 					Directory.SetCurrentDirectory(value);
@@ -168,7 +146,7 @@ namespace bsn.ModuleStore.Console {
 						throw new InvalidOperationException("Cannot change database server while connected");
 					}
 					if (string.IsNullOrEmpty(value)) {
-						throw new ArgumentNullException("value");
+						throw new ArgumentNullException(nameof(value));
 					}
 					serverName = value;
 				}
@@ -198,7 +176,7 @@ namespace bsn.ModuleStore.Console {
 			Inventory inventory;
 			switch (inventorySource) {
 			case Source.Database:
-				using (ManagementConnectionProvider provider = new ManagementConnectionProvider(connection, Schema)) {
+				using (var provider = new ManagementConnectionProvider(connection, Schema)) {
 					inventory = new DatabaseInventory(provider, Schema);
 				}
 				break;

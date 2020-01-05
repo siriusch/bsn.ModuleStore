@@ -37,10 +37,6 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<ViewOptionalAttribute> ::= ~WITH ~SCHEMABINDING")]
 		public OptionSchemabindingToken() {}
 
-		protected override string OptionSpecifier {
-			get {
-				return "SCHEMABINDING";
-			}
-		}
+		protected override string OptionSpecifier => "SCHEMABINDING";
 	}
 }

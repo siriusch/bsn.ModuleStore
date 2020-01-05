@@ -49,17 +49,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.predicate = predicate;
 		}
 
-		public Predicate Predicate {
-			get {
-				return predicate;
-			}
-		}
+		public Predicate Predicate => predicate;
 
-		public ReplicationToken Replication {
-			get {
-				return replication;
-			}
-		}
+		public ReplicationToken Replication => replication;
 
 		internal override bool IsPartOfSchemaDefinition {
 			get {

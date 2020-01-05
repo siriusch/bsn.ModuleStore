@@ -38,14 +38,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			Debug.Assert(!isIdentity);
 		}
 
-		public override sealed Type DbClrType {
-			get {
-				return typeof(SqlXml);
-			}
-		}
+		public override sealed Type DbClrType => typeof(SqlXml);
 
 		public override sealed object ProcessFromDb(IDeserializerContext context, int column) {
-			SqlXml xml = context.GetSqlXml(column);
+			var xml = context.GetSqlXml(column);
 			if (!xml.IsNull) {
 				return ProcessXmlReader(context, xml.CreateReader());
 			}

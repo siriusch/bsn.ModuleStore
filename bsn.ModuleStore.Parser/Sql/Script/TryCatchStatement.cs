@@ -43,17 +43,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.catchStatements = catchStatements.ToList();
 		}
 
-		public IEnumerable<Statement> CatchStatements {
-			get {
-				return catchStatements;
-			}
-		}
+		public IEnumerable<Statement> CatchStatements => catchStatements;
 
-		public IEnumerable<Statement> TryStatements {
-			get {
-				return tryStatements;
-			}
-		}
+		public IEnumerable<Statement> TryStatements => tryStatements;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

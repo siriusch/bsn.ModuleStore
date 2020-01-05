@@ -37,11 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Join> ::= ~FULL ~OUTER <JoinHint> ~JOIN <Source> ~ON <Predicate>")]
 		public FullOuterJoin(Optional<KeywordToken> hint, Source joinSource, Predicate predicate): base(hint, joinSource, predicate) {}
 
-		public override JoinKind Kind {
-			get {
-				return JoinKind.Full;
-			}
-		}
+		public override JoinKind Kind => JoinKind.Full;
 
 		protected override string JoinSpecifier {
 			get {

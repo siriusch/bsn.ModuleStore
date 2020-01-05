@@ -45,17 +45,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.typeName = typeName;
 		}
 
-		public Expression Expression {
-			get {
-				return expression;
-			}
-		}
+		public Expression Expression => expression;
 
-		public TypeName TypeName {
-			get {
-				return typeName;
-			}
-		}
+		public TypeName TypeName => typeName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteFunction("CAST");

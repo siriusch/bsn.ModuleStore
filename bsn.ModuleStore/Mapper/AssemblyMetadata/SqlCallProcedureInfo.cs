@@ -51,27 +51,27 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 
 		public static CreateProcedureStatement GetCreateScript(Type type, string manifestResourceName) {
 			if (type == null) {
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 			if (manifestResourceName == null) {
-				throw new ArgumentNullException("manifestResourceName");
+				throw new ArgumentNullException(nameof(manifestResourceName));
 			}
 			manifestResourceName = type.Namespace+Type.Delimiter+manifestResourceName;
 			CreateProcedureStatement result;
-			string manifestResourceKey = type.Assembly.FullName+", "+manifestResourceName;
+			var manifestResourceKey = type.Assembly.FullName+", "+manifestResourceName;
 			lock (statements) {
 				if (!statements.TryGetValue(manifestResourceKey, out result)) {
-					using (Stream stream = type.Assembly.GetManifestResourceStream(manifestResourceName)) {
+					using (var stream = type.Assembly.GetManifestResourceStream(manifestResourceName)) {
 						if (stream != null) {
 							using (TextReader reader = new StreamReader(stream, true)) {
-								using (IEnumerator<CreateProcedureStatement> enumerator = ScriptParser.Parse(reader).OfType<CreateProcedureStatement>().GetEnumerator()) {
+								using (var enumerator = ScriptParser.Parse(reader).OfType<CreateProcedureStatement>().GetEnumerator()) {
 									if (!enumerator.MoveNext()) {
-										throw new InvalidOperationException(String.Format("No CREATE PROCEDURE statement found in script {0}.", manifestResourceName));
+										throw new InvalidOperationException($"No CREATE PROCEDURE statement found in script {manifestResourceName}.");
 									}
 									result = enumerator.Current;
 									Debug.Assert(result != null);
 									if (enumerator.MoveNext()) {
-										throw new InvalidOperationException(String.Format("More than one CREATE PROCEDURE statement was found in script {0}", manifestResourceName));
+										throw new InvalidOperationException($"More than one CREATE PROCEDURE statement was found in script {manifestResourceName}");
 									}
 								}
 							}
@@ -100,17 +100,17 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 				proc = attribute;
 			}
 			if (proc == null) {
-				throw new NotImplementedException(String.Format("The method {0}.{1} has no SQL script attached to it.", method.DeclaringType.FullName, method.Name));
+				throw new NotImplementedException($"The method {method.DeclaringType.FullName}.{method.Name} has no SQL script attached to it.");
 			}
 			script = GetCreateScript(proc.ManifestResourceType ?? method.DeclaringType, proc.ManifestResourceName);
 			if (script == null) {
-				throw new FileNotFoundException(String.Format("The embedded script for the method {0}.{1} could not be found", method.DeclaringType.FullName, method.Name), proc.ManifestResourceName);
+				throw new FileNotFoundException($"The embedded script for the method {method.DeclaringType.FullName}.{method.Name} could not be found", proc.ManifestResourceName);
 			}
 			if (proc.ExecuteFirstCommentBeforeInvocation && (script.Comments.Count > 0)) {
-				List<Statement> callStatements = new List<Statement>(ScriptParser.Parse(rxUncomment.Match(script.Comments.First()).Value));
+				var callStatements = new List<Statement>(ScriptParser.Parse(rxUncomment.Match(script.Comments.First()).Value));
 				if (callStatements.Count > 0) {
-					foreach (Statement preCallStatement in callStatements) {
-						foreach (IQualifiedName<SchemaName> qualifiedName in preCallStatement.GetObjectSchemaQualifiedNames(script.ObjectSchema)) {
+					foreach (var preCallStatement in callStatements) {
+						foreach (var qualifiedName in preCallStatement.GetObjectSchemaQualifiedNames(script.ObjectSchema)) {
 							qualifiedName.SetOverride(this);
 						}
 					}
@@ -119,19 +119,19 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			}
 			parameters = new SqlCallParameterBase[script.Parameters.Count];
 			foreach (SqlParameterAttribute parameterAttribute in method.GetCustomAttributes(typeof(SqlParameterAttribute), false)) {
-				string parameterName = parameterAttribute.ParameterName;
+				var parameterName = parameterAttribute.ParameterName;
 				if (string.IsNullOrEmpty(parameterName)) {
-					throw new InvalidOperationException(string.Format("Constant parameters on method {0}.{1} must specify a valid name", method.DeclaringType.FullName, method.Name));
+					throw new InvalidOperationException($"Constant parameters on method {method.DeclaringType.FullName}.{method.Name} must specify a valid name");
 				}
 				if (!parameterName.StartsWith("@")) {
 					parameterName = "@"+parameterName;
 				}
-				bool found = false;
-				for (int i = 0; i < script.Parameters.Count; i++) {
-					ProcedureParameter parameter = script.Parameters[i];
+				var found = false;
+				for (var i = 0; i < script.Parameters.Count; i++) {
+					var parameter = script.Parameters[i];
 					if (string.Equals(parameter.ParameterName.Value, parameterName, StringComparison.OrdinalIgnoreCase)) {
 						if (parameters[i] != null) {
-							throw new InvalidOperationException(string.Format("The constant parameter {0} on method {1}.{2} cannot be declared multiple times", parameterName, method.DeclaringType.FullName, method.Name));
+							throw new InvalidOperationException($"The constant parameter {parameterName} on method {method.DeclaringType.FullName}.{method.Name} cannot be declared multiple times");
 						}
 						parameters[i] = new SqlCallParameterConstant(script.ProcedureName.Name, parameter, parameterAttribute.Value);
 						found = true;
@@ -139,15 +139,15 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 					}
 				}
 				if (!found) {
-					throw new InvalidOperationException(string.Format("The constant parameter {0} on method {1}.{2} does not match any of the stored procedure parameter names", parameterName, method.DeclaringType.FullName, method.Name));
+					throw new InvalidOperationException($"The constant parameter {parameterName} on method {method.DeclaringType.FullName}.{method.Name} does not match any of the stored procedure parameter names");
 				}
 			}
-			int index = 0;
-			ParameterInfo[] methodParameters = method.GetParameters();
-			foreach (ParameterInfo parameterInfo in methodParameters.OrderBy(p => p.Position)) {
+			var index = 0;
+			var methodParameters = method.GetParameters();
+			foreach (var parameterInfo in methodParameters.OrderBy(p => p.Position)) {
 				if ((parameterInfo.GetCustomAttributes(typeof(SqlNameTableAttribute), true).Length > 0) || (typeof(XmlNameTable).IsAssignableFrom(parameterInfo.ParameterType))) {
 					if (xmlNameTableParameter != null) {
-						throw new InvalidOperationException(string.Format("Only one XML name table parameter is allowed for method {0}.{1}", method.DeclaringType.FullName, method.Name));
+						throw new InvalidOperationException($"Only one XML name table parameter is allowed for method {method.DeclaringType.FullName}.{method.Name}");
 					}
 					xmlNameTableParameter = parameterInfo;
 				} else {
@@ -155,9 +155,9 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 						index++;
 					}
 					if (index >= parameters.Length) {
-						throw new InvalidOperationException(String.Format("The method {0}.{1} has more parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
+						throw new InvalidOperationException($"The method {method.DeclaringType.FullName}.{method.Name} has more parameters than its stored procedure");
 					}
-					SqlCallParameterInfo callParameterInfo = new SqlCallParameterInfo(serializationTypeInfoProvider, parameterInfo, script.ProcedureName.Name, script.Parameters[index], typeMappingProvider);
+					var callParameterInfo = new SqlCallParameterInfo(serializationTypeInfoProvider, parameterInfo, script.ProcedureName.Name, script.Parameters[index], typeMappingProvider);
 					if (callParameterInfo.Direction != ParameterDirection.Input) {
 						outArgCount = methodParameters.Length;
 					}
@@ -165,7 +165,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 				}
 			}
 			if (parameters.Any(p => p == null)) {
-				throw new InvalidOperationException(String.Format("The method {0}.{1} has less parameters than its stored procedure", method.DeclaringType.FullName, method.Name));
+				throw new InvalidOperationException($"The method {method.DeclaringType.FullName}.{method.Name} has less parameters than its stored procedure");
 			}
 			returnTypeInfo = serializationTypeInfoProvider.GetSerializationTypeInfo(method.ReturnType, proc.UseReturnValue==SqlReturnValue.Scalar);
 			if ((proc.UseReturnValue != SqlReturnValue.Auto) || (method.ReturnType != typeof(void))) {
@@ -174,16 +174,12 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			exceptionMappings = inventory.ExceptionMappings.Where(a => (a.DeclaredOn == null) || (a.DeclaredOn == method.DeclaringType) || (a.DeclaredOn == method)).OrderByDescending(a => a.ComputeSpecificity()).ToArray();
 		}
 
-		public string ProcedureName {
-			get {
-				return script.ProcedureName.Name.Value;
-			}
-		}
+		public string ProcedureName => script.ProcedureName.Name.Value;
 
 		public ICollection<SqlCommand> GetCommands(IMethodCallMessage mcm, SqlConnection connection, string schemaName, out SqlParameter returnParameter, out SqlParameter[] outArgs, out ISerializationTypeInfo returnTypeInfo, out ICallDeserializationInfo procInfo, out XmlNameTable xmlNameTable,
 		                                           IList<IDisposable> disposeList) {
 			if (String.IsNullOrEmpty(schemaName)) {
-				throw new ArgumentNullException("schemaName");
+				throw new ArgumentNullException(nameof(schemaName));
 			}
 			VerifyArgs(mcm);
 			SqlCommand[] commands;
@@ -191,12 +187,12 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 				commands = new SqlCommand[preCallStatements.Length+1];
 				lock (preCallStatements) {
 					schemaNameOverride = new SchemaName(schemaName);
-					int index = 0;
-					foreach (Statement preCallStatement in preCallStatements) {
-						StringWriter output = new StringWriter(CultureInfo.InvariantCulture);
-						SqlWriter writer = new SqlWriter(output, DatabaseEngine.Unknown, SqlWriterMode.NoComments);
+					var index = 0;
+					foreach (var preCallStatement in preCallStatements) {
+						var output = new StringWriter(CultureInfo.InvariantCulture);
+						var writer = new SqlWriter(output, DatabaseEngine.Unknown, SqlWriterMode.NoComments);
 						preCallStatement.WriteTo(writer);
-						SqlCommand preCallCommand = connection.CreateCommand();
+						var preCallCommand = connection.CreateCommand();
 						preCallCommand.CommandType = CommandType.Text;
 						preCallCommand.CommandText = output.ToString();
 						commands[index++] = preCallCommand;
@@ -205,15 +201,15 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			} else {
 				commands = new SqlCommand[1];
 			}
-			SqlCommand callCommand = connection.CreateCommand();
+			var callCommand = connection.CreateCommand();
 			callCommand.CommandType = CommandType.StoredProcedure;
-			callCommand.CommandText = String.Format("[{0}].[{1}]", schemaName, ProcedureName);
+			callCommand.CommandText = $"[{schemaName}].[{ProcedureName}]";
 			if (proc.Timeout > 0) {
 				callCommand.CommandTimeout = proc.Timeout;
 			}
 			outArgs = new SqlParameter[outArgCount];
 			xmlNameTable = xmlNameTableParameter != null ? (XmlNameTable)mcm.GetArg(xmlNameTableParameter.Position) : null;
-			foreach (SqlCallParameterBase factory in parameters) {
+			foreach (var factory in parameters) {
 				callCommand.Parameters.Add(factory.GetSqlParameter(callCommand, mcm, outArgs, disposeList));
 			}
 			if (useReturnValue) {
@@ -231,7 +227,7 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 		}
 
 		public Exception MapException(SqlException ex) {
-			foreach (SqlExceptionMappingAttribute mapping in exceptionMappings) {
+			foreach (var mapping in exceptionMappings) {
 				if (mapping.GetNumber(ex.Number).Equals(ex.Number) && mapping.GetSeverity(ex.Class).Equals(ex.Class) && mapping.GetState(ex.State).Equals(ex.State)) {
 					return (Exception)Activator.CreateInstance(mapping.TargetException, mapping.GetMessage(ex.Message), ex);
 				}
@@ -241,24 +237,20 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 
 		[Conditional("DEBUG")]
 		private void VerifyArgs(IMethodCallMessage mcm) {
-			List<string> expectedNames = parameters.OfType<SqlCallParameterInfo>().Select(p => p.ParameterName).ToList();
+			var expectedNames = parameters.OfType<SqlCallParameterInfo>().Select(p => p.ParameterName).ToList();
 			if (xmlNameTableParameter != null) {
 				expectedNames.Insert(xmlNameTableParameter.Position, xmlNameTableParameter.Name);
 			}
 			if (mcm.ArgCount != expectedNames.Count) {
-				throw new InvalidOperationException(string.Format("{0}.{1} parameter verification failed, the parameter count does not match", mcm.MethodBase.DeclaringType.FullName, mcm.MethodName));
+				throw new InvalidOperationException($"{mcm.MethodBase.DeclaringType.FullName}.{mcm.MethodName} parameter verification failed, the parameter count does not match");
 			}
-			for (int i = 0; i < expectedNames.Count; i++) {
+			for (var i = 0; i < expectedNames.Count; i++) {
 				if (!string.Equals(expectedNames[i], mcm.GetArgName(i), StringComparison.Ordinal)) {
-					throw new InvalidOperationException(string.Format("{0}.{1} parameter {2} verification failed, expected {3} but got {4}", mcm.MethodBase.DeclaringType.FullName, mcm.MethodName, i, expectedNames[i], mcm.GetArgName(i)));
+					throw new InvalidOperationException($"{mcm.MethodBase.DeclaringType.FullName}.{mcm.MethodName} parameter {i} verification failed, expected {expectedNames[i]} but got {mcm.GetArgName(i)}");
 				}
 			}
 		}
 
-		SchemaName IQualified<SchemaName>.Qualification {
-			get {
-				return schemaNameOverride;
-			}
-		}
+		SchemaName IQualified<SchemaName>.Qualification => schemaNameOverride;
 	}
 }

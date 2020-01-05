@@ -36,7 +36,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 	public class MemberConverter: IMemberConverter {
 		public static IMemberConverter Get(Type type, bool isIdentity, string columnName, int memberIndex, DateTimeKind dateTimeKind) {
 			if (type == null) {
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 			type = Nullable.GetUnderlyingType(type) ?? type;
 			if (type.IsEnum) {
@@ -84,38 +84,18 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			this.memberIndex = memberIndex;
 		}
 
-		public string ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public string ColumnName => columnName;
 
-		public virtual Type DbClrType {
-			get {
-				return type;
-			}
-		}
+		public virtual Type DbClrType => type;
 
-		public bool IsIdentity {
-			get {
-				return isIdentity;
-			}
-		}
+		public bool IsIdentity => isIdentity;
 
-		public int MemberIndex {
-			get {
-				return memberIndex;
-			}
-		}
+		public int MemberIndex => memberIndex;
 
-		public Type Type {
-			get {
-				return type;
-			}
-		}
+		public Type Type => type;
 
 		public virtual object ProcessFromDb(IDeserializerContext context, int column) {
-			object result = context.GetValue(column);
+			var result = context.GetValue(column);
 			if (result == DBNull.Value) {
 				return null;
 			}

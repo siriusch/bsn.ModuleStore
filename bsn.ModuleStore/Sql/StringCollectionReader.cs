@@ -49,7 +49,7 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		public override int Read() {
-			int result = GetCharAt(index++);
+			var result = GetCharAt(index++);
 			if (result >= 0) {
 				if ((current != null) && (index >= current.Length)) {
 					index -= (current.Length+newLine.Length);

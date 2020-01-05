@@ -57,23 +57,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.output = output;
 		}
 
-		public bool Output {
-			get {
-				return output;
-			}
-		}
+		public bool Output => output;
 
-		public ParameterName ParameterName {
-			get {
-				return parameterName;
-			}
-		}
+		public ParameterName ParameterName => parameterName;
 
-		public T Value {
-			get {
-				return value;
-			}
-		}
+		public T Value => value;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(ParameterName, WhitespacePadding.None, null, w => w.Write('='));

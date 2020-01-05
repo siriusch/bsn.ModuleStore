@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.collation = collation;
 		}
 
-		public CollationName Collation {
-			get {
-				return collation;
-			}
-		}
+		public CollationName Collation => collation;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("COLLATE ");

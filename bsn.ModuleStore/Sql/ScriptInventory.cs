@@ -43,8 +43,8 @@ namespace bsn.ModuleStore.Sql {
 			if (!string.IsNullOrEmpty(scriptPath)) {
 				this.scriptPath = Path.Combine(this.scriptPath, scriptPath);
 			}
-			List<Statement> unsupportedStatements = new List<Statement>();
-			foreach (string fileName in Directory.GetFiles(this.scriptPath, "*.sql", deepSearch ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)) {
+			var unsupportedStatements = new List<Statement>();
+			foreach (var fileName in Directory.GetFiles(this.scriptPath, "*.sql", deepSearch ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)) {
 				unsupportedStatements.Clear();
 				using (TextReader reader = new StreamReader(fileName, true)) {
 					try {
@@ -57,21 +57,17 @@ namespace bsn.ModuleStore.Sql {
 				if (unsupportedStatements.Count > 0) {
 					// only files which have no DDL as "unsupported statements" are assumed to be setup scripts
 					if (unsupportedStatements.TrueForAll(statement => !(statement is DdlStatement))) {
-						foreach (Statement statement in unsupportedStatements) {
+						foreach (var statement in unsupportedStatements) {
 							AddAdditionalSetupStatement(statement);
 						}
 					} else {
-						Trace.WriteLine(string.Format("Script {0} contains {1} unsupported statements", fileName, unsupportedStatements.Count));
+						Trace.WriteLine($"Script {fileName} contains {unsupportedStatements.Count} unsupported statements");
 					}
 				}
 			}
 			AdditionalSetupStatementSetSchemaOverride();
 		}
 
-		public string ScriptPath {
-			get {
-				return scriptPath;
-			}
-		}
+		public string ScriptPath => scriptPath;
 	}
 }

@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -40,7 +40,7 @@ using System.Runtime.Remoting.Proxies;
 using System.Xml;
 using System.Xml.XPath;
 
-using Common.Logging;
+using NLog;
 
 using bsn.ModuleStore.Mapper.AssemblyMetadata;
 using bsn.ModuleStore.Mapper.Serialization;
@@ -64,14 +64,14 @@ namespace bsn.ModuleStore.Mapper {
 	/// <seealso cref="IConnectionProvider"/>
 	public class SqlCallProxy: RealProxy {
 		private struct Profiler {
-			private readonly ILog log;
+			private readonly Logger log;
 			private long call;
 			private long fetch;
 			private string name;
 			private Stopwatch sw;
 			private bool transaction;
 
-			public Profiler(ILog log): this() {
+			public Profiler(Logger log): this() {
 				this.log = log;
 			}
 
@@ -79,7 +79,7 @@ namespace bsn.ModuleStore.Mapper {
 				if (sw != null) {
 					sw.Stop();
 					fetch = sw.ElapsedMilliseconds;
-					log.DebugFormat("SP {0} called; Duration {1}ms -- Fetch {2}ms -- Transaction: {3}", name, call, fetch, transaction);
+					log.Debug("SP {storedProcedure} called; Duration {durationMs}ms -- Fetch {fetchMs}ms -- Transaction: {transaction}", name, call, fetch, transaction);
 				}
 			}
 
@@ -135,11 +135,11 @@ namespace bsn.ModuleStore.Mapper {
 			if (dbParams == null) {
 				return null;
 			}
-			object[] result = new object[dbParams.Length];
-			for (int i = 0; i < result.Length; i++) {
-				SqlParameter sqlParameter = dbParams[i];
+			var result = new object[dbParams.Length];
+			for (var i = 0; i < result.Length; i++) {
+				var sqlParameter = dbParams[i];
 				if (sqlParameter != null) {
-					object value = sqlParameter.Value;
+					var value = sqlParameter.Value;
 					result[i] = value == DBNull.Value ? null : value;
 				}
 			}
@@ -148,23 +148,23 @@ namespace bsn.ModuleStore.Mapper {
 
 		private readonly ISqlCallInfo callInfo;
 		private readonly IConnectionProvider connectionProvider;
-		private readonly ILog log;
+		private readonly Logger log;
 		private readonly Dictionary<MethodBase, Func<IMethodCallMessage, IMessage>> methods = new Dictionary<MethodBase, Func<IMethodCallMessage, IMessage>>(8);
 		private readonly ISerializationTypeInfoProvider serializationTypeInfoProvider;
 		private IInstanceProvider provider;
 
 		private SqlCallProxy(IMetadataProvider metadataProvider, IConnectionProvider connectionProvider, Type interfaceToProxy): base(interfaceToProxy) {
 			if (metadataProvider == null) {
-				throw new ArgumentNullException("metadataProvider");
+				throw new ArgumentNullException(nameof(metadataProvider));
 			}
 			if (connectionProvider == null) {
-				throw new ArgumentNullException("connectionProvider");
+				throw new ArgumentNullException(nameof(connectionProvider));
 			}
-			log = LogManager.GetLogger(interfaceToProxy);
+			log = LogManager.GetLogger(interfaceToProxy.FullName);
 			this.connectionProvider = connectionProvider;
 			serializationTypeInfoProvider = metadataProvider.SerializationTypeInfoProvider;
 			if (serializationTypeInfoProvider == null) {
-				throw new ArgumentException("The metadata provider does not provide a serializationTypeInfoProvider. Please check the implementation.", "metadataProvider");
+				throw new ArgumentException("The metadata provider does not provide a serializationTypeInfoProvider. Please check the implementation.", nameof(metadataProvider));
 			}
 			callInfo = metadataProvider.GetCallInfo(interfaceToProxy);
 			methods.Add(equals, ProxyEquals);
@@ -181,33 +181,32 @@ namespace bsn.ModuleStore.Mapper {
 		/// Handle a method invocation. This is called by the proxy and should not be called explicitly.
 		/// </summary>
 		public override IMessage Invoke(IMessage msg) {
-			Profiler profiler = new Profiler(log);
-			IMethodCallMessage mcm = (IMethodCallMessage)msg;
+			var profiler = new Profiler(log);
+			var mcm = (IMethodCallMessage)msg;
 			try {
-				Func<IMethodCallMessage, IMessage> method;
-				if (methods.TryGetValue(mcm.MethodBase, out method)) {
-					log.TraceFormat("Invoking {0} as built-in method", mcm.MethodName);
+				if (methods.TryGetValue(mcm.MethodBase, out var method)) {
+					log.Trace("Invoking {methodName} as built-in method", mcm.MethodName);
 					return method(mcm);
 				}
-				log.TraceFormat("Invoking {0} via database proxy", mcm.MethodName);
-				bool ownsConnection = false;
+				log.Trace("Invoking {methodName} via database proxy", mcm.MethodName);
+				var ownsConnection = false;
 				SqlConnection connection;
-				SqlTransaction transaction = connectionProvider.GetTransaction();
+				var transaction = connectionProvider.GetTransaction();
 				if (transaction != null) {
 					connection = transaction.Connection;
 					if (connection == null) {
 						throw new InvalidOperationException("The transaction is not associated to a connection");
 					}
-					log.TraceFormat("Using connection of transaction provided by connection provider");
+					log.Trace("Using connection of transaction provided by connection provider");
 				} else {
 					connection = connectionProvider.GetConnection();
 					if (connection == null) {
 						throw new InvalidOperationException("No connection was returned by the provider");
 					}
-					log.TraceFormat("Acquired connection from connection provider");
+					log.Trace("Acquired connection from connection provider");
 				}
 				profiler.Start(callInfo.GetProcedureName(mcm, connectionProvider.SchemaName), transaction != null);
-				bool rollback = false;
+				var rollback = false;
 				SqlDataReader reader = null;
 				try {
 					ownsConnection = (transaction == null) && (connection.State == ConnectionState.Closed);
@@ -220,23 +219,18 @@ namespace bsn.ModuleStore.Mapper {
 					if (connection.State != ConnectionState.Open) {
 						throw new InvalidOperationException("Connection is expected to be open");
 					}
-					SqlParameter returnParameter;
-					SqlParameter[] outParameters;
-					ISerializationTypeInfo returnTypeInfo;
-					ICallDeserializationInfo procInfo;
 					IList<IDisposable> disposeList = new List<IDisposable>(0);
-					XmlNameTable xmlNameTable;
-					using (IEnumerator<SqlCommand> commandEnumerator = callInfo.CreateCommands(mcm, connection, connectionProvider.SchemaName, out returnParameter, out outParameters, out returnTypeInfo, out procInfo, out xmlNameTable, disposeList).GetEnumerator()) {
+					using (var commandEnumerator = callInfo.CreateCommands(mcm, connection, connectionProvider.SchemaName, out var returnParameter, out var outParameters, out var returnTypeInfo, out var procInfo, out var xmlNameTable, disposeList).GetEnumerator()) {
 						if (procInfo.RequireTransaction && (transaction == null)) {
 							throw new InvalidOperationException("A transaction is required for this stored procedure invocation");
 						}
 						if (!commandEnumerator.MoveNext()) {
 							throw new InvalidOperationException();
 						}
-						SqlCommand command = commandEnumerator.Current;
+						var command = commandEnumerator.Current;
 						Debug.Assert(command != null);
 						while (commandEnumerator.MoveNext()) {
-							log.DebugFormat("Pre-call SQL execute: {0}", command.CommandText);
+							log.Debug("Pre-call SQL execute: {sql}", command.CommandText);
 							command.Transaction = transaction;
 							command.ExecuteNonQuery();
 							command = commandEnumerator.Current;
@@ -244,7 +238,7 @@ namespace bsn.ModuleStore.Mapper {
 						}
 						command.Transaction = transaction;
 						try {
-							Type returnType = ((MethodInfo)mcm.MethodBase).ReturnType;
+							var returnType = ((MethodInfo)mcm.MethodBase).ReturnType;
 							object returnValue;
 							if (returnType == typeof(void)) {
 								command.ExecuteNonQuery();
@@ -252,9 +246,9 @@ namespace bsn.ModuleStore.Mapper {
 								returnValue = null;
 							} else {
 								if ((returnType == typeof(XPathNavigator)) || (returnType == typeof(XPathDocument))) {
-									using (XmlReader xmlReader = command.ExecuteXmlReader()) {
+									using (var xmlReader = command.ExecuteXmlReader()) {
 										profiler.Fetch();
-										XPathDocument xmlDocument = new XPathDocument(xmlReader);
+										var xmlDocument = new XPathDocument(xmlReader);
 										returnValue = (returnType == typeof(XPathNavigator)) ? (object)xmlDocument.CreateNavigator() : xmlDocument;
 									}
 								} else if (returnType == typeof(XmlReader)) {
@@ -264,7 +258,7 @@ namespace bsn.ModuleStore.Mapper {
 								} else if (typeof(ResultSet).IsAssignableFrom(returnType)) {
 									reader = command.ExecuteReader(CommandBehavior.Default);
 									profiler.Fetch();
-									using (SqlDeserializationContext context = new SqlDeserializationContext(provider, serializationTypeInfoProvider)) {
+									using (var context = new SqlDeserializationContext(provider, serializationTypeInfoProvider)) {
 										returnValue = Activator.CreateInstance(returnType);
 										((ResultSet)returnValue).Load(context, reader);
 										if (reader.NextResult()) {
@@ -272,13 +266,12 @@ namespace bsn.ModuleStore.Mapper {
 										}
 										reader.Dispose();
 										reader = null;
-										ISqlDeserializationHook hook = returnValue as ISqlDeserializationHook;
-										if (hook != null) {
+										if (returnValue is ISqlDeserializationHook hook) {
 											hook.AfterDeserialization();
 										}
 									}
 								} else {
-									bool isTypedDataReader = typeof(ITypedDataReader).IsAssignableFrom(returnType);
+									var isTypedDataReader = typeof(ITypedDataReader).IsAssignableFrom(returnType);
 									if (isTypedDataReader || typeof(IDataReader).IsAssignableFrom(returnType)) {
 										Debug.Assert(returnParameter == null);
 										if (outParameters.Length > 0) {
@@ -312,12 +305,12 @@ namespace bsn.ModuleStore.Mapper {
 												throw new InvalidOperationException("The stored procedure did not return any result, but a result was required for object deserialization");
 											}
 										} else {
-											using (SqlDeserializationContext context = new SqlDeserializationContext(provider, serializationTypeInfoProvider)) {
+											using (var context = new SqlDeserializationContext(provider, serializationTypeInfoProvider)) {
 												if (returnTypeInfo.SimpleConverter != null) {
-													SqlDeserializer.DeserializerContext deserializerContext = new SqlDeserializer.DeserializerContext(context, reader, procInfo.DeserializeCallConstructor, xmlNameTable);
+													var deserializerContext = new SqlDeserializer.DeserializerContext(context, reader, procInfo.DeserializeCallConstructor, xmlNameTable);
 													if (returnTypeInfo.IsCollection) {
-														IList list = returnTypeInfo.CreateList();
-														for (int row = procInfo.DeserializeRowLimit; reader.Read() && (row > 0); row--) {
+														var list = returnTypeInfo.CreateList();
+														for (var row = procInfo.DeserializeRowLimit; reader.Read() && (row > 0); row--) {
 															list.Add(returnTypeInfo.SimpleConverter.ProcessFromDb(deserializerContext, 0));
 														}
 														returnValue = returnTypeInfo.FinalizeList(list);
@@ -344,7 +337,7 @@ namespace bsn.ModuleStore.Mapper {
 							}
 							return new ReturnMessage(returnValue, GetOutArgValues(outParameters), outParameters.Length, mcm.LogicalCallContext, mcm);
 						} finally {
-							foreach (IDisposable disposable in disposeList) {
+							foreach (var disposable in disposeList) {
 								disposable.Dispose();
 							}
 						}
@@ -374,10 +367,9 @@ namespace bsn.ModuleStore.Mapper {
 					profiler.End();
 				}
 			} catch (Exception ex) {
-				log.WarnFormat("An exception occured during the call to {0}", ex, mcm.MethodName);
+				log.Warn(ex, "An exception occured during the call to {methodName}", mcm.MethodName);
 				IMessage result = null;
-				SqlException sqlEx = ex as SqlException;
-				if (sqlEx != null) {
+				if (ex is SqlException sqlEx) {
 					result = callInfo.HandleException(mcm, sqlEx);
 				}
 				return result ?? new ReturnMessage(ex, mcm);
@@ -414,7 +406,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		private IMessage ProxyToString(IMethodCallMessage mcm) {
-			return new ReturnMessage(string.Format("{0}@{1}", callInfo.InterfaceType.FullName, connectionProvider.SchemaName), null, 0, mcm.LogicalCallContext, mcm);
+			return new ReturnMessage($"{callInfo.InterfaceType.FullName}@{connectionProvider.SchemaName}", null, 0, mcm.LogicalCallContext, mcm);
 		}
 	}
 }

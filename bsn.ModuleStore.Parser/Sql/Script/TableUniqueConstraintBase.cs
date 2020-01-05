@@ -44,33 +44,17 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.indexColumns = indexColumns.ToList();
 		}
 
-		public Clustered Clustered {
-			get {
-				return clustered;
-			}
-		}
+		public Clustered Clustered => clustered;
 
-		public IndexOptionGroup IndexOptionGroup {
-			get {
-				return indexOptionGroup;
-			}
-		}
+		public IndexOptionGroup IndexOptionGroup => indexOptionGroup;
 
-		public IEnumerable<IndexColumn> IndexColumns {
-			get {
-				return indexColumns;
-			}
-		}
+		public IEnumerable<IndexColumn> IndexColumns => indexColumns;
 
 		protected abstract string UniqueKindName {
 			get;
 		}
 
-		internal override bool IsPartOfSchemaDefinition {
-			get {
-				return true;
-			}
-		}
+		internal override bool IsPartOfSchemaDefinition => true;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

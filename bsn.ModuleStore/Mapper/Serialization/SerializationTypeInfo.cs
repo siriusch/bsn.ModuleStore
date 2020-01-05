@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -34,11 +34,11 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using Common.Logging;
+using NLog;
 
 namespace bsn.ModuleStore.Mapper.Serialization {
 	public class SerializationTypeInfo: ISerializationTypeInfo {
-		private static readonly ILog log = LogManager.GetLogger<SerializationTypeInfo>();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		private static class ToArray<T> {
 #pragma warning disable 169
@@ -49,12 +49,12 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 #pragma warning restore 169
 
 			private static Func<object, Array> CreateToArrayInvoker() {
-				MethodInfo toArrayMethod = typeof(T).GetMethod("ToArray");
+				var toArrayMethod = typeof(T).GetMethod("ToArray");
 				if (toArrayMethod == null) {
 					return null;
 				}
-				DynamicMethod method = new DynamicMethod(string.Format("{0}.ToArray`Invoke", typeof(T).FullName), typeof(Array), new[] {typeof(object)}, false);
-				ILGenerator il = method.GetILGenerator();
+				var method = new DynamicMethod($"{typeof(T).FullName}.ToArray`Invoke", typeof(Array), new[] {typeof(object)}, false);
+				var il = method.GetILGenerator();
 				il.Emit(OpCodes.Ldarg_0);
 				il.Emit(OpCodes.Castclass, typeof(T));
 				il.Emit(OpCodes.Callvirt, toArrayMethod);
@@ -66,8 +66,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		// ReSharper disable UnusedMember.Local
 		public static Array ToArrayGeneric<T>(IEnumerable enumerable) {
 			// ReSharper restore UnusedMember.Local
-			List<T> list = new List<T>();
-			foreach (object obj in enumerable) {
+			var list = new List<T>();
+			foreach (var obj in enumerable) {
 				list.Add((T)obj);
 			}
 			return list.ToArray();
@@ -121,59 +121,27 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			}
 		}
 
-		public Type InstanceType {
-			get {
-				return instanceType;
-			}
-		}
+		public Type InstanceType => instanceType;
 
-		public bool IsCollection {
-			get {
-				return type != instanceType;
-			}
-		}
+		public bool IsCollection => type != instanceType;
 
-		public bool IsXmlInstanceType {
-			get {
-				return isXmlType;
-			}
-		}
+		public bool IsXmlInstanceType => isXmlType;
 
-		public Type ListType {
-			get {
-				return listType;
-			}
-		}
+		public Type ListType => listType;
 
-		public bool RequiresNotification {
-			get {
-				return requiresNotification;
-			}
-		}
+		public bool RequiresNotification => requiresNotification;
 
-		public Type Type {
-			get {
-				return type;
-			}
-		}
+		public Type Type => type;
 
-		public ISerializationTypeMapping Mapping {
-			get {
-				return mapping;
-			}
-		}
+		public ISerializationTypeMapping Mapping => mapping;
 
-		public IMemberConverter SimpleConverter {
-			get {
-				return simpleConverter;
-			}
-		}
+		public IMemberConverter SimpleConverter => simpleConverter;
 
 		public IList CreateList() {
 			try {
 				return (IList)Activator.CreateInstance(listType);
 			} catch {
-				log.WarnFormat("Failed to create list of type {0}", listType.FullName);
+				log.Warn("Failed to create list of type {listType}", listType.FullName);
 				throw;
 			}
 		}

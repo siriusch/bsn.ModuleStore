@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -37,7 +37,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-using Common.Logging;
+using NLog;
 
 using bsn.ModuleStore.Bootstrapper;
 using bsn.ModuleStore.Mapper;
@@ -50,45 +50,33 @@ using bsn.ModuleStore.Sql.Script.Tokens;
 namespace bsn.ModuleStore {
 	public class ModuleDatabase: IDisposable, IMetadataProvider {
 		private static readonly Dictionary<Type, SqlCallInfo> knownTypes = new Dictionary<Type, SqlCallInfo>();
-		private static readonly ILog log = LogManager.GetLogger<ModuleDatabase>();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 		private static readonly SerializationTypeInfoProvider serializationTypeInfoProvider = new SerializationTypeInfoProvider();
 		private static bool forceUpdateCheckDefault = Debugger.IsAttached;
 		private static bool ignoreDatabaseInventory;
 
 		public static bool ForceUpdateCheckDefault {
-			get {
-				return forceUpdateCheckDefault;
-			}
-			set {
-				forceUpdateCheckDefault = value;
-			}
+			get => forceUpdateCheckDefault;
+			set => forceUpdateCheckDefault = value;
 		}
 
 		public static bool IgnoreDatabaseInventory {
-			get {
-				return ignoreDatabaseInventory;
-			}
-			set {
-				ignoreDatabaseInventory = value;
-			}
+			get => ignoreDatabaseInventory;
+			set => ignoreDatabaseInventory = value;
 		}
 
-		internal static SerializationTypeInfoProvider SerializationTypeInfoProvider {
-			get {
-				return serializationTypeInfoProvider;
-			}
-		}
+		internal static SerializationTypeInfoProvider SerializationTypeInfoProvider => serializationTypeInfoProvider;
 
 		[Conditional("DEBUG")]
 		private static void DebugWriteFirstLines(string sql) {
 			if (log.IsTraceEnabled) {
-				log.TraceFormat("Executing SQL: {0}", sql);
+				log.Trace("Executing SQL: {sql}", sql);
 			} else if (log.IsDebugEnabled) {
-				StringBuilder result = new StringBuilder("Executing SQL: ");
+				var result = new StringBuilder("Executing SQL: ");
 				bool hasMore;
-				using (StringReader reader = new StringReader(sql)) {
-					for (int i = 0; i < 3; i++) {
-						string line = reader.ReadLine();
+				using (var reader = new StringReader(sql)) {
+					for (var i = 0; i < 3; i++) {
+						var line = reader.ReadLine();
 						if (line == null) {
 							break;
 						}
@@ -110,7 +98,7 @@ namespace bsn.ModuleStore {
 		}
 
 		public static DatabaseType GetDatabaseType(string connectionString) {
-			using (SqlConnection connection = new SqlConnection(connectionString)) {
+			using (var connection = new SqlConnection(connectionString)) {
 				connection.Open();
 				return GetDatabaseType(connection);
 			}
@@ -141,64 +129,36 @@ namespace bsn.ModuleStore {
 			schemaOwner = "dbo";
 		}
 
-		public bool AutoUpdate {
-			get {
-				return autoUpdate;
-			}
-		}
+		public bool AutoUpdate => autoUpdate;
 
-		public string ConnectionString {
-			get {
-				return connectionString;
-			}
-		}
+		public string ConnectionString => connectionString;
 
-		public bool Disposed {
-			get {
-				return disposed;
-			}
-		}
+		public bool Disposed => disposed;
 
 		public bool ForceUpdateCheck {
-			get {
-				return forceUpdateCheck.GetValueOrDefault(forceUpdateCheckDefault);
-			}
-			set {
-				forceUpdateCheck = value;
-			}
+			get => forceUpdateCheck.GetValueOrDefault(forceUpdateCheckDefault);
+			set => forceUpdateCheck = value;
 		}
 
 		public string SchemaOwner {
-			get {
-				return schemaOwner;
-			}
-			set {
-				schemaOwner = value;
-			}
+			get => schemaOwner;
+			set => schemaOwner = value;
 		}
 
-		protected internal ManagementConnectionProvider ManagementConnectionProvider {
-			get {
-				return managementConnectionProvider;
-			}
-		}
+		protected internal ManagementConnectionProvider ManagementConnectionProvider => managementConnectionProvider;
 
-		internal IModules ModuleStore {
-			get {
-				return moduleStore;
-			}
-		}
+		internal IModules ModuleStore => moduleStore;
 
 		public string CreateInstance(Assembly assembly) {
 			return GetModuleInstanceCache(assembly).CreateInstance();
 		}
 
 		public IEnumerable<string> GenerateUpdateInstanceStatements(AssemblyInventory inventory, Module module) {
-			DatabaseInventory databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
-			foreach (string sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
+			var databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
+			foreach (var sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
 				yield return sql;
 			}
-			ExecuteStatement exec = new ExecuteStatement(
+			var exec = new ExecuteStatement(
 					new Qualified<SchemaName, ProcedureName>(new SchemaName(moduleStore.InstanceName), new ProcedureName("spModuleUpdate")),
 					new Optional<Sequence<ExecuteParameter>>(
 							new Sequence<ExecuteParameter>(
@@ -230,14 +190,14 @@ namespace bsn.ModuleStore {
 
 		public IStoredProcedures Get(Type interfaceType, bool autoCreate) {
 			if (interfaceType == null) {
-				throw new ArgumentNullException("interfaceType");
+				throw new ArgumentNullException(nameof(interfaceType));
 			}
 			return GetModuleInstanceCache(interfaceType.Assembly).GetDefaultInstance(autoCreate).GetProxy(interfaceType);
 		}
 
 		public IStoredProcedures Get(Type interfaceType, string instance) {
 			if (interfaceType == null) {
-				throw new ArgumentNullException("interfaceType");
+				throw new ArgumentNullException(nameof(interfaceType));
 			}
 			return GetModuleInstanceCache(interfaceType.Assembly).GetInstance(instance).GetProxy(interfaceType);
 		}
@@ -256,7 +216,7 @@ namespace bsn.ModuleStore {
 
 		public void Refresh() {
 			lock (instances) {
-				foreach (ModuleInstanceCache cache in instances.Values) {
+				foreach (var cache in instances.Values) {
 					cache.SetDirty();
 				}
 			}
@@ -264,18 +224,18 @@ namespace bsn.ModuleStore {
 
 		public void UpdateInstanceDatabaseSchema(AssemblyInventory inventory, Module module) {
 			if (inventory == null) {
-				throw new ArgumentNullException("inventory");
+				throw new ArgumentNullException(nameof(inventory));
 			}
 			if (module == null) {
-				throw new ArgumentNullException("module");
+				throw new ArgumentNullException(nameof(module));
 			}
 			AssertSmoTransaction();
-			DatabaseInventory databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
-			bool hasChanges = !HashWriter.HashEqual(databaseInventory.GetInventoryHash(managementConnectionProvider.Engine), inventory.GetInventoryHash(managementConnectionProvider.Engine));
-			foreach (string sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
+			var databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
+			var hasChanges = !HashWriter.HashEqual(databaseInventory.GetInventoryHash(managementConnectionProvider.Engine), inventory.GetInventoryHash(managementConnectionProvider.Engine));
+			foreach (var sql in inventory.GenerateUpdateSql(databaseInventory, module.UpdateVersion)) {
 				DebugWriteFirstLines(sql);
 				hasChanges = true;
-				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
+				using (var command = managementConnectionProvider.GetConnection().CreateCommand()) {
 					command.Transaction = managementConnectionProvider.GetTransaction();
 					command.CommandType = CommandType.Text;
 					command.CommandText = sql+';';
@@ -285,14 +245,14 @@ namespace bsn.ModuleStore {
 			}
 			if (hasChanges) {
 				databaseInventory = new DatabaseInventory(managementConnectionProvider, module.Schema);
-				IEnumerable<KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>> differences = Inventory.Compare(inventory, databaseInventory, managementConnectionProvider.Engine).Where(pair => pair.Value != InventoryObjectDifference.None);
-				using (IEnumerator<KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference>> enumerator = differences.GetEnumerator()) {
+				var differences = Inventory.Compare(inventory, databaseInventory, managementConnectionProvider.Engine).Where(pair => pair.Value != InventoryObjectDifference.None);
+				using (var enumerator = differences.GetEnumerator()) {
 					if (enumerator.MoveNext()) {
-						StringBuilder message = new StringBuilder("Schema ");
+						var message = new StringBuilder("Schema ");
 						message.Append(module.Schema);
 						message.Append(" update failed for");
 						do {
-							log.InfoFormat("SQL object {0}.{1} is {2}", module.Schema, enumerator.Current.Key.ObjectName, enumerator.Current.Value);
+							log.Info("SQL object {schema}.{object} is {difference}", module.Schema, enumerator.Current.Key.ObjectName, enumerator.Current.Value);
 							message.Append(' ');
 							message.Append(enumerator.Current.Key.ObjectName);
 						} while (enumerator.MoveNext());
@@ -310,15 +270,15 @@ namespace bsn.ModuleStore {
 
 		protected internal virtual void CreateInstanceDatabaseSchema(AssemblyInventory inventory, string moduleSchema) {
 			if (inventory == null) {
-				throw new ArgumentNullException("inventory");
+				throw new ArgumentNullException(nameof(inventory));
 			}
 			if (String.IsNullOrEmpty(moduleSchema)) {
-				throw new ArgumentNullException("moduleSchema");
+				throw new ArgumentNullException(nameof(moduleSchema));
 			}
 			AssertSmoTransaction();
-			foreach (string sql in inventory.GenerateInstallSql(managementConnectionProvider.Engine, moduleSchema, schemaOwner)) {
-				log.DebugFormat("SQL install: ", sql);
-				using (SqlCommand command = managementConnectionProvider.GetConnection().CreateCommand()) {
+			foreach (var sql in inventory.GenerateInstallSql(managementConnectionProvider.Engine, moduleSchema, schemaOwner)) {
+				log.Debug("SQL install: {sql}", sql);
+				using (var command = managementConnectionProvider.GetConnection().CreateCommand()) {
 					command.Transaction = managementConnectionProvider.GetTransaction();
 					command.CommandType = CommandType.Text;
 					command.CommandText = sql+';';
@@ -346,7 +306,7 @@ namespace bsn.ModuleStore {
 
 		internal ModuleInstanceCache GetModuleInstanceCache(Assembly assembly) {
 			if (assembly == null) {
-				throw new ArgumentNullException("assembly");
+				throw new ArgumentNullException(nameof(assembly));
 			}
 			ModuleInstanceCache moduleInstances;
 			lock (instances) {
@@ -368,11 +328,10 @@ namespace bsn.ModuleStore {
 
 		ISqlCallInfo IMetadataProvider.GetCallInfo(Type interfaceType) {
 			if (interfaceType == null) {
-				throw new ArgumentNullException("interfaceType");
+				throw new ArgumentNullException(nameof(interfaceType));
 			}
 			lock (knownTypes) {
-				SqlCallInfo result;
-				if (!knownTypes.TryGetValue(interfaceType, out result)) {
+				if (!knownTypes.TryGetValue(interfaceType, out var result)) {
 					result = new SqlCallInfo(GetModuleInstanceCache(interfaceType.Assembly).AssemblyInfo.Inventory, serializationTypeInfoProvider, interfaceType, serializationTypeInfoProvider.TypeMappingProvider);
 					knownTypes.Add(interfaceType, result);
 				}
@@ -380,10 +339,6 @@ namespace bsn.ModuleStore {
 			}
 		}
 
-		ISerializationTypeInfoProvider IMetadataProvider.SerializationTypeInfoProvider {
-			get {
-				return SerializationTypeInfoProvider;
-			}
-		}
+		ISerializationTypeInfoProvider IMetadataProvider.SerializationTypeInfoProvider => SerializationTypeInfoProvider;
 	}
 }

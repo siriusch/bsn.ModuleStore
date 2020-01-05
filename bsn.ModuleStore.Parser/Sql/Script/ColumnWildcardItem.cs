@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnWildcard = columnWildcard;
 		}
 
-		public Qualified<SqlName, ColumnName> ColumnWildcard {
-			get {
-				return columnWildcard;
-			}
-		}
+		public Qualified<SqlName, ColumnName> ColumnWildcard => columnWildcard;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(columnWildcard, WhitespacePadding.None);

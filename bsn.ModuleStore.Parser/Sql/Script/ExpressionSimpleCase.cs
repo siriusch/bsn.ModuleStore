@@ -45,11 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.inputExpression = inputExpression;
 		}
 
-		public Expression InputExpression {
-			get {
-				return inputExpression;
-			}
-		}
+		public Expression InputExpression => inputExpression;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

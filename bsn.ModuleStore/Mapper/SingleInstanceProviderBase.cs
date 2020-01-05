@@ -55,21 +55,13 @@ namespace bsn.ModuleStore.Mapper {
 				set;
 			}
 
-			public bool IsStrong {
-				get {
-					return true;
-				}
-			}
+			public bool IsStrong => true;
 		}
 
 		private sealed class WeakCacheReference: WeakReference, ICacheReference {
 			public WeakCacheReference(object target): base(target) {}
 
-			public bool IsStrong {
-				get {
-					return false;
-				}
-			}
+			public bool IsStrong => false;
 		}
 
 		internal const CachePolicy DefaultCachePolicy = CachePolicy.WeakReference;
@@ -87,7 +79,7 @@ namespace bsn.ModuleStore.Mapper {
 				this.defaultCachePolicy = defaultCachePolicy;
 				break;
 			default:
-				throw new ArgumentOutOfRangeException("defaultCachePolicy");
+				throw new ArgumentOutOfRangeException(nameof(defaultCachePolicy));
 			}
 		}
 
@@ -103,8 +95,7 @@ namespace bsn.ModuleStore.Mapper {
 		protected override object CreateOrGetCachedInstance(TTypeKey key, out InstanceOrigin instanceOrigin) {
 			object instance;
 			lock (instances) {
-				ICacheReference reference;
-				if (instances.TryGetValue(key, out reference)) {
+				if (instances.TryGetValue(key, out var reference)) {
 					instance = reference.Target;
 					if (instance == null) {
 						instance = base.CreateOrGetCachedInstance(key, out instanceOrigin);
@@ -114,7 +105,7 @@ namespace bsn.ModuleStore.Mapper {
 					}
 				} else {
 					instance = base.CreateOrGetCachedInstance(key, out instanceOrigin);
-					CachePolicy policy = GetCachePolicy(key.Type);
+					var policy = GetCachePolicy(key.Type);
 					switch (policy) {
 					case CachePolicy.WeakReference:
 						instances.Add(key, new WeakCacheReference(instance));
@@ -141,12 +132,12 @@ namespace bsn.ModuleStore.Mapper {
 		protected override void Forget(IDictionary<string, object> state, Type instanceType, object identity) {
 			Debug.Assert(instanceType != null);
 			if ((!instanceType.IsValueType) && (identity is TKey)) {
-				TTypeKey key = CreateTypeKey(instanceType, (TKey)identity);
+				var key = CreateTypeKey(instanceType, (TKey)identity);
 				lock (instances) {
 					instances.Remove(key);
 				}
 				if (state != null) {
-					Dictionary<TTypeKey, object> deserializedInstances = ((Dictionary<TTypeKey, object>)state[DeserializedInstanceSet]);
+					var deserializedInstances = ((Dictionary<TTypeKey, object>)state[DeserializedInstanceSet]);
 					if (deserializedInstances != null) {
 						deserializedInstances.Remove(key);
 					}
@@ -156,7 +147,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected CachePolicy GetCachePolicy(Type type) {
 			if (type == null) {
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 			CachePolicy result;
 			lock (cachePolicy) {
@@ -170,9 +161,9 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected IEnumerable<T> GetFromCache<T>(bool includeWeak) {
 			lock (instances) {
-				foreach (ICacheReference cacheReference in instances.Where(p => typeof(T) == p.Key.Type).Select(p => p.Value)) {
+				foreach (var cacheReference in instances.Where(p => typeof(T) == p.Key.Type).Select(p => p.Value)) {
 					if (includeWeak || cacheReference.IsStrong) {
-						object target = cacheReference.Target;
+						var target = cacheReference.Target;
 						if (target != null) {
 							yield return (T)target;
 						}
@@ -182,23 +173,21 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		protected T GetFromCache<T>(TKey identity) where T: class {
-			ICacheReference reference;
 			lock (instances) {
-				if (instances.TryGetValue(CreateTypeKey(typeof(T), identity), out reference)) {
-					object result = reference.Target;
+				if (instances.TryGetValue(CreateTypeKey(typeof(T), identity), out var reference)) {
+					var result = reference.Target;
 					if (result != null) {
 						return (T)result;
 					}
-					throw new KeyNotFoundException(string.Format("The {0} instance with the identity {1} is no longer in the cache", typeof(T).FullName, identity));
+					throw new KeyNotFoundException($"The {typeof(T).FullName} instance with the identity {identity} is no longer in the cache");
 				}
 			}
-			throw new KeyNotFoundException(string.Format("A {0} instance with the identity {1} was not found in the cache", typeof(T).FullName, identity));
+			throw new KeyNotFoundException($"A {typeof(T).FullName} instance with the identity {identity} was not found in the cache");
 		}
 
 		protected bool TryGetFromCache<T>(TKey identity, out T item) where T: class {
-			ICacheReference reference;
 			lock (instances) {
-				if (instances.TryGetValue(CreateTypeKey(typeof(T), identity), out reference)) {
+				if (instances.TryGetValue(CreateTypeKey(typeof(T), identity), out var reference)) {
 					item = (T)reference.Target;
 					return item != null;
 				}
@@ -209,13 +198,13 @@ namespace bsn.ModuleStore.Mapper {
 
 		private void CleanupCache() {
 			lock (instances) {
-				List<TTypeKey> keys = new List<TTypeKey>();
-				foreach (KeyValuePair<TTypeKey, ICacheReference> pair in instances) {
+				var keys = new List<TTypeKey>();
+				foreach (var pair in instances) {
 					if (pair.Value.Target == null) {
 						keys.Add(pair.Key);
 					}
 				}
-				foreach (TTypeKey key in keys) {
+				foreach (var key in keys) {
 					instances.Remove(key);
 				}
 			}

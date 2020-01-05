@@ -134,20 +134,12 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.item = item;
 		}
 
-		public T Item {
-			get {
-				return item;
-			}
-		}
+		public T Item => item;
 
-		public Sequence<T> Next {
-			get {
-				return next;
-			}
-		}
+		public Sequence<T> Next => next;
 
 		public IEnumerator<T> GetEnumerator() {
-			for (Sequence<T> sequence = this; sequence != null; sequence = sequence.Next) {
+			for (var sequence = this; sequence != null; sequence = sequence.Next) {
 				if (sequence.Item != null) {
 					yield return sequence.Item;
 				}

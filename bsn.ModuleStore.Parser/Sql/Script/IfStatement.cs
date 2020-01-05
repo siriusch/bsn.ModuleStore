@@ -50,23 +50,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.elseStatement = elseStatement;
 		}
 
-		public Predicate Condition {
-			get {
-				return condition;
-			}
-		}
+		public Predicate Condition => condition;
 
-		public Statement ElseStatement {
-			get {
-				return elseStatement;
-			}
-		}
+		public Statement ElseStatement => elseStatement;
 
-		public Statement ThenStatement {
-			get {
-				return thenStatement;
-			}
-		}
+		public Statement ThenStatement => thenStatement;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

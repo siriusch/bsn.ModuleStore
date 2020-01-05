@@ -44,11 +44,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.hints = hints.ToList();
 		}
 
-		public IEnumerable<TableHint> Hints {
-			get {
-				return hints;
-			}
-		}
+		public IEnumerable<TableHint> Hints => hints;
 
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
@@ -59,10 +55,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool HasValue {
-			get {
-				return hints.Count > 0;
-			}
-		}
+		public bool HasValue => hints.Count > 0;
 	}
 }

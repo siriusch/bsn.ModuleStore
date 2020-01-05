@@ -55,17 +55,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.arguments = arguments;
 		}
 
-		public IEnumerable<Expression> Arguments {
-			get {
-				return arguments;
-			}
-		}
+		public IEnumerable<Expression> Arguments => arguments;
 
-		public Qualified<SchemaName, FunctionName> FunctionName {
-			get {
-				return functionName;
-			}
-		}
+		public Qualified<SchemaName, FunctionName> FunctionName => functionName;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(functionName, WhitespacePadding.None);
@@ -75,7 +67,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		internal NamedFunction QualifiedWith(SqlName qualification) {
-			Qualified<SchemaName, FunctionName> qualifiedFunctionName = new Qualified<SchemaName, FunctionName>(new SchemaName(qualification.Value), functionName.Name);
+			var qualifiedFunctionName = new Qualified<SchemaName, FunctionName>(new SchemaName(qualification.Value), functionName.Name);
 			qualifiedFunctionName.SetPosition(((IToken)qualification).Position);
 			return new NamedFunction(qualifiedFunctionName, arguments);
 		}

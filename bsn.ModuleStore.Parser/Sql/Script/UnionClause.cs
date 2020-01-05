@@ -36,16 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<RowsetCombineClause> ::= ~UNION <SelectQuery>")]
 		public UnionClause(SelectQuery selectQuery): base(selectQuery) {}
 
-		public virtual bool All {
-			get {
-				return false;
-			}
-		}
+		public virtual bool All => false;
 
-		protected override string CombineSpecifier {
-			get {
-				return "UNION";
-			}
-		}
+		protected override string CombineSpecifier => "UNION";
 	}
 }

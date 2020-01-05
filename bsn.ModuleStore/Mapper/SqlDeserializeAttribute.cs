@@ -54,12 +54,8 @@ namespace bsn.ModuleStore.Mapper {
 		private bool notNull;
 
 		public bool NotNull {
-			get {
-				return notNull;
-			}
-			set {
-				notNull = value;
-			}
+			get => notNull;
+			set => notNull = value;
 		}
 	}
 }

@@ -40,10 +40,6 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<NamedColumnConstraint> ::= ~CONSTRAINT <ConstraintName> ~UNIQUE <ConstraintCluster> <IndexOptionGroup>")]
 		public ColumnUniqueConstraint(ConstraintName constraintName, ConstraintClusterToken clustered, IndexOptionGroup indexOptionGroup): base(constraintName, clustered, indexOptionGroup) {}
 
-		protected override string UniqueKindName {
-			get {
-				return "UNIQUE";
-			}
-		}
+		protected override string UniqueKindName => "UNIQUE";
 	}
 }

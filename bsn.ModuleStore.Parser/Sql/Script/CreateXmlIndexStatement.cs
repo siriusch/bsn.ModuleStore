@@ -44,23 +44,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.indexUsing = indexUsing;
 		}
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
-		public IndexUsing IndexUsing {
-			get {
-				return indexUsing;
-			}
-		}
+		public IndexUsing IndexUsing => indexUsing;
 
-		public virtual bool Primary {
-			get {
-				return false;
-			}
-		}
+		public virtual bool Primary => false;
 
 		public override bool DoesApplyToEngine(DatabaseEngine engine) {
 			if (engine == DatabaseEngine.SqlAzure) {

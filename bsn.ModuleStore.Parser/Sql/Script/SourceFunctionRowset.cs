@@ -45,11 +45,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.function = function;
 		}
 
-		public NamedFunction Function {
-			get {
-				return function;
-			}
-		}
+		public NamedFunction Function => function;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(function, WhitespacePadding.None);

@@ -37,16 +37,12 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected Instance(TManager owner) {
 			if (owner == null) {
-				throw new ArgumentNullException("owner");
+				throw new ArgumentNullException(nameof(owner));
 			}
 			this.owner = owner;
 		}
 
-		public TManager Owner {
-			get {
-				return owner;
-			}
-		}
+		public TManager Owner => owner;
 
 		public override sealed bool Equals(object obj) {
 			return Equals(obj as Instance<TId, TManager>);
@@ -57,7 +53,7 @@ namespace bsn.ModuleStore.Mapper {
 		}
 
 		public override string ToString() {
-			return string.Format("{0}[{1}]", GetType().FullName, Id);
+			return $"{GetType().FullName}[{Id}]";
 		}
 
 		public bool Equals(Instance<TId, TManager> other) {

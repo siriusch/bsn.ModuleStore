@@ -37,11 +37,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.transactionIdentifier = transactionIdentifier;
 		}
 
-		public SqlName TransactionIdentifier {
-			get {
-				return transactionIdentifier;
-			}
-		}
+		public SqlName TransactionIdentifier => transactionIdentifier;
 
 		protected abstract string OperationSpecifier {
 			get;

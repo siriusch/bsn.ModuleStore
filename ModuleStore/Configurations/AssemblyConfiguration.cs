@@ -48,7 +48,7 @@ namespace bsn.ModuleStore.Console.Configurations {
 				return;
 			}
 			executionContext.Output.WriteLine(" Assembly: {0}", executionContext.Assembly);
-			AssemblyInventory inventory = new AssemblyInventory(executionContext.Assembly);
+			var inventory = new AssemblyInventory(executionContext.Assembly);
 			executionContext.Output.WriteLine(" Setup objects: {0}", inventory.Objects.Count);
 			executionContext.Output.WriteLine(" Setup statements: {0}", inventory.AdditionalSetupStatements.Count());
 			executionContext.Output.WriteLine(" Update scripts: {0}", inventory.UpdateStatements.Count);

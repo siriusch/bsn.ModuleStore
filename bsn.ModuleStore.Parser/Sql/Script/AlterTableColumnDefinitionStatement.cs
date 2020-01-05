@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.definition = definition;
 		}
 
-		public ColumnDefinition Definition {
-			get {
-				return definition;
-			}
-		}
+		public ColumnDefinition Definition => definition;
 
 		public override void WriteTo(SqlWriter writer) {
 			base.WriteTo(writer);

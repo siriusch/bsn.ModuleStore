@@ -40,27 +40,15 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.elementName = elementName;
 		}
 
-		public IEnumerable<XmlDirective> Directives {
-			get {
-				return directives;
-			}
-		}
+		public IEnumerable<XmlDirective> Directives => directives;
 
-		public StringLiteral ElementName {
-			get {
-				return elementName;
-			}
-		}
+		public StringLiteral ElementName => elementName;
 
 		public abstract ForXmlKind Kind {
 			get;
 		}
 
-		public override SelectFor SelectFor {
-			get {
-				return SelectFor.Xml;
-			}
-		}
+		public override SelectFor SelectFor => SelectFor.Xml;
 
 		protected abstract String KindSpecifier {
 			get;

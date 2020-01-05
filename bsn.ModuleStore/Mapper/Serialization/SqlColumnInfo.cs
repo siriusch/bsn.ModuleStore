@@ -40,13 +40,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public SqlColumnInfo(ISerializationTypeMapping typeMapping, string columnName, IMemberConverter converter) {
 			if (string.IsNullOrEmpty(columnName)) {
-				throw new ArgumentNullException("columnName");
+				throw new ArgumentNullException(nameof(columnName));
 			}
 			if (converter == null) {
-				throw new ArgumentNullException("converter");
+				throw new ArgumentNullException(nameof(converter));
 			}
 			if (typeMapping == null) {
-				throw new ArgumentNullException("typeMapping");
+				throw new ArgumentNullException(nameof(typeMapping));
 			}
 			name = columnName;
 			this.converter = converter;
@@ -55,33 +55,17 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		public SqlColumnInfo(MemberInfo memberInfo, string columnName, IMemberConverter converter, ISerializationTypeMapping typeMapping): this(typeMapping, columnName, converter) {
 			if (memberInfo == null) {
-				throw new ArgumentNullException("memberInfo");
+				throw new ArgumentNullException(nameof(memberInfo));
 			}
 			this.memberInfo = memberInfo;
 		}
 
-		public IMemberConverter Converter {
-			get {
-				return converter;
-			}
-		}
+		public IMemberConverter Converter => converter;
 
-		public SqlDbType DbType {
-			get {
-				return typeMapping.DbType;
-			}
-		}
+		public SqlDbType DbType => typeMapping.DbType;
 
-		public MemberInfo MemberInfo {
-			get {
-				return memberInfo;
-			}
-		}
+		public MemberInfo MemberInfo => memberInfo;
 
-		public string Name {
-			get {
-				return name;
-			}
-		}
+		public string Name => name;
 	}
 }

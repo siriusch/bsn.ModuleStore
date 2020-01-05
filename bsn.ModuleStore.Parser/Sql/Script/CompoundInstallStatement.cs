@@ -45,8 +45,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public override void WriteTo(SqlWriter writer) {
-			bool first = true;
-			foreach (IScriptableStatement statement in statements) {
+			var first = true;
+			foreach (var statement in statements) {
 				if (first) {
 					first = false;
 				} else {
@@ -56,16 +56,8 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public string ObjectName {
-			get {
-				return objectName;
-			}
-		}
+		public string ObjectName => objectName;
 
-		public bool IsPartOfSchemaDefinition {
-			get {
-				return false;
-			}
-		}
+		public bool IsPartOfSchemaDefinition => false;
 	}
 }

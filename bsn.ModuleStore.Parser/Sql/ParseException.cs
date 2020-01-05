@@ -54,17 +54,13 @@ namespace bsn.ModuleStore.Sql {
 		protected ParseException(SerializationInfo info, StreamingContext context): base(info, context) {}
 
 		public string FileName {
-			get {
-				return fileName ?? string.Empty;
-			}
-			internal set {
-				fileName = value;
-			}
+			get => fileName ?? string.Empty;
+			internal set => fileName = value;
 		}
 
 		public override string Message {
 			get {
-				StringBuilder result = new StringBuilder(base.Message);
+				var result = new StringBuilder(base.Message);
 				result.AppendLine();
 				result.Append(parseMessage);
 				result.Append(" @ ");
@@ -77,16 +73,8 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public ParseMessage ParseMessage {
-			get {
-				return parseMessage;
-			}
-		}
+		public ParseMessage ParseMessage => parseMessage;
 
-		public LineInfo Position {
-			get {
-				return position;
-			}
-		}
+		public LineInfo Position => position;
 	}
 }

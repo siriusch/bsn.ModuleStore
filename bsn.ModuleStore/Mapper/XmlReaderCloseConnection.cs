@@ -39,188 +39,72 @@ namespace bsn.ModuleStore.Mapper {
 
 		public XmlReaderCloseConnection(XmlReader reader, SqlConnection connection) {
 			if (connection == null) {
-				throw new ArgumentNullException("connection");
+				throw new ArgumentNullException(nameof(connection));
 			}
 			if (reader == null) {
-				throw new ArgumentNullException("reader");
+				throw new ArgumentNullException(nameof(reader));
 			}
 			this.connection = connection;
 			this.reader = reader;
 		}
 
-		public override string this[string name, string namespaceURI] {
-			get {
-				return reader[name, namespaceURI];
-			}
-		}
+		public override string this[string name, string namespaceURI] => reader[name, namespaceURI];
 
-		public override string this[string name] {
-			get {
-				return reader[name];
-			}
-		}
+		public override string this[string name] => reader[name];
 
-		public override string this[int i] {
-			get {
-				return reader[i];
-			}
-		}
+		public override string this[int i] => reader[i];
 
-		public override int AttributeCount {
-			get {
-				return reader.AttributeCount;
-			}
-		}
+		public override int AttributeCount => reader.AttributeCount;
 
-		public override string BaseURI {
-			get {
-				return reader.BaseURI;
-			}
-		}
+		public override string BaseURI => reader.BaseURI;
 
-		public override bool CanReadBinaryContent {
-			get {
-				return reader.CanReadBinaryContent;
-			}
-		}
+		public override bool CanReadBinaryContent => reader.CanReadBinaryContent;
 
-		public override bool CanReadValueChunk {
-			get {
-				return reader.CanReadValueChunk;
-			}
-		}
+		public override bool CanReadValueChunk => reader.CanReadValueChunk;
 
-		public override bool CanResolveEntity {
-			get {
-				return reader.CanResolveEntity;
-			}
-		}
+		public override bool CanResolveEntity => reader.CanResolveEntity;
 
-		public override int Depth {
-			get {
-				return reader.Depth;
-			}
-		}
+		public override int Depth => reader.Depth;
 
-		public override bool EOF {
-			get {
-				return reader.EOF;
-			}
-		}
+		public override bool EOF => reader.EOF;
 
-		public override bool HasAttributes {
-			get {
-				return reader.HasAttributes;
-			}
-		}
+		public override bool HasAttributes => reader.HasAttributes;
 
-		public override bool HasValue {
-			get {
-				return reader.HasValue;
-			}
-		}
+		public override bool HasValue => reader.HasValue;
 
-		public override bool IsDefault {
-			get {
-				return reader.IsDefault;
-			}
-		}
+		public override bool IsDefault => reader.IsDefault;
 
-		public override bool IsEmptyElement {
-			get {
-				return reader.IsEmptyElement;
-			}
-		}
+		public override bool IsEmptyElement => reader.IsEmptyElement;
 
-		public override string LocalName {
-			get {
-				return reader.LocalName;
-			}
-		}
+		public override string LocalName => reader.LocalName;
 
-		public override string Name {
-			get {
-				return reader.Name;
-			}
-		}
+		public override string Name => reader.Name;
 
-		public override XmlNameTable NameTable {
-			get {
-				return reader.NameTable;
-			}
-		}
+		public override XmlNameTable NameTable => reader.NameTable;
 
-		public override string NamespaceURI {
-			get {
-				return reader.NamespaceURI;
-			}
-		}
+		public override string NamespaceURI => reader.NamespaceURI;
 
-		public override XmlNodeType NodeType {
-			get {
-				return reader.NodeType;
-			}
-		}
+		public override XmlNodeType NodeType => reader.NodeType;
 
-		public override string Prefix {
-			get {
-				return reader.Prefix;
-			}
-		}
+		public override string Prefix => reader.Prefix;
 
-		public override char QuoteChar {
-			get {
-				return reader.QuoteChar;
-			}
-		}
+		public override char QuoteChar => reader.QuoteChar;
 
-		public override ReadState ReadState {
-			get {
-				return reader.ReadState;
-			}
-		}
+		public override ReadState ReadState => reader.ReadState;
 
-		public XmlReader Reader {
-			get {
-				return reader;
-			}
-		}
+		public XmlReader Reader => reader;
 
-		public override IXmlSchemaInfo SchemaInfo {
-			get {
-				return reader.SchemaInfo;
-			}
-		}
+		public override IXmlSchemaInfo SchemaInfo => reader.SchemaInfo;
 
-		public override XmlReaderSettings Settings {
-			get {
-				return reader.Settings;
-			}
-		}
+		public override XmlReaderSettings Settings => reader.Settings;
 
-		public override string Value {
-			get {
-				return reader.Value;
-			}
-		}
+		public override string Value => reader.Value;
 
-		public override Type ValueType {
-			get {
-				return reader.ValueType;
-			}
-		}
+		public override Type ValueType => reader.ValueType;
 
-		public override string XmlLang {
-			get {
-				return reader.XmlLang;
-			}
-		}
+		public override string XmlLang => reader.XmlLang;
 
-		public override XmlSpace XmlSpace {
-			get {
-				return reader.XmlSpace;
-			}
-		}
+		public override XmlSpace XmlSpace => reader.XmlSpace;
 
 		public override void Close() {
 			Dispose(true);

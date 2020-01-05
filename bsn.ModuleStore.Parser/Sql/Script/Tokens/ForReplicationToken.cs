@@ -36,11 +36,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 		[Rule("<ProcedureFor> ::= ~FOR ~REPLICATION")]
 		public ForReplicationToken() {}
 
-		public override bool? ForReplication {
-			get {
-				return true;
-			}
-		}
+		public override bool? ForReplication => true;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("FOR REPLICATION");

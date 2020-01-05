@@ -8,10 +8,6 @@ namespace bsn.ModuleStore.Mapper.InterfaceMetadata {
 			return SqlCallInfo.Get(interfaceToProxy, SerializationTypeInfoProvider);
 		}
 
-		public ISerializationTypeInfoProvider SerializationTypeInfoProvider {
-			get {
-				return new SerializationTypeInfoProvider(new SerializationTypeMappingProvider());
-			}
-		}
+		public ISerializationTypeInfoProvider SerializationTypeInfoProvider => new SerializationTypeInfoProvider(new SerializationTypeMappingProvider());
 	}
 }

@@ -39,11 +39,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			[SqlColumn("id")]
 			private Guid id;
 
-			public Guid Id {
-				get {
-					return id;
-				}
-			}
+			public Guid Id => id;
 		}
 
 		public class Outer {
@@ -53,17 +49,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 			[SqlColumn("val")]
 			private string val;
 
-			public Inner Inner {
-				get {
-					return inner;
-				}
-			}
+			public Inner Inner => inner;
 
-			public string Val {
-				get {
-					return val;
-				}
-			}
+			public string Val => val;
 		}
 
 		[Fact]
@@ -78,7 +66,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				dtUpdate = DateTime.UtcNow.AddHours(-1),
 				iUpdateVersion = 1
 			};
-			Module module = SqlDeserializer<Module>.Mock(data);
+			var module = SqlDeserializer<Module>.Mock(data);
 			Assert.Equal(data.uidAssemblyGuid, module.AssemblyGuid);
 			Assert.Equal(data.uidModule, module.Id);
 			Assert.Equal(data.sSchema, module.Schema);
@@ -94,7 +82,7 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				id = Guid.NewGuid(),
 				val = "Value"
 			};
-			Outer outer = SqlDeserializer<Outer>.Mock(data);
+			var outer = SqlDeserializer<Outer>.Mock(data);
 			Assert.Equal(data.id, outer.Inner.Id);
 			Assert.Equal(data.val, outer.Val);
 		}

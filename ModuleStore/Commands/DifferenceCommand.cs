@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -42,13 +42,13 @@ namespace bsn.ModuleStore.Console.Commands {
 		public DifferenceCommand(CommandBase<ExecutionContext> parentCommand): base(parentCommand) {}
 
 		public override void Execute(ExecutionContext executionContext, IDictionary<string, object> tags) {
-			DatabaseEngine engine = DatabaseEngine.Unknown;
-			Inventory sourceInventory = executionContext.GetInventory((Entities.Source)tags["source"], (bool)tags["directories"]);
+			var engine = DatabaseEngine.Unknown;
+			var sourceInventory = executionContext.GetInventory((Entities.Source)tags["source"], (bool)tags["directories"]);
 			GetDatabaseEngine(sourceInventory, ref engine);
-			Inventory targetInventory = executionContext.GetInventory((Entities.Source)tags["target"], (bool)tags["directories"]);
+			var targetInventory = executionContext.GetInventory((Entities.Source)tags["target"], (bool)tags["directories"]);
 			GetDatabaseEngine(sourceInventory, ref engine);
 			using (executionContext.Output.Indent()) {
-				foreach (KeyValuePair<IAlterableCreateStatement, InventoryObjectDifference> difference in Inventory.Compare(sourceInventory, targetInventory, engine)) {
+				foreach (var difference in Inventory.Compare(sourceInventory, targetInventory, engine)) {
 					switch (difference.Value) {
 					case InventoryObjectDifference.None: executionContext.Output.SetForeground(Color.Gray);
 						break;
@@ -75,8 +75,7 @@ namespace bsn.ModuleStore.Console.Commands {
 		}
 
 		private void GetDatabaseEngine(Inventory sourceInventory, ref DatabaseEngine engine) {
-			DatabaseInventory databaseInventory = sourceInventory as DatabaseInventory;
-			if (databaseInventory != null) {
+			if (sourceInventory is DatabaseInventory databaseInventory) {
 				engine = databaseInventory.TargetEngine;
 			}
 		}

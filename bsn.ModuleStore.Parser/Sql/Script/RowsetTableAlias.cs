@@ -42,17 +42,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.aliasName = aliasName;
 		}
 
-		public AliasName AliasName {
-			get {
-				return aliasName;
-			}
-		}
+		public AliasName AliasName => aliasName;
 
-		public override sealed bool HasValue {
-			get {
-				return true;
-			}
-		}
+		public override sealed bool HasValue => true;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteKeyword("AS ");

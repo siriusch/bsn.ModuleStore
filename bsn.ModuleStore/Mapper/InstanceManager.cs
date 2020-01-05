@@ -38,7 +38,7 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected static TDataInterface GetDefaultDataInterface<TDataInterface>(ModuleDatabase database, bool autoCreate) where TDataInterface: IStoredProcedures {
 			if (database == null) {
-				throw new ArgumentNullException("database");
+				throw new ArgumentNullException(nameof(database));
 			}
 			return database.Get<TDataInterface>(autoCreate);
 		}
@@ -49,16 +49,12 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected InstanceManager(ManagedInstanceProvider<TId, TManager> provider) {
 			if (provider == null) {
-				throw new ArgumentNullException("provider");
+				throw new ArgumentNullException(nameof(provider));
 			}
 			provider.Manager = (TManager)this;
 			this.provider = provider;
 		}
 
-		protected ManagedInstanceProvider<TId, TManager> Provider {
-			get {
-				return provider;
-			}
-		}
-	                                                     }
+		protected ManagedInstanceProvider<TId, TManager> Provider => provider;
+	}
 }

@@ -1,7 +1,7 @@
 // bsn ModuleStore database versioning
 // -----------------------------------
 // 
-// Copyright 2010 by Arsène von Wyss - avw@gmx.ch
+// Copyright 2010 by ArsÃ¨ne von Wyss - avw@gmx.ch
 // 
 // Development has been supported by Sirius Technologies AG, Basel
 // 
@@ -46,18 +46,13 @@ namespace bsn.ModuleStore.Sql.Script {
 			Debug.Assert(statements != null);
 			this.statements = statements;
 			if ((this.statements.Count == 1) && (Comments.Count == 0)) {
-				StatementBlock innerBlock = this.statements[0] as StatementBlock;
-				if (innerBlock != null) {
+				if (this.statements[0] is StatementBlock innerBlock) {
 					this.statements = innerBlock.statements;
 				}
 			}
 		}
 
-		public IEnumerable<Statement> Statements {
-			get {
-				return statements;
-			}
-		}
+		public IEnumerable<Statement> Statements => statements;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

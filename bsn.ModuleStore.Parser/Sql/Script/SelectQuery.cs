@@ -80,47 +80,19 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.whereClause = whereClause;
 		}
 
-		public IEnumerable<ColumnItem> ColumnItems {
-			get {
-				return columnItems;
-			}
-		}
+		public IEnumerable<ColumnItem> ColumnItems => columnItems;
 
-		public ForClause ForClause {
-			get {
-				return forClause;
-			}
-		}
+		public ForClause ForClause => forClause;
 
-		public DestinationRowset IntoClause {
-			get {
-				return intoClause;
-			}
-		}
+		public DestinationRowset IntoClause => intoClause;
 
-		public bool? Restriction {
-			get {
-				return restriction;
-			}
-		}
+		public bool? Restriction => restriction;
 
-		public TopExpression Top {
-			get {
-				return top;
-			}
-		}
+		public TopExpression Top => top;
 
-		public RowsetCombineClause UnionClause {
-			get {
-				return unionClause;
-			}
-		}
+		public RowsetCombineClause UnionClause => unionClause;
 
-		public Predicate WhereClause {
-			get {
-				return whereClause;
-			}
-		}
+		public Predicate WhereClause => whereClause;
 
 		internal void WriteToWithoutSelect(SqlWriter writer) {
 			writer.WriteDuplicateRestriction(restriction, WhitespacePadding.SpaceAfter);
@@ -141,8 +113,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		protected override void Initialize(Symbol symbol, LineInfo position) {
 			base.Initialize(symbol, position);
-			HashSet<string> virtualTableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (RowsetTableAlias tableAlias in GetInnerTokens<RowsetTableAlias>(null, typeof(SelectQuery))) {
+			var virtualTableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (var tableAlias in GetInnerTokens<RowsetTableAlias>(null, typeof(SelectQuery))) {
 				virtualTableNames.Add(tableAlias.AliasName.Value);
 			}
 			if (virtualTableNames.Count > 0) {

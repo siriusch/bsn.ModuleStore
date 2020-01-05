@@ -41,29 +41,23 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public ModuleInstance(ModuleInstanceCache owner, Module module) {
 			if (owner == null) {
-				throw new ArgumentNullException("owner");
+				throw new ArgumentNullException(nameof(owner));
 			}
 			if (module == null) {
-				throw new ArgumentNullException("module");
+				throw new ArgumentNullException(nameof(module));
 			}
 			this.owner = owner;
 			this.module = module;
 			UpdateUpToDateStatus();
 		}
 
-		public bool IsUpToDate {
-			get {
-				return isUpToDate;
-			}
-		}
+		public bool IsUpToDate => isUpToDate;
 
 		public Module Module {
-			get {
-				return module;
-			}
+			get => module;
 			set {
 				if (value == null) {
-					throw new ArgumentNullException("value");
+					throw new ArgumentNullException(nameof(value));
 				}
 				module = value;
 				UpdateUpToDateStatus();
@@ -72,7 +66,7 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		public void AssertIsUpToDate() {
 			if (!IsUpToDate) {
-				throw new InvalidOperationException(string.Format("The module instance {0} is not up to date", module.Schema));
+				throw new InvalidOperationException($"The module instance {module.Schema} is not up to date");
 			}
 		}
 
@@ -89,12 +83,11 @@ namespace bsn.ModuleStore.Bootstrapper {
 
 		private IStoredProcedures GetProxyInternal(Type type) {
 			lock (proxies) {
-				IStoredProcedures proxy;
-				if (proxies.TryGetValue(type, out proxy)) {
+				if (proxies.TryGetValue(type, out var proxy)) {
 					return proxy;
 				}
 				AssertIsUpToDate();
-				IStoredProcedures result = SqlCallProxy.CreateInternal(type, owner.Owner, owner.Owner.CreateConnectionProvider(module.Schema));
+				var result = SqlCallProxy.CreateInternal(type, owner.Owner, owner.Owner.CreateConnectionProvider(module.Schema));
 				proxies.Add(type, result);
 				return result;
 			}

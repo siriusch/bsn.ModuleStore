@@ -33,11 +33,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
 
-using Common.Logging;
+using NLog;
 
 namespace bsn.ModuleStore.Mapper {
 	public sealed class ManagementConnectionProvider: IConnectionProvider, IDisposable {
-		private static readonly ILog log = LogManager.GetLogger<ManagementConnectionProvider>();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		private readonly bool closeConnection;
 		private readonly SqlConnection connection;
@@ -57,10 +57,10 @@ namespace bsn.ModuleStore.Mapper {
 
 		public ManagementConnectionProvider(SqlConnection connection, string schemaName) {
 			if (connection == null) {
-				throw new ArgumentNullException("connection");
+				throw new ArgumentNullException(nameof(connection));
 			}
 			if (String.IsNullOrEmpty(schemaName)) {
-				throw new ArgumentNullException("schemaName");
+				throw new ArgumentNullException(nameof(schemaName));
 			}
 			this.schemaName = schemaName;
 			if (connection.State == ConnectionState.Closed) {
@@ -73,7 +73,7 @@ namespace bsn.ModuleStore.Mapper {
 				}
 			}
 			this.connection = connection;
-			using (SqlCommand cmd = connection.CreateCommand()) {
+			using (var cmd = connection.CreateCommand()) {
 				cmd.CommandType = CommandType.Text;
 				cmd.CommandText = "SELECT SERVERPROPERTY('productversion')";
 				engineVersion = new Version((string)cmd.ExecuteScalar());
@@ -112,38 +112,18 @@ namespace bsn.ModuleStore.Mapper {
 					}
 				}
 			}
-			log.DebugFormat("Detected server: {0}", engine);
+			log.Debug("Detected server: {engine}", engine);
 		}
 
-		public string DatabaseName {
-			get {
-				return connection.Database;
-			}
-		}
+		public string DatabaseName => connection.Database;
 
-		public DatabaseEngine Engine {
-			get {
-				return engine;
-			}
-		}
+		public DatabaseEngine Engine => engine;
 
-		public string EngineEdition {
-			get {
-				return engineEdition;
-			}
-		}
+		public string EngineEdition => engineEdition;
 
-		public string EngineLevel {
-			get {
-				return engineLevel;
-			}
-		}
+		public string EngineLevel => engineLevel;
 
-		public Version EngineVersion {
-			get {
-				return engineVersion;
-			}
-		}
+		public Version EngineVersion => engineVersion;
 
 		public void BeginTransaction() {
 			lock (sync) {
@@ -152,7 +132,7 @@ namespace bsn.ModuleStore.Mapper {
 					transaction = connection.BeginTransaction();
 				} else {
 					log.Debug("Creating management transaction savepoint");
-					string savepoint = Guid.NewGuid().ToString("N");
+					var savepoint = Guid.NewGuid().ToString("N");
 					transaction.Save(savepoint);
 					savepoints.Push(savepoint);
 				}
@@ -164,9 +144,9 @@ namespace bsn.ModuleStore.Mapper {
 				if (transaction == null) {
 					throw new InvalidOperationException("No open transaction");
 				}
-				log.DebugFormat("Ending management transaction: [Savepoints: {0}] [Commit: {1}]", savepoints.Count, commit);
+				log.Debug("Ending management transaction: [Savepoints: {savepoints}] [Commit: {commit}]", savepoints.Count, commit);
 				if (savepoints.Count > 0) {
-					string savepoint = savepoints.Pop();
+					var savepoint = savepoints.Pop();
 					if (!commit) {
 						try {
 							transaction.Rollback(savepoint);
@@ -199,17 +179,9 @@ namespace bsn.ModuleStore.Mapper {
 			}
 		}
 
-		public IsolationLevel DefaultIsolationLevel {
-			get {
-				return IsolationLevel.Unspecified;
-			}
-		}
+		public IsolationLevel DefaultIsolationLevel => IsolationLevel.Unspecified;
 
-		public string SchemaName {
-			get {
-				return schemaName;
-			}
-		}
+		public string SchemaName => schemaName;
 
 		public SqlConnection GetConnection() {
 			return connection;
@@ -223,7 +195,7 @@ namespace bsn.ModuleStore.Mapper {
 			if (connection != null) {
 				try {
 					// don't block on dispose, therefore we don't lock
-					SqlTransaction transaction = Interlocked.Exchange(ref this.transaction, null);
+					var transaction = Interlocked.Exchange(ref this.transaction, null);
 					if (transaction != null) {
 						transaction.Dispose();
 					}

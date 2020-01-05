@@ -53,23 +53,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnItems = columnItems.ToList();
 		}
 
-		public IEnumerable<ColumnItem> ColumnItems {
-			get {
-				return columnItems;
-			}
-		}
+		public IEnumerable<ColumnItem> ColumnItems => columnItems;
 
-		public IEnumerable<ColumnName> DestinationColumnNames {
-			get {
-				return destinationColumnNames;
-			}
-		}
+		public IEnumerable<ColumnName> DestinationColumnNames => destinationColumnNames;
 
-		public DestinationRowset DestinationName {
-			get {
-				return destinationName;
-			}
-		}
+		public DestinationRowset DestinationName => destinationName;
 
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
@@ -95,10 +83,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			LockInnerUnqualifiedTableNames(IsInsertedOrDeletedTableName);
 		}
 
-		public bool HasValue {
-			get {
-				return columnItems.Count > 0;
-			}
-		}
+		public bool HasValue => columnItems.Count > 0;
 	}
 }

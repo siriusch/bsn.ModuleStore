@@ -42,11 +42,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.predicate = predicate;
 		}
 
-		public Predicate Predicate {
-			get {
-				return predicate;
-			}
-		}
+		public Predicate Predicate => predicate;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

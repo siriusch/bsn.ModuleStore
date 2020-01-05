@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -47,52 +47,31 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.definitions = definitions.ToList();
 		}
 
-		public List<TableDefinition> Definitions {
-			get {
-				return definitions;
-			}
-		}
+		public List<TableDefinition> Definitions => definitions;
 
-		public override ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.Table;
-			}
-		}
+		public override ObjectCategory ObjectCategory => ObjectCategory.Table;
 
 		public override string ObjectName {
-			get {
-				return tableName.Name.Value;
-			}
-			set {
-				tableName.Name = new TableName(value);
-			}
+			get => tableName.Name.Value;
+			set => tableName.Name = new TableName(value);
 		}
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableName => tableName;
 
-		protected override SchemaName SchemaName {
-			get {
-				return tableName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => tableName.Qualification;
 
 		public override IEnumerable<IAlterableCreateStatement> CreateStatementFragments(CreateFragmentMode mode) {
-			List<TableDefinition> definitions = new List<TableDefinition>();
-			List<TableConstraint> constraints = new List<TableConstraint>();
-			foreach (TableDefinition definition in Definitions) {
-				TableConstraint constraint = definition as TableConstraint;
-				if ((constraint == null) || ((mode == CreateFragmentMode.CreateOnExistingSchema) && (constraint is TableUniqueConstraintBase)) || ((mode == CreateFragmentMode.CreateOnNewSchema) && constraint.IsPartOfSchemaDefinition)) {
+			var definitions = new List<TableDefinition>();
+			var constraints = new List<TableConstraint>();
+			foreach (var definition in Definitions) {
+				if ((!(definition is TableConstraint constraint)) || ((mode == CreateFragmentMode.CreateOnExistingSchema) && (constraint is TableUniqueConstraintBase)) || ((mode == CreateFragmentMode.CreateOnNewSchema) && constraint.IsPartOfSchemaDefinition)) {
 					definitions.Add(definition);
 				} else {
 					constraints.Add(constraint);
 				}
 			}
 			yield return new CreateTableFragment(this, definitions);
-			foreach (TableConstraint constraint in constraints) {
+			foreach (var constraint in constraints) {
 				yield return new AlterTableAddConstraintFragment(this, constraint);
 			}
 		}
@@ -103,14 +82,14 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		internal void WriteTo(SqlWriter writer, Func<TableDefinition, TableDefinition> definitionRewriter) {
 			if (definitionRewriter == null) {
-				throw new ArgumentNullException("definitionRewriter");
+				throw new ArgumentNullException(nameof(definitionRewriter));
 			}
 			WriteCommentsTo(writer);
 			writer.WriteKeyword("CREATE TABLE ");
 			writer.WriteScript(tableName, WhitespacePadding.None);
 			writer.Write(" (");
 			using (writer.Indent()) {
-				IEnumerable<TableDefinition> tableDefinitions = definitions.Select(definitionRewriter);
+				var tableDefinitions = definitions.Select(definitionRewriter);
 				if (writer.Mode == SqlWriterMode.ForHashing) {
 					tableDefinitions = tableDefinitions.OrderBy(td => (td != null) ? td.ToString(DatabaseEngine.Unknown) : string.Empty);
 				}

@@ -48,17 +48,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.aliasName = aliasName;
 		}
 
-		public AliasName AliasName {
-			get {
-				return aliasName;
-			}
-		}
+		public AliasName AliasName => aliasName;
 
-		public Expression Expression {
-			get {
-				return expression;
-			}
-		}
+		public Expression Expression => expression;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(expression, WhitespacePadding.None);

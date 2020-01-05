@@ -35,11 +35,7 @@ namespace bsn.ModuleStore.Sql.Script.Tokens {
 			this.offset = offset;
 		}
 
-		public TOffset Offset {
-			get {
-				return offset;
-			}
-		}
+		public TOffset Offset => offset;
 
 		protected override void WriteOffset(SqlWriter writer) {
 			writer.WriteScript(offset, WhitespacePadding.SpaceAfter);

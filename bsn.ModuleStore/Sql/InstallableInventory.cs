@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -33,36 +33,32 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Common.Logging;
+using NLog;
 
 using bsn.ModuleStore.Sql.Script;
 using bsn.ModuleStore.Sql.Script.Tokens;
 
 namespace bsn.ModuleStore.Sql {
 	public abstract class InstallableInventory: Inventory {
-		private static readonly ILog log = LogManager.GetLogger<InstallableInventory>();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		private readonly List<IScriptableStatement> additionalSetupStatements = new List<IScriptableStatement>();
 
-		public IEnumerable<IScriptableStatement> AdditionalSetupStatements {
-			get {
-				return additionalSetupStatements;
-			}
-		}
+		public IEnumerable<IScriptableStatement> AdditionalSetupStatements => additionalSetupStatements;
 
 		public IEnumerable<string> GenerateInstallSql(DatabaseEngine targetEngine, string schemaName, string ownerName) {
 			if (string.IsNullOrEmpty(schemaName)) {
-				throw new ArgumentNullException("schemaName");
+				throw new ArgumentNullException(nameof(schemaName));
 			}
-			bool newSchema = !schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase);
-			StringBuilder builder = new StringBuilder(4096);
-			DependencyResolver resolver = new DependencyResolver();
-			IEnumerable<IAlterableCreateStatement> createStatements = Objects.SelectMany(o => o.CreateStatementFragments(newSchema ? CreateFragmentMode.CreateOnNewSchema : CreateFragmentMode.CreateOnExistingSchema)).Where(s => s.DoesApplyToEngine(targetEngine));
+			var newSchema = !schemaName.Equals("dbo", StringComparison.OrdinalIgnoreCase);
+			var builder = new StringBuilder(4096);
+			var resolver = new DependencyResolver();
+			var createStatements = Objects.SelectMany(o => o.CreateStatementFragments(newSchema ? CreateFragmentMode.CreateOnNewSchema : CreateFragmentMode.CreateOnExistingSchema)).Where(s => s.DoesApplyToEngine(targetEngine));
 			if (newSchema) {
 				SetQualification(null);
 				try {
-					using (StringWriter writer = new StringWriter(builder)) {
-						SqlWriter sqlWriter = new SqlWriter(writer, targetEngine);
+					using (var writer = new StringWriter(builder)) {
+						var sqlWriter = new SqlWriter(writer, targetEngine);
 						sqlWriter.WriteKeyword("CREATE SCHEMA");
 						using (sqlWriter.Indent()) {
 							sqlWriter.WriteScript(new SchemaName(schemaName), WhitespacePadding.SpaceBefore);
@@ -70,8 +66,8 @@ namespace bsn.ModuleStore.Sql {
 								sqlWriter.Write(" AUTHORIZATION");
 								sqlWriter.WriteScript(new ObjectName(ownerName), WhitespacePadding.SpaceBefore);
 							}
-							DependencyResolver schemaResolver = new DependencyResolver();
-							foreach (IAlterableCreateStatement statement in createStatements) {
+							var schemaResolver = new DependencyResolver();
+							foreach (var statement in createStatements) {
 								if (statement.IsPartOfSchemaDefinition) {
 									if (statement is CreateTableFragment) {
 										sqlWriter.WriteLine();
@@ -86,14 +82,14 @@ namespace bsn.ModuleStore.Sql {
 								}
 							}
 							try {
-								foreach (IInstallStatement statement in schemaResolver.GetInOrder(true)) {
+								foreach (var statement in schemaResolver.GetInOrder(true)) {
 									sqlWriter.WriteLine();
 									statement.WriteTo(sqlWriter);
 									resolver.AddExistingObject(statement.ObjectName);
 								}
 							} catch (InvalidOperationException ex) {
 								schemaResolver.TransferPendingObjects(resolver);
-								log.DebugFormat("SCHEMA CREATE trimmed because of {0} - processing continues", ex, ex.Message);
+								log.Debug(ex, "SCHEMA CREATE trimmed because of {message} - processing continues", ex.Message);
 							}
 						}
 						yield return writer.ToString();
@@ -102,23 +98,23 @@ namespace bsn.ModuleStore.Sql {
 					UnsetQualification();
 				}
 			} else {
-				foreach (IAlterableCreateStatement statement in createStatements) {
+				foreach (var statement in createStatements) {
 					resolver.Add(statement);
 				}
 			}
 			SetQualification(schemaName);
 			try {
-				foreach (IInstallStatement statement in resolver.GetInOrder(true)) {
+				foreach (var statement in resolver.GetInOrder(true)) {
 					yield return WriteStatement(statement, builder, targetEngine);
 				}
 				if (AdditionalSetupStatements.Any()) {
-					foreach (CreateTableStatement table in Objects.OfType<CreateTableStatement>()) {
+					foreach (var table in Objects.OfType<CreateTableStatement>()) {
 						yield return WriteStatement(new AlterTableNocheckConstraintStatement(table.TableName, new TableCheckToken()), builder, targetEngine);
 					}
-					foreach (IScriptableStatement additionalSetupStatement in AdditionalSetupStatements) {
+					foreach (var additionalSetupStatement in AdditionalSetupStatements) {
 						yield return WriteStatement(additionalSetupStatement, builder, targetEngine);
 					}
-					foreach (CreateTableStatement table in Objects.OfType<CreateTableStatement>()) {
+					foreach (var table in Objects.OfType<CreateTableStatement>()) {
 						yield return WriteStatement(new AlterTableCheckConstraintStatement(table.TableName, new TableWithCheckToken()), builder, targetEngine);
 					}
 				}
@@ -129,7 +125,7 @@ namespace bsn.ModuleStore.Sql {
 
 		protected void AddAdditionalSetupStatement(IScriptableStatement statement) {
 			if (statement == null) {
-				throw new ArgumentNullException("statement");
+				throw new ArgumentNullException(nameof(statement));
 			}
 			additionalSetupStatements.Add(statement);
 		}
@@ -139,8 +135,8 @@ namespace bsn.ModuleStore.Sql {
 		}
 
 		protected void StatementSetSchemaOverride(IEnumerable<IScriptableStatement> statements) {
-			foreach (Statement statement in statements.OfType<Statement>()) {
-				foreach (IQualifiedName<SchemaName> name in statement.GetInnerSchemaQualifiedNames(n => ObjectSchemas.Contains(n))) {
+			foreach (var statement in statements.OfType<Statement>()) {
+				foreach (var name in statement.GetInnerSchemaQualifiedNames(n => ObjectSchemas.Contains(n))) {
 					name.SetOverride(this);
 				}
 			}

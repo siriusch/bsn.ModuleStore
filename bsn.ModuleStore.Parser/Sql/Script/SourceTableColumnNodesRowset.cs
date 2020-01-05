@@ -52,17 +52,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columnName = columnName;
 		}
 
-		public ColumnName ColumnName {
-			get {
-				return columnName;
-			}
-		}
+		public ColumnName ColumnName => columnName;
 
-		public Qualified<SchemaName, TableName> TableNameQualified {
-			get {
-				return tableNameQualified;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableNameQualified => tableNameQualified;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteScript(tableNameQualified, WhitespacePadding.None);

@@ -36,16 +36,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<Join> ::= ~OUTER ~APPLY <Source>")]
 		public OuterApply(Source joinSource): base(joinSource) {}
 
-		public override JoinKind Kind {
-			get {
-				return JoinKind.OuterApply;
-			}
-		}
+		public override JoinKind Kind => JoinKind.OuterApply;
 
-		protected override string JoinSpecifier {
-			get {
-				return "OUTER APPLY";
-			}
-		}
+		protected override string JoinSpecifier => "OUTER APPLY";
 	}
 }

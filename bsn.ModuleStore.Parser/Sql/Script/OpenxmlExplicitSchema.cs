@@ -41,11 +41,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.columns = columns.ToList();
 		}
 
-		public IEnumerable<OpenxmlColumn> Columns {
-			get {
-				return columns;
-			}
-		}
+		public IEnumerable<OpenxmlColumn> Columns => columns;
 
 		protected override void WriteToInternal(SqlWriter writer) {
 			writer.WriteScriptSequence(columns, WhitespacePadding.None, w => w.Write(", "));

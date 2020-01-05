@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -37,28 +37,29 @@ using System.Reflection;
 namespace bsn.ModuleStore.Sql {
 	public class AssemblyHandle: IAssemblyHandle {
 		private static void ApplyDeclaringMember(object attribute, MemberInfo member) {
-			IHasDeclaringMember apply = attribute as IHasDeclaringMember;
-			if (apply != null) {
+			switch (attribute) {
+			case IHasDeclaringMember apply:
 				apply.SetDeclaringMember(member);
+				break;
 			}
 		}
 
 		internal static KeyValuePair<T, string>[] FindCustomAttributes<T>(Assembly assembly, Func<Assembly, IEnumerable<T>> forAssembly, Func<MemberInfo, IEnumerable<T>> forMember) {
-			List<KeyValuePair<T, string>> result = new List<KeyValuePair<T, string>>();
-			string assemblyName = assembly.GetName().Name;
-			foreach (T attribute in forAssembly(assembly)) {
+			var result = new List<KeyValuePair<T, string>>();
+			var assemblyName = assembly.GetName().Name;
+			foreach (var attribute in forAssembly(assembly)) {
 				ApplyDeclaringMember(attribute, null);
 				result.Add(new KeyValuePair<T, string>(attribute, assemblyName));
 			}
-			foreach (Type type in GetTypes(assembly)) {
+			foreach (var type in GetTypes(assembly)) {
 				try {
-					string typePrefix = type.Namespace;
-					foreach (T attribute in forMember(type)) {
+					var typePrefix = type.Namespace;
+					foreach (var attribute in forMember(type)) {
 						ApplyDeclaringMember(attribute, type);
 						result.Add(new KeyValuePair<T, string>(attribute, typePrefix));
 					}
-					foreach (MemberInfo member in type.GetMembers(BindingFlags.Instance|BindingFlags.DeclaredOnly|BindingFlags.Public)) {
-						foreach (T attribute in forMember(member)) {
+					foreach (var member in type.GetMembers(BindingFlags.Instance|BindingFlags.DeclaredOnly|BindingFlags.Public)) {
+						foreach (var attribute in forMember(member)) {
 							ApplyDeclaringMember(attribute, member);
 							result.Add(new KeyValuePair<T, string>(attribute, typePrefix));
 						}
@@ -85,7 +86,7 @@ namespace bsn.ModuleStore.Sql {
 
 		public AssemblyHandle(Assembly assembly) {
 			if (assembly == null) {
-				throw new ArgumentNullException("assembly");
+				throw new ArgumentNullException(nameof(assembly));
 			}
 			this.assembly = assembly;
 		}
@@ -95,7 +96,7 @@ namespace bsn.ModuleStore.Sql {
 			if ((targets&
 			     (AttributeTargets.Delegate|AttributeTargets.Enum|AttributeTargets.Class|AttributeTargets.Struct|AttributeTargets.Interface|AttributeTargets.Property|AttributeTargets.Field|AttributeTargets.Event|AttributeTargets.Constructor|AttributeTargets.Method|AttributeTargets.Parameter|
 			      AttributeTargets.ReturnValue)) != 0) {
-				foreach (Type type in GetTypes(assembly)) {
+				foreach (var type in GetTypes(assembly)) {
 					if (((type.IsEnum) && ((targets&AttributeTargets.Enum) != 0)) || ((type.IsValueType) && ((targets&AttributeTargets.Enum) != 0)) || ((type.IsInterface) && ((targets&AttributeTargets.Enum) != 0)) || ((type.IsSubclassOf(typeof(Delegate))) && ((targets&AttributeTargets.Enum) != 0)) ||
 					    ((targets&AttributeTargets.Class) != 0)) {
 						foreach (T attribute in type.GetCustomAttributes(typeof(T), inherit)) {
@@ -103,17 +104,17 @@ namespace bsn.ModuleStore.Sql {
 						}
 					}
 					if (type.IsGenericTypeDefinition && ((targets&AttributeTargets.GenericParameter) != 0)) {
-						foreach (Type genericArgument in type.GetGenericArguments()) {
+						foreach (var genericArgument in type.GetGenericArguments()) {
 							foreach (T attribute in genericArgument.GetCustomAttributes(typeof(T), inherit)) {
 								yield return attribute;
 							}
 						}
 					}
-					foreach (MemberInfo member in type.GetMembers()) {
+					foreach (var member in type.GetMembers()) {
 						switch (member.MemberType) {
 						case MemberTypes.Method:
 							if ((targets&AttributeTargets.ReturnValue) != 0) {
-								MethodInfo method = (MethodInfo)member;
+								var method = (MethodInfo)member;
 								foreach (T attribute in method.ReturnTypeCustomAttributes.GetCustomAttributes(typeof(T), inherit)) {
 									yield return attribute;
 								}
@@ -121,8 +122,8 @@ namespace bsn.ModuleStore.Sql {
 							goto case MemberTypes.Constructor;
 						case MemberTypes.Constructor:
 							if ((targets&AttributeTargets.Parameter) != 0) {
-								MethodBase methodBase = (MethodBase)member;
-								foreach (ParameterInfo parameter in methodBase.GetParameters()) {
+								var methodBase = (MethodBase)member;
+								foreach (var parameter in methodBase.GetParameters()) {
 									foreach (T attribute in parameter.GetCustomAttributes(typeof(T), inherit)) {
 										yield return attribute;
 									}
@@ -142,11 +143,7 @@ namespace bsn.ModuleStore.Sql {
 			}
 		}
 
-		public AssemblyName AssemblyName {
-			get {
-				return assembly.GetName();
-			}
-		}
+		public AssemblyName AssemblyName => assembly.GetName();
 
 		public KeyValuePair<T, string>[] GetCustomAttributes<T>() where T: Attribute {
 			return FindCustomAttributes(assembly, a => a.GetCustomAttributes(typeof(T), false).Cast<T>(), m => m.GetCustomAttributes(typeof(T), false).Cast<T>());

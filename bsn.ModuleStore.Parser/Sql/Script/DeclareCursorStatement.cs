@@ -40,11 +40,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.definition = definition;
 		}
 
-		public CursorDefinition Definition {
-			get {
-				return definition;
-			}
-		}
+		public CursorDefinition Definition => definition;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

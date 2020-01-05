@@ -51,22 +51,14 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<FunctionCall> ::= ~OBJECT_ID ~'(' StringLiteral ~',' StringLiteral ~')'")]
 		public ObjectIdFunction(StringLiteral objectName, StringLiteral objectType): this(ScriptParser.ParseObjectName(objectName.Value), objectName.IsUnicode, objectType) {}
 
-		public Qualified<SchemaName, ObjectName> ObjectName {
-			get {
-				return objectName;
-			}
-		}
+		public Qualified<SchemaName, ObjectName> ObjectName => objectName;
 
-		public StringLiteral ObjectType {
-			get {
-				return objectType;
-			}
-		}
+		public StringLiteral ObjectType => objectType;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteFunction("OBJECT_ID");
 			writer.Write('(');
-			using (StringWriter nameWriter = new StringWriter(CultureInfo.InvariantCulture)) {
+			using (var nameWriter = new StringWriter(CultureInfo.InvariantCulture)) {
 				objectName.WriteTo(new SqlWriter(nameWriter, writer.Engine, SqlWriterMode.NoComments));
 				new StringLiteral(nameWriter.ToString(), unicodeObjectName, null).WriteTo(writer);
 			}

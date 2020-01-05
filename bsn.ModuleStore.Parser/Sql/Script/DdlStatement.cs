@@ -38,15 +38,13 @@ namespace bsn.ModuleStore.Sql.Script {
 				if (forcedSchema != null) {
 					return forcedSchema;
 				}
-				SchemaName schemaName = SchemaName;
+				var schemaName = SchemaName;
 				if (schemaName != null) {
 					return schemaName.Value;
 				}
 				return string.Empty;
 			}
-			internal set {
-				forcedSchema = value;
-			}
+			internal set => forcedSchema = value;
 		}
 
 		protected abstract SchemaName SchemaName {

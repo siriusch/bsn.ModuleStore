@@ -51,23 +51,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			withTies = option is OptionTiesToken;
 		}
 
-		public Expression Expression {
-			get {
-				return expression;
-			}
-		}
+		public Expression Expression => expression;
 
-		public bool Percent {
-			get {
-				return percent;
-			}
-		}
+		public bool Percent => percent;
 
-		public bool WithTies {
-			get {
-				return withTies;
-			}
-		}
+		public bool WithTies => withTies;
 
 		public override void WriteTo(SqlWriter writer) {
 			if (HasValue) {
@@ -84,10 +72,6 @@ namespace bsn.ModuleStore.Sql.Script {
 			}
 		}
 
-		public bool HasValue {
-			get {
-				return expression != null;
-			}
-		}
+		public bool HasValue => expression != null;
 	}
 }

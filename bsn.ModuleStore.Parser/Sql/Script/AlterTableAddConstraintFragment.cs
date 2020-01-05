@@ -37,23 +37,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.constraint = constraint;
 		}
 
-		public TableConstraint Constraint {
-			get {
-				return constraint;
-			}
-		}
+		public TableConstraint Constraint => constraint;
 
-		public override ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.Constraint;
-			}
-		}
+		public override ObjectCategory ObjectCategory => ObjectCategory.Constraint;
 
-		public override string ObjectName {
-			get {
-				return constraint.ConstraintName.Value;
-			}
-		}
+		public override string ObjectName => constraint.ConstraintName.Value;
 
 		public override IInstallStatement CreateDropStatement() {
 			return new AlterTableDropConstraintStatement(Owner.TableName, constraint.ConstraintName);

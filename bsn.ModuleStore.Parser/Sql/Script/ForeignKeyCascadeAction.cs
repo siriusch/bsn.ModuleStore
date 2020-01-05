@@ -38,16 +38,8 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ForeignKeyAction> ::= ~ON UPDATE ~CASCADE")]
 		public ForeignKeyCascadeAction(DmlOperationToken operation): base(operation) {}
 
-		public override ForeignKeyActionKind Kind {
-			get {
-				return ForeignKeyActionKind.Cascade;
-			}
-		}
+		public override ForeignKeyActionKind Kind => ForeignKeyActionKind.Cascade;
 
-		protected override string ActionString {
-			get {
-				return "CASCADE";
-			}
-		}
+		protected override string ActionString => "CASCADE";
 	}
 }

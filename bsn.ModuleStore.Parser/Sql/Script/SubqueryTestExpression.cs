@@ -16,17 +16,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			any = restriction.Distinct;
 		}
 
-		public bool Any {
-			get {
-				return any;
-			}
-		}
+		public bool Any => any;
 
-		public SelectQuery Subquery {
-			get {
-				return subquery;
-			}
-		}
+		public SelectQuery Subquery => subquery;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

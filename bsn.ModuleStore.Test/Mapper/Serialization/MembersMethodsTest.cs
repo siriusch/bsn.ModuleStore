@@ -42,17 +42,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				this.b = b;
 			}
 
-			public Guid A {
-				get {
-					return a;
-				}
-			}
+			public Guid A => a;
 
-			public Guid B {
-				get {
-					return b;
-				}
-			}
+			public Guid B => b;
 
 			// ReSharper disable FieldCanBeMadeReadOnly.Local
 			private Guid a;
@@ -70,23 +62,11 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				this.c = c;
 			}
 
-			public int A {
-				get {
-					return a;
-				}
-			}
+			public int A => a;
 
-			public Guid? B {
-				get {
-					return b;
-				}
-			}
+			public Guid? B => b;
 
-			public object C {
-				get {
-					return c;
-				}
-			}
+			public object C => c;
 #pragma warning disable 169
 			// ReSharper disable FieldCanBeMadeReadOnly.Local
 			private int a;
@@ -107,17 +87,13 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 				this.a = a;
 			}
 
-			public int A {
-				get {
-					return a;
-				}
-			}
+			public int A => a;
 		}
 
 		private static readonly MemberInfo[] members = GetMemberFields<Members>();
 
 		private static FieldInfo[] GetMemberFields<T>() {
-			FieldInfo[] result = typeof(T).GetAllFieldsAndProperties().OfType<FieldInfo>().ToArray();
+			var result = typeof(T).GetAllFieldsAndProperties().OfType<FieldInfo>().ToArray();
 			Array.Sort(result, (x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.Name, y.Name)); // sort alphabetically
 			return result;
 		}
@@ -134,8 +110,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		[Fact]
 		public void ExtractMembers() {
-			Members x = new Members(1, Guid.NewGuid(), new object());
-			object[] data = new object[3];
+			var x = new Members(1, Guid.NewGuid(), new object());
+			var data = new object[3];
 			MembersMethods.Get(members).ExtractMembers(x, data);
 			Assert.Equal(x.A, data[0]);
 			Assert.Equal(x.B, data[1]);
@@ -144,8 +120,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		[Fact]
 		public void ExtractStructMembers() {
-			Struct x = new Struct(1);
-			object[] data = new object[1];
+			var x = new Struct(1);
+			var data = new object[1];
 			MembersMethods.Get(GetMemberFields<Struct>()).ExtractMembers(x, data);
 			Assert.Equal(x.A, data[0]);
 		}
@@ -153,32 +129,32 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		[Fact]
 		public void GetMemberNullableValueType() {
 			Guid? guid = Guid.NewGuid();
-			Members x = new Members(0, guid, null);
+			var x = new Members(0, guid, null);
 			Assert.Equal(guid, MembersMethods.Get(members).GetMember(x, 1));
 		}
 
 		[Fact]
 		public void GetMemberNullableValueTypeNull() {
-			Members x = new Members(0, null, null);
+			var x = new Members(0, null, null);
 			Assert.Null(MembersMethods.Get(members).GetMember(x, 1));
 		}
 
 		[Fact]
 		public void GetMemberReferenceType() {
-			object obj = new object();
-			Members x = new Members(0, null, obj);
+			var obj = new object();
+			var x = new Members(0, null, obj);
 			Assert.Equal(obj, MembersMethods.Get(members).GetMember(x, 2));
 		}
 
 		[Fact]
 		public void GetMemberReferenceTypeNull() {
-			Members x = new Members(0, null, null);
+			var x = new Members(0, null, null);
 			Assert.Null(MembersMethods.Get(members).GetMember(x, 2));
 		}
 
 		[Fact]
 		public void GetMemberValueType() {
-			Members x = new Members(1, null, null);
+			var x = new Members(1, null, null);
 			Assert.Equal(1, MembersMethods.Get(members).GetMember(x, 0));
 		}
 
@@ -192,9 +168,9 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		[Fact]
 		public void PopulateMembersInitial() {
-			Members x = new Members();
-			Guid guid = Guid.NewGuid();
-			object obj = new object();
+			var x = new Members();
+			var guid = Guid.NewGuid();
+			var obj = new object();
 			MembersMethods.Get(members).PopulateMembers(x, new[] {1, guid, obj});
 			Assert.Equal(1, x.A);
 			Assert.Equal(guid, x.B);
@@ -203,8 +179,8 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 
 		[Fact]
 		public void PopulateMembersOverride() {
-			Members x = new Members();
-			MembersMethods membersMethods = MembersMethods.Get(members);
+			var x = new Members();
+			var membersMethods = MembersMethods.Get(members);
 			membersMethods.PopulateMembers(x, new[] {1, Guid.NewGuid(), new object()});
 			membersMethods.PopulateMembers(x, new object[] {2, null, null});
 			Assert.Equal(2, x.A);
@@ -215,10 +191,10 @@ namespace bsn.ModuleStore.Mapper.Serialization {
 		[Fact]
 		public void PopulateMembersStruct() {
 			object o = new GuidStruct();
-			Guid guid1 = Guid.NewGuid();
-			Guid guid2 = Guid.NewGuid();
+			var guid1 = Guid.NewGuid();
+			var guid2 = Guid.NewGuid();
 			MembersMethods.Get(GetMemberFields<GuidStruct>()).PopulateMembers(o, new object[] {guid1, guid2});
-			GuidStruct x = (GuidStruct)o;
+			var x = (GuidStruct)o;
 			Assert.Equal(guid1, x.A);
 			Assert.Equal(guid2, x.B);
 		}

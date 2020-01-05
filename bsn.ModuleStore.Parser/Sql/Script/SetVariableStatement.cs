@@ -39,11 +39,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			Debug.Assert(variableName != null);
 		}
 
-		public VariableName VariableName {
-			get {
-				return variableName;
-			}
-		}
+		public VariableName VariableName => variableName;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

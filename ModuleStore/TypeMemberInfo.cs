@@ -41,17 +41,9 @@ namespace bsn.ModuleStore.Console {
 			memberName = info.Name;
 		}
 
-		public string MemberName {
-			get {
-				return memberName;
-			}
-		}
+		public string MemberName => memberName;
 
-		public MemberTypes MemberType {
-			get {
-				return memberType;
-			}
-		}
+		public MemberTypes MemberType => memberType;
 
 		public bool Equals(TypeMemberInfo other) {
 			return Equals(other.memberType, memberType) && Equals(other.memberName, memberName);

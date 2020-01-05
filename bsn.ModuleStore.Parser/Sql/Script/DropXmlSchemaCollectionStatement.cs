@@ -42,23 +42,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.xmlSchemaCollectionName = xmlSchemaCollectionName;
 		}
 
-		public override string ObjectName {
-			get {
-				return xmlSchemaCollectionName.Name.Value;
-			}
-		}
+		public override string ObjectName => xmlSchemaCollectionName.Name.Value;
 
-		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName {
-			get {
-				return xmlSchemaCollectionName;
-			}
-		}
+		public Qualified<SchemaName, XmlSchemaCollectionName> XmlSchemaCollectionName => xmlSchemaCollectionName;
 
-		protected override SchemaName SchemaName {
-			get {
-				return xmlSchemaCollectionName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => xmlSchemaCollectionName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

@@ -60,7 +60,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public string ToString(DatabaseEngine engine) {
-			using (StringWriter writer = new StringWriter()) {
+			using (var writer = new StringWriter()) {
 				WriteTo(new SqlWriter(writer, engine));
 				return writer.ToString();
 			}
@@ -81,7 +81,7 @@ namespace bsn.ModuleStore.Sql.Script {
 		}
 
 		public byte[] GetHash(DatabaseEngine engine) {
-			using (HashWriter writer = new HashWriter()) {
+			using (var writer = new HashWriter()) {
 				WriteTo(new SqlWriter(writer, engine, SqlWriterMode.ForHashing));
 				return writer.ToArray();
 			}

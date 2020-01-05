@@ -48,17 +48,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.options = options.ToList();
 		}
 
-		public IEnumerable<Expression> Arguments {
-			get {
-				return arguments;
-			}
-		}
+		public IEnumerable<Expression> Arguments => arguments;
 
-		public IEnumerable<UnreservedKeyword> Options {
-			get {
-				return options;
-			}
-		}
+		public IEnumerable<UnreservedKeyword> Options => options;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

@@ -40,16 +40,8 @@ namespace bsn.ModuleStore.Mapper.AssemblyMetadata {
 			this.tableTypeColumn = tableTypeColumn;
 		}
 
-		public string SqlColumn {
-			get {
-				return sqlColumn;
-			}
-		}
+		public string SqlColumn => sqlColumn;
 
-		public string TableTypeColumn {
-			get {
-				return tableTypeColumn;
-			}
-		}
+		public string TableTypeColumn => tableTypeColumn;
 	}
 }

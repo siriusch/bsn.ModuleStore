@@ -42,17 +42,13 @@ namespace bsn.ModuleStore.Mapper {
 
 		protected MetadataBase(Func<XDocument> metadata, XName elementName) {
 			if (elementName == null) {
-				throw new ArgumentNullException("elementName");
+				throw new ArgumentNullException(nameof(elementName));
 			}
 			this.metadata = metadata;
 			this.elementName = elementName;
 		}
 
-		protected XName ElementName {
-			get {
-				return elementName;
-			}
-		}
+		protected XName ElementName => elementName;
 
 		public T GetValue(XDocument metadata, CultureInfo culture) {
 			return ToValueInternal(GetValueString(metadata, culture));
@@ -72,13 +68,13 @@ namespace bsn.ModuleStore.Mapper {
 
 		public void Set(XDocument metadata, CultureInfo culture, T value) {
 			if (metadata == null) {
-				throw new ArgumentNullException("metadata");
+				throw new ArgumentNullException(nameof(metadata));
 			}
 			metadata.Set(elementName, culture, ToStringInternal(value));
 		}
 
 		public XDocument Set(CultureInfo culture, T value) {
-			XDocument result = GetMetadata().Clone();
+			var result = GetMetadata().Clone();
 			Set(result, culture, value);
 			return result;
 		}

@@ -1,4 +1,4 @@
-﻿// bsn ModuleStore database versioning
+// bsn ModuleStore database versioning
 // -----------------------------------
 // 
 // Copyright 2010 by Arsène von Wyss - avw@gmx.ch
@@ -39,15 +39,10 @@ namespace bsn.ModuleStore.Sql.Script {
 		[Rule("<ExpressionParens> ::= ~'(' <Expression> ~')'")]
 		public ExpressionParens(Expression expression) {
 			Debug.Assert(expression != null);
-			ExpressionParens parens = expression as ExpressionParens;
-			this.expression = (parens != null) ? parens.expression : expression;
+			this.expression = (expression is ExpressionParens parens) ? parens.expression : expression;
 		}
 
-		public Expression Expression {
-			get {
-				return expression;
-			}
-		}
+		public Expression Expression => expression;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

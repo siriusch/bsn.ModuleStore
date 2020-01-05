@@ -44,11 +44,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			functions.Item.FunctionName.LockOverride();
 		}
 
-		public Qualified<TableName, ColumnName> ColumnNameQualified {
-			get {
-				return columnNameQualified;
-			}
-		}
+		public Qualified<TableName, ColumnName> ColumnNameQualified => columnNameQualified;
 
 		protected override void WriteToInternal(SqlWriter writer) {
 			writer.WriteScript(columnNameQualified, WhitespacePadding.None);

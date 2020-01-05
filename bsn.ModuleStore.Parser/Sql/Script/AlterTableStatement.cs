@@ -39,17 +39,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tableName = tableName;
 		}
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableName => tableName;
 
-		protected override SchemaName SchemaName {
-			get {
-				return tableName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => tableName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

@@ -47,17 +47,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.tuple = tuple;
 		}
 
-		public Tuple Tuple {
-			get {
-				return tuple;
-			}
-		}
+		public Tuple Tuple => tuple;
 
-		public Expression ValueExpression {
-			get {
-				return valueExpression;
-			}
-		}
+		public Expression ValueExpression => valueExpression;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

@@ -48,17 +48,9 @@ namespace bsn.ModuleStore.Mapper {
 			return type.FullName+'['+key+']';
 		}
 
-		public TKey Key {
-			get {
-				return key;
-			}
-		}
+		public TKey Key => key;
 
-		public Type Type {
-			get {
-				return type;
-			}
-		}
+		public Type Type => type;
 
 		public bool Equals(TypeKey<TKey> other) {
 			return key.Equals(other.key) && type.Equals(other.type);
@@ -82,17 +74,9 @@ namespace bsn.ModuleStore.Mapper {
 			return type.FullName+'['+key+']';
 		}
 
-		public object Key {
-			get {
-				return key;
-			}
-		}
+		public object Key => key;
 
-		public Type Type {
-			get {
-				return type;
-			}
-		}
+		public Type Type => type;
 
 		public bool Equals(TypeKey other) {
 			return key.Equals(other.key) && type.Equals(other.type);

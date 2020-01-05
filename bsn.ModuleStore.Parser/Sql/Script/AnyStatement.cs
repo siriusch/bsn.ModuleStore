@@ -38,8 +38,8 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		[Rule("<AnyStatement> ::= Id <ExpressionList>")]
 		public AnyStatement(Identifier identifier, Sequence<Expression> expressions) {
-			using (StringWriter stringWriter = new StringWriter()) {
-				SqlWriter statementWriter = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
+			using (var stringWriter = new StringWriter()) {
+				var statementWriter = new SqlWriter(stringWriter, DatabaseEngine.Unknown);
 				statementWriter.WriteIdentifier(identifier.Value);
 				statementWriter.WriteScriptSequence(expressions, WhitespacePadding.SpaceBefore, null);
 				statementText = stringWriter.ToString();

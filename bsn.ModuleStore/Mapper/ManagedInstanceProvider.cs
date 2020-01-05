@@ -44,13 +44,13 @@ namespace bsn.ModuleStore.Mapper {
 			DynamicMethod factoryMethod;
 			lock (factoryMethods) {
 				if (!factoryMethods.TryGetValue(type, out factoryMethod)) {
-					Type[] arguments = new[] {typeof(TManager)};
-					ConstructorInfo constructor = type.GetConstructor(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic, null, arguments, null);
+					var arguments = new[] {typeof(TManager)};
+					var constructor = type.GetConstructor(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic, null, arguments, null);
 					if (constructor == null) {
-						throw new MissingMemberException(type.FullName, string.Format(".ctor({0})", typeof(TManager).FullName));
+						throw new MissingMemberException(type.FullName, $".ctor({typeof(TManager).FullName})");
 					}
-					factoryMethod = new DynamicMethod(string.Format("ManagedInstanceFactory<{0}>", type.Name), type, arguments, type, true);
-					ILGenerator il = factoryMethod.GetILGenerator();
+					factoryMethod = new DynamicMethod($"ManagedInstanceFactory<{type.Name}>", type, arguments, type, true);
+					var il = factoryMethod.GetILGenerator();
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Newobj, constructor);
 					il.Emit(OpCodes.Ret);
@@ -68,12 +68,10 @@ namespace bsn.ModuleStore.Mapper {
 		public ManagedInstanceProvider(CachePolicy defaultCachePolicy): base(defaultCachePolicy) {}
 
 		protected internal TManager Manager {
-			get {
-				return manager;
-			}
+			get => manager;
 			internal set {
 				if (value == null) {
-					throw new ArgumentNullException("value");
+					throw new ArgumentNullException(nameof(value));
 				}
 				if (manager != null) {
 					throw new InvalidOperationException("Manager can only be set once");

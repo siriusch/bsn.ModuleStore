@@ -38,10 +38,6 @@ namespace bsn.ModuleStore.Mapper {
 			this.policy = policy;
 		}
 
-		public CachePolicy Policy {
-			get {
-				return policy;
-			}
-		}
+		public CachePolicy Policy => policy;
 	}
 }

@@ -44,17 +44,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.output = output.HasValue();
 		}
 
-		public bool Output {
-			get {
-				return output;
-			}
-		}
+		public bool Output => output;
 
-		public bool Varying {
-			get {
-				return varying;
-			}
-		}
+		public bool Varying => varying;
 
 		protected override void WriteParameterQualifiers(SqlWriter writer) {
 			if (varying) {

@@ -61,56 +61,24 @@ namespace bsn.ModuleStore.Sql.Script {
 			type = triggerType;
 		}
 
-		public override ObjectCategory ObjectCategory {
-			get {
-				return ObjectCategory.Trigger;
-			}
-		}
+		public override ObjectCategory ObjectCategory => ObjectCategory.Trigger;
 
 		public override string ObjectName {
-			get {
-				return triggerName.Name.Value;
-			}
-			set {
-				triggerName.Name = new TriggerName(value);
-			}
+			get => triggerName.Name.Value;
+			set => triggerName.Name = new TriggerName(value);
 		}
 
-		public ReplicationToken Replication {
-			get {
-				return replication;
-			}
-		}
+		public ReplicationToken Replication => replication;
 
-		public Statement Statement {
-			get {
-				return statement;
-			}
-		}
+		public Statement Statement => statement;
 
-		public Qualified<SchemaName, TriggerName> TriggerName {
-			get {
-				return triggerName;
-			}
-		}
+		public Qualified<SchemaName, TriggerName> TriggerName => triggerName;
 
-		public IEnumerable<DmlOperation> TriggerOperations {
-			get {
-				return triggerOperations;
-			}
-		}
+		public IEnumerable<DmlOperation> TriggerOperations => triggerOperations;
 
-		public TriggerTypeToken Type {
-			get {
-				return type;
-			}
-		}
+		public TriggerTypeToken Type => type;
 
-		protected override SchemaName SchemaName {
-			get {
-				return triggerName.Qualification;
-			}
-		}
+		protected override SchemaName SchemaName => triggerName.Qualification;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteToInternal(writer, "CREATE");
@@ -134,7 +102,7 @@ namespace bsn.ModuleStore.Sql.Script {
 			writer.WriteScript(tableName, WhitespacePadding.SpaceAfter);
 			writer.WriteScript(type, WhitespacePadding.SpaceAfter);
 			string prefix = null;
-			foreach (DmlOperation operation in triggerOperations) {
+			foreach (var operation in triggerOperations) {
 				writer.Write(prefix);
 				writer.WriteEnum(operation, WhitespacePadding.None);
 				prefix = ", ";
@@ -148,15 +116,11 @@ namespace bsn.ModuleStore.Sql.Script {
 
 		void ICreateOrAlterStatement.WriteToInternal(SqlWriter writer, string command) {
 			if (string.IsNullOrEmpty(command)) {
-				throw new ArgumentNullException("command");
+				throw new ArgumentNullException(nameof(command));
 			}
 			WriteToInternal(writer, command);
 		}
 
-		public Qualified<SchemaName, TableName> TableName {
-			get {
-				return tableName;
-			}
-		}
+		public Qualified<SchemaName, TableName> TableName => tableName;
 	}
 }

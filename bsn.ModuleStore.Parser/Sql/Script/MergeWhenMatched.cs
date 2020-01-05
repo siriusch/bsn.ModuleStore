@@ -47,23 +47,11 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.operation = operation;
 		}
 
-		public virtual string NotMatchedBy {
-			get {
-				return string.Empty;
-			}
-		}
+		public virtual string NotMatchedBy => string.Empty;
 
-		public MergeOperation Operation {
-			get {
-				return operation;
-			}
-		}
+		public MergeOperation Operation => operation;
 
-		public Predicate Predicate {
-			get {
-				return predicate;
-			}
-		}
+		public Predicate Predicate => predicate;
 
 		public override sealed void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);

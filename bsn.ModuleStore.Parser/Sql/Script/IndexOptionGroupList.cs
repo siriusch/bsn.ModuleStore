@@ -41,17 +41,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.indexOptions = indexOptions.ToList();
 		}
 
-		public override bool HasValue {
-			get {
-				return indexOptions.Count > 0;
-			}
-		}
+		public override bool HasValue => indexOptions.Count > 0;
 
-		public IEnumerable<IndexOption> IndexOptions {
-			get {
-				return indexOptions;
-			}
-		}
+		public IEnumerable<IndexOption> IndexOptions => indexOptions;
 
 		public override void WriteTo(SqlWriter writer) {
 			writer.WriteIndexOptions(indexOptions, WhitespacePadding.None);

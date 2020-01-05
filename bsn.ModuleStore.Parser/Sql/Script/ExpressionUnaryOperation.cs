@@ -48,17 +48,9 @@ namespace bsn.ModuleStore.Sql.Script {
 			this.expression = expression;
 		}
 
-		public Expression Expression {
-			get {
-				return expression;
-			}
-		}
+		public Expression Expression => expression;
 
-		public OperationToken Operation {
-			get {
-				return operation;
-			}
-		}
+		public OperationToken Operation => operation;
 
 		public override void WriteTo(SqlWriter writer) {
 			WriteCommentsTo(writer);
